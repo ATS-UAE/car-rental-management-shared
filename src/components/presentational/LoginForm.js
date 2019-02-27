@@ -25,6 +25,9 @@ function LoginForm(props) {
 	return (
 		<Paper className={classes.paper}>
 			<form>
+				<Typography variant="h6" gutterBottom headlineMapping={{ h6: "h1" }}>
+					Login
+				</Typography>
 				<TextFieldValidation
 					TextFieldProps={{
 						className: classes.textFields,
