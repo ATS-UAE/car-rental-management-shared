@@ -38,6 +38,7 @@ export default function TextFieldValidation(props) {
 			onChange={e => {
 				onChange && onChange(e);
 			}}
+			value={value}
 			helperText={helperText}
 			error={errored}
 			label={label}

@@ -40,5 +40,14 @@ export const validators = {
 			v => /.{8,}/.test(v),
 			"Password should be greater than 8 characters."
 		)
+	],
+	email: [
+		new Validator(
+			v =>
+				/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
+					v
+				),
+			"Invalid email."
+		)
 	]
 };
