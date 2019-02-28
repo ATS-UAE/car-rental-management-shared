@@ -1,14 +1,28 @@
-import React, { Component } from "react";
-import { BrowserRouter } from "react-router-dom";
+import React, { Component, Fragment } from "react";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 import CssBaseline from "@material-ui/core/CssBaseline";
 
 import AppBar from "./components/presentational/AppBar";
+import { pages } from "./variables";
+
 class App extends Component {
 	render() {
 		return (
 			<div className="App">
 				<BrowserRouter>
-					<AppBar />
+					<Fragment>
+						<AppBar />
+						<Switch>
+							{pages.map(page => (
+								<Route
+									key={page.path}
+									path={page.path}
+									exact={true}
+									component={page.component}
+								/>
+							))}
+						</Switch>
+					</Fragment>
 				</BrowserRouter>
 				<CssBaseline />
 			</div>
