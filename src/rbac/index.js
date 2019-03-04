@@ -1,4 +1,5 @@
 const Q = require("q");
+
 function RBAC(roles) {
 	this.roles = {};
 	this.addRoles(roles);
@@ -58,7 +59,7 @@ RBAC.prototype.can = function(role, operation, params, cb) {
 
 		// Operation is conditional, run async function
 		if (typeof $role.can[operation] === "function") {
-			$role.can[operation](params, function(err, result) {
+			$role.can[operation](params || {}, function(err, result) {
 				if (err) {
 					return reject(err);
 				}
@@ -87,6 +88,7 @@ RBAC.prototype.addRoles = function(roles, cb = () => {}) {
 		}
 
 		if (typeof roles === "function") {
+			// Asynchronously add a roles by providing a function as an argument.
 			return Q.nfcall(roles)
 				.then(data => this.addRoles(data))
 				.catch(err => {
@@ -104,7 +106,6 @@ RBAC.prototype.addRoles = function(roles, cb = () => {}) {
 			if (roles[role].inherits) {
 				map[role].inherits = roles[role].inherits;
 			}
-
 			roles[role].can.forEach(operation => {
 				if (typeof operation === "string") {
 					map[role].can[operation] = 1;
@@ -124,4 +125,42 @@ RBAC.prototype.addRoles = function(roles, cb = () => {}) {
 	});
 };
 
-module.exports = RBAC;
+function Resource(name, operation, condition) {
+	if (!name) {
+		throw new Error("Resource name is required.");
+	}
+	this.name = name;
+	this.operation = operation;
+	this.condition = condition;
+}
+
+Resource.prototype.getPermission = function(operation, condition) {
+	let name = this.name;
+	let $operation = operation || this.operation;
+	let $condition = condition || this.condition;
+	if (!operation) {
+		throw new Error("No operation given on Resource.");
+	}
+	// operation can be an array. condition will be ignored.
+	if ($operation instanceof Array) {
+		return $operation.map(op => `${name}:${op}`);
+	}
+	if (!$operation) throw new Error("No operation is defined");
+	if (typeof $condition === "function") {
+		return {
+			name: `${name}:${$operation}`,
+			when: $condition
+		};
+	} else {
+		return `${name}:${$operation}`;
+	}
+};
+
+Resource.OPERATIONS = {
+	CREATE: "CREATE",
+	READ: "READ",
+	UPDATE: "UPDATE",
+	DELETE: "DELETE"
+};
+
+module.exports = { RBAC, Resource };
