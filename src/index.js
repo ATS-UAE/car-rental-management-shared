@@ -20,7 +20,6 @@ passport.use(
 			});
 			if (existingUser) {
 				existingUser = existingUser.get({ plain: true });
-				console.log(existingUser);
 				let valid = await bcrypt.compare(password, existingUser.password);
 
 				if (!valid) {
@@ -56,7 +55,7 @@ app.use(
 		saveUninitialized: false
 	})
 );
-
+app.use(express.json());
 // Initialize Passport and restore authentication state, if any, from the
 // session.
 app.use(passport.initialize());
