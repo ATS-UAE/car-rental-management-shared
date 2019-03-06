@@ -1,26 +1,26 @@
 const { RBAC, Resource } = require("./");
-
-let bookings = new Resource("bookings");
-let locations = new Resource("locations");
-let vehicles = new Resource("vehicles");
-let users = new Resource("users");
+const { ROLES, RESOURCES } = require("../utils/variables");
+let bookings = new Resource(RESOURCES.BOOKINGS);
+let locations = new Resource(RESOURCES.LOCATIONS);
+let vehicles = new Resource(RESOURCES.VEHICLES);
+let users = new Resource(RESOURCES.USERS);
 
 let { CREATE, READ, UPDATE, DELETE } = Resource.OPERATIONS;
 
 const accessControl = new RBAC({
-	admin: {
+	[ROLES.ADMIN]: {
 		can: [
 			...locations.getPermission([CREATE, READ, UPDATE, DELETE]),
 			...vehicles.getPermission([CREATE, READ, UPDATE, DELETE]),
 			...users.getPermission([CREATE, READ, UPDATE, DELETE])
 		],
-		inherits: ["key_manager"]
+		inherits: [ROLES.KEY_MANAGER]
 	},
-	key_manager: {
+	[ROLES.KEY_MANAGER]: {
 		can: [...bookings.getPermission([READ, UPDATE, DELETE])],
-		inherits: ["guest"]
+		inherits: [ROLES.GUEST]
 	},
-	guest: {
+	[ROLES.GUEST]: {
 		can: [
 			bookings.getPermission(CREATE),
 			bookings.getPermission(READ, ({ currentUserId, resourceOwnerId }, cb) => {
@@ -69,5 +69,6 @@ module.exports = {
 	locations,
 	vehicles,
 	users,
+	ROLES,
 	op: { CREATE, READ, UPDATE, DELETE }
 };
