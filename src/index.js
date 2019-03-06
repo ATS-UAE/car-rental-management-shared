@@ -51,7 +51,7 @@ passport.deserializeUser(function(id, cb) {
 app.use(require("body-parser").urlencoded({ extended: true }));
 app.use(
 	require("express-session")({
-		secret: "keyboard cat",
+		secret: config.hashSecret,
 		resave: false,
 		saveUninitialized: false
 	})
