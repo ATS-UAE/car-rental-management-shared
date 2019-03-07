@@ -70,5 +70,6 @@ module.exports = {
 	vehicles,
 	users,
 	ROLES,
+	RESOURCES,
 	op: { CREATE, READ, UPDATE, DELETE }
 };

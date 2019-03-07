@@ -11,4 +11,11 @@ const RESOURCES = {
 	USERS: "USERS"
 };
 
-module.exports = { ROLES, RESOURCES };
+const errorCodes = {
+	UNAUTHORIZED: {
+		message: "You do not have the permission to access this resource.",
+		statusCode: 403
+	}
+};
+
+module.exports = { ROLES, RESOURCES, errorCodes };
