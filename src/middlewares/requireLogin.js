@@ -1,7 +1,13 @@
+const { ResponseBuilder } = require("../utils");
+
 module.exports = function(req, res, next) {
 	if (!req.user) {
+		let response = new ResponseBuilder();
+		response.message = "You are not authorized. Please login.";
+		response.setCode(401);
+		response.setSuccess(false);
 		res.status(401);
-		res.json({ error: { message: "You are not authorized. Please login." } });
+		res.json(response);
 	} else {
 		next();
 	}
