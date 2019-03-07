@@ -39,6 +39,10 @@ module.exports = (sequelize, { STRING, DATE, BOOLEAN }) => {
 					notNull: { msg: "Email address is required" }
 				}
 			},
+			emailConfirmed: {
+				type: BOOLEAN,
+				defaultValue: false
+			},
 			password: {
 				type: STRING,
 				allowNull: false,
