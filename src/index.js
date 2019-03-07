@@ -28,6 +28,7 @@ passport.use(
 					return cb(null, existingUser);
 				}
 			}
+			return cb(null, false);
 		} catch (e) {
 			return cb(e);
 		}
@@ -50,7 +51,7 @@ passport.deserializeUser(function(id, cb) {
 app.use(require("body-parser").urlencoded({ extended: true }));
 app.use(
 	require("express-session")({
-		secret: config.hashSecret,
+		secret: config.secretKey,
 		resave: false,
 		saveUninitialized: false
 	})
