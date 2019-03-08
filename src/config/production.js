@@ -1,13 +1,18 @@
+const moment = require("moment");
+
+let toUnix = date => {
+	return moment(date, "YYYY-MM-DDTHH:mm:ss").unix();
+};
+
 module.exports = {
 	database: {
 		name: "CarBooking",
 		username: "root",
 		password: process.env.DATABASE_PASS,
-		server: {
-			dialect: "mysql",
-			host: process.env.DATABASE_HOST
-		},
+		host: process.env.DATABASE_HOST,
+		port: process.env.DATABASE_PORT,
 		sequelize: {
+			dialect: "mysql",
 			hooks: {
 				afterFind: results => {
 					if (results) {
