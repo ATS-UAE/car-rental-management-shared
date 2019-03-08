@@ -4,6 +4,7 @@ let bookings = new Resource(RESOURCES.BOOKINGS);
 let locations = new Resource(RESOURCES.LOCATIONS);
 let vehicles = new Resource(RESOURCES.VEHICLES);
 let users = new Resource(RESOURCES.USERS);
+let roles = new Resource(RESOURCES.ROLES);
 
 let { CREATE, READ, UPDATE, DELETE } = Resource.OPERATIONS;
 
@@ -58,7 +59,13 @@ const accessControl = new RBAC({
 						cb(undefined, true);
 					}
 				}
-			)
+			),
+			users.getPermission(UPDATE, (params, cb) => {
+				if (params.roleId === undefined) {
+					cb(undefined, false);
+				}
+			}),
+			roles.getPermission(READ)
 		]
 	}
 });
