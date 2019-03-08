@@ -8,7 +8,8 @@ const RESOURCES = {
 	BOOKINGS: "BOOKINGS",
 	LOCATIONS: "LOCATIONS",
 	VEHICLES: "VEHICLES",
-	USERS: "USERS"
+	USERS: "USERS",
+	ROLES: "ROLES"
 };
 
 const errorCodes = {
