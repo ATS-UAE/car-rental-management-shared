@@ -39,10 +39,6 @@ module.exports = (sequelize, { STRING, DATE, BOOLEAN }) => {
 					notNull: { msg: "Email address is required" }
 				}
 			},
-			emailConfirmed: {
-				type: BOOLEAN,
-				defaultValue: false
-			},
 			password: {
 				type: STRING,
 				allowNull: false,
@@ -62,7 +58,8 @@ module.exports = (sequelize, { STRING, DATE, BOOLEAN }) => {
 			userImageSrc: { type: STRING },
 			licenseImageSrc: { type: STRING },
 			approved: { type: BOOLEAN, defaultValue: false },
-			blocked: { type: BOOLEAN, defaultValue: false }
+			blocked: { type: BOOLEAN, defaultValue: false },
+			emailConfirmed: { type: BOOLEAN, defaultValue: false }
 		},
 		{
 			validate: {
