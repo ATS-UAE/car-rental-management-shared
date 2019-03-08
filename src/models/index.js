@@ -4,7 +4,7 @@ const Sequelize = require("sequelize");
 const basename = path.basename(__filename);
 const config = require("../config");
 const bcrypt = require("bcrypt");
-const { textColors, asyncForEach } = require("../utils");
+const { asyncForEach } = require("../utils");
 const { ROLES } = require("../utils/variables");
 
 const createStore = () => {
@@ -38,15 +38,17 @@ const createStore = () => {
 	});
 	db.sequelize = sequelize;
 	db.Sequelize = Sequelize;
-	sequelize
-		.authenticate()
-		.then(async () => {
-			await init(db);
-			console.log("Connection has been established successfully.");
-		})
-		.catch(err => {
-			console.error("Unable to connect to the database\n", err);
-		});
+	init(db, { sync: { options: { force: true } } }).then(() => {
+		sequelize
+			.authenticate()
+			.then(() => {
+				console.log("Connection has been established successfully.");
+			})
+			.catch(() => {
+				console.error("Unable to connect to the database\n", err);
+			});
+	});
+
 	return db;
 };
 
@@ -59,13 +61,19 @@ const init = async (db, params = {}) => {
 	let users = await db.User.findAll({
 		include: [{ model: db.Role, as: "role" }]
 	});
-	if (users.length === 0) {
+
+	let roles = await db.Role.findAll();
+
+	if (roles.length === 0) {
 		// Create user types...
 		await asyncForEach(Object.values(ROLES), async name => {
 			if (typeof name === "string") {
 				await db.Role.create({ name });
 			}
 		});
+	}
+
+	if (users.length === 0) {
 		let adminRole = await db.Role.findOne({
 			where: { name: ROLES.ADMIN }
 		});
