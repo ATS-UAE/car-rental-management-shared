@@ -53,6 +53,9 @@ router.get("/:token", async (req, res) => {
 			}
 			response.setCode(200);
 			response.setSuccess(true);
+		} else {
+			response.setCode(422);
+			response.setMessage("User ID does not exist.");
 		}
 	} catch (e) {
 		response.setMessage("Token is invalid or expired.");
