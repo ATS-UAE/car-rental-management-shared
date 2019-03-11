@@ -1,5 +1,6 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const router = express.Router();
 
 const requireLogin = require("../middlewares/requireLogin");
@@ -8,7 +9,7 @@ const { ROLES, RESOURCES, accessControl, op } = require("../rbac/init");
 const { CREATE, READ, UPDATE, DELETE } = op;
 const db = require("../models");
 const { errorCodes } = require("../utils/variables");
-const { ResponseBuilder } = require("../utils");
+const { ResponseBuilder, sendInviteToken } = require("../utils");
 
 router.use(requireLogin);
 router.use(disallowGuests);
@@ -92,6 +93,8 @@ router.post("/", async ({ user, body }, res) => {
 			roleId
 		} = body;
 		let role = await db.Role.findByPk(roleId);
+		// Approve if userCreated is not guest
+		let approved = role.getDataValue("name") === ROLES.GUEST ? false : true;
 		let hashedPassword = await bcrypt.hash(password, 10);
 		let createdUser = await db.User.build({
 			username,
@@ -103,12 +106,14 @@ router.post("/", async ({ user, body }, res) => {
 			mobileNumber,
 			userImageSrc,
 			licenseImageSrc,
-			roleId
+			roleId,
+			approved
 		});
 		try {
 			createdUser.validate();
 			createdUser = await createdUser.save();
 			response.setData({
+				id: createdUser.getDataValue("id"),
 				username,
 				firstName,
 				lastName,
@@ -119,12 +124,22 @@ router.post("/", async ({ user, body }, res) => {
 				licenseImageSrc,
 				roleId
 			});
-			if (role.getDataValue("name") === ROLES.GUEST) {
-				// Send email invite
-			}
-			response.setMessage("User created.");
+			response.setMessage("User has been created.");
 			response.setCode(200);
 			response.setSuccess(true);
+			if (role.getDataValue("name") === ROLES.GUEST) {
+				// Send email invite
+				try {
+					await sendInviteToken(
+						createdUser.getDataValue("id"),
+						createdUser.getDataValue("email")
+					);
+				} catch (e) {
+					response.setMessage(e.message || "Cannot send invite.");
+					response.setCode(500);
+					response.setSuccess(false);
+				}
+			}
 		} catch (e) {
 			response.setMessage(e.message);
 			response.setCode(422);

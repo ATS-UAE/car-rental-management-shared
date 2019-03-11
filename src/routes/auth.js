@@ -1,9 +1,11 @@
 const passport = require("passport");
+const jwt = require("jsonwebtoken");
 const express = require("express");
 const router = express.Router();
 
 const { ResponseBuilder } = require("../utils");
 const requireLogin = require("../middlewares/requireLogin");
+const db = require("../models");
 
 router.get("/me", requireLogin, function(req, res) {
 	let response = new ResponseBuilder();

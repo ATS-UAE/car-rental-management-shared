@@ -9,6 +9,7 @@ const db = require("./models");
 const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/users");
 const roleRoutes = require("./routes/roles");
+const inviteRoutes = require("./routes/invites");
 
 const app = express();
 
@@ -67,6 +68,7 @@ app.use(passport.session());
 app.use("/api/carbooking/auth", authRoutes);
 app.use("/api/carbooking/users", userRoutes);
 app.use("/api/carbooking/roles", roleRoutes);
+app.use("/api/carbooking/invites", inviteRoutes);
 
 app.listen(config.serverPort, () => {
 	console.log(`Listening on port ${config.serverPort}`);

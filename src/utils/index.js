@@ -1,3 +1,7 @@
+const jwt = require("jsonwebtoken");
+const mailer = require("../mail");
+const config = require("../config");
+
 const asyncForEach = async (array, cb) => {
 	for (let i = 0; i < array.length; i++) {
 		await cb(array[i], i, array);
@@ -30,4 +34,18 @@ ResponseBuilder.prototype.setMessage = function(message) {
 ResponseBuilder.prototype.getResponse = function() {
 	return ({ error, message, success, data } = this);
 };
-module.exports = { asyncForEach, ResponseBuilder };
+
+function sendInviteToken(userId, email) {
+	// Send email invite
+	let token = jwt.sign({ id: userId }, config.secretKey, { expiresIn: "7d" });
+	return mailer.sendMail({
+		from: "no-reply@atsuae.net",
+		to: email,
+		subject: "You are invited to LeasePlan Car Booking!",
+		html: `<h1>Welcome</h1><a href="${
+			config.serverUrl
+		}/api/carbooking/invites/${token}">Click here to login!</a>`
+	});
+}
+
+module.exports = { asyncForEach, ResponseBuilder, sendInviteToken };
