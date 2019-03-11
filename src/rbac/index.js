@@ -64,9 +64,9 @@ RBAC.prototype.can = function(role, operation, params, cb) {
 					return reject(err);
 				}
 				if (!result) {
-					return reject(false);
+					return reject(result);
 				}
-				resolve(true);
+				return resolve(result);
 			});
 			return;
 		}
@@ -141,9 +141,17 @@ Resource.prototype.getPermission = function(operation, condition) {
 	if (!operation) {
 		throw new Error("No operation given on Resource.");
 	}
-	// operation can be an array. condition will be ignored.
+	// operation can be an array.
 	if ($operation instanceof Array) {
-		return $operation.map(op => `${name}:${op}`);
+		return $operation.map(op => {
+			if (typeof $condition === "function") {
+				return {
+					name: `${name}:${op}`,
+					when: $condition
+				};
+			}
+			return `${name}:${op}`;
+		});
 	}
 	if (!$operation) throw new Error("No operation is defined");
 	if (typeof $condition === "function") {
