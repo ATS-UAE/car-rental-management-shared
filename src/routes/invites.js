@@ -1,4 +1,3 @@
-const passport = require("passport");
 const jwt = require("jsonwebtoken");
 const express = require("express");
 const router = express.Router();
@@ -8,9 +7,6 @@ const requireLogin = require("../middlewares/requireLogin");
 const disallowGuests = require("../middlewares/disallowGuests");
 const db = require("../models");
 const config = require("../config");
-const { ROLES, RESOURCES, accessControl, op } = require("../rbac/init");
-const { CREATE, READ, UPDATE, DELETE } = op;
-const mailer = require("../mail");
 
 // Resend new invite token
 router.post("/", requireLogin, disallowGuests, async (req, res) => {
