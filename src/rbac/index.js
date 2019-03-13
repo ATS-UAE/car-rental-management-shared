@@ -63,12 +63,8 @@ RBAC.prototype.can = function(role, operation, params, cb) {
 				if (err) {
 					return reject(err);
 				}
-				if (!result) {
-					return reject(result);
-				}
 				return resolve(result);
 			});
-			return;
 		}
 		// No operation reject as false
 		reject(false);
