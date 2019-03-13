@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const moment = require("moment");
 const mailer = require("../mail");
 const config = require("../config");
 
@@ -68,10 +69,15 @@ function sendInviteToken(email) {
 	});
 }
 
+let toUnix = date => {
+	return moment(date, "YYYY-MM-DDTHH:mm:ss").unix();
+};
+
 module.exports = {
 	asyncForEach,
 	ResponseBuilder,
 	sendInviteToken,
 	exceptFields,
-	pickFields
+	pickFields,
+	toUnix
 };
