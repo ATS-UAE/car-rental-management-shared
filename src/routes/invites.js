@@ -1,63 +1,35 @@
-const jwt = require("jsonwebtoken");
 const express = require("express");
 const router = express.Router();
 
-const { ResponseBuilder } = require("../utils");
+const { ResponseBuilder, sendInviteToken } = require("../utils");
 const requireLogin = require("../middlewares/requireLogin");
 const disallowGuests = require("../middlewares/disallowGuests");
-const db = require("../models");
-const config = require("../config");
+router.use(requireLogin);
+router.use(disallowGuests);
 
-// Resend new invite token
-router.post("/", requireLogin, disallowGuests, async (req, res) => {
+// Send an invite to an email
+router.post("/", async ({ body }, res) => {
 	let response = new ResponseBuilder();
-	let userId = req.body.id;
-	let user = await db.User.findByPk(userId);
-	if (user) {
-		if (!user.getDataValue("approved")) {
-			// Send email invite
-			try {
-				await sendInviteToken(
-					createdUser.getDataValue("id"),
-					createdUser.getDataValue("email")
-				);
-			} catch (e) {
-				response.setMessage(e.message || "Cannot send invite.");
-				res.status(500);
-			}
-		} else {
-			response.setMessage("User is already approved");
+
+	// Check if email is provided.
+	if (body.email) {
+		// Send email invite
+		try {
+			await sendInviteToken(body.email);
 			response.setCode(200);
 			response.setSuccess(true);
+			response.setMessage(`Invite has been sent to ${body.email}`);
+		} catch (e) {
+			response.appendError(e.message || "Cannot send invite.");
+			res.status(500);
+			response.setCode(500);
+			response.setSuccess(false);
 		}
-	}
-	res.json(response);
-});
-
-// Consume token
-router.get("/:token", async (req, res) => {
-	let response = new ResponseBuilder();
-	try {
-		let tokenData = jwt.verify(req.params.token, config.secretKey);
-		let user = await db.User.findByPk(tokenData.id);
-		if (user) {
-			if (!user.getDataValue("approved")) {
-				user.update({ approved: true });
-				response.setMessage("User has been approved");
-			} else {
-				response.setMessage("User is already approved");
-			}
-			response.setCode(200);
-			response.setSuccess(true);
-		} else {
-			response.setCode(422);
-			response.setMessage("User ID does not exist.");
-		}
-	} catch (e) {
-		response.setMessage("Token is invalid or expired.");
+	} else {
+		response.setMessage("Please provide an email address.");
 		response.setCode(422);
 	}
+
 	res.json(response);
 });
-
 module.exports = router;
