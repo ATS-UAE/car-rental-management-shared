@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const moment = require("moment");
-const mailer = require("../mail");
 const config = require("../config");
+const mailer = require("../mail");
 
 const asyncForEach = async (array, cb) => {
 	for (let i = 0; i < array.length; i++) {
@@ -59,7 +59,7 @@ ResponseBuilder.prototype.getResponse = function() {
 function sendInviteToken(email) {
 	// Send email invite
 	let token = jwt.sign({ email }, config.secretKey, { expiresIn: "7d" });
-	return mailer.sendMail({
+	return mailer.getTransport().sendMail({
 		from: "no-reply@atsuae.net",
 		to: email,
 		subject: "You are invited to LeasePlan Car Booking!",
@@ -68,10 +68,7 @@ function sendInviteToken(email) {
 		}/api/carbooking/invites/${token}">Click here to login!</a>`
 	});
 }
-
-let toUnix = date => {
-	return moment(date, "YYYY-MM-DDTHH:mm:ss").unix();
-};
+const toUnix = date => moment(date, "YYYY-MM-DDTHH:mm:ss").unix();
 
 module.exports = {
 	asyncForEach,

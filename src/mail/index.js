@@ -1,6 +1,5 @@
 const nodemailer = require("nodemailer");
 const { mail } = require("../config/");
+const getTransport = () => nodemailer.createTransport(mail);
 
-let transporter = nodemailer.createTransport(mail);
-
-module.exports = transporter;
+module.exports = getTransport;
