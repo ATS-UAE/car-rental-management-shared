@@ -1,3 +1,5 @@
+const { toUnix } = require("../utils");
+
 module.exports = (sequelize, { STRING, DATE, BOOLEAN }) => {
 	let User = sequelize.define(
 		"User",
@@ -71,6 +73,20 @@ module.exports = (sequelize, { STRING, DATE, BOOLEAN }) => {
 			emailConfirmed: { type: BOOLEAN, defaultValue: false }
 		},
 		{
+			hooks: {
+				afterFind: results => {
+					if (results) {
+						let isArray = Array.isArray(results);
+						if (isArray) {
+							return results.map(result => {
+								result.dataValues["lastLogin"] = toUnix(result["lastLogin"]);
+							});
+						}
+						results.dataValues["lastLogin"] = toUnix(results["lastLogin"]);
+					}
+					return results;
+				}
+			},
 			validate: {
 				checkUsername() {
 					if (this.username.length < 4) {
