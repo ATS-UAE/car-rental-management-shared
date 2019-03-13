@@ -4,7 +4,7 @@ let bookings = new Resource(RESOURCES.BOOKINGS);
 let locations = new Resource(RESOURCES.LOCATIONS);
 let vehicles = new Resource(RESOURCES.VEHICLES);
 let users = new Resource(RESOURCES.USERS);
-let roles = new Resource(RESOURCES.ROLES);
+let enums = new Resource(RESOURCES.ENUMS);
 
 let { CREATE, READ, UPDATE, DELETE } = Resource.OPERATIONS;
 
@@ -65,10 +65,10 @@ const accessControl = new RBAC({
 			users.getPermission(UPDATE, ({ updateUser, currentUser }, cb) => {
 				// TODO: Disallow on update confidential data.
 				// Can only update self
-				return cb(undefined, updateUser.id === currentUser.id);
+				cb(undefined, updateUser.id === currentUser.id);
 			}),
 			vehicles.getPermission(READ),
-			roles.getPermission(READ)
+			enums.getPermission(READ)
 		]
 	}
 });

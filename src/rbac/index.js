@@ -44,7 +44,7 @@ RBAC.prototype.can = function(role, operation, params, cb) {
 		if (!$role.can[operation]) {
 			// If no parents reject
 			if (!$role.inherits) {
-				return reject(false);
+				return resolve(false);
 			}
 			// Return if any parent resolves true or all reject
 			return Q.any(
@@ -67,7 +67,7 @@ RBAC.prototype.can = function(role, operation, params, cb) {
 			});
 		}
 		// No operation reject as false
-		reject(false);
+		resolve(false);
 	});
 };
 
