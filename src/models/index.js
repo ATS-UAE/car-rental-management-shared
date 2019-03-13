@@ -4,7 +4,7 @@ const Sequelize = require("sequelize");
 const basename = path.basename(__filename);
 const config = require("../config");
 const bcrypt = require("bcrypt");
-const { asyncForEach } = require("../utils");
+const { asyncForEach, toUnix } = require("../utils");
 const { ROLES, BOOKING_STATUS, BOOKING_TYPES } = require("../utils/variables");
 
 const createStore = () => {
@@ -16,6 +16,22 @@ const createStore = () => {
 		{
 			host: config.database.host,
 			port: config.database.port,
+			hooks: {
+				afterFind: results => {
+					if (results) {
+						let isArray = Array.isArray(results);
+						if (isArray) {
+							return results.map(result => {
+								result.dataValues["createdAt"] = toUnix(result["createdAt"]);
+								result.dataValues["updatedAt"] = toUnix(result["updatedAt"]);
+							});
+						}
+						results.dataValues["createdAt"] = toUnix(results["createdAt"]);
+						results.dataValues["updatedAt"] = toUnix(results["updatedAt"]);
+					}
+					return results;
+				}
+			},
 			...config.database.sequelize
 		}
 	);
