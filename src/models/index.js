@@ -5,7 +5,7 @@ const basename = path.basename(__filename);
 const config = require("../config");
 const bcrypt = require("bcrypt");
 const { asyncForEach } = require("../utils");
-const { ROLES } = require("../utils/variables");
+const { ROLES, BOOKING_STATUS, BOOKING_TYPES } = require("../utils/variables");
 
 const createStore = () => {
 	let db = {};
@@ -69,6 +69,17 @@ const init = async (db, params = {}) => {
 		await asyncForEach(Object.values(ROLES), async name => {
 			if (typeof name === "string") {
 				await db.Role.create({ name });
+			}
+		});
+
+		await asyncForEach(Object.values(BOOKING_STATUS), async name => {
+			if (typeof name === "string") {
+				await db.BookingStatus.create({ name });
+			}
+		});
+		await asyncForEach(Object.values(BOOKING_TYPES), async name => {
+			if (typeof name === "string") {
+				await db.BookingType.create({ name });
 			}
 		});
 	}

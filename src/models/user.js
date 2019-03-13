@@ -54,6 +54,15 @@ module.exports = (sequelize, { STRING, DATE, BOOLEAN }) => {
 					notNull: { msg: "Mobile number is required" }
 				}
 			},
+			clientNo: {
+				type: STRING
+			},
+			contractNo: {
+				type: STRING
+			},
+			objectNo: {
+				type: STRING
+			},
 			lastLogin: { type: DATE },
 			userImageSrc: { type: STRING },
 			licenseImageSrc: { type: STRING },
