@@ -16,6 +16,26 @@ function ResponseBuilder() {
 	this.data = null;
 }
 
+function exceptFields(fields, obj) {
+	let result = {};
+
+	for (key in obj) {
+		if (fields.indexOf(key) < 0) result[key] = obj[key];
+	}
+
+	return result;
+}
+
+function pickFields(fields, obj) {
+	let result = {};
+
+	for (key in obj) {
+		if (fields.indexOf(key) >= 0) result[key] = obj[key];
+	}
+
+	return result;
+}
+
 ResponseBuilder.prototype.setData = function(data) {
 	this.data = data;
 };
@@ -35,9 +55,9 @@ ResponseBuilder.prototype.getResponse = function() {
 	return ({ error, message, success, data } = this);
 };
 
-function sendInviteToken(userId, email) {
+function sendInviteToken(email) {
 	// Send email invite
-	let token = jwt.sign({ id: userId }, config.secretKey, { expiresIn: "7d" });
+	let token = jwt.sign({ email }, config.secretKey, { expiresIn: "7d" });
 	return mailer.sendMail({
 		from: "no-reply@atsuae.net",
 		to: email,
@@ -48,4 +68,10 @@ function sendInviteToken(userId, email) {
 	});
 }
 
-module.exports = { asyncForEach, ResponseBuilder, sendInviteToken };
+module.exports = {
+	asyncForEach,
+	ResponseBuilder,
+	sendInviteToken,
+	exceptFields,
+	pickFields
+};
