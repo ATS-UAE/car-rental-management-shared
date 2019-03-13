@@ -12,8 +12,11 @@ router.use(requireLogin);
 
 router.get("/", async ({ user }, res) => {
 	let response = new ResponseBuilder();
-	try {
-		await accessControl.can(user.role.name, `${RESOURCES.ROLES}:${READ}`);
+	let accessible = await accessControl.can(
+		user.role.name,
+		`${RESOURCES.ROLES}:${READ}`
+	);
+	if (accessible) {
 		let roles = await db.Role.findAll();
 		response.setData(
 			roles.map(({ id, name }) => ({
@@ -24,7 +27,7 @@ router.get("/", async ({ user }, res) => {
 		response.setSuccess(true);
 		response.setCode(200);
 		response.setMessage(`Found ${roles.length} roles.`);
-	} catch (err) {
+	} else {
 		response.setCode(errorCodes.UNAUTHORIZED.statusCode);
 		response.setMessage(errorCodes.UNAUTHORIZED.message);
 		response.setSuccess(false);
