@@ -1,11 +1,11 @@
 const passport = require("passport");
-const jwt = require("jsonwebtoken");
 const express = require("express");
 const router = express.Router();
+const moment = require("moment");
 
 const { ResponseBuilder } = require("../utils");
-const requireLogin = require("../middlewares/requireLogin");
 const db = require("../models");
+const requireLogin = require("../middlewares/requireLogin");
 
 router.get("/me", requireLogin, function(req, res) {
 	let response = new ResponseBuilder();
@@ -30,6 +30,12 @@ router.post(
 				return res.json(response);
 			}
 			req.logIn(user, function(err) {
+				// TODO: Updated last login in user.
+				db.User.findByPk(user.id).then(user => {
+					user
+						.update({ lastLogin: moment().format("YYYY-MM-DD HH:mm:ss") })
+						.then(user => console.log(user));
+				});
 				let response = new ResponseBuilder();
 				if (err) {
 					return next(err);
