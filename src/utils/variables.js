@@ -12,6 +12,17 @@ const RESOURCES = {
 	ROLES: "ROLES"
 };
 
+const BOOKING_TYPES = {
+	PRIVATE: "PRIVATE",
+	BUSINESS: "BUSINESS",
+	SERVICE: "SERVICE"
+};
+
+const BOOKING_STATUS = {
+	PENDING: "PENDING",
+	ONGOING: "ONGOING",
+	FINISHED: "FINISHED"
+};
 const errorCodes = {
 	UNAUTHORIZED: {
 		message: "You do not have the permission to access this resource.",
@@ -19,4 +30,10 @@ const errorCodes = {
 	}
 };
 
-module.exports = { ROLES, RESOURCES, errorCodes };
+module.exports = {
+	ROLES,
+	RESOURCES,
+	BOOKING_TYPES,
+	BOOKING_STATUS,
+	errorCodes
+};
