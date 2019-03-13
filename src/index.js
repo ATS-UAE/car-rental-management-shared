@@ -8,7 +8,7 @@ const config = require("./config");
 const db = require("./models");
 const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/users");
-const roleRoutes = require("./routes/roles");
+const enumRoutes = require("./routes/enums");
 const inviteRoutes = require("./routes/invites");
 const vehicleRoutes = require("./routes/vehicles");
 
@@ -68,7 +68,7 @@ app.use(passport.session());
 // Express routes
 app.use("/api/carbooking/auth", authRoutes);
 app.use("/api/carbooking/users", userRoutes);
-app.use("/api/carbooking/roles", roleRoutes);
+app.use("/api/carbooking/enums", enumRoutes);
 app.use("/api/carbooking/invites", inviteRoutes);
 app.use("/api/carbooking/vehicles", vehicleRoutes);
 
