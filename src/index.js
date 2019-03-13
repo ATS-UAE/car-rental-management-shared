@@ -10,6 +10,7 @@ const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/users");
 const roleRoutes = require("./routes/roles");
 const inviteRoutes = require("./routes/invites");
+const vehicleRoutes = require("./routes/vehicles");
 
 const app = express();
 
@@ -69,6 +70,7 @@ app.use("/api/carbooking/auth", authRoutes);
 app.use("/api/carbooking/users", userRoutes);
 app.use("/api/carbooking/roles", roleRoutes);
 app.use("/api/carbooking/invites", inviteRoutes);
+app.use("/api/carbooking/vehicles", vehicleRoutes);
 
 app.listen(config.serverPort, () => {
 	console.log(`Listening on port ${config.serverPort}`);
