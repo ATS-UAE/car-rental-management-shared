@@ -5,7 +5,11 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import AppBar from "./components/presentational/AppBar";
 import { pages } from "./variables";
 
+
 class App extends Component {
+	state = {
+		textValue: ""
+	};
 	render() {
 		return (
 			<div className="App">
@@ -24,6 +28,7 @@ class App extends Component {
 						</Switch>
 					</Fragment>
 				</BrowserRouter>
+
 				<CssBaseline />
 			</div>
 		);
