@@ -20,7 +20,7 @@ function ResponseBuilder() {
 function exceptFields(fields, obj) {
 	let result = {};
 
-	for (key in obj) {
+	for (let key in obj) {
 		if (fields.indexOf(key) < 0) result[key] = obj[key];
 	}
 
@@ -30,11 +30,19 @@ function exceptFields(fields, obj) {
 function pickFields(fields, obj) {
 	let result = {};
 
-	for (key in obj) {
+	for (let key in obj) {
 		if (fields.indexOf(key) >= 0) result[key] = obj[key];
 	}
 
 	return result;
+}
+
+function containsField(fields, obj) {
+	let contains = [];
+	for (let key in obj) {
+		let exists = fields.indexOf(key);
+		if (exists >= 0) contains.push(fields[exists]);
+	}
 }
 
 ResponseBuilder.prototype.setData = function(data) {
@@ -69,6 +77,12 @@ function sendInviteToken(email) {
 	});
 }
 const toUnix = date => moment(date, "YYYY-MM-DDTHH:mm:ss").unix();
+const toMySQLDate = unixS => {
+	if (unixS === undefined || unixS === null) {
+		return undefined;
+	}
+	return moment(unixS, "X").format("YYYY-MM-DD HH:mm:ss");
+};
 
 module.exports = {
 	asyncForEach,
@@ -76,5 +90,7 @@ module.exports = {
 	sendInviteToken,
 	exceptFields,
 	pickFields,
-	toUnix
+	toUnix,
+	toMySQLDate,
+	containsField
 };
