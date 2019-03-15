@@ -10,6 +10,7 @@ const { CREATE, READ, UPDATE, DELETE } = op;
 const db = require("../models");
 const { errorCodes } = require("../utils/variables");
 const { ResponseBuilder, pickFields } = require("../utils");
+const config = require("../config");
 
 router.get("/", requireLogin, disallowGuests, async ({ user }, res) => {
 	let response = new ResponseBuilder();
@@ -64,12 +65,13 @@ router.post("/", async ({ user, body }, res) => {
 	// Else, create directly with approved = true.
 	let response = new ResponseBuilder();
 	let accessible = false;
+	let inviteTokenUsed = false;
 	let email = body.email;
-	if (req.body.inviteToken) {
+	if (body.inviteToken) {
 		// Consume invite token
-		let inviteToken = jwt.verify(req.body.inviteToken);
+		let inviteToken = jwt.verify(body.inviteToken, config.secretKey);
 		if (inviteToken) {
-			accessible = true;
+			inviteTokenUsed = true;
 			email = inviteToken.email;
 		}
 	} else if (user && user.role && user.role.name) {
@@ -78,12 +80,13 @@ router.post("/", async ({ user, body }, res) => {
 			`${RESOURCES.USERS}:${CREATE}`
 		);
 	}
-	if (accessible) {
+	if (accessible || inviteTokenUsed) {
 		let role = await db.Role.findByPk(body.roleId);
+		let guestRole = await db.Role.findOne({ where: { name: ROLES.GUEST } });
 
 		// Immediately create the user otherwise.
-		let approved = role.getDataValue("name") === ROLES.GUEST ? false : true; // Approve if userCreated is not guest
-		let hashedPassword = await bcrypt.hash(password, 10);
+		let approved = role.name === ROLES.GUEST ? false : true; // Approve if userCreated is not guest
+		let hashedPassword = await bcrypt.hash(body.password, 10);
 		try {
 			let createdUser = await db.User.create({
 				...pickFields(
@@ -94,12 +97,12 @@ router.post("/", async ({ user, body }, res) => {
 						"gender",
 						"mobileNumber",
 						"userImageSrc",
-						"licenseImageSrc",
-						"roleId"
+						"licenseImageSrc"
 					],
 					body
 				),
 				email,
+				roleId: inviteTokenUsed ? guestRole.id : role.id,
 				approved,
 				password: hashedPassword
 			});
@@ -116,9 +119,12 @@ router.post("/", async ({ user, body }, res) => {
 						"userImageSrc",
 						"licenseImageSrc"
 					],
-					createdUser
+					createdUser.get({ plain: true })
 				),
-				role: { id: role.id, name: role.name }
+				role: {
+					id: inviteTokenUsed ? guestRole.id : role.id,
+					name: inviteTokenUsed ? guestRole.name : role.name
+				}
 			});
 
 			response.setMessage("User has been created.");
