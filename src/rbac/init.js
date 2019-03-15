@@ -1,5 +1,6 @@
 const { RBAC, Resource } = require("./");
 const { ROLES, RESOURCES, BOOKING_STATUS } = require("../utils/variables");
+const { containsField } = require("../utils");
 let bookings = new Resource(RESOURCES.BOOKINGS);
 let locations = new Resource(RESOURCES.LOCATIONS);
 let vehicles = new Resource(RESOURCES.VEHICLES);
@@ -51,9 +52,19 @@ const accessControl = new RBAC({
 				// Can only read own bookings
 				cb(undefined, booking.userId === user.id);
 			}),
-			bookings.getPermission(UPDATE, ({ booking, user }, cb) => {
+			bookings.getPermission(UPDATE, ({ booking, user, update }, cb) => {
 				// Can only update own bookings
-				cb(undefined, booking.userId === user.id);
+				// Do not allow updates on booking status.
+				if (booking.bookingStatus.name === BOOKING_STATUS.FINISHED) {
+					cb(undefined, false);
+				} else {
+					let unallowedFields = containsField(
+						["bookingStatusId", "paid", "userId"],
+						update
+					);
+					let ownBooking = booking.userId === user.id;
+					cb(undefined, ownBooking && unallowedFields.length);
+				}
 			}),
 			bookings.getPermission(DELETE, ({ booking, user }, cb) => {
 				// Booking status is pending. Then it is not final.
