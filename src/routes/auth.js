@@ -10,6 +10,7 @@ const requireLogin = require("../middlewares/requireLogin");
 router.get("/me", requireLogin, function(req, res) {
 	let response = new ResponseBuilder();
 	response.setData(req.user);
+	response.setMessage("You are logged in.");
 	response.setSuccess(true);
 	response.setCode(200);
 	res.json(response);
@@ -32,9 +33,7 @@ router.post(
 			req.logIn(user, function(err) {
 				// TODO: Updated last login in user.
 				db.User.findByPk(user.id).then(user => {
-					user
-						.update({ lastLogin: moment().format("YYYY-MM-DD HH:mm:ss") })
-						.then(user => console.log(user));
+					user.update({ lastLogin: moment().format("YYYY-MM-DD HH:mm:ss") });
 				});
 				let response = new ResponseBuilder();
 				if (err) {
