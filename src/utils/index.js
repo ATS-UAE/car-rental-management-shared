@@ -31,8 +31,8 @@ Validator.runThroughValidators = function runThroughValidators(
 export const validators = {
 	username: [
 		new Validator(
-			v => /.{5,}/.test(v),
-			"Username should be greater than 5 characters."
+			v => /.{4,}/.test(v),
+			"Username should be greater than 3 characters."
 		)
 	],
 	password: [

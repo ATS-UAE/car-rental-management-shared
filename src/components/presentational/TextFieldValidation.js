@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
-import { TextField } from "@material-ui/core";
+import { TextField, InputAdornment, IconButton } from "@material-ui/core";
+import { Visibility, VisibilityOff } from "@material-ui/icons";
 
 import { Validator } from "../../utils";
 
@@ -14,7 +15,8 @@ export default function TextFieldValidation(props) {
 		label,
 		id,
 		TextFieldProps,
-		onError
+		onError,
+		onValid
 	} = props;
 	let helperText = "";
 	let errored = false;
@@ -31,18 +33,36 @@ export default function TextFieldValidation(props) {
 			helperText = errors[0];
 		}
 	}
+	const [showPassword, setShowPassword] = useState(false);
+	function handleShowPassword() {
+		setShowPassword(!showPassword);
+	}
+	const inputAdornment = TextFieldProps.type === "password" && (
+		<InputAdornment position="end">
+			<IconButton
+				aria-label="Toggle password visibility"
+				onClick={handleShowPassword}
+			>
+				{showPassword ? <Visibility /> : <VisibilityOff />}
+			</IconButton>
+		</InputAdornment>
+	);
 
 	return (
 		<TextField
 			id={id}
 			onChange={e => {
 				onChange && onChange(e);
+				errored && onValid && onValid();
 			}}
 			value={value}
-			helperText={helperText}
-			error={errored}
-			label={label}
+			error={value.length > 0 && errored}
+			label={helperText && value && errored ? helperText : label}
 			{...TextFieldProps}
+			type={showPassword ? "text" : TextFieldProps.type}
+			InputProps={{
+				endAdornment: inputAdornment
+			}}
 		/>
 	);
 }
@@ -56,7 +76,8 @@ TextFieldValidation.propTypes = {
 	label: PropTypes.string,
 	id: PropTypes.string,
 	TextFieldProps: PropTypes.object,
-	onError: PropTypes.func
+	onError: PropTypes.func,
+	onValid: PropTypes.func
 };
 
 TextFieldValidation.defaultProps = {

@@ -5,7 +5,6 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import AppBar from "./components/presentational/AppBar";
 import { pages } from "./variables";
 
-
 class App extends Component {
 	state = {
 		textValue: ""

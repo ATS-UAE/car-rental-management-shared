@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { Paper, Button, Typography } from "@material-ui/core";
 import { withStyles } from "@material-ui/core";
 import TextFieldValidation from "./TextFieldValidation";
 import { validators } from "../../utils";
+import ErrorChip from "./ErrorChip";
 
 function LoginForm(props) {
 	const {
@@ -13,17 +14,41 @@ function LoginForm(props) {
 		onLogin,
 		errors,
 		onError,
-		showErrors
+		showErrors,
+		onValid,
+		errorNotes
 	} = props;
+	const [validFields, setValidFields] = useState({
+		username: false,
+		password: false
+	});
 	const handleChange = name => event =>
 		onChange && onChange({ ...values, [name]: event.target.value });
-	const handleError = name => () => onError && onError(name);
+
+	const handleError = name => () => {
+		if (validFields[name]) {
+			setValidFields({ ...validFields, [name]: false });
+			onError && onError(name);
+		}
+	};
+
+	const handleValid = name => () => {
+		setValidFields({ ...validFields, [name]: true });
+		onValid && onValid(name);
+	};
+
 	const handleSubmit = event => {
 		event.preventDefault();
 		onLogin && onLogin();
 	};
+
+	const isSubmitDisabled = Object.values(validFields).includes(false);
+
 	return (
 		<Paper className={classes.paper}>
+			{errorNotes.map((e, i) => (
+				<ErrorChip key={i} label={e} className={classes.errorNotes} />
+			))}
 			<form>
 				<Typography variant="h6" gutterBottom headlineMapping={{ h6: "h1" }}>
 					Login
@@ -44,6 +69,7 @@ function LoginForm(props) {
 					value={values.username}
 					onChange={handleChange("username")}
 					onError={handleError("username")}
+					onValid={handleValid("username")}
 				/>
 				<TextFieldValidation
 					TextFieldProps={{
@@ -61,6 +87,7 @@ function LoginForm(props) {
 					value={values.password}
 					onChange={handleChange("password")}
 					onError={handleError("password")}
+					onValid={handleValid("password")}
 				/>
 				<Typography align="right">*Required</Typography>
 				<div className={classes.buttonContainer}>
@@ -70,6 +97,7 @@ function LoginForm(props) {
 						variant="contained"
 						color="primary"
 						onClick={handleSubmit}
+						disabled={isSubmitDisabled}
 					>
 						Login
 					</Button>
@@ -84,11 +112,13 @@ LoginForm.propTypes = {
 		username: PropTypes.string.isRequired,
 		password: PropTypes.string.isRequired
 	}).isRequired,
+	errorNotes: PropTypes.arrayOf(PropTypes.string),
 	onChange: PropTypes.func,
 	onLogin: PropTypes.func,
 	errors: PropTypes.arrayOf(PropTypes.string),
 	onError: PropTypes.func,
-	showErrors: PropTypes.func
+	showErrors: PropTypes.bool,
+	onValid: PropTypes.func
 };
 
 LoginForm.defaultProps = {
@@ -110,6 +140,9 @@ const styles = theme => ({
 	paper: {
 		padding: theme.spacing.unit * 3,
 		borderRadius: "1rem"
+	},
+	errorNotes: {
+		margin: theme.spacing.unit
 	}
 });
 
