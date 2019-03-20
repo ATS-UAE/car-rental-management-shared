@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { TextField, InputAdornment, IconButton } from "@material-ui/core";
 import { Visibility, VisibilityOff } from "@material-ui/icons";
@@ -77,7 +77,7 @@ export default function TextFieldValidation(props) {
 TextFieldValidation.propTypes = {
 	showErrors: PropTypes.bool,
 	errors: PropTypes.arrayOf(PropTypes.string),
-	validators: PropTypes.oneOf([
+	validators: PropTypes.oneOfType([
 		PropTypes.arrayOf(PropTypes.instanceOf(Validator)),
 		PropTypes.instanceOf(Validator)
 	]),
