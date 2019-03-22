@@ -17,8 +17,7 @@ export default function TextFieldValidation(props) {
 		TextFieldProps,
 		onError,
 		onValid,
-		required,
-		fullWidth
+		required
 	} = props;
 	let helperText = "";
 	let errored = false;
