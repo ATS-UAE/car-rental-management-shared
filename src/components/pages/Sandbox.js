@@ -1,15 +1,20 @@
 import React from "react";
 import { Typography, Paper } from "@material-ui/core";
 
-import Login from "../containers/Login";
+import Login from "../containers/forms/Login";
+import UserCreate from "../containers/forms/UserCreate";
 
 export default function Locations() {
 	return (
 		<Paper>
-			<Typography variant="h1">Sandbox Page</Typography>
+			<Typography headlineMapping={{ h1: "h6" }}>Sandbox Page</Typography>
 			<Paper>
 				<Login />
 			</Paper>
+			<Paper>
+				<UserCreate />
+			</Paper>
+			<Paper />
 		</Paper>
 	);
 }

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import PropTypes from "prop-types";
 import SimpleSelect from "./SimpleSelect";
 
-export default function GenderSelect({ required, value, onChange }) {
+export default function GenderSelect({ required, value, onChange, fullWidth }) {
 	const [stateValue, setStateValue] = useState("");
 	return (
 		<SimpleSelect
@@ -13,13 +13,15 @@ export default function GenderSelect({ required, value, onChange }) {
 			label="Gender"
 			id="gender-select"
 			name="gender"
+			fullWidth={fullWidth}
 		/>
 	);
 }
 
 GenderSelect.propTypes = {
 	required: PropTypes.bool,
-	value: PropTypes.oneOf(["m", "f"])
+	value: PropTypes.oneOf(["m", "f"]),
+	fullWidth: PropTypes.bool
 };
 
 GenderSelect.defaultProps = {

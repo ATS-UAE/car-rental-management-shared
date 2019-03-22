@@ -34,6 +34,7 @@ export default function SimpleSelect({
 			<Select
 				{...SelectProps}
 				value={value}
+				autoWidth
 				onChange={onChange}
 				displayEmpty
 				name={name}

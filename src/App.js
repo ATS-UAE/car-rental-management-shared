@@ -2,7 +2,7 @@ import React, { Component, Fragment } from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import CssBaseline from "@material-ui/core/CssBaseline";
 
-import AppBar from "./components/presentational/AppBar";
+import AppBar from "./components/presentational/layout/AppBar";
 import { pages } from "./variables";
 
 class App extends Component {

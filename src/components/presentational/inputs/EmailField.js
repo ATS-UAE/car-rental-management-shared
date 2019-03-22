@@ -49,5 +49,5 @@ PasswordField.propTypes = {
 };
 
 PasswordField.defaultProps = {
-	label: "Username"
+	label: "Email"
 };

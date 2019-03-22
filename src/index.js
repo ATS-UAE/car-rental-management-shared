@@ -6,11 +6,13 @@ import { createStore, applyMiddleware } from "redux";
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import { Provider } from "react-redux";
 import "typeface-roboto";
+import axios from "axios";
 
 import reducers from "./reducers";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 
+window.axios = axios;
 const theme = createMuiTheme({
 	palette: {
 		type: "light"

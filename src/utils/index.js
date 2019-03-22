@@ -1,3 +1,4 @@
+import axios from "axios";
 export function runIfExistFunction(func, parent, args) {
 	return function() {
 		if (typeof func === "function") {
@@ -45,3 +46,25 @@ export const validators = {
 		"Invalid email."
 	)
 };
+
+const API_URL = process.env.REACT_APP_CAR_BOOKING_API_DOMAIN;
+export const api = {};
+api.createUser = user =>
+	new Promise((resolve, reject) => {
+		axios
+			.post(`${API_URL}/api/carbooking/users`, user, { withCredentials: true })
+			.then(data => {
+				resolve(data.data);
+			})
+			.catch(error => {
+				if (
+					error &&
+					error.response &&
+					error.response.data &&
+					error.response.data.message
+				) {
+					reject(error.response.data.message);
+				}
+				reject(error.message || "Unknown error has occured.");
+			});
+	});

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 import TextFieldValidation from "./TextFieldValidation";
-import { validators } from "../../../utils";
+import { validators, Validator } from "../../../utils";
 
 export default function PasswordField(props) {
 	const [stateValue, setStateValue] = useState("");
@@ -14,7 +14,8 @@ export default function PasswordField(props) {
 		onValid,
 		TextFieldProps,
 		required,
-		label
+		label,
+		id
 	} = props;
 	return (
 		<TextFieldValidation
@@ -24,11 +25,11 @@ export default function PasswordField(props) {
 				...TextFieldProps
 			}}
 			required={required}
-			id="password"
+			id={id}
 			label={label}
 			errors={errors}
 			showErrors={showErrors}
-			validators={validators.password}
+			validators={[validators.password, ...props.validators]}
 			value={value === undefined ? stateValue : value}
 			onChange={e => (onChange && onChange(e)) || setStateValue(e.target.value)}
 			onError={e => onError && onError(e)}
@@ -45,9 +46,12 @@ PasswordField.propTypes = {
 	onValid: PropTypes.func,
 	onChange: PropTypes.func,
 	TextFieldProps: PropTypes.object,
-	label: PropTypes.string
+	label: PropTypes.string,
+	validators: PropTypes.arrayOf(PropTypes.instanceOf(Validator))
 };
 
 PasswordField.defaultProps = {
-	label: "Username"
+	id: "password",
+	label: "Password",
+	validators: []
 };

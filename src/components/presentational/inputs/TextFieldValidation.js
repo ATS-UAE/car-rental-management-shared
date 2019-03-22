@@ -17,7 +17,8 @@ export default function TextFieldValidation(props) {
 		TextFieldProps,
 		onError,
 		onValid,
-		required
+		required,
+		fullWidth
 	} = props;
 	let helperText = "";
 	let errored = false;
@@ -53,7 +54,6 @@ export default function TextFieldValidation(props) {
 			</IconButton>
 		</InputAdornment>
 	);
-
 	return (
 		<TextField
 			id={id}
