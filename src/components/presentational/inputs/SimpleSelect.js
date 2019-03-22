@@ -36,7 +36,6 @@ export default function SimpleSelect({
 				value={value}
 				autoWidth
 				onChange={onChange}
-				displayEmpty
 				name={name}
 				input={<Input {...InputProps} name={name} id={id} />}
 			>
@@ -45,7 +44,7 @@ export default function SimpleSelect({
 						<em>None</em>
 					</MenuItem>
 				)}
-				{items.map(item => (
+				{items.map((item, index) => (
 					<MenuItem value={item.value} key={item.value}>
 						{item.label}
 					</MenuItem>
