@@ -55,7 +55,7 @@ function UserCreate({
 					<Grid item sm={6} xs={12}>
 						<UsernameField
 							TextFieldProps={{
-								className: classes.textFields
+								fullWidth: true
 							}}
 							required
 							value={values.username}
@@ -64,13 +64,12 @@ function UserCreate({
 							onError={handleError("username")}
 							onChange={handleChange("username")}
 							onValid={handleValid("username")}
-							TextFieldProps={{ fullWidth: true }}
 						/>
 					</Grid>
 					<Grid item sm={6} xs={12}>
 						<PasswordField
 							TextFieldProps={{
-								className: classes.textFields
+								fullWidth: true
 							}}
 							required
 							value={values.password}
@@ -79,13 +78,12 @@ function UserCreate({
 							onError={handleError("password")}
 							onChange={handleChange("password")}
 							onValid={handleValid("password")}
-							TextFieldProps={{ fullWidth: true }}
 						/>
 					</Grid>
 					<Grid item sm={6} xs={12}>
 						<PasswordField
 							TextFieldProps={{
-								className: classes.textFields
+								fullWidth: true
 							}}
 							id="password-confirm"
 							validators={[samePassword]}
@@ -97,13 +95,13 @@ function UserCreate({
 							onError={handleError("password")}
 							onChange={handleChange("password")}
 							onValid={handleValid("password")}
-							TextFieldProps={{ fullWidth: true }}
 						/>
 					</Grid>
 					<Grid item sm={6} xs={12}>
 						<GenericTextField
 							id="first-name"
 							label="First name"
+							required
 							errors={errors.firstName}
 							value={values.firstName}
 							showErrors={showErrors}
@@ -117,6 +115,7 @@ function UserCreate({
 						<GenericTextField
 							id="last-name"
 							label="Last name"
+							required
 							errors={errors.lastName}
 							value={values.lastName}
 							showErrors={showErrors}
