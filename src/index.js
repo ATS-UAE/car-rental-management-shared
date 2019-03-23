@@ -3,6 +3,7 @@ const express = require("express");
 const passport = require("passport");
 const { Strategy } = require("passport-local");
 const bcrypt = require("bcrypt");
+const cors = require("cors");
 
 const config = require("./config");
 const db = require("./models");
@@ -61,6 +62,8 @@ app.use(
 	})
 );
 app.use(express.json());
+// TODO: Use config.js for cors options.
+app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 // Initialize Passport and restore authentication state, if any, from the
 // session.
 app.use(passport.initialize());

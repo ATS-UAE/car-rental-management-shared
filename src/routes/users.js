@@ -84,10 +84,10 @@ router.post("/", async ({ user, body }, res) => {
 		let role = await db.Role.findByPk(body.roleId);
 		let guestRole = await db.Role.findOne({ where: { name: ROLES.GUEST } });
 
-		// Immediately create the user otherwise.
-		let approved = role.name === ROLES.GUEST ? false : true; // Approve if userCreated is not guest
-		let hashedPassword = await bcrypt.hash(body.password, 10);
 		try {
+			// Immediately create the user otherwise.
+			let approved = role.name === ROLES.GUEST ? false : true; // Approve if userCreated is not guest
+			let hashedPassword = await bcrypt.hash(body.password, 10);
 			let createdUser = await db.User.create({
 				...pickFields(
 					[
@@ -196,7 +196,7 @@ router.get("/:id", requireLogin, disallowGuests, async (req, res) => {
 		} catch (e) {
 			res.status(errorCodes.UNAUTHORIZED.statusCode);
 			response.setCode(errorCodes.UNAUTHORIZED.statusCode);
-			response.setMessage(errorCodes.UNAUTHORIZED.message);
+			response.setMessage(e.message || errorCodes.UNAUTHORIZED.message);
 		}
 	} else {
 		response.setMessage(errorCodes.UNAUTHORIZED.message);
