@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { connect } from "react-redux";
 import UserCreateForm from "../../presentational/forms/UserCreate";
-import * as actions from "../../../actions";
+import { api } from "../../../utils";
 
-function UserCreate({ createUser }) {
+export default function UserCreate() {
 	let [newUser, setNewUser] = useState({
 		username: "",
 		password: "",
@@ -13,7 +13,7 @@ function UserCreate({ createUser }) {
 		email: "",
 		mobileNumber: "",
 		gender: "",
-		role: ""
+		roleId: ""
 	});
 	let [errors, setErrors] = useState([]);
 	return (
@@ -21,14 +21,9 @@ function UserCreate({ createUser }) {
 			values={newUser}
 			onChange={data => setNewUser(data)}
 			onCreate={() => {
-				createUser(newUser);
+				api.createUser(newUser);
 			}}
 			errorNotes={errors}
 		/>
 	);
 }
-
-export default connect(
-	null,
-	actions
-)(UserCreate);

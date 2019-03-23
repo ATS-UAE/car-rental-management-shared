@@ -9,11 +9,12 @@ import {
 	TablePagination,
 	TableRow
 } from "@material-ui/core";
+import { withStyles } from "@material-ui/core/styles";
 
 import TablePaginationActions from "./TablePaginationActions";
 
-function renderRow(row, className, key) {
-	let cells = row.map((cell, index) => {
+function renderRow(row, key, options = {}) {
+	let cells = row.values.map((cell, index) => {
 		let value = "";
 		let colSpan = 1;
 		if (typeof cell === "object") {
@@ -23,13 +24,22 @@ function renderRow(row, className, key) {
 			value = cell || "";
 		}
 		return (
-			<TableCell colSpan={colSpan} className={`${className}__cell`} key={index}>
+			<TableCell colSpan={colSpan} key={index}>
 				{value}
 			</TableCell>
 		);
 	});
+	let className = "";
+	if (options.classes && options.classes.rows && row.onClick) {
+		className = options.classes.rows;
+	}
+	console.log(options, className);
 	return (
-		<TableRow className={className} key={key}>
+		<TableRow
+			className={className}
+			key={key}
+			onClick={() => row.onClick && row.onClick(row.metadata)}
+		>
 			{cells}
 		</TableRow>
 	);
@@ -37,15 +47,15 @@ function renderRow(row, className, key) {
 
 function renderHeader(rows) {
 	return (
-		<TableHead className="table-head">
+		<TableHead>
 			{rows.map((header, index) => {
-				return renderRow(header, "table-head__row", index);
+				return renderRow(header, index);
 			})}
 		</TableHead>
 	);
 }
 
-function renderBody(rows, currentPage, rowsPerPage) {
+function renderBody(rows, currentPage, rowsPerPage, options) {
 	return (
 		<TableBody className="table-body">
 			{rows
@@ -54,7 +64,7 @@ function renderBody(rows, currentPage, rowsPerPage) {
 					currentPage * rowsPerPage + rowsPerPage
 				)
 				.map((row, index) => {
-					return renderRow(row, "table-body__row", index);
+					return renderRow(row, index, options);
 				})}
 		</TableBody>
 	);
@@ -72,10 +82,9 @@ function renderFooter(options = {}) {
 		onChangeRowsPerPage
 	} = options;
 	return (
-		<TableFooter className="table-footer">
-			<TableRow className="table-footer__row">
+		<TableFooter>
+			<TableRow>
 				<TablePagination
-					className="pagination"
 					rowsPerPageOptions={rowsPerPageOptions}
 					colSpan={colSpan}
 					count={count}
@@ -92,12 +101,11 @@ function renderFooter(options = {}) {
 }
 
 function TableWithPagination(props) {
-	const { data, pagination } = props;
+	const { data, pagination, classes } = props;
 	const count = data.body.length;
 	const { rowsPerPageOptions, colSpan, SelectProps } = pagination;
 	const [currentPage, setCurrentPage] = useState(0);
 	const [rowsPerPage, setRowsPerPage] = useState(rowsPerPageOptions[0]);
-
 	function onChangePage(event, page) {
 		setCurrentPage(page);
 	}
@@ -109,7 +117,9 @@ function TableWithPagination(props) {
 	return (
 		<Table className="table">
 			{renderHeader(data.headers)}
-			{renderBody(data.body, currentPage, rowsPerPage)}
+			{renderBody(data.body, currentPage, rowsPerPage, {
+				classes
+			})}
 			{renderFooter({
 				rowsPerPageOptions,
 				colSpan,
@@ -137,7 +147,8 @@ TableWithPagination.propTypes = {
 		body: PropTypes.arrayOf(
 			PropTypes.arrayOf(
 				PropTypes.shape({
-					value: PropTypes.node.isRequired,
+					values: PropTypes.arrayOf(PropTypes.node.isRequired),
+					metadata: PropTypes.any,
 					colSpan: PropTypes.number
 				})
 			)
@@ -157,4 +168,12 @@ TableWithPagination.defaultProps = {
 	data: { headers: [], body: [] }
 };
 
-export default TableWithPagination;
+const styles = {
+	rows: {
+		"&:hover": {
+			cursor: "pointer"
+		}
+	}
+};
+
+export default withStyles(styles)(TableWithPagination);

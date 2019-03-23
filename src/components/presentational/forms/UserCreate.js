@@ -159,7 +159,7 @@ function UserCreate({
 						/>
 					</Grid>
 					<Grid item sm={6} xs={12}>
-						<RoleSelect required fullWidth onChange={handleChange("role")} />
+						<RoleSelect required fullWidth onChange={handleChange("roleId")} />
 					</Grid>
 				</Grid>
 				<Typography align="right">*Required</Typography>

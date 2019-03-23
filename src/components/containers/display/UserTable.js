@@ -10,26 +10,31 @@ function UserTable({ users, enums, fetchEnums, fetchUsers }) {
 	}, []);
 	const tableBody = users
 		? users.data.map(user => {
-				let row = [];
-				row.push(
-					user.username,
-					user.firstName,
-					user.lastName,
-					user.gender,
-					user.email,
-					user.mobileNumber
-				);
+				let row = {
+					metadata: user,
+					values: [
+						{ value: user.username },
+						{ value: user.firstName },
+						{ value: user.lastName },
+						{ value: user.gender },
+						{ value: user.email },
+						{ value: user.mobileNumber }
+					],
+					onClick: rowData => {
+						console.log(rowData);
+					}
+				};
 				if (enums && enums.data) {
 					let userRole = enums.data.roles.find(
 						role => user.role.id === role.id
 					);
 					if (userRole) {
-						row.push(userRole.name);
+						row.values.push({ value: userRole.name });
 					} else {
-						row.push(user.role);
+						row.values.push({ value: user.role });
 					}
 				} else {
-					row.push(user.role);
+					row.values.push({ value: user.role.name });
 				}
 				return row;
 		  })
@@ -38,15 +43,17 @@ function UserTable({ users, enums, fetchEnums, fetchUsers }) {
 		<Table
 			data={{
 				headers: [
-					[
-						{ value: "Username" },
-						{ value: "First Name" },
-						{ value: "Last Name" },
-						{ value: "Gender" },
-						{ value: "Email" },
-						{ value: "Mobile Number" },
-						{ value: "Role" }
-					]
+					{
+						values: [
+							{ value: "Username" },
+							{ value: "First Name" },
+							{ value: "Last Name" },
+							{ value: "Gender" },
+							{ value: "Email" },
+							{ value: "Mobile Number" },
+							{ value: "Role" }
+						]
+					}
 				],
 				body: tableBody
 			}}
