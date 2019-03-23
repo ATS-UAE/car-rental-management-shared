@@ -4,13 +4,25 @@ import UserCreateForm from "../../presentational/forms/UserCreate";
 import * as actions from "../../../actions";
 
 function UserCreate({ createUser }) {
-	let [newUser, setNewUser] = useState({ username: "", password: "" });
+	let [newUser, setNewUser] = useState({
+		username: "",
+		password: "",
+		passwordConfirm: "",
+		firstName: "",
+		lastName: "",
+		email: "",
+		mobileNumber: "",
+		gender: "",
+		role: ""
+	});
 	let [errors, setErrors] = useState([]);
 	return (
 		<UserCreateForm
 			values={newUser}
-			onChange={data => setNewUser(data).catch(e => setErrors([e]))}
-			onCreate={createUser}
+			onChange={data => setNewUser(data)}
+			onCreate={() => {
+				createUser(newUser);
+			}}
 			errorNotes={errors}
 		/>
 	);

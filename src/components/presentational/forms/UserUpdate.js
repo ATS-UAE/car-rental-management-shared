@@ -49,9 +49,23 @@ function UserCreate({
 			))}
 			<form>
 				<Typography variant="h6" gutterBottom headlineMapping={{ h6: "h1" }}>
-					User Create
+					User Update
 				</Typography>
 				<Grid container spacing={24}>
+					<Grid item sm={6} xs={12}>
+						<GenericTextField
+							id="user-id"
+							label="ID"
+							required
+							errors={errors.userId}
+							value={values.userId}
+							showErrors={showErrors}
+							onError={handleError("userId")}
+							onChange={handleChange("userId")}
+							onValid={handleValid("userId")}
+							TextFieldProps={{ fullWidth: true }}
+						/>
+					</Grid>
 					<Grid item sm={6} xs={12}>
 						<UsernameField
 							TextFieldProps={{
@@ -89,12 +103,12 @@ function UserCreate({
 							validators={[samePassword]}
 							required
 							label="Validate Password"
-							value={values.passwordConfirm}
-							errors={errors.passwordConfirm}
+							value={values.password}
+							errors={errors.password}
 							showErrors={showErrors}
-							onError={handleError("passwordConfirm")}
-							onChange={handleChange("passwordConfirm")}
-							onValid={handleValid("passwordConfirm")}
+							onError={handleError("password")}
+							onChange={handleChange("password")}
+							onValid={handleValid("password")}
 						/>
 					</Grid>
 					<Grid item sm={6} xs={12}>
@@ -155,11 +169,15 @@ function UserCreate({
 						<GenderSelect
 							required
 							fullWidth
-							onChange={handleChange("gender")}
+							onChange={handleChange("mobileNumber")}
 						/>
 					</Grid>
 					<Grid item sm={6} xs={12}>
-						<RoleSelect required fullWidth onChange={handleChange("role")} />
+						<RoleSelect
+							required
+							fullWidth
+							onChange={handleChange("mobileNumber")}
+						/>
 					</Grid>
 				</Grid>
 				<Typography align="right">*Required</Typography>
