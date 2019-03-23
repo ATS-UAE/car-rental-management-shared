@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import * as actions from "../../../actions";
 import Table from "../../presentational/display/TableWithPagination";
 
-function UserTable({ users, enums, fetchEnums, fetchUsers }) {
+function UserTable({ users, enums, fetchEnums, fetchUsers, onClick }) {
 	useEffect(() => {
 		fetchUsers();
 		fetchEnums();
@@ -20,9 +20,7 @@ function UserTable({ users, enums, fetchEnums, fetchUsers }) {
 						{ value: user.email },
 						{ value: user.mobileNumber }
 					],
-					onClick: rowData => {
-						console.log(rowData);
-					}
+					onClick
 				};
 				if (enums && enums.data) {
 					let userRole = enums.data.roles.find(

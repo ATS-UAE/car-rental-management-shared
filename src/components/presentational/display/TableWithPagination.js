@@ -33,7 +33,6 @@ function renderRow(row, key, options = {}) {
 	if (options.classes && options.classes.rows && row.onClick) {
 		className = options.classes.rows;
 	}
-	console.log(options, className);
 	return (
 		<TableRow
 			className={className}
@@ -149,7 +148,8 @@ TableWithPagination.propTypes = {
 				PropTypes.shape({
 					values: PropTypes.arrayOf(PropTypes.node.isRequired),
 					metadata: PropTypes.any,
-					colSpan: PropTypes.number
+					colSpan: PropTypes.number,
+					onClick: PropTypes.func
 				})
 			)
 		)

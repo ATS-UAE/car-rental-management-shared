@@ -3,7 +3,7 @@ import { Typography, Paper } from "@material-ui/core";
 
 import Login from "../containers/forms/Login";
 import UserCreate from "../containers/forms/UserCreate";
-import UserTable from "../containers/display/UserTable";
+import UserUpdateTable from "../presentational/forms/UserUpdateTable";
 
 export default function Locations() {
 	return (
@@ -16,7 +16,7 @@ export default function Locations() {
 				<UserCreate />
 			</Paper>
 			<Paper>
-				<UserTable />
+				<UserUpdateTable />
 			</Paper>
 		</Paper>
 	);

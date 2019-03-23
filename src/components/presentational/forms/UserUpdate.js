@@ -45,7 +45,7 @@ function UserCreate({
 	return (
 		<Paper className={classes.paper}>
 			{errorNotes.map((e, i) => (
-				<ErrorChip key={i} label={e} className={classes.errorNotes} />
+				<ErrorChip key={i} label={e} />
 			))}
 			<form>
 				<Typography variant="h6" gutterBottom headlineMapping={{ h6: "h1" }}>
@@ -63,7 +63,7 @@ function UserCreate({
 							onError={handleError("userId")}
 							onChange={handleChange("userId")}
 							onValid={handleValid("userId")}
-							TextFieldProps={{ fullWidth: true }}
+							TextFieldProps={{ fullWidth: true, disabled: true }}
 						/>
 					</Grid>
 					<Grid item sm={6} xs={12}>
@@ -181,14 +181,14 @@ function UserCreate({
 					</Grid>
 				</Grid>
 				<Typography align="right">*Required</Typography>
-				<div className={classes.buttonContainer}>
+				<div>
 					<Button
 						type="submit"
 						variant="contained"
 						color="primary"
 						onClick={handleSubmit}
 					>
-						Create
+						Update
 					</Button>
 				</div>
 			</form>
@@ -212,23 +212,13 @@ UserCreate.propTypes = {
 UserCreate.defaultProps = {
 	showErrors: true,
 	errors: {},
-	values: {}
+	values: {},
+	errorNotes: []
 };
 
 const styles = theme => ({
-	textFields: {
-		"&:not(:last-child)": {
-			marginBottom: theme.spacing.unit
-		}
-	},
-	buttonContainer: {
-		marginTop: theme.spacing.unit,
-		display: "flex",
-		justifyContent: "space-between"
-	},
 	paper: {
-		padding: theme.spacing.unit * 3,
-		borderRadius: "1rem"
+		padding: theme.spacing.unit * 3
 	}
 });
 
