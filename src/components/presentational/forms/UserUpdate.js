@@ -1,21 +1,18 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-import { Paper, Button, Typography, Grid } from "@material-ui/core";
-import { withStyles } from "@material-ui/core";
+import { Button, Typography, Grid, withStyles, Paper } from "@material-ui/core";
 import UsernameField from "../inputs/UsernameField";
-import PasswordField from "../inputs/PasswordField";
 import GenericTextField from "../inputs/GenericTextField";
 import GenderSelect from "../inputs/GenderSelect";
 import ErrorChip from "../display/ErrorChip";
 import EmailField from "../inputs/EmailField";
-import { Validator } from "../../../utils";
 import RoleSelect from "../../containers/inputs/RoleSelect";
 
 function UserCreate({
 	classes,
 	values,
 	onChange,
-	onCreate,
+	onSubmit,
 	errors,
 	onError,
 	showErrors,
@@ -31,23 +28,19 @@ function UserCreate({
 	const handleError = name => () => onError && onError(name);
 	const handleSubmit = event => {
 		event.preventDefault();
-		onCreate && onCreate();
+		onSubmit && onSubmit();
 	};
 
 	const handleValid = name => event => {
 		setValidFields({ ...validFields, [name]: true });
 		onValid && onValid({ ...values, [name]: event.target.value });
 	};
-	let samePassword = new Validator(
-		password => password === values.password,
-		"Password does not match."
-	);
 	return (
 		<Paper className={classes.paper}>
-			{errorNotes.map((e, i) => (
-				<ErrorChip key={i} label={e} />
-			))}
 			<form>
+				{errorNotes.map((e, i) => (
+					<ErrorChip key={i} label={e} />
+				))}
 				<Typography variant="h6" gutterBottom headlineMapping={{ h6: "h1" }}>
 					User Update
 				</Typography>
@@ -56,7 +49,6 @@ function UserCreate({
 						<GenericTextField
 							id="user-id"
 							label="ID"
-							required
 							errors={errors.userId}
 							value={values.userId}
 							showErrors={showErrors}
@@ -71,7 +63,6 @@ function UserCreate({
 							TextFieldProps={{
 								fullWidth: true
 							}}
-							required
 							value={values.username}
 							errors={errors.username}
 							showErrors={showErrors}
@@ -81,41 +72,9 @@ function UserCreate({
 						/>
 					</Grid>
 					<Grid item sm={6} xs={12}>
-						<PasswordField
-							TextFieldProps={{
-								fullWidth: true
-							}}
-							required
-							value={values.password}
-							errors={errors.password}
-							showErrors={showErrors}
-							onError={handleError("password")}
-							onChange={handleChange("password")}
-							onValid={handleValid("password")}
-						/>
-					</Grid>
-					<Grid item sm={6} xs={12}>
-						<PasswordField
-							TextFieldProps={{
-								fullWidth: true
-							}}
-							id="password-confirm"
-							validators={[samePassword]}
-							required
-							label="Validate Password"
-							value={values.password}
-							errors={errors.password}
-							showErrors={showErrors}
-							onError={handleError("password")}
-							onChange={handleChange("password")}
-							onValid={handleValid("password")}
-						/>
-					</Grid>
-					<Grid item sm={6} xs={12}>
 						<GenericTextField
 							id="first-name"
 							label="First name"
-							required
 							errors={errors.firstName}
 							value={values.firstName}
 							showErrors={showErrors}
@@ -129,7 +88,6 @@ function UserCreate({
 						<GenericTextField
 							id="last-name"
 							label="Last name"
-							required
 							errors={errors.lastName}
 							value={values.lastName}
 							showErrors={showErrors}
@@ -141,7 +99,6 @@ function UserCreate({
 					</Grid>
 					<Grid item sm={6} xs={12}>
 						<EmailField
-							required
 							errors={errors.email}
 							value={values.email}
 							showErrors={showErrors}
@@ -167,30 +124,29 @@ function UserCreate({
 
 					<Grid item sm={6} xs={12}>
 						<GenderSelect
-							required
+							value={values.gender}
 							fullWidth
-							onChange={handleChange("mobileNumber")}
+							onChange={handleChange("gender")}
 						/>
 					</Grid>
 					<Grid item sm={6} xs={12}>
 						<RoleSelect
-							required
+							value={values.roleId}
 							fullWidth
-							onChange={handleChange("mobileNumber")}
+							onChange={handleChange("roleId")}
 						/>
 					</Grid>
+					<Grid item sm={12}>
+						<Button
+							type="submit"
+							variant="contained"
+							color="primary"
+							onClick={handleSubmit}
+						>
+							Update
+						</Button>
+					</Grid>
 				</Grid>
-				<Typography align="right">*Required</Typography>
-				<div>
-					<Button
-						type="submit"
-						variant="contained"
-						color="primary"
-						onClick={handleSubmit}
-					>
-						Update
-					</Button>
-				</div>
 			</form>
 		</Paper>
 	);
@@ -198,8 +154,14 @@ function UserCreate({
 
 UserCreate.propTypes = {
 	values: PropTypes.shape({
+		userId: PropTypes.string.isRequired,
 		username: PropTypes.string.isRequired,
-		password: PropTypes.string.isRequired
+		firstName: PropTypes.string.isRequired,
+		lastName: PropTypes.string.isRequired,
+		email: PropTypes.string.isRequired,
+		mobileNumber: PropTypes.string.isRequired,
+		gender: PropTypes.string.isRequired,
+		roleId: PropTypes.string.isRequired
 	}).isRequired,
 	errorNotes: PropTypes.arrayOf(PropTypes.string),
 	onChange: PropTypes.func,
@@ -216,10 +178,10 @@ UserCreate.defaultProps = {
 	errorNotes: []
 };
 
-const styles = theme => ({
+const style = theme => ({
 	paper: {
 		padding: theme.spacing.unit * 3
 	}
 });
 
-export default withStyles(styles)(UserCreate);
+export default withStyles(style)(UserCreate);

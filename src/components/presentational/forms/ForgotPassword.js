@@ -99,6 +99,9 @@ LoginForm.defaultProps = {
 };
 
 const styles = theme => ({
+	paper: {
+		padding: theme.spacing.unit * 3
+	},
 	textFields: {
 		"&:not(:last-child)": {
 			marginBottom: theme.spacing.unit
@@ -109,10 +112,6 @@ const styles = theme => ({
 		display: "flex",
 		justifyContent: "space-between",
 		flexDirection: "row-reverse"
-	},
-	paper: {
-		padding: theme.spacing.unit * 3,
-		borderRadius: "1rem"
 	},
 	form: {
 		display: "flex",

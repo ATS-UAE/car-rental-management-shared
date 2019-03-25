@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-import { Paper, Button, Typography, Grid } from "@material-ui/core";
-import { withStyles } from "@material-ui/core";
+import { Button, Typography, Grid, Paper } from "@material-ui/core";
+import { withStyles } from "@material-ui/core/styles";
 import UsernameField from "../inputs/UsernameField";
 import PasswordField from "../inputs/PasswordField";
 import GenericTextField from "../inputs/GenericTextField";
@@ -12,7 +12,6 @@ import { Validator } from "../../../utils";
 import RoleSelect from "../../containers/inputs/RoleSelect";
 
 function UserCreate({
-	classes,
 	values,
 	onChange,
 	onCreate,
@@ -20,7 +19,8 @@ function UserCreate({
 	onError,
 	showErrors,
 	onValid,
-	errorNotes
+	errorNotes,
+	classes
 }) {
 	const [validFields, setValidFields] = useState({
 		username: false,
@@ -44,10 +44,10 @@ function UserCreate({
 	);
 	return (
 		<Paper className={classes.paper}>
-			{errorNotes.map((e, i) => (
-				<ErrorChip key={i} label={e} className={classes.errorNotes} />
-			))}
 			<form>
+				{errorNotes.map((e, i) => (
+					<ErrorChip key={i} label={e} />
+				))}
 				<Typography variant="h6" gutterBottom headlineMapping={{ h6: "h1" }}>
 					User Create
 				</Typography>
@@ -161,18 +161,24 @@ function UserCreate({
 					<Grid item sm={6} xs={12}>
 						<RoleSelect required fullWidth onChange={handleChange("roleId")} />
 					</Grid>
+					<Grid item xs={12}>
+						<Grid container justify="space-between">
+							<Grid item>
+								<Button
+									type="submit"
+									variant="contained"
+									color="primary"
+									onClick={handleSubmit}
+								>
+									Create
+								</Button>
+							</Grid>
+							<Grid item>
+								<Typography>*Required</Typography>
+							</Grid>
+						</Grid>
+					</Grid>
 				</Grid>
-				<Typography align="right">*Required</Typography>
-				<div className={classes.buttonContainer}>
-					<Button
-						type="submit"
-						variant="contained"
-						color="primary"
-						onClick={handleSubmit}
-					>
-						Create
-					</Button>
-				</div>
 			</form>
 		</Paper>
 	);
@@ -197,21 +203,10 @@ UserCreate.defaultProps = {
 	values: {}
 };
 
-const styles = theme => ({
-	textFields: {
-		"&:not(:last-child)": {
-			marginBottom: theme.spacing.unit
-		}
-	},
-	buttonContainer: {
-		marginTop: theme.spacing.unit,
-		display: "flex",
-		justifyContent: "space-between"
-	},
+const style = theme => ({
 	paper: {
-		padding: theme.spacing.unit * 3,
-		borderRadius: "1rem"
+		padding: theme.spacing.unit * 3
 	}
 });
 
-export default withStyles(styles)(UserCreate);
+export default withStyles(style)(UserCreate);

@@ -46,10 +46,10 @@ function LoginForm(props) {
 
 	return (
 		<Paper className={classes.paper}>
-			{errorNotes.map((e, i) => (
-				<ErrorChip key={i} label={e} className={classes.errorNotes} />
-			))}
 			<form>
+				{errorNotes.map((e, i) => (
+					<ErrorChip key={i} label={e} className={classes.errorNotes} />
+				))}
 				<Typography variant="h6" gutterBottom headlineMapping={{ h6: "h1" }}>
 					Login
 				</Typography>
@@ -120,6 +120,9 @@ LoginForm.defaultProps = {
 };
 
 const styles = theme => ({
+	paper: {
+		padding: theme.spacing.unit * 3
+	},
 	textFields: {
 		"&:not(:last-child)": {
 			marginBottom: theme.spacing.unit
@@ -129,10 +132,6 @@ const styles = theme => ({
 		marginTop: theme.spacing.unit,
 		display: "flex",
 		justifyContent: "space-between"
-	},
-	paper: {
-		padding: theme.spacing.unit * 3,
-		borderRadius: "1rem"
 	},
 	errorNotes: {
 		margin: theme.spacing.unit

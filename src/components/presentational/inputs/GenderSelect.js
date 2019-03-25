@@ -25,5 +25,5 @@ GenderSelect.propTypes = {
 };
 
 GenderSelect.defaultProps = {
-	required: true
+	required: false
 };
