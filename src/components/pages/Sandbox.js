@@ -4,6 +4,7 @@ import { Typography, Paper } from "@material-ui/core";
 import Login from "../containers/forms/Login";
 import UserCreate from "../containers/forms/UserCreate";
 import UserUpdateTable from "../containers/forms/UserUpdateTable";
+import GuestInvite from "../containers/forms/GuestInvite";
 
 export default function Locations() {
 	return (
@@ -12,6 +13,7 @@ export default function Locations() {
 			<Login />
 			<UserCreate />
 			<UserUpdateTable />
+			<GuestInvite />
 		</Paper>
 	);
 }

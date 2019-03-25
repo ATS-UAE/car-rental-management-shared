@@ -12,7 +12,10 @@ function GuestInvite({ value, onChange, onSubmit }) {
 					type="submit"
 					variant="contained"
 					color="primary"
-					onClick={onSubmit}
+					onClick={e => {
+						e.preventDefault();
+						onSubmit(e);
+					}}
 				>
 					Invite
 				</Button>

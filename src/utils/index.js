@@ -73,7 +73,7 @@ api.inviteGuest = email =>
 	new Promise((resolve, reject) => {
 		axios
 			.post(
-				`${API_URL}/api/carbooking/users`,
+				`${API_URL}/api/carbooking/invites`,
 				{ email },
 				{ withCredentials: true }
 			)
