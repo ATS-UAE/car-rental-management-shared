@@ -68,3 +68,27 @@ api.createUser = user =>
 				reject(error.message || "Unknown error has occured.");
 			});
 	});
+
+api.inviteGuest = email =>
+	new Promise((resolve, reject) => {
+		axios
+			.post(
+				`${API_URL}/api/carbooking/users`,
+				{ email },
+				{ withCredentials: true }
+			)
+			.then(data => {
+				resolve(data.data);
+			})
+			.catch(error => {
+				if (
+					error &&
+					error.response &&
+					error.response.data &&
+					error.response.data.message
+				) {
+					reject(error.response.data.message);
+				}
+				reject(error.message || "Unknown error has occured.");
+			});
+	});
