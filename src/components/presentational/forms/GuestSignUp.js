@@ -124,18 +124,20 @@ function GuestSignUp({
 							TextFieldProps={{ fullWidth: true }}
 						/>
 					</Grid>
-					<Grid item sm={6} xs={12}>
-						<EmailField
-							required
-							errors={errors.email}
-							value={values.email}
-							showErrors={showErrors}
-							onError={handleError("email")}
-							onChange={handleChange("email")}
-							onValid={handleValid("email")}
-							TextFieldProps={{ fullWidth: true }}
-						/>
-					</Grid>
+					{values.email && (
+						<Grid item sm={6} xs={12}>
+							<EmailField
+								required
+								errors={errors.email}
+								value={values.email}
+								showErrors={showErrors}
+								onError={handleError("email")}
+								onChange={handleChange("email")}
+								onValid={handleValid("email")}
+								TextFieldProps={{ fullWidth: true, disabled: true }}
+							/>
+						</Grid>
+					)}
 					<Grid item sm={6} xs={12}>
 						<GenericTextField
 							id="mobile-number"
@@ -195,7 +197,8 @@ GuestSignUp.propTypes = {
 GuestSignUp.defaultProps = {
 	showErrors: true,
 	errors: {},
-	values: {}
+	values: {},
+	errorNotes: []
 };
 
 const style = theme => ({

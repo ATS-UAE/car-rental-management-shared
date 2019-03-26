@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import GuestSignUp from "../../presentational/forms/GuestSignUp";
-import { api } from "../../../";
+import { api } from "../../../utils";
 
 export default function GuestSignUpContainer() {
 	let [newUser, setNewUser] = useState({

@@ -5,6 +5,7 @@ import Login from "../containers/forms/Login";
 import UserCreate from "../containers/forms/UserCreate";
 import UserUpdateTable from "../containers/forms/UserUpdateTable";
 import GuestInvite from "../containers/forms/GuestInvite";
+import GuestSignUp from "../containers/forms/GuestSignUp";
 
 export default function Locations() {
 	return (
@@ -14,6 +15,7 @@ export default function Locations() {
 			<UserCreate />
 			<UserUpdateTable />
 			<GuestInvite />
+			<GuestSignUp />
 		</Paper>
 	);
 }
