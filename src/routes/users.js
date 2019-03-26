@@ -86,7 +86,7 @@ router.post("/", async ({ user, body }, res) => {
 
 		try {
 			// Immediately create the user otherwise.
-			let approved = role.name === ROLES.GUEST ? false : true; // Approve if userCreated is not guest
+			let approved = !inviteTokenUsed; // Approve if userCreated is not guest
 			let hashedPassword = await bcrypt.hash(body.password, 10);
 			let createdUser = await db.User.create({
 				...pickFields(
