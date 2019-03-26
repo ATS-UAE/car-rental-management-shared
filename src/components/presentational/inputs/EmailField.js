@@ -3,19 +3,18 @@ import PropTypes from "prop-types";
 import TextFieldValidation from "./TextFieldValidation";
 import { validators } from "../../../utils";
 
-export default function PasswordField(props) {
+export default function PasswordField({
+	errors,
+	showErrors,
+	value,
+	onError,
+	onChange,
+	onValid,
+	TextFieldProps,
+	required,
+	label
+}) {
 	const [stateValue, setStateValue] = useState("");
-	const {
-		errors,
-		showErrors,
-		value,
-		onError,
-		onChange,
-		onValid,
-		TextFieldProps,
-		required,
-		label
-	} = props;
 	return (
 		<TextFieldValidation
 			TextFieldProps={{

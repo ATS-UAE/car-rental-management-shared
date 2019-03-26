@@ -52,60 +52,6 @@ export const fetchUsers = () => dispatch =>
 			});
 	});
 
-export const createUser = user => dispatch =>
-	new Promise((resolve, reject) => {
-		axios
-			.post(`${API_URL}/api/carbooking/users/`, user, {
-				withCredentials: true
-			})
-			.then(data => {
-				axios
-					.get(`${API_URL}/api/carbooking/users`, { withCredentials: true })
-					.then(data => {
-						dispatch({ type: FETCH_USERS, payload: data.data });
-					});
-				resolve(data.data);
-			})
-			.catch(error => {
-				if (
-					error &&
-					error.response &&
-					error.response.data &&
-					error.response.data.message
-				) {
-					reject(error.response.data.message);
-				}
-				reject(error.message || "Unknown error has occured.");
-			});
-	});
-
-export const updateUser = user => dispatch =>
-	new Promise((resolve, reject) => {
-		axios
-			.patch(`${API_URL}/api/carbooking/users/${user.id}`, user, {
-				withCredentials: true
-			})
-			.then(data => {
-				axios
-					.get(`${API_URL}/api/carbooking/users`, { withCredentials: true })
-					.then(data => {
-						dispatch({ type: FETCH_USERS, payload: data.data });
-					});
-				resolve(data.data);
-			})
-			.catch(error => {
-				if (
-					error &&
-					error.response &&
-					error.response.data &&
-					error.response.data.message
-				) {
-					reject(error.response.data.message);
-				}
-				reject(error.message || "Unknown error has occured.");
-			});
-	});
-
 export const fetchEnums = () => dispatch =>
 	new Promise((resolve, reject) => {
 		axios

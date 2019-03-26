@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { connect } from "react-redux";
+import * as actions from "../../../actions";
 import UserCreateForm from "../../presentational/forms/UserCreate";
 import { api } from "../../../utils";
 
-export default function UserCreate() {
+function UserCreate() {
 	let [newUser, setNewUser] = useState({
 		username: "",
 		password: "",
@@ -27,3 +28,8 @@ export default function UserCreate() {
 		/>
 	);
 }
+
+export default connect(
+	null,
+	actions
+)(UserCreate);

@@ -81,7 +81,7 @@ TextFieldValidation.propTypes = {
 		PropTypes.instanceOf(Validator)
 	]),
 	onChange: PropTypes.func,
-	value: PropTypes.string,
+	value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 	label: PropTypes.string,
 	id: PropTypes.string,
 	TextFieldProps: PropTypes.object,

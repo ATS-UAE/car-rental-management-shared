@@ -2,21 +2,20 @@ import React, { useState } from "react";
 import PropTypes from "prop-types";
 import TextFieldValidation from "./TextFieldValidation";
 
-export default function PasswordField(props) {
+export default function GenericTextField({
+	errors,
+	showErrors,
+	value,
+	onError,
+	onChange,
+	onValid,
+	TextFieldProps,
+	required,
+	label,
+	id,
+	validators
+}) {
 	const [stateValue, setStateValue] = useState("");
-	const {
-		errors,
-		showErrors,
-		value,
-		onError,
-		onChange,
-		onValid,
-		TextFieldProps,
-		required,
-		label,
-		id,
-		validators
-	} = props;
 	return (
 		<TextFieldValidation
 			TextFieldProps={{
@@ -38,11 +37,11 @@ export default function PasswordField(props) {
 	);
 }
 
-PasswordField.propTypes = {
+GenericTextField.propTypes = {
 	errors: PropTypes.arrayOf(PropTypes.string),
 	id: PropTypes.string.isRequired,
 	showErrors: PropTypes.bool,
-	value: PropTypes.string,
+	value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 	onError: PropTypes.func,
 	onValid: PropTypes.func,
 	onChange: PropTypes.func,

@@ -3,12 +3,12 @@ import PropTypes from "prop-types";
 import { Button, Typography, Grid, withStyles, Paper } from "@material-ui/core";
 import UsernameField from "../inputs/UsernameField";
 import GenericTextField from "../inputs/GenericTextField";
-import GenderSelect from "../inputs/GenderSelect";
+import GenderSelect from "../../containers/inputs/GenderSelect";
 import ErrorChip from "../display/ErrorChip";
 import EmailField from "../inputs/EmailField";
 import RoleSelect from "../../containers/inputs/RoleSelect";
 
-function UserCreate({
+function UserUpdate({
 	classes,
 	values,
 	onChange,
@@ -152,28 +152,28 @@ function UserCreate({
 	);
 }
 
-UserCreate.propTypes = {
+UserUpdate.propTypes = {
 	values: PropTypes.shape({
-		userId: PropTypes.string.isRequired,
+		userId: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+			.isRequired,
 		username: PropTypes.string.isRequired,
 		firstName: PropTypes.string.isRequired,
 		lastName: PropTypes.string.isRequired,
-		email: PropTypes.string.isRequired,
 		mobileNumber: PropTypes.string.isRequired,
 		gender: PropTypes.string.isRequired,
-		roleId: PropTypes.string.isRequired
+		roleId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired
 	}).isRequired,
 	errorNotes: PropTypes.arrayOf(PropTypes.string),
 	onChange: PropTypes.func,
 	onLogin: PropTypes.func,
 	errors: PropTypes.arrayOf(PropTypes.string),
 	onError: PropTypes.func,
-	showErrors: PropTypes.func
+	showErrors: PropTypes.bool
 };
 
-UserCreate.defaultProps = {
+UserUpdate.defaultProps = {
 	showErrors: true,
-	errors: {},
+	errors: [],
 	values: {},
 	errorNotes: []
 };
@@ -184,4 +184,4 @@ const style = theme => ({
 	}
 });
 
-export default withStyles(style)(UserCreate);
+export default withStyles(style)(UserUpdate);

@@ -5,7 +5,7 @@ import { withStyles } from "@material-ui/core/styles";
 import UsernameField from "../inputs/UsernameField";
 import PasswordField from "../inputs/PasswordField";
 import GenericTextField from "../inputs/GenericTextField";
-import GenderSelect from "../inputs/GenderSelect";
+import GenderSelect from "../../containers/inputs/GenderSelect";
 import ErrorChip from "../display/ErrorChip";
 import EmailField from "../inputs/EmailField";
 import { Validator } from "../../../utils";

@@ -1,11 +1,19 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 import { Dialog, Paper } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import UserUpdate from "./UserUpdate";
 import UserTable from "../../containers/display/UserTable";
-function UserUpdateTable({ classes, onSubmit, isDialogOpen, setIsDialogOpen }) {
+function UserUpdateTable({
+	classes,
+	onSubmit,
+	isDialogOpen,
+	setIsDialogOpen,
+	onTableRowClick,
+	onUserUpdateChange,
+	userUpdateData
+}) {
 	const [isDialogOpenState, setIsDialogOpenState] = useState(false);
-	const [userUpdateData, setUserUpdateData] = useState({});
 	const open = isDialogOpen === undefined ? isDialogOpenState : isDialogOpen;
 	const setIsOpen =
 		setIsDialogOpen === undefined ? setIsDialogOpenState : setIsDialogOpen;
@@ -14,32 +22,41 @@ function UserUpdateTable({ classes, onSubmit, isDialogOpen, setIsDialogOpen }) {
 			<UserTable
 				onClick={user => {
 					setIsOpen(true);
-					setUserUpdateData({
-						userId: user.id,
-						username: user.username,
-						firstName: user.firstName,
-						lastName: user.lastName,
-						email: user.email,
-						mobileNumber: user.mobileNumber,
-						gender: user.gender,
-						roleId: user.role.id
-					});
+					onTableRowClick(user);
 				}}
 			/>
 			<Dialog open={open} onClose={() => setIsOpen(false)}>
 				<UserUpdate
 					values={userUpdateData}
 					onChange={user => {
-						setUserUpdateData({ id: user.userId, ...user });
+						onUserUpdateChange(user);
 					}}
 					onSubmit={() => {
-						onSubmit && onSubmit(userUpdateData);
+						onSubmit && onSubmit();
 					}}
 				/>
 			</Dialog>
 		</Paper>
 	);
 }
+
+UserUpdateTable.propTypes = {
+	onSubmit: PropTypes.func,
+	isDialogOpen: PropTypes.bool,
+	setIsDialogOpen: PropTypes.func,
+	onTableRowClick: PropTypes.func,
+	onUserUpdateChange: PropTypes.func,
+	userUpdateData: PropTypes.shape({
+		userId: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+			.isRequired,
+		username: PropTypes.string.isRequired,
+		firstName: PropTypes.string.isRequired,
+		lastName: PropTypes.string.isRequired,
+		mobileNumber: PropTypes.string.isRequired,
+		gender: PropTypes.string.isRequired,
+		roleId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired
+	}).isRequired
+};
 
 const style = theme => ({
 	paper: {

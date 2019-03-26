@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-import SimpleSelect from "./SimpleSelect";
+import SimpleSelect from "../../presentational/inputs/SimpleSelect";
 
 export default function GenderSelect({ required, value, onChange, fullWidth }) {
 	const [stateValue, setStateValue] = useState("");

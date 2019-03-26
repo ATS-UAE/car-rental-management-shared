@@ -41,7 +41,7 @@ export default function PasswordField(props) {
 PasswordField.propTypes = {
 	errors: PropTypes.arrayOf(PropTypes.string),
 	showErrors: PropTypes.bool,
-	value: PropTypes.string,
+	value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 	onError: PropTypes.func,
 	onValid: PropTypes.func,
 	onChange: PropTypes.func,
