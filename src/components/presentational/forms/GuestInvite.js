@@ -1,24 +1,30 @@
 import React from "react";
-import { Paper, Button } from "@material-ui/core";
+import { Paper, Button, Grid } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import EmailField from "../inputs/EmailField";
 
-function GuestInvite({ value, onChange, onSubmit }) {
+function GuestInvite({ value, onChange, onSubmit, classes }) {
 	return (
-		<Paper>
+		<Paper className={classes.paper}>
 			<form>
-				<EmailField value={value} onChange={onChange} />
-				<Button
-					type="submit"
-					variant="contained"
-					color="primary"
-					onClick={e => {
-						e.preventDefault();
-						onSubmit(e);
-					}}
-				>
-					Invite
-				</Button>
+				<Grid container spacing={24} alignItems="center">
+					<Grid item>
+						<EmailField value={value} onChange={onChange} />
+					</Grid>
+					<Grid item>
+						<Button
+							type="submit"
+							variant="contained"
+							color="primary"
+							onClick={e => {
+								e.preventDefault();
+								onSubmit(e);
+							}}
+						>
+							Invite
+						</Button>
+					</Grid>
+				</Grid>
 			</form>
 		</Paper>
 	);
