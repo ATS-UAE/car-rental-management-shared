@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import GuestSignUp from "../../presentational/forms/GuestSignUp";
 import { api } from "../../../";
 
@@ -14,11 +14,17 @@ export default function GuestSignUpContainer() {
 		gender: "",
 		roleId: ""
 	});
+	let inviteToken;
+	useEffect(() => {
+		// Get token from url.
+		const urlParams = new URLSearchParams(window.location.search);
+		inviteToken = urlParams.get("inviteToken");
+	}, []);
 	return (
 		<GuestSignUp
 			values={newUser}
 			onChange={newUser => setNewUser(newUser)}
-			onSubmit={() => api.GuestSignUp(newUser)}
+			onSubmit={() => api.GuestSignUp({ inviteToken, ...newUser })}
 		/>
 	);
 }
