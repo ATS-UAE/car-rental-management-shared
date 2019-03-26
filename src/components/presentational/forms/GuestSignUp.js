@@ -48,7 +48,7 @@ function GuestSignUp({
 					<ErrorChip key={i} label={e} />
 				))}
 				<Typography variant="h6" gutterBottom headlineMapping={{ h6: "h1" }}>
-					User Create
+					Sign Up
 				</Typography>
 				<Grid container spacing={24}>
 					<Grid item sm={6} xs={12}>
@@ -167,7 +167,7 @@ function GuestSignUp({
 									color="primary"
 									onClick={handleSubmit}
 								>
-									Create
+									Sign Up
 								</Button>
 							</Grid>
 							<Grid item>
