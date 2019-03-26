@@ -194,12 +194,12 @@ UserCreate.propTypes = {
 	onLogin: PropTypes.func,
 	errors: PropTypes.arrayOf(PropTypes.string),
 	onError: PropTypes.func,
-	showErrors: PropTypes.func
+	showErrors: PropTypes.bool
 };
 
 UserCreate.defaultProps = {
 	showErrors: true,
-	errors: {},
+	errors: [],
 	values: {}
 };
 

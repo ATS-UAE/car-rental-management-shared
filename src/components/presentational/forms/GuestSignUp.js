@@ -191,12 +191,12 @@ GuestSignUp.propTypes = {
 	onLogin: PropTypes.func,
 	errors: PropTypes.arrayOf(PropTypes.string),
 	onError: PropTypes.func,
-	showErrors: PropTypes.func
+	showErrors: PropTypes.bool
 };
 
 GuestSignUp.defaultProps = {
 	showErrors: true,
-	errors: {},
+	errors: [],
 	values: {},
 	errorNotes: []
 };

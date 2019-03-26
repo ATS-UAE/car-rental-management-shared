@@ -136,22 +136,28 @@ function TableWithPagination(props) {
 TableWithPagination.propTypes = {
 	data: PropTypes.shape({
 		headers: PropTypes.arrayOf(
-			PropTypes.arrayOf(
-				PropTypes.shape({
-					value: PropTypes.node.isRequired,
-					colSpan: PropTypes.number
-				})
-			)
+			PropTypes.shape({
+				values: PropTypes.arrayOf(
+					PropTypes.shape({
+						value: PropTypes.string,
+						colSpan: PropTypes.number
+					}).isRequired
+				),
+				metadata: PropTypes.any,
+				onClick: PropTypes.func
+			})
 		),
 		body: PropTypes.arrayOf(
-			PropTypes.arrayOf(
-				PropTypes.shape({
-					values: PropTypes.arrayOf(PropTypes.node.isRequired),
-					metadata: PropTypes.any,
-					colSpan: PropTypes.number,
-					onClick: PropTypes.func
-				})
-			)
+			PropTypes.shape({
+				values: PropTypes.arrayOf(
+					PropTypes.shape({
+						value: PropTypes.string,
+						colSpan: PropTypes.number
+					}).isRequired
+				),
+				metadata: PropTypes.any,
+				onClick: PropTypes.func
+			})
 		)
 	}),
 	pagination: PropTypes.shape({
