@@ -14,17 +14,18 @@ export default function GuestSignUpContainer() {
 		gender: "",
 		roleId: ""
 	});
-	let inviteToken;
+	let [inviteToken, setInviteToken] = useState("");
 	useEffect(() => {
 		// Get token from url.
 		const urlParams = new URLSearchParams(window.location.search);
-		inviteToken = urlParams.get("inviteToken");
+		const inviteToken = urlParams.get("inviteToken");
+		setInviteToken(inviteToken);
 	}, []);
 	return (
 		<GuestSignUp
 			values={newUser}
 			onChange={newUser => setNewUser(newUser)}
-			onSubmit={() => api.GuestSignUp({ inviteToken, ...newUser })}
+			onSubmit={() => api.createUser({ inviteToken, ...newUser })}
 		/>
 	);
 }
