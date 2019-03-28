@@ -11,7 +11,7 @@ function VehicleCreateContainer({ fetchVehicles }) {
 			values={newVehicle}
 			onChange={setNewVehicle}
 			onSubmit={() =>
-				api.createVehicle().then(() => {
+				api.createVehicle(newVehicle).then(() => {
 					fetchVehicles();
 				})
 			}

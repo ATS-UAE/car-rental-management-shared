@@ -96,7 +96,7 @@ api.inviteGuest = email =>
 api.createVehicle = vehicle =>
 	new Promise((resolve, reject) => {
 		axios
-			.post(`${API_URL}/api/carbooking/vehicles`.vehicle, {
+			.post(`${API_URL}/api/carbooking/vehicles`, vehicle, {
 				withCredentials: true
 			})
 			.then(data => {

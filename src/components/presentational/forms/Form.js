@@ -56,7 +56,6 @@ function Form({
 						return (
 							<Grid item xs={12} sm={6}>
 								<Component
-									{...props}
 									key={name}
 									id={id}
 									value={values[name]}
@@ -64,6 +63,11 @@ function Form({
 									onError={handleError(name)}
 									onChange={handleChange(name)}
 									onValid={handleValid(name)}
+									{...props}
+									TextFieldProps={{
+										fullWidth: true,
+										...props.TextFieldProps
+									}}
 								/>
 							</Grid>
 						);
@@ -111,6 +115,8 @@ Form.propTypes = {
 
 Form.defaultProps = {
 	fields: [],
+	values: {},
+	errors: {},
 	errorNotes: []
 };
 

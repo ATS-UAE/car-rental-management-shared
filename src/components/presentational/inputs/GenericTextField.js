@@ -19,7 +19,6 @@ export default function GenericTextField({
 	return (
 		<TextFieldValidation
 			TextFieldProps={{
-				autoComplete: "text",
 				type: "text",
 				...TextFieldProps
 			}}
