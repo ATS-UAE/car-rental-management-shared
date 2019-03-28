@@ -92,3 +92,25 @@ api.inviteGuest = email =>
 				reject(error.message || "Unknown error has occured.");
 			});
 	});
+
+api.createVehicle = vehicle =>
+	new Promise((resolve, reject) => {
+		axios
+			.post(`${API_URL}/api/carbooking/vehicles`.vehicle, {
+				withCredentials: true
+			})
+			.then(data => {
+				resolve(data.data);
+			})
+			.catch(error => {
+				if (
+					error &&
+					error.response &&
+					error.response.data &&
+					error.response.data.message
+				) {
+					reject(error.response.data.message);
+				}
+				reject(error.message || "Unknown error has occured.");
+			});
+	});

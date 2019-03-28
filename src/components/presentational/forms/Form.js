@@ -19,7 +19,6 @@ function Form({
 	fields,
 	classes,
 	errorNotes,
-	handleSubmit,
 	title,
 	onValid,
 	values,
@@ -102,7 +101,10 @@ Form.propTypes = {
 		})
 	),
 	errorNotes: PropTypes.arrayOf(PropTypes.string),
-	handleSubmit: PropTypes.func,
+	onSubmit: PropTypes.func,
+	onChange: PropTypes.func,
+	onError: PropTypes.func,
+	onValid: PropTypes.func,
 	title: PropTypes.string,
 	errors: PropTypes.arrayOf(PropTypes.string)
 };

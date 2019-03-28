@@ -1,5 +1,5 @@
 import axios from "axios";
-import { AUTH_LOGIN, FETCH_ENUMS, FETCH_USERS } from "./types";
+import { AUTH_LOGIN, FETCH_ENUMS, FETCH_USERS, FETCH_VEHICLES } from "./types";
 
 const API_URL = process.env.REACT_APP_CAR_BOOKING_API_DOMAIN;
 
@@ -27,7 +27,7 @@ export const authLogin = (username, password) => dispatch =>
 				) {
 					reject(error.response.data.message);
 				}
-				reject(error.message || "Unknown error has occured.");
+				reject(error.message || "Unknown error has occurred.");
 			});
 	});
 
@@ -48,7 +48,7 @@ export const fetchUsers = () => dispatch =>
 				) {
 					reject(error.response.data.message);
 				}
-				reject(error.message || "Unknown error has occured.");
+				reject(error.message || "Unknown error has occurred.");
 			});
 	});
 
@@ -69,6 +69,27 @@ export const fetchEnums = () => dispatch =>
 				) {
 					reject(error.response.data.message);
 				}
-				reject(error.message || "Unknown error has occured.");
+				reject(error.message || "Unknown error has occurred.");
+			});
+	});
+
+export const fetchVehicles = () => dispatch =>
+	new Promise((resolve, reject) => {
+		axios
+			.get(`${API_URL}/api/carbooking/users`, { withCredentials: true })
+			.then(data => {
+				resolve(data.data);
+				dispatch({ type: FETCH_VEHICLES, payload: data.data });
+			})
+			.catch(error => {
+				if (
+					error &&
+					error.response &&
+					error.response.data &&
+					error.response.data.message
+				) {
+					reject(error.response.data.message);
+				}
+				reject(error.message || "Unknown error has occurred.");
 			});
 	});
