@@ -76,7 +76,7 @@ export const fetchEnums = () => dispatch =>
 export const fetchVehicles = () => dispatch =>
 	new Promise((resolve, reject) => {
 		axios
-			.get(`${API_URL}/api/carbooking/users`, { withCredentials: true })
+			.get(`${API_URL}/api/carbooking/vehicles`, { withCredentials: true })
 			.then(data => {
 				resolve(data.data);
 				dispatch({ type: FETCH_VEHICLES, payload: data.data });
