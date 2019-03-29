@@ -67,71 +67,18 @@ const executeFromAPI = (action, url, body) =>
 				});
 	});
 
-export const api = {};
-api.createUser = user =>
-	new Promise((resolve, reject) => {
-		axios
-			.post(`${API_URL}/api/carbooking/users`, user, { withCredentials: true })
-			.then(data => {
-				resolve(data.data);
-			})
-			.catch(error => {
-				if (
-					error &&
-					error.response &&
-					error.response.data &&
-					error.response.data.message
-				) {
-					reject(error.response.data.message);
-				}
-				reject(error.message || "Unknown error has occured.");
-			});
-	});
+export const api = {
+	createUser: user => executeFromAPI("post", "/api/carbooking/users", user),
 
-api.inviteGuest = email =>
-	new Promise((resolve, reject) => {
-		axios
-			.post(
-				`${API_URL}/api/carbooking/invites`,
-				{ email },
-				{ withCredentials: true }
-			)
-			.then(data => {
-				resolve(data.data);
-			})
-			.catch(error => {
-				if (
-					error &&
-					error.response &&
-					error.response.data &&
-					error.response.data.message
-				) {
-					reject(error.response.data.message);
-				}
-				reject(error.message || "Unknown error has occured.");
-			});
-	});
+	updateUser: user =>
+		executeFromAPI("patch", `/api/carbooking/users/${user.id}`, user),
 
-api.createVehicle = vehicle =>
-	new Promise((resolve, reject) => {
-		axios
-			.post(`${API_URL}/api/carbooking/vehicles`, vehicle, {
-				withCredentials: true
-			})
-			.then(data => {
-				resolve(data.data);
-			})
-			.catch(error => {
-				if (
-					error &&
-					error.response &&
-					error.response.data &&
-					error.response.data.message
-				) {
-					reject(error.response.data.message);
-				}
-				reject(error.message || "Unknown error has occured.");
-			});
-	});
-api.updateVehicle = vehicle =>
-	executeFromAPI("patch", `/api/carbooking/vehicles/${vehicle.id}`, vehicle);
+	inviteGuest: email =>
+		executeFromAPI("post", "/api/carbooking/invites", { email }),
+
+	createVehicle: vehicle =>
+		executeFromAPI("post", "/api/carbooking/vehicles", vehicle),
+
+	updateVehicle: vehicle =>
+		executeFromAPI("patch", `/api/carbooking/vehicles/${vehicle.id}`, vehicle)
+};
