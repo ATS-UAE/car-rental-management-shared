@@ -48,6 +48,25 @@ export const validators = {
 };
 
 const API_URL = process.env.REACT_APP_CAR_BOOKING_API_DOMAIN;
+
+const executeFromAPI = (action, url, body) =>
+	new Promise((resolve, reject) => {
+		if (action !== "get")
+			axios[action](`${API_URL}${url}`, body, { withCredentials: true })
+				.then(data => resolve(data.data))
+				.catch(error => {
+					if (
+						error &&
+						error.response &&
+						error.response.data &&
+						error.response.data.message
+					) {
+						reject(error.response.data.message, error);
+					}
+					reject(error.message || "Unknown error has occurred.", error);
+				});
+	});
+
 export const api = {};
 api.createUser = user =>
 	new Promise((resolve, reject) => {
@@ -114,3 +133,5 @@ api.createVehicle = vehicle =>
 				reject(error.message || "Unknown error has occured.");
 			});
 	});
+api.updateVehicle = vehicle =>
+	executeFromAPI("patch", `/api/carbooking/vehicles/${vehicle.id}`, vehicle);

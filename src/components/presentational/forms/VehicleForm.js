@@ -3,14 +3,17 @@ import React from "react";
 import Form, { FIELDS } from "./Form";
 const { TEXT } = FIELDS;
 
-function VehicleCreate({
+function VehicleForm({
 	values,
 	errorNotes,
 	errors,
 	onSubmit,
 	onValid,
 	onChange,
-	onError
+	onError,
+	include,
+	buttonLabel,
+	title
 }) {
 	const fields = [
 		{
@@ -50,10 +53,12 @@ function VehicleCreate({
 			}
 		}
 	];
+
 	return (
 		<Form
-			title="Vehicle Create"
+			title={title}
 			fields={fields}
+			include={include}
 			errorNotes={errorNotes}
 			errors={errors}
 			onSubmit={onSubmit}
@@ -61,8 +66,9 @@ function VehicleCreate({
 			onChange={onChange}
 			onError={onError}
 			values={values}
+			buttonLabel={buttonLabel}
 		/>
 	);
 }
 
-export default VehicleCreate;
+export default VehicleForm;

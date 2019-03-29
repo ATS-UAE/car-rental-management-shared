@@ -7,6 +7,7 @@ import UserUpdateTable from "../containers/forms/UserUpdateTable";
 import GuestInvite from "../containers/forms/GuestInvite";
 import GuestSignUp from "../containers/forms/GuestSignUp";
 import VehicleCreate from "../containers/forms/VehicleCreate";
+import VehicleTableView from "../containers/display/VehicleTableView";
 
 export default function Locations() {
 	return (
@@ -18,6 +19,7 @@ export default function Locations() {
 			<GuestInvite />
 			<GuestSignUp />
 			<VehicleCreate />
+			<VehicleTableView />
 		</Paper>
 	);
 }

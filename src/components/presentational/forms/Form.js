@@ -25,7 +25,9 @@ function Form({
 	onChange,
 	onSubmit,
 	errors,
-	onError
+	onError,
+	include,
+	buttonLabel
 }) {
 	const handleChange = name => event =>
 		onChange && onChange({ ...values, [name]: event.target.value });
@@ -37,6 +39,11 @@ function Form({
 	const handleValid = name => event => {
 		onValid && onValid({ ...values, [name]: event.target.value });
 	};
+	const formFields = include.length
+		? fields.filter(
+				field => include.includes(field.name) || include.includes(field.id)
+		  )
+		: fields;
 	return (
 		<Paper className={classes.paper}>
 			<form>
@@ -49,14 +56,13 @@ function Form({
 					</Typography>
 				)}
 				<Grid container spacing={24}>
-					{fields.map(field => {
+					{formFields.map(field => {
 						const Component = field.type;
 						const { props, name, id } = field;
 
 						return (
-							<Grid item xs={12} sm={6}>
+							<Grid item xs={12} sm={6} key={name}>
 								<Component
-									key={name}
 									id={id}
 									value={values[name]}
 									errors={errors[name]}
@@ -81,7 +87,7 @@ function Form({
 									color="primary"
 									onClick={handleSubmit}
 								>
-									Create
+									{buttonLabel}
 								</Button>
 							</Grid>
 							<Grid item>
@@ -104,6 +110,7 @@ Form.propTypes = {
 			id: PropTypes.string.isRequired
 		})
 	),
+	buttonLabel: PropTypes.string,
 	errorNotes: PropTypes.arrayOf(PropTypes.string),
 	onSubmit: PropTypes.func,
 	onChange: PropTypes.func,
@@ -115,9 +122,11 @@ Form.propTypes = {
 
 Form.defaultProps = {
 	fields: [],
+	include: [],
 	values: {},
-	errors: {},
-	errorNotes: []
+	errors: [],
+	errorNotes: [],
+	buttonLabel: "Confirm"
 };
 
 const style = theme => ({

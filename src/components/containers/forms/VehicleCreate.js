@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { connect } from "react-redux";
-import VehicleCreate from "../../presentational/forms/VehicleCreate";
+import VehicleForm from "../../presentational/forms/VehicleForm";
 import * as actions from "../../../actions";
 import { api } from "../../../utils";
 
 function VehicleCreateContainer({ fetchVehicles }) {
 	const [newVehicle, setNewVehicle] = useState({});
 	return (
-		<VehicleCreate
+		<VehicleForm
 			values={newVehicle}
 			onChange={setNewVehicle}
 			onSubmit={() =>
@@ -15,6 +15,8 @@ function VehicleCreateContainer({ fetchVehicles }) {
 					fetchVehicles();
 				})
 			}
+			buttonLabel="Create"
+			title="Create Vehicle"
 		/>
 	);
 }
