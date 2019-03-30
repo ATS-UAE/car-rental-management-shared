@@ -51,7 +51,7 @@ const API_URL = process.env.REACT_APP_CAR_BOOKING_API_DOMAIN;
 
 const executeFromAPI = (action, url, body) =>
 	new Promise((resolve, reject) => {
-		if (action !== "get")
+		if (action !== "get") {
 			axios[action](`${API_URL}${url}`, body, { withCredentials: true })
 				.then(data => resolve(data.data))
 				.catch(error => {
@@ -65,6 +65,24 @@ const executeFromAPI = (action, url, body) =>
 					}
 					reject(error.message || "Unknown error has occurred.", error);
 				});
+		} else if (action === "get") {
+			axios
+				.get(`${API_URL}${url}`, { withCredentials: true })
+				.then(data => resolve(data.data))
+				.catch(error => {
+					if (
+						error &&
+						error.response &&
+						error.response.data &&
+						error.response.data.message
+					) {
+						reject(error.response.data.message, error);
+					}
+					reject(error.message || "Unknown error has occurred.", error);
+				});
+		} else {
+			reject(`Unknown action '%{action}'`);
+		}
 	});
 
 export const api = {
@@ -82,5 +100,6 @@ export const api = {
 	updateVehicle: vehicle =>
 		executeFromAPI("patch", `/api/carbooking/vehicles/${vehicle.id}`, vehicle),
 	createBooking: booking =>
-		executeFromAPI("post", "/api/carbooking/bookings/", booking)
+		executeFromAPI("post", "/api/carbooking/bookings/", booking),
+	fetchBookings: () => executeFromAPI("get", "/api/carbooking/bookings")
 };
