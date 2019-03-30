@@ -7,6 +7,7 @@ import UserUpdateTable from "../containers/forms/UserUpdateTable";
 import GuestInvite from "../containers/forms/GuestInvite";
 import GuestSignUp from "../containers/forms/GuestSignUp";
 import VehicleCreate from "../containers/forms/VehicleCreate";
+import BookingCreate from "../containers/forms/BookingCreate";
 import VehicleTableView from "../containers/display/VehicleTableView";
 
 export default function Locations() {
@@ -20,6 +21,7 @@ export default function Locations() {
 			<GuestSignUp />
 			<VehicleCreate />
 			<VehicleTableView />
+			<BookingCreate />
 		</Paper>
 	);
 }

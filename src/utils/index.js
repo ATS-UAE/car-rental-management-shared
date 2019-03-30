@@ -80,5 +80,7 @@ export const api = {
 		executeFromAPI("post", "/api/carbooking/vehicles", vehicle),
 
 	updateVehicle: vehicle =>
-		executeFromAPI("patch", `/api/carbooking/vehicles/${vehicle.id}`, vehicle)
+		executeFromAPI("patch", `/api/carbooking/vehicles/${vehicle.id}`, vehicle),
+	createBooking: booking =>
+		executeFromAPI("post", "/api/carbooking/bookings/", booking)
 };
