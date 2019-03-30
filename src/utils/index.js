@@ -91,7 +91,7 @@ export const api = {
 
 	fetchEnums: () => executeFromAPI("get", "/api/carbooking/enums"),
 
-	fetchUsers: () => executeFromAPI("post", "/api/carbooking/users"),
+	fetchUsers: () => executeFromAPI("get", "/api/carbooking/users"),
 	createUser: user => executeFromAPI("post", "/api/carbooking/users", user),
 	updateUser: user =>
 		executeFromAPI("patch", `/api/carbooking/users/${user.id}`, user),
