@@ -86,8 +86,13 @@ const executeFromAPI = (action, url, body) =>
 	});
 
 export const api = {
-	createUser: user => executeFromAPI("post", "/api/carbooking/users", user),
+	authLogin: credentials =>
+		executeFromAPI("post", "/api/carbooking/auth/login", credentials),
 
+	fetchEnums: () => executeFromAPI("get", "/api/carbooking/enums"),
+
+	fetchUsers: () => executeFromAPI("post", "/api/carbooking/users"),
+	createUser: user => executeFromAPI("post", "/api/carbooking/users", user),
 	updateUser: user =>
 		executeFromAPI("patch", `/api/carbooking/users/${user.id}`, user),
 
@@ -96,9 +101,10 @@ export const api = {
 
 	createVehicle: vehicle =>
 		executeFromAPI("post", "/api/carbooking/vehicles", vehicle),
-
+	fetchVehicles: () => executeFromAPI("get", "/api/carbooking/vehicles"),
 	updateVehicle: vehicle =>
 		executeFromAPI("patch", `/api/carbooking/vehicles/${vehicle.id}`, vehicle),
+
 	createBooking: booking =>
 		executeFromAPI("post", "/api/carbooking/bookings/", booking),
 	fetchBookings: () => executeFromAPI("get", "/api/carbooking/bookings")
