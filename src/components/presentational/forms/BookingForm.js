@@ -14,9 +14,10 @@ function BookingForm({
 	onError,
 	values,
 	buttonLabel,
-	users,
+	userList,
 	bookingStatusList,
-	bookingTypeList
+	bookingTypeList,
+	vehicleList
 }) {
 	const fields = [
 		{
@@ -57,7 +58,7 @@ function BookingForm({
 			name: "userId",
 			props: {
 				label: "User",
-				items: users.map(user => ({ value: user.id, label: user.username })),
+				items: userList,
 				fullWidth: true,
 				required: true
 			}
@@ -68,10 +69,7 @@ function BookingForm({
 			name: "bookingStatusId",
 			props: {
 				label: "Booking Status",
-				items: bookingStatusList.map(item => ({
-					value: item.id,
-					label: item.name
-				})),
+				items: bookingStatusList,
 				fullWidth: true,
 				required: true
 			}
@@ -82,10 +80,18 @@ function BookingForm({
 			name: "bookingTypeId",
 			props: {
 				label: "Booking Type",
-				items: bookingTypeList.map(item => ({
-					value: item.id,
-					label: item.name
-				})),
+				items: bookingTypeList,
+				fullWidth: true,
+				required: true
+			}
+		},
+		{
+			type: SELECT,
+			id: "vehicle-id",
+			name: "vehicleId",
+			props: {
+				label: "Vehicle",
+				items: vehicleList,
 				fullWidth: true,
 				required: true
 			}

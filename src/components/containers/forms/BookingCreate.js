@@ -9,7 +9,9 @@ function BookingCreateContainer({
 	enums,
 	users,
 	fetchEnums,
-	fetchUsers
+	fetchUsers,
+	vehicles,
+	fetchVehicles
 }) {
 	const [newBooking, setNewBooking] = useState({});
 	useEffect(() => {
@@ -19,16 +21,35 @@ function BookingCreateContainer({
 		if (!users) {
 			fetchUsers();
 		}
+		if (!vehicles) {
+			fetchVehicles();
+		}
 	}, []);
 	let bookingStatusList = [];
 	let userList = [];
 	let bookingTypeList = [];
+	let vehicleList = [];
 	if (enums && enums.data) {
-		bookingStatusList = enums.data.bookingStatus;
-		bookingTypeList = enums.data.bookingTypes;
+		bookingStatusList = enums.data.bookingStatus.map(item => ({
+			value: item.id,
+			label: item.name
+		}));
+		bookingTypeList = enums.data.bookingTypes.map(item => ({
+			value: item.id,
+			label: item.name
+		}));
 	}
 	if (users && users.data) {
-		userList = users.data;
+		userList = users.data.map(user => ({
+			value: user.id,
+			label: `${user.firstName} ${user.lastName} - ${user.username}`
+		}));
+	}
+	if (vehicles && vehicles.data) {
+		vehicleList = vehicles.data.map(vehicle => ({
+			value: vehicle.id,
+			label: `${vehicle.brand} ${vehicle.model} - ${vehicle.plateNumber}`
+		}));
 	}
 	return (
 		<BookingForm
@@ -41,14 +62,19 @@ function BookingCreateContainer({
 			}
 			buttonLabel="Create"
 			title="Create Booking"
-			users={userList}
+			userList={userList}
 			bookingStatusList={bookingStatusList}
 			bookingTypeList={bookingTypeList}
+			vehicleList={vehicleList}
 		/>
 	);
 }
 
-const mapStateToProps = ({ users, enums }) => ({ users, enums });
+const mapStateToProps = ({ users, enums, vehicles }) => ({
+	users,
+	enums,
+	vehicles
+});
 
 export default connect(
 	mapStateToProps,
