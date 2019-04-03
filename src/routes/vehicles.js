@@ -11,6 +11,37 @@ const { ResponseBuilder, pickFields } = require("../utils");
 
 router.use(requireLogin);
 
+router.get("/bookings", async ({ user }, res) => {
+	let response = new ResponseBuilder();
+	let accessible = await accessControl.can(
+		user.role.name,
+		`${RESOURCES.VEHICLES}:${READ}`
+	);
+	if (accessible) {
+		let results = [];
+		let vehicles = await db.Vehicle.findAll({ include: [{ all: true }] });
+		for (let i = 0; i < vehicles.length; i++) {
+			let vehicle = vehicles[i];
+			let vehicleBookings = await db.Booking.findAll({
+				where: { vehicleId: vehicle.id }
+			});
+			if (vehicleBookings) {
+				results.push({ ...vehicle, bookings: vehicleBookings });
+			}
+		}
+		response.setData(results);
+		response.setCode(200);
+		response.setMessage(`Found ${results.length} vehicles with bookings.`);
+		response.setSuccess(true);
+		res.status(200);
+	} else {
+		response.setCode(errorCodes.UNAUTHORIZED.statusCode);
+		response.setMessage(errorCodes.UNAUTHORIZED.message);
+		res.status(errorCodes.UNAUTHORIZED.statusCode);
+	}
+	res.json(response);
+});
+
 // TODO: Only return available vehicles.
 router.get("/available", async ({ user }, res) => {
 	let response = new ResponseBuilder();
@@ -75,7 +106,7 @@ router.get("/", async ({ user }, res) => {
 	if (accessible) {
 		let vehicles = await db.Vehicle.findAll();
 		let result = vehicles.map(vehicle => ({
-			...vehicles.get({ plain: true }),
+			...vehicle.get({ plain: true }),
 			role: pickFields(["id", "name"], vehicle.get({ plain: true }).role)
 		}));
 		response.setSuccess(true);
@@ -162,15 +193,13 @@ router.patch("/:id", disallowGuests, async ({ user, params, body }, res) => {
 		`${RESOURCES.VEHICLES}:${UPDATE}`
 	);
 	if (accessible) {
-		let foundVehicle = await db.Vehicle.findByPk(params.id, {
-			include: [{ model: db.Role, as: "role" }]
-		});
+		let foundVehicle = await db.Vehicle.findByPk(params.id);
 		if (foundVehicle) {
 			try {
 				let updatedVehicle = await foundVehicle.update(body);
 				response.setData(updatedVehicle);
 				response.setCode(200);
-				response.setMessage(`Vehicle with ID ${req.params.id} updated.`);
+				response.setMessage(`Vehicle with ID ${params.id} updated.`);
 				response.setSuccess(true);
 			} catch (e) {
 				response.setMessage(e.message);
@@ -182,7 +211,7 @@ router.patch("/:id", disallowGuests, async ({ user, params, body }, res) => {
 		} else {
 			res.status(404);
 			response.setCode(404);
-			response.setMessage(`Vehicle with ID ${req.params.id} not found.`);
+			response.setMessage(`Vehicle with ID ${params.id} not found.`);
 		}
 	} else {
 		response.setMessage(errorCodes.UNAUTHORIZED.message);

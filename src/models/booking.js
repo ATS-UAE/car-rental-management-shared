@@ -6,7 +6,9 @@ module.exports = (sequelize, DataTypes) => {
 		{
 			paid: { type: DataTypes.BOOLEAN, defaultValue: false },
 			from: { type: DataTypes.DATE, allowNull: false },
-			to: { type: DataTypes.DATE, allowNull: false }
+			to: { type: DataTypes.DATE, allowNull: false },
+			approved: { type: DataTypes.BOOLEAN },
+			finished: { type: DataTypes.BOOLEAN, defaultValue: false }
 		},
 		{
 			hooks: {
@@ -34,12 +36,6 @@ module.exports = (sequelize, DataTypes) => {
 				name: "userId"
 			},
 			as: "user"
-		});
-		models.Booking.belongsTo(models.BookingStatus, {
-			foreignKey: {
-				name: "bookingStatusId"
-			},
-			as: "bookingStatus"
 		});
 		models.Booking.belongsTo(models.BookingType, {
 			foreignKey: {

@@ -10,6 +10,37 @@ const { ResponseBuilder, pickFields, toMySQLDate } = require("../utils");
 
 router.use(requireLogin);
 
+// Get all finalized bookings
+
+router.get("/", async ({ user }, res) => {
+	let response = new ResponseBuilder();
+
+	let bookings = await db.Booking.findAll();
+	let userBookings = [];
+	for (let booking of bookings) {
+		// Get own bookings.
+		let accessible = await accessControl.can(
+			user.role.name,
+			`${RESOURCES.BOOKINGS}:${READ}`,
+			{
+				booking,
+				user
+			}
+		);
+		accessible && userBookings.push(booking);
+	}
+
+	let result = userBookings.map(booking => ({
+		...booking.get({ plain: true })
+	}));
+	response.setSuccess(true);
+	response.setCode(200);
+	response.setMessage(`Found ${userBookings.length} bookings.`);
+	response.setData(result);
+
+	res.json(response);
+});
+
 router.get("/", async ({ user }, res) => {
 	let response = new ResponseBuilder();
 
@@ -51,7 +82,7 @@ router.post("/", async ({ user, body }, res) => {
 				where: { name: BOOKING_STATUS.PENDING }
 			});
 			let createdBooking = await db.Booking.create({
-				...pickFields(["bookingType"], body),
+				...pickFields(["bookingType", "vehicleId"], body),
 				bookingStatus: pendingBookingStatus.id,
 				to: toMySQLDate(body.to),
 				from: toMySQLDate(body.from)

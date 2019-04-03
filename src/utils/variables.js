@@ -20,9 +20,11 @@ const BOOKING_TYPES = {
 };
 
 const BOOKING_STATUS = {
-	PENDING: "PENDING",
-	ONGOING: "ONGOING",
-	FINISHED: "FINISHED"
+	PENDING: "PENDING", // When the booking is sent by the user.
+	EXPIRED: "EXPIRED", // When the booking schedule has passed without being approved.
+	APPROVED: "APPROVED", // When it is approved by the key manager / admin
+	ONGOING: "ONGOING", // When the vehicle is picked up
+	FINISHED: "FINISHED" // When the vehicle is returned
 };
 const errorCodes = {
 	UNAUTHORIZED: {
