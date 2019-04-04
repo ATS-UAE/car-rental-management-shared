@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import moment from "moment";
 import { connect } from "react-redux";
 import BookingForm from "../../presentational/forms/BookingForm";
 import * as actions from "../../../actions";
@@ -13,7 +14,14 @@ function BookingCreateContainer({
 	vehicles,
 	fetchVehicles
 }) {
-	const [newBooking, setNewBooking] = useState({});
+	const [newBooking, setNewBooking] = useState({
+		from: moment()
+			.startOf("day")
+			.unix(),
+		to: moment()
+			.endOf("day")
+			.unix()
+	});
 	useEffect(() => {
 		if (!enums) {
 			fetchEnums();
@@ -25,15 +33,10 @@ function BookingCreateContainer({
 			fetchVehicles();
 		}
 	}, []);
-	let bookingStatusList = [];
 	let userList = [];
 	let bookingTypeList = [];
 	let vehicleList = [];
 	if (enums && enums.data) {
-		bookingStatusList = enums.data.bookingStatus.map(item => ({
-			value: item.id,
-			label: item.name
-		}));
 		bookingTypeList = enums.data.bookingTypes.map(item => ({
 			value: item.id,
 			label: item.name
@@ -54,7 +57,16 @@ function BookingCreateContainer({
 	return (
 		<BookingForm
 			values={newBooking}
-			onChange={setNewBooking}
+			onChange={newBooking => {
+				let from = newBooking.from;
+				let to = newBooking.to;
+				if (to < from) {
+					let temp = to;
+					to = from;
+					from = temp;
+				}
+				setNewBooking({ ...newBooking, from, to });
+			}}
 			onSubmit={() =>
 				api.createBooking(newBooking).then(() => {
 					fetchBookings();
@@ -63,7 +75,6 @@ function BookingCreateContainer({
 			buttonLabel="Create"
 			title="Create Booking"
 			userList={userList}
-			bookingStatusList={bookingStatusList}
 			bookingTypeList={bookingTypeList}
 			vehicleList={vehicleList}
 		/>

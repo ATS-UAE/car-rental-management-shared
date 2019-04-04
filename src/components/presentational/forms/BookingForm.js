@@ -1,7 +1,6 @@
 import React from "react";
-import moment from "moment";
 import Form, { FIELDS } from "./Form";
-const { TEXT, SELECT } = FIELDS;
+const { SELECT, DATE_TIME_PICKER } = FIELDS;
 
 function BookingForm({
 	title,
@@ -15,27 +14,24 @@ function BookingForm({
 	values,
 	buttonLabel,
 	userList,
-	bookingStatusList,
 	bookingTypeList,
 	vehicleList
 }) {
 	const fields = [
 		{
-			type: TEXT,
-			id: "time-from",
+			type: DATE_TIME_PICKER,
+			id: "from",
 			name: "from",
 			props: {
-				label: "From",
-				required: true
+				label: "Book Start"
 			}
 		},
 		{
-			type: TEXT,
-			id: "time-to",
+			type: DATE_TIME_PICKER,
+			id: "to",
 			name: "to",
 			props: {
-				label: "To",
-				required: true
+				label: "Book End"
 			}
 		},
 		{
@@ -59,17 +55,6 @@ function BookingForm({
 			props: {
 				label: "User",
 				items: userList,
-				fullWidth: true,
-				required: true
-			}
-		},
-		{
-			type: SELECT,
-			id: "booking-status-id",
-			name: "bookingStatusId",
-			props: {
-				label: "Booking Status",
-				items: bookingStatusList,
 				fullWidth: true,
 				required: true
 			}

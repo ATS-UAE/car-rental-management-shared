@@ -64,11 +64,11 @@ export default function TextFieldValidation(props) {
 			error={value.length > 0 && errored}
 			label={helperText && value && errored ? helperText : label}
 			required={required}
-			{...TextFieldProps}
 			type={showPassword ? "text" : TextFieldProps.type}
 			InputProps={{
 				endAdornment: inputAdornment
 			}}
+			{...TextFieldProps}
 		/>
 	);
 }

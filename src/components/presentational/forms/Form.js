@@ -7,12 +7,16 @@ import PasswordField from "../inputs/PasswordField";
 import TextField from "../inputs/GenericTextField";
 import Select from "../inputs/SimpleSelect";
 import ErrorChip from "../display/ErrorChip";
+import Slider from "../inputs/Slider";
+import DateTimePicker from "../inputs/DateTimePicker";
 
 export const FIELDS = {
 	USERNAME: UsernameField,
 	PASSWORD: PasswordField,
 	TEXT: TextField,
-	SELECT: Select
+	SELECT: Select,
+	SLIDER: Slider,
+	DATE_TIME_PICKER: DateTimePicker
 };
 
 function Form({
@@ -58,8 +62,8 @@ function Form({
 				<Grid container spacing={24}>
 					{formFields.map(field => {
 						const Component = field.type;
-						const { props, name, id } = field;
-
+						const { props = {}, name, id } = field;
+						const { TextFieldProps = {} } = props;
 						return (
 							<Grid item xs={12} sm={6} key={name}>
 								<Component
@@ -72,7 +76,7 @@ function Form({
 									{...props}
 									TextFieldProps={{
 										fullWidth: true,
-										...props.TextFieldProps
+										...TextFieldProps
 									}}
 								/>
 							</Grid>
