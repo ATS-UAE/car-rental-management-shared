@@ -11,7 +11,6 @@ function TableView({
 	children,
 	editable
 }) {
-	console.log(open);
 	return (
 		<Paper className={classes.paper}>
 			<Table

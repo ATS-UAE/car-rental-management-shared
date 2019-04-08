@@ -77,6 +77,7 @@ function BookingCreateContainer({
 			userList={userList}
 			bookingTypeList={bookingTypeList}
 			vehicleList={vehicleList}
+			include={["from", "to", "userId", "bookingTypeId", "vehicleId"]}
 		/>
 	);
 }

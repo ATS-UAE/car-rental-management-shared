@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import React from "react";
 import { Typography, Paper } from "@material-ui/core";
-import moment from "moment";
 
 import Login from "../containers/forms/Login";
 import UserCreate from "../containers/forms/UserCreate";
@@ -10,10 +9,9 @@ import GuestSignUp from "../containers/forms/GuestSignUp";
 import VehicleCreate from "../containers/forms/VehicleCreate";
 import BookingCreate from "../containers/forms/BookingCreate";
 import VehicleTableView from "../containers/display/VehicleTableView";
-import DateTimePicker from "../presentational/inputs/DateTimePicker";
+import VehicleBookingRange from "../containers/display/VehicleBookingRange";
 
-export default function Locations() {
-	let [date, setDate] = useState(moment().unix());
+export default function LocatiBookings() {
 	return (
 		<Paper>
 			<Typography headlineMapping={{ h1: "h6" }}>Sandbox Page</Typography>
@@ -25,7 +23,7 @@ export default function Locations() {
 			<VehicleCreate />
 			<VehicleTableView />
 			<BookingCreate />
-
+			<VehicleBookingRange />
 		</Paper>
 	);
 }
