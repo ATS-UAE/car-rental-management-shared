@@ -14,7 +14,9 @@ class App extends Component {
 			<div className="App">
 				<BrowserRouter>
 					<Fragment>
-						<AppBar />
+						<AppBar
+						onMenuClick={() => {}}
+						/>
 						<Switch>
 							{pages.map(page => (
 								<Route

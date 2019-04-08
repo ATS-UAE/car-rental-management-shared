@@ -6,16 +6,24 @@ import { createStore, applyMiddleware } from "redux";
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import { Provider } from "react-redux";
 import "typeface-roboto";
-import axios from "axios";
+
+import { amber } from "@material-ui/core/colors";
 
 import reducers from "./reducers";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 
-window.axios = axios;
 const theme = createMuiTheme({
 	palette: {
-		type: "light"
+		primary: { main: "#FF875D" }, // Purple and green play nicely together.
+		secondary: { main: "#11cb5f" } // This is just green.A700 as hex.
+	},
+	overrides: {
+		MuiAppBar: {
+			root: {
+				background: "linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)"
+			}
+		}
 	},
 	typography: {
 		useNextVariants: true

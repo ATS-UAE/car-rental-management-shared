@@ -17,6 +17,9 @@ const styles = {
 	menuButton: {
 		marginLeft: -12,
 		marginRight: 20
+	},
+	logo: {
+		marginBottom: "-37px"
 	}
 };
 
@@ -26,6 +29,15 @@ function ButtonAppBar(props) {
 		<div className={classes.root}>
 			<AppBar position="static">
 				<Toolbar>
+					<img
+						src="/static/images/logo-navigation.png"
+						className={classes.logo}
+						alt="LeasePlan Logo"
+					/>
+					<Typography variant="h6" color="inherit" className={classes.grow}>
+						{title}
+					</Typography>
+					{renderActions()}
 					{onMenuClick && (
 						<IconButton
 							className={classes.menuButton}
@@ -36,10 +48,6 @@ function ButtonAppBar(props) {
 							<MenuIcon />
 						</IconButton>
 					)}
-					<Typography variant="h6" color="inherit" className={classes.grow}>
-						{title}
-					</Typography>
-					{renderActions()}
 				</Toolbar>
 			</AppBar>
 		</div>

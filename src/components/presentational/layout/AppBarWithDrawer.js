@@ -14,6 +14,7 @@ export default function AppBarWithDrawer(props) {
 				renderActions={renderActions}
 			/>
 			<Drawer
+				anchor="right"
 				isOpen={isDrawerOpen}
 				list={menuList}
 				onClick={() => setDrawerOpenState(false)}
