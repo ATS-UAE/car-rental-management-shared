@@ -3,20 +3,17 @@ const router = express.Router();
 
 const requireLogin = require("../middlewares/requireLogin");
 const disallowGuests = require("../middlewares/disallowGuests");
-const { RESOURCES, accessControl, op } = require("../rbac/init");
-const { CREATE, READ, UPDATE, DELETE } = op;
+const { RBAC, OPERATIONS, resources } = require("../rbac/init");
+const { CREATE, READ, UPDATE, DELETE } = OPERATIONS;
 const db = require("../models");
 const { errorCodes } = require("../utils/variables");
 const { ResponseBuilder, pickFields } = require("../utils");
 
 router.use(requireLogin);
 
-router.get("/bookings", async ({ user }, res) => {
+router.get("/", async ({ user }, res) => {
 	let response = new ResponseBuilder();
-	let accessible = await accessControl.can(
-		user.role.name,
-		`${RESOURCES.VEHICLES}:${READ}`
-	);
+	let accessible = await RBAC.can(user.role.name, READ, resources.vehicles);
 	if (accessible) {
 		let results = [];
 		let vehicles = await db.Vehicle.findAll({ include: [{ all: true }] });
@@ -25,94 +22,16 @@ router.get("/bookings", async ({ user }, res) => {
 			let vehicleBookings = await db.Booking.findAll({
 				where: { vehicleId: vehicle.id }
 			});
-			if (vehicleBookings) {
-				results.push({ ...vehicle, bookings: vehicleBookings });
-			}
+			results.push({
+				...vehicle.get({ plain: true }),
+				bookings: vehicleBookings
+			});
 		}
 		response.setData(results);
 		response.setCode(200);
 		response.setMessage(`Found ${results.length} vehicles with bookings.`);
 		response.setSuccess(true);
 		res.status(200);
-	} else {
-		response.setCode(errorCodes.UNAUTHORIZED.statusCode);
-		response.setMessage(errorCodes.UNAUTHORIZED.message);
-		res.status(errorCodes.UNAUTHORIZED.statusCode);
-	}
-	res.json(response);
-});
-
-// TODO: Only return available vehicles.
-router.get("/available", async ({ user }, res) => {
-	let response = new ResponseBuilder();
-	let accessible = await accessControl.can(
-		user.role.name,
-		`${RESOURCES.VEHICLES}:${READ}`
-	);
-	if (accessible) {
-		let availableVehicles = await db.Vehicle.findAll({
-			include: [
-				{
-					all: true
-				}
-			]
-		});
-		response.setData(availableVehicles);
-		response.setCode(200);
-		response.setMessage(
-			`Found ${availableVehicles.length} available vehicles.`
-		);
-		response.setSuccess(true);
-	} else {
-		response.setCode(errorCodes.UNAUTHORIZED.statusCode);
-		response.setMessage(errorCodes.UNAUTHORIZED.message);
-		res.status(errorCodes.UNAUTHORIZED.statusCode);
-	}
-	res.json(response);
-});
-
-router.get("/available/:id", async ({ user, params }, res) => {
-	let response = new ResponseBuilder();
-	let accessible = await accessControl.can(
-		user.role.name,
-		`${RESOURCES.VEHICLES}:${READ}`
-	);
-	if (accessible) {
-		let availableVehicle = await db.Vehicle.findByPk(params.id, {
-			include: [
-				{
-					all: true
-				}
-			]
-		});
-		response.setData(availableVehicle.get({ plain: true }));
-		response.setCode(200);
-		response.setMessage(`Found ${availableVehicle.length} available vehicles.`);
-		response.setSuccess(true);
-	} else {
-		response.setCode(errorCodes.UNAUTHORIZED.statusCode);
-		response.setMessage(errorCodes.UNAUTHORIZED.message);
-		res.status(errorCodes.UNAUTHORIZED.statusCode);
-	}
-	res.json(response);
-});
-
-router.get("/", async ({ user }, res) => {
-	let response = new ResponseBuilder();
-	let accessible = await accessControl.can(
-		user.role.name,
-		`${RESOURCES.VEHICLES}:${READ}`
-	);
-	if (accessible) {
-		let vehicles = await db.Vehicle.findAll();
-		let result = vehicles.map(vehicle => ({
-			...vehicle.get({ plain: true }),
-			role: pickFields(["id", "name"], vehicle.get({ plain: true }).role)
-		}));
-		response.setSuccess(true);
-		response.setCode(200);
-		response.setMessage(`Found ${vehicles.length} vehicles.`);
-		response.setData(result);
 	} else {
 		response.setCode(errorCodes.UNAUTHORIZED.statusCode);
 		response.setMessage(errorCodes.UNAUTHORIZED.message);
@@ -125,10 +44,7 @@ router.get("/", async ({ user }, res) => {
 
 router.post("/", disallowGuests, async ({ user, body }, res) => {
 	let response = new ResponseBuilder();
-	let accessible = await accessControl.can(
-		user.role.name,
-		`${RESOURCES.VEHICLES}:${CREATE}`
-	);
+	let accessible = await RBAC.can(user.role.name, CREATE, resources.vehicles);
 	if (accessible) {
 		try {
 			let createdVehicle = await db.Vehicle.create(body);
@@ -155,10 +71,7 @@ router.post("/", disallowGuests, async ({ user, body }, res) => {
 
 router.get("/:id", disallowGuests, async ({ user }, res) => {
 	let response = new ResponseBuilder();
-	let accessible = await accessControl.can(
-		user.role.name,
-		`${RESOURCES.VEHICLES}:${READ}`
-	);
+	let accessible = await RBAC.can(user.role.name, READ, resources.vehicles);
 	if (accessible) {
 		try {
 			let foundVehicle = await db.Vehicle.findByPk(req.params.id);
@@ -188,10 +101,7 @@ router.get("/:id", disallowGuests, async ({ user }, res) => {
 router.patch("/:id", disallowGuests, async ({ user, params, body }, res) => {
 	let response = new ResponseBuilder();
 
-	let accessible = await accessControl.can(
-		user.role.name,
-		`${RESOURCES.VEHICLES}:${UPDATE}`
-	);
+	let accessible = await RBAC.can(user.role.name, UPDATE, resources.vehicles);
 	if (accessible) {
 		let foundVehicle = await db.Vehicle.findByPk(params.id);
 		if (foundVehicle) {
@@ -225,10 +135,7 @@ router.patch("/:id", disallowGuests, async ({ user, params, body }, res) => {
 router.delete("/:id", disallowGuests, async ({ user, params }, res) => {
 	let response = new ResponseBuilder();
 
-	let accessible = await accessControl.can(
-		user.role.name,
-		`${RESOURCES.USERS}:${DELETE}`
-	);
+	let accessible = await RBAC.can(user.role.name, DELETE, resources.vehicles);
 
 	if (accessible) {
 		let foundVehicle = await db.Vehicle.findByPk(params.id);
@@ -236,10 +143,10 @@ router.delete("/:id", disallowGuests, async ({ user, params }, res) => {
 			await foundVehicle.destroy();
 			response.setCode(200);
 			response.setSuccess(true);
-			response.setMessage(`User with ID ${params.id} has been deleted.`);
+			response.setMessage(`Vehicle with ID ${params.id} has been deleted.`);
 		} else {
 			response.setCode(404);
-			response.setMessage(`User with ID ${params.id} is not found.`);
+			response.setMessage(`Vehicle with ID ${params.id} is not found.`);
 		}
 	} else {
 		response.setMessage(errorCodes.UNAUTHORIZED.message);

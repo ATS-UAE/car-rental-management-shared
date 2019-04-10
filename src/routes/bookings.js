@@ -2,16 +2,14 @@ const express = require("express");
 const router = express.Router();
 
 const requireLogin = require("../middlewares/requireLogin");
-const { RESOURCES, accessControl, op } = require("../rbac/init");
-const { CREATE, READ, UPDATE, DELETE } = op;
+const { RBAC, OPERATIONS, resources } = require("../rbac/init");
+const { CREATE, READ, UPDATE, DELETE } = OPERATIONS;
 const db = require("../models");
-const { errorCodes, BOOKING_STATUS } = require("../utils/variables");
+const { errorCodes } = require("../utils/variables");
 const { ResponseBuilder, pickFields, toMySQLDate } = require("../utils");
 
 router.use(requireLogin);
 
-// Get all finalized bookings
-
 router.get("/", async ({ user }, res) => {
 	let response = new ResponseBuilder();
 
@@ -19,43 +17,10 @@ router.get("/", async ({ user }, res) => {
 	let userBookings = [];
 	for (let booking of bookings) {
 		// Get own bookings.
-		let accessible = await accessControl.can(
-			user.role.name,
-			`${RESOURCES.BOOKINGS}:${READ}`,
-			{
-				booking,
-				user
-			}
-		);
-		accessible && userBookings.push(booking);
-	}
-
-	let result = userBookings.map(booking => ({
-		...booking.get({ plain: true })
-	}));
-	response.setSuccess(true);
-	response.setCode(200);
-	response.setMessage(`Found ${userBookings.length} bookings.`);
-	response.setData(result);
-
-	res.json(response);
-});
-
-router.get("/", async ({ user }, res) => {
-	let response = new ResponseBuilder();
-
-	let bookings = await db.Booking.findAll();
-	let userBookings = [];
-	for (let booking of bookings) {
-		// Get own bookings.
-		let accessible = await accessControl.can(
-			user.role.name,
-			`${RESOURCES.BOOKINGS}:${READ}`,
-			{
-				booking,
-				user
-			}
-		);
+		let accessible = await RBAC.can(user.role.name, READ, resources.bookings, {
+			booking,
+			user
+		});
 		accessible && userBookings.push(booking);
 	}
 
@@ -72,18 +37,11 @@ router.get("/", async ({ user }, res) => {
 
 router.post("/", async ({ user, body }, res) => {
 	let response = new ResponseBuilder();
-	let accessible = await accessControl.can(
-		user.role.name,
-		`${RESOURCES.BOOKINGS}:${CREATE}`
-	);
+	let accessible = await RBAC.can(user.role.name, CREATE, resources.bookings);
 	if (accessible) {
 		try {
-			let pendingBookingStatus = await db.BookingStatus.find({
-				where: { name: BOOKING_STATUS.PENDING }
-			});
 			let createdBooking = await db.Booking.create({
-				...pickFields(["bookingType", "vehicleId"], body),
-				bookingStatus: pendingBookingStatus.id,
+				...pickFields(["bookingTypeId", "userId", "vehicleId"], body),
 				to: toMySQLDate(body.to),
 				from: toMySQLDate(body.from)
 			});
@@ -112,14 +70,10 @@ router.get("/:id", async ({ user, params }, res) => {
 
 	let booking = await db.Booking.findByPk(params.id);
 	// Allow only on own bookings.
-	let accessible = await accessControl.can(
-		user.role.name,
-		`${RESOURCES.BOOKINGS}:${READ}`,
-		{
-			booking,
-			user
-		}
-	);
+	let accessible = await RBAC.can(user.role.name, READ, resources.bookings, {
+		booking,
+		user
+	});
 
 	if (accessible) {
 		response.setSuccess(true);
@@ -141,15 +95,10 @@ router.patch("/:id", async ({ user, params, body }, res) => {
 		include: [{ all: true }]
 	});
 	// Allow only on own bookings.
-	let accessible = await accessControl.can(
-		user.role.name,
-		`${RESOURCES.BOOKINGS}:${UPDATE}`,
-		{
-			booking,
-			user,
-			update
-		}
-	);
+	let accessible = await RBAC.can(user.role.name, UPDATE, resource.bookings, {
+		booking,
+		user
+	});
 
 	if (accessible) {
 		booking.update({ ...pickFields([], body) });
@@ -170,7 +119,8 @@ router.delete("/:id", async ({ user, params }, res) => {
 
 	let accessible = await accessControl.can(
 		user.role.name,
-		`${RESOURCES.USERS}:${DELETE}`
+		DELETE,
+		resources.bookings
 	);
 
 	if (accessible) {

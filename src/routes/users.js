@@ -5,8 +5,8 @@ const router = express.Router();
 
 const requireLogin = require("../middlewares/requireLogin");
 const disallowGuests = require("../middlewares/disallowGuests");
-const { ROLES, RESOURCES, accessControl, op } = require("../rbac/init");
-const { CREATE, READ, UPDATE, DELETE } = op;
+const { RBAC, OPERATIONS, resources } = require("../rbac/init");
+const { CREATE, READ, UPDATE, DELETE } = OPERATIONS;
 const db = require("../models");
 const { errorCodes } = require("../utils/variables");
 const { ResponseBuilder, pickFields } = require("../utils");
@@ -14,10 +14,7 @@ const config = require("../config");
 
 router.get("/", requireLogin, disallowGuests, async ({ user }, res) => {
 	let response = new ResponseBuilder();
-	let accessible = await accessControl.can(
-		user.role.name,
-		`${RESOURCES.USERS}:${READ}`
-	);
+	let accessible = await RBAC.can(user.role.name, READ, resources.users);
 	if (accessible) {
 		let users = await db.User.findAll({
 			include: [{ model: db.Role, as: "role" }]
@@ -75,10 +72,7 @@ router.post("/", async ({ user, body }, res) => {
 			email = inviteToken.email;
 		}
 	} else if (user && user.role && user.role.name) {
-		accessible = await accessControl.can(
-			user.role.name,
-			`${RESOURCES.USERS}:${CREATE}`
-		);
+		accessible = await RBAC.can(user.role.name, CREATE, resources.users);
 	}
 	if (accessible || inviteTokenUsed) {
 		let role = await db.Role.findByPk(body.roleId);
@@ -148,10 +142,7 @@ router.post("/", async ({ user, body }, res) => {
 
 router.get("/:id", requireLogin, disallowGuests, async (req, res) => {
 	let response = new ResponseBuilder();
-	let accessible = await accessControl.can(
-		user.role.name,
-		`${RESOURCES.USERS}:${READ}`
-	);
+	let accessible = await RBAC.can(user.role.name, READ, resources.users);
 	if (accessible) {
 		try {
 			let foundUser = await db.User.findByPk(req.params.id, {
@@ -210,18 +201,14 @@ router.get("/:id", requireLogin, disallowGuests, async (req, res) => {
 router.patch("/:id", requireLogin, async (req, res) => {
 	let response = new ResponseBuilder();
 
-	let accessible = await accessControl.can(
-		req.user.role.name,
-		`${RESOURCES.USERS}:${UPDATE}`,
-		{
-			updateUser: {
-				id: req.params.id
-			},
-			currentUser: {
-				id: req.user.id
-			}
+	let accessible = await RBAC.can(req.user.role.name, UPDATE, resources.users, {
+		updateUser: {
+			id: req.params.id
+		},
+		currentUser: {
+			id: req.user.id
 		}
-	);
+	});
 	if (accessible) {
 		let foundUser = await db.User.findByPk(req.params.id, {
 			include: [{ model: db.Role, as: "role" }]
@@ -309,10 +296,7 @@ router.delete(
 	async ({ user, params }, res) => {
 		let response = new ResponseBuilder();
 
-		let accessible = await accessControl.can(
-			user.role.name,
-			`${RESOURCES.USERS}:${DELETE}`
-		);
+		let accessible = await RBAC.can(user.role.name, DELETE, resources.users);
 
 		if (accessible) {
 			let foundUser = await db.User.findByPk(params.id);
