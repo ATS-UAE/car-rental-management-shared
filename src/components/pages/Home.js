@@ -1,6 +1,13 @@
 import React from "react";
-import { Typography } from "@material-ui/core";
+import { Redirect } from "react-router-dom";
+import { connect } from "react-redux";
 
-export default function Home() {
-	return <Typography variant="h1">Home Page</Typography>;
+function Home({ auth }) {
+	return null;
 }
+
+function renderPage() {}
+
+const mapStateToProps = ({ auth }) => ({ auth });
+
+export default connect(mapStateToProps)(Home);

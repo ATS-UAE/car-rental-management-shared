@@ -19,12 +19,13 @@ const styles = {
 		marginRight: 20
 	},
 	logo: {
-		marginBottom: "-37px"
+		marginBottom: "-37px",
+		cursor: "pointer"
 	}
 };
 
 function ButtonAppBar(props) {
-	const { classes, title, renderActions, onMenuClick } = props;
+	const { classes, title, renderActions, onMenuClick, onLogoClick } = props;
 	return (
 		<div className={classes.root}>
 			<AppBar position="static">
@@ -33,6 +34,7 @@ function ButtonAppBar(props) {
 						src="/static/images/logo-navigation.png"
 						className={classes.logo}
 						alt="LeasePlan Logo"
+						onClick={onLogoClick}
 					/>
 					<Typography variant="h6" color="inherit" className={classes.grow}>
 						{title}
@@ -58,7 +60,8 @@ ButtonAppBar.propTypes = {
 	classes: PropTypes.object.isRequired,
 	title: PropTypes.string,
 	renderActions: PropTypes.func,
-	onMenuClick: PropTypes.func
+	onMenuClick: PropTypes.func,
+	onLogoClick: PropTypes.func
 };
 
 ButtonAppBar.defaultProps = {

@@ -27,8 +27,8 @@ function TemporaryDrawer(props) {
 				(listGroup, index, array) => (
 					<Fragment key={index}>
 						<List>
-							{listGroup.map((listItem, index) => (
-								<ListItem button key={index} onClick={listItem.onClick}>
+							{listGroup.map(listItem => (
+								<ListItem button key={listItem.text} onClick={listItem.onClick}>
 									<ListItemIcon>{listItem.icon}</ListItemIcon>
 									<ListItemText primary={listItem.text} />
 								</ListItem>

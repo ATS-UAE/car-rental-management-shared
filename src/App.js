@@ -1,39 +1,27 @@
-import React, { Component, Fragment } from "react";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
+import React, { Fragment } from "react";
+import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
 import CssBaseline from "@material-ui/core/CssBaseline";
 
-import AppBar from "./components/presentational/layout/AppBar";
 import { pages } from "./variables";
 
-class App extends Component {
-	state = {
-		textValue: ""
-	};
-	render() {
-		return (
-			<div className="App">
-				<BrowserRouter>
-					<Fragment>
-						<AppBar
-						onMenuClick={() => {}}
+function App() {
+	return (
+		<div className="App">
+			<BrowserRouter>
+				<Fragment>
+					{pages.map(page => (
+						<Route
+							key={page.id}
+							path={page.path}
+							exact={page.exact}
+							component={page.component}
 						/>
-						<Switch>
-							{pages.map(page => (
-								<Route
-									key={page.path}
-									path={page.path}
-									exact={true}
-									component={page.component}
-								/>
-							))}
-						</Switch>
-					</Fragment>
-				</BrowserRouter>
-
-				<CssBaseline />
-			</div>
-		);
-	}
+					))}
+				</Fragment>
+			</BrowserRouter>
+			<CssBaseline />
+		</div>
+	);
 }
 
 export default App;

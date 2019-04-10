@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import LoginForm from "../../presentational/forms/LoginForm";
 import * as actions from "../../../actions";
 
-function Login(props) {
+function Login({ authLogin, onLogin }) {
 	let [auth, setAuth] = useState({ username: "", password: "" });
 	let [authErrors, setAuthErrors] = useState([]);
 	return (
@@ -11,8 +11,8 @@ function Login(props) {
 			values={auth}
 			onChange={data => setAuth(data)}
 			onLogin={() =>
-				props
-					.authLogin(auth.username, auth.password)
+				authLogin(auth.username, auth.password)
+					.then(() => onLogin && onLogin())
 					.catch(e => setAuthErrors([e]))
 			}
 			errorNotes={authErrors}

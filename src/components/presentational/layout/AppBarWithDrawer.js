@@ -3,21 +3,28 @@ import PropTypes from "prop-types";
 import AppBar from "./AppBar";
 import Drawer from "./Drawer";
 
-export default function AppBarWithDrawer(props) {
-	const { menuList, renderActions, title } = props;
+export default function AppBarWithDrawer({
+	menuList,
+	renderActions,
+	title,
+	onLogoClick,
+	showMenu
+}) {
 	const [isDrawerOpen, setDrawerOpenState] = useState(false);
 	return (
 		<Fragment>
 			<AppBar
-				onMenuClick={() => setDrawerOpenState(true)}
+				onMenuClick={showMenu ? () => setDrawerOpenState(true) : undefined}
 				title={title}
 				renderActions={renderActions}
+				onLogoClick={onLogoClick}
 			/>
 			<Drawer
 				anchor="right"
 				isOpen={isDrawerOpen}
 				list={menuList}
 				onClick={() => setDrawerOpenState(false)}
+				onClose={() => setDrawerOpenState(false)}
 			/>
 		</Fragment>
 	);
@@ -34,5 +41,6 @@ AppBarWithDrawer.propTypes = {
 		)
 	),
 	title: PropTypes.string,
-	renderActions: PropTypes.func
+	renderActions: PropTypes.func,
+	showMenu: PropTypes.bool
 };

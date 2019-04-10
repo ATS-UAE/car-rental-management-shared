@@ -6,14 +6,16 @@ import SignUp from "../components/pages/SignUp";
 import Users from "../components/pages/Users";
 import Vehicles from "../components/pages/Vehicles";
 import Sandbox from "../components/pages/Sandbox";
+import All from "../components/pages/All";
 
 export const pages = [
-	{ label: "Bookings", path: "/bookings", component: Bookings },
-	{ label: "Home", path: "/", component: Home },
-	{ label: "Locations", path: "/locations", component: Locations },
-	{ label: "Login", path: "/login", component: Login },
-	{ label: "SignUp", path: "/signup", component: SignUp },
-	{ label: "Users", path: "/users", component: Users },
-	{ label: "Vehicles", path: "/vehicles", component: Vehicles },
-	{ label: "Sandbox", path: "/sandbox", component: Sandbox }
+	{ id: "All", path: "/", component: All, exact: false },
+	{ id: "Bookings", path: "/bookings", component: Bookings },
+	{ id: "Home", path: "/", component: Home },
+	{ id: "Locations", path: "/locations", component: Locations },
+	{ id: "Login", path: "/login", component: Login },
+	{ id: "SignUp", path: "/signup", component: SignUp },
+	{ id: "Users", path: "/users", component: Users },
+	{ id: "Vehicles", path: "/vehicles", component: Vehicles },
+	{ id: "Sandbox", path: "/sandbox", component: Sandbox }
 ];
