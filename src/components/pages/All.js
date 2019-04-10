@@ -1,10 +1,18 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import { Redirect, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { compose } from "redux";
 import AppBarWithDrawer from "../presentational/layout/AppBarWithDrawer";
-
-function All({ auth, enums, history }) {
+import * as actions from "../../actions";
+function All({ auth, enums, history, fetchEnums, fetchCurrentUserDetails }) {
+	useEffect(() => {
+		if (!enums) {
+			fetchEnums();
+		}
+		if (!auth) {
+			fetchCurrentUserDetails();
+		}
+	}, []);
 	return (
 		<Fragment>
 			<AppBarWithDrawer
@@ -27,6 +35,9 @@ function renderPage() {}
 const mapStateToProps = ({ auth, enums }) => ({ auth, enums });
 
 export default compose(
-	connect(mapStateToProps),
+	connect(
+		mapStateToProps,
+		actions
+	),
 	withRouter
 )(All);

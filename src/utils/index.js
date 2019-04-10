@@ -88,6 +88,8 @@ const executeFromAPI = (action, url, body) =>
 export const api = {
 	authLogin: credentials =>
 		executeFromAPI("post", "/api/carbooking/auth/login", credentials),
+	fetchCurrentUserDetails: () =>
+		executeFromAPI("get", "/api/carbooking/auth/me"),
 
 	fetchEnums: () => executeFromAPI("get", "/api/carbooking/enums"),
 

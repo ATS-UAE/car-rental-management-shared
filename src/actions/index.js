@@ -3,9 +3,17 @@ import {
 	FETCH_ENUMS,
 	FETCH_USERS,
 	FETCH_VEHICLES,
-	FETCH_BOOKINGS
+	FETCH_BOOKINGS,
+	FETCH_CURRENT_USER_DETAILS
 } from "./types";
 import { api } from "../utils";
+
+export const fetchCurrentUserDetails = () => dispatch =>
+	api
+		.fetchCurrentUserDetails()
+		.then(data =>
+			dispatch({ type: FETCH_CURRENT_USER_DETAILS, payload: data })
+		);
 
 export const authLogin = (username, password) => dispatch =>
 	api
