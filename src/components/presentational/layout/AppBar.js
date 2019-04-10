@@ -36,9 +36,11 @@ function ButtonAppBar(props) {
 						alt="LeasePlan Logo"
 						onClick={onLogoClick}
 					/>
-					<Typography variant="h6" color="inherit" className={classes.grow}>
-						{title}
-					</Typography>
+					{title && (
+						<Typography variant="h6" color="inherit" className={classes.grow}>
+							{title}
+						</Typography>
+					)}
 					{renderActions()}
 					{onMenuClick && (
 						<IconButton

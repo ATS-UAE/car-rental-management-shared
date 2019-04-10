@@ -14,7 +14,11 @@ export default function AppBarWithDrawer({
 	return (
 		<Fragment>
 			<AppBar
-				onMenuClick={showMenu ? () => setDrawerOpenState(true) : undefined}
+				onMenuClick={
+					showMenu && menuList.length
+						? () => setDrawerOpenState(true)
+						: undefined
+				}
 				title={title}
 				renderActions={renderActions}
 				onLogoClick={onLogoClick}
@@ -43,4 +47,9 @@ AppBarWithDrawer.propTypes = {
 	title: PropTypes.string,
 	renderActions: PropTypes.func,
 	showMenu: PropTypes.bool
+};
+
+AppBarWithDrawer.defaultProps = {
+	showMenu: false,
+	list: []
 };

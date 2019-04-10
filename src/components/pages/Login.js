@@ -6,7 +6,6 @@ import { compose } from "redux";
 import LoginContainer from "../containers/forms/Login";
 
 function Login({ classes, auth, history }) {
-	console.log(history);
 	return (
 		<div className={classes.root}>
 			<LoginContainer
