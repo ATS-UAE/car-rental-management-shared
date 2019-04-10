@@ -51,5 +51,5 @@ AppBarWithDrawer.propTypes = {
 
 AppBarWithDrawer.defaultProps = {
 	showMenu: false,
-	list: []
+	menuList: []
 };
