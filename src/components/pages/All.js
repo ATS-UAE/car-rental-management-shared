@@ -12,7 +12,6 @@ function All({ auth, enums, history, fetchEnums, fetchCurrentUserDetails }) {
 		fetchEnums();
 		fetchCurrentUserDetails();
 	}, []);
-	console.log(history);
 	return (
 		<Fragment>
 			<AppBarWithDrawer />

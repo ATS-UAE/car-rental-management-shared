@@ -1,6 +1,13 @@
 import React from "react";
-import { Typography } from "@material-ui/core";
+import { Paper } from "@material-ui/core";
+import UserCreate from "../containers/forms/UserCreate";
+import UserTable from "../containers/display/UserTable";
 
 export default function Users() {
-	return <Typography variant="h1">Users Page</Typography>;
+	return (
+		<Paper>
+			<UserCreate />
+			<UserTable />
+		</Paper>
+	);
 }

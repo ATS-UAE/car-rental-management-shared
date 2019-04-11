@@ -25,13 +25,7 @@ export const authLogout = () => dispatch =>
 	api.authLogout().then(() => dispatch({ type: AUTH_LOGOUT, payload: false }));
 
 export const fetchUsers = () => dispatch =>
-	api
-		.fetchUsers()
-		.then(data =>
-			fetchCurrentUserDetails().then(() =>
-				dispatch({ type: FETCH_USERS, payload: data })
-			)
-		);
+	api.fetchUsers().then(data => dispatch({ type: FETCH_USERS, payload: data }));
 
 export const fetchEnums = () => dispatch =>
 	api.fetchEnums().then(data => dispatch({ type: FETCH_ENUMS, payload: data }));

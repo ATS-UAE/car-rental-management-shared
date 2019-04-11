@@ -22,43 +22,28 @@ const linkStyle = {
 const pageMap = {
 	BOOKINGS: {
 		icon: <ChromeReaderMode />,
-		text: (
-			<Link to="/bookings" style={linkStyle}>
-				<Typography>Bookings</Typography>
-			</Link>
-		)
+		path: "/bookings",
+		text: <Typography>Bookings</Typography>
 	},
 	LOCATIONS: {
 		icon: <Place />,
-		text: (
-			<Link to="/locations" style={linkStyle}>
-				<Typography>Locations</Typography>
-			</Link>
-		)
+		path: "/locations",
+		text: <Typography>Locations</Typography>
 	},
 	USERS: {
 		icon: <SupervisedUserCircle />,
-		text: (
-			<Link to="/users" style={linkStyle}>
-				<Typography>Users</Typography>
-			</Link>
-		)
+		path: "/users",
+		text: <Typography>Users</Typography>
 	},
 	VEHICLES: {
 		icon: <DirectionsCar />,
-		text: (
-			<Link to="/vehicles" style={linkStyle}>
-				<Typography>Vehicles</Typography>
-			</Link>
-		)
+		path: "/vehicles",
+		text: <Typography>Vehicles</Typography>
 	},
 	SETTINGS: {
 		icon: <Settings />,
-		text: (
-			<Link to="/settings" style={linkStyle}>
-				<Typography>Settings</Typography>
-			</Link>
-		)
+		path: "/settings",
+		text: <Typography>Settings</Typography>
 	},
 	LOGOUT: {
 		icon: <ExitToApp />,
@@ -85,7 +70,10 @@ function AppBarWithDrawerContainer({
 		let pageList = [];
 		for (let key of Object.keys(permissionData)) {
 			if (pageMap[key]) {
-				pageList.push(pageMap[key]);
+				pageList.push({
+					...pageMap[key],
+					onClick: () => history.push(pageMap[key].path)
+				});
 			}
 		}
 		if (pageList.length) {
