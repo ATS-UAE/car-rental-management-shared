@@ -6,4 +6,10 @@ import users from "./users";
 import vehicles from "./vehicles";
 import bookings from "./bookings";
 
-export default combineReducers({ auth, enums, users, vehicles, bookings });
+export default combineReducers({
+	auth,
+	enums,
+	users,
+	vehicles,
+	bookings
+});

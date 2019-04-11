@@ -4,18 +4,19 @@ import AppBar from "./AppBar";
 import Drawer from "./Drawer";
 
 export default function AppBarWithDrawer({
-	menuList,
+	list,
 	renderActions,
 	title,
 	onLogoClick,
-	showMenu
+	showMenu,
+	endList
 }) {
 	const [isDrawerOpen, setDrawerOpenState] = useState(false);
 	return (
 		<Fragment>
 			<AppBar
 				onMenuClick={
-					showMenu && menuList.length
+					showMenu && (list.length || endList.length)
 						? () => setDrawerOpenState(true)
 						: undefined
 				}
@@ -26,9 +27,10 @@ export default function AppBarWithDrawer({
 			<Drawer
 				anchor="right"
 				isOpen={isDrawerOpen}
-				list={menuList}
+				list={list}
 				onClick={() => setDrawerOpenState(false)}
 				onClose={() => setDrawerOpenState(false)}
+				endList={endList}
 			/>
 		</Fragment>
 	);
@@ -39,8 +41,8 @@ AppBarWithDrawer.propTypes = {
 		PropTypes.arrayOf(
 			PropTypes.shape({
 				icon: PropTypes.node.isRequired,
-				text: PropTypes.string.isRequired,
-				onClick: PropTypes.func.isRequired
+				text: PropTypes.node.isRequired,
+				onClick: PropTypes.func
 			})
 		)
 	),
@@ -51,5 +53,5 @@ AppBarWithDrawer.propTypes = {
 
 AppBarWithDrawer.defaultProps = {
 	showMenu: false,
-	menuList: []
+	list: []
 };

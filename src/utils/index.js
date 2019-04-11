@@ -1,4 +1,5 @@
 import axios from "axios";
+import { access } from "fs";
 export function runIfExistFunction(func, parent, args) {
 	return function() {
 		if (typeof func === "function") {
@@ -85,9 +86,66 @@ const executeFromAPI = (action, url, body) =>
 		}
 	});
 
+export function getPermissionData(permissions, role) {
+	let $permissions = permissions;
+	let $role = role;
+	if (permissions && permissions.data && permissions.data.permissions) {
+		$permissions = permissions.data.permissions;
+	}
+	if (role && role.data && role.data.role) {
+		$role = role.data.role.name;
+	}
+	let access = {};
+	let rolePages = $permissions.roles.find(roleItem => roleItem.name === $role);
+	if (rolePages) {
+		if (rolePages.extends) {
+			for (let role of rolePages.extends) {
+				access = { ...getPermissionData($permissions, role), ...access };
+			}
+		}
+		for (let resourceKey in rolePages.access.resources) {
+			if (!access[resourceKey]) {
+				access[resourceKey] = {};
+			}
+			for (let permissionKey in rolePages.access.resources[resourceKey]
+				.permissions) {
+				if (!access[resourceKey][permissionKey]) {
+					access[resourceKey][permissionKey] = {};
+				}
+				access[resourceKey][permissionKey] = {
+					...access[resourceKey][permissionKey],
+					...rolePages.access.resources[resourceKey].permissions[permissionKey]
+				};
+			}
+			access[resourceKey] = {
+				...access[resourceKey],
+				...rolePages.access.resources[resourceKey]
+			};
+		}
+	}
+	return access;
+}
+
+export function toTitleWords(word, delimiter = "_") {
+	let splitWord = word.split(delimiter);
+	let result = "";
+	for (let word of splitWord) {
+		for (let i = 0; i < word.length; i++) {
+			let letter = word[i];
+			if ((i = 0)) {
+				result += letter.toUpperCase();
+			}
+			result += letter.toUpperCase();
+		}
+		result += " ";
+	}
+	return result;
+}
+
 export const api = {
 	authLogin: credentials =>
 		executeFromAPI("post", "/api/carbooking/auth/login", credentials),
+	authLogout: () => executeFromAPI("get", "/api/carbooking/auth/logout"),
 	fetchCurrentUserDetails: () =>
 		executeFromAPI("get", "/api/carbooking/auth/me"),
 

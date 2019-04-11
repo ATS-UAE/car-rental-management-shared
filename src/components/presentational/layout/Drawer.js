@@ -7,47 +7,75 @@ import Divider from "@material-ui/core/Divider";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
+import Typography from "@material-ui/core/Typography";
 
 import { runIfExistFunction } from "../../../utils";
 
 const styles = {
 	list: {
-		width: 250
+		width: 250,
+		display: "flex",
+		flexDirection: "column",
+		justifyContent: "space-between",
+		minHeight: "100vh"
 	},
-	fullList: {
-		width: "auto"
+	text: {
+		textDecoration: "none"
 	}
 };
 
-function TemporaryDrawer(props) {
-	const { classes, list, isOpen, onClick, onClose } = props;
+function TemporaryDrawer({ classes, list, isOpen, onClick, onClose, endList }) {
 	const sideList = (
 		<div className={classes.list}>
-			{list.map(
-				(listGroup, index, array) => (
+			<div>
+				{list.map((listGroup, index, array) => (
 					<Fragment key={index}>
 						<List>
-							{listGroup.map(listItem => (
-								<ListItem button key={listItem.text} onClick={listItem.onClick}>
+							{listGroup.map((listItem, index) => (
+								<ListItem
+									button
+									key={index}
+									onClick={() => listItem.onClick && listItem.onClick()}
+								>
 									<ListItemIcon>{listItem.icon}</ListItemIcon>
-									<ListItemText primary={listItem.text} />
+									<ListItemText className={classes.text}>
+										{listItem.text}
+									</ListItemText>
 								</ListItem>
 							))}
 						</List>
 						{index !== array.length - 1 && <Divider />}
 					</Fragment>
-				),
-
-				[]
+				))}
+			</div>
+			{endList.length > 0 && (
+				<div>
+					{endList.map((listGroup, index, array) => (
+						<Fragment key={index}>
+							<Divider />
+							<List>
+								{listGroup.map((listItem, index) => (
+									<ListItem
+										button
+										key={index}
+										onClick={() => listItem.onClick && listItem.onClick()}
+									>
+										<ListItemIcon>{listItem.icon}</ListItemIcon>
+										<ListItemText>{listItem.text}</ListItemText>
+									</ListItem>
+								))}
+							</List>
+							{index !== array.length - 1 && <Divider />}
+						</Fragment>
+					))}
+				</div>
 			)}
 		</div>
 	);
 
 	return (
-		<Drawer open={isOpen} onClose={runIfExistFunction(onClose)}>
+		<Drawer open={isOpen} onClose={() => onClose && onClose()}>
 			<div
-				tabIndex={0}
-				role="button"
 				onClick={runIfExistFunction(onClick)}
 				onKeyDown={runIfExistFunction(onClick)}
 			>
@@ -63,8 +91,8 @@ TemporaryDrawer.propTypes = {
 		PropTypes.arrayOf(
 			PropTypes.shape({
 				icon: PropTypes.node.isRequired,
-				text: PropTypes.string.isRequired,
-				onClick: PropTypes.func.isRequired
+				text: PropTypes.node.isRequired,
+				onClick: PropTypes.func
 			})
 		)
 	),
@@ -74,7 +102,8 @@ TemporaryDrawer.propTypes = {
 };
 
 TemporaryDrawer.defaultProps = {
-	list: []
+	list: [],
+	endList: []
 };
 
 export default withStyles(styles)(TemporaryDrawer);

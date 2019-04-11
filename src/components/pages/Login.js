@@ -4,12 +4,15 @@ import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { compose } from "redux";
 import LoginContainer from "../containers/forms/Login";
+import * as actions from "../../actions";
 
-function Login({ classes, auth, history }) {
+function Login({ classes, history, fetchEnums, fetchCurrentUserDetails }) {
 	return (
 		<div className={classes.root}>
 			<LoginContainer
-				onLogin={() => {
+				onLogin={async () => {
+					await fetchEnums();
+					await fetchCurrentUserDetails();
 					history.push("/");
 				}}
 			/>
@@ -28,9 +31,11 @@ const styles = {
 	}
 };
 
-const mapStateToProps = ({ auth }) => ({ auth });
 export default compose(
-	connect(mapStateToProps),
+	connect(
+		null,
+		actions
+	),
 	withRouter,
 	withStyles(styles)
 )(Login);

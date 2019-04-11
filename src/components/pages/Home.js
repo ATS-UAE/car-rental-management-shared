@@ -1,13 +1,22 @@
 import React from "react";
-import { Redirect } from "react-router-dom";
+import { Redirect, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 
-function Home({ auth }) {
+function Home({ auth, history }) {
+	return auth === false && history.location.pathname !== "/login" ? (
+		<Redirect to="/login" />
+	) : (
+		renderPage()
+	);
+}
+
+function renderPage() {
 	return null;
 }
 
-function renderPage() {}
-
 const mapStateToProps = ({ auth }) => ({ auth });
 
-export default connect(mapStateToProps)(Home);
+export default connect(
+	mapStateToProps,
+	withRouter
+)(Home);
