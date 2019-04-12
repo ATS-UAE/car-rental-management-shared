@@ -72,11 +72,7 @@ keyManagerRole.addPermission(new Action(READ, bookingsResource));
 // Users permission
 keyManagerRole.addPermission(new Action(READ, usersResource));
 keyManagerRole.addPermission(
-	new Action(
-		CREATE,
-		usersResource,
-		({ booking, user }) => booking.userId === user.id
-	)
+	new Action(CREATE, usersResource, role => role && role.name !== ROLES.GUEST)
 );
 
 ///////////////////////

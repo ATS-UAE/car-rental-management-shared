@@ -10,6 +10,7 @@ const { CREATE, READ, UPDATE, DELETE } = OPERATIONS;
 const db = require("../models");
 const { errorCodes } = require("../utils/variables");
 const { ResponseBuilder, pickFields } = require("../utils");
+const { ROLES } = require("../utils/variables");
 const config = require("../config");
 
 router.get("/", requireLogin, disallowGuests, async ({ user }, res) => {
@@ -64,6 +65,7 @@ router.post("/", async ({ user, body }, res) => {
 	let accessible = false;
 	let inviteTokenUsed = false;
 	let email = body.email;
+	let role = await db.Role.findByPk(body.roleId);
 	if (body.inviteToken) {
 		// Consume invite token
 		let inviteToken = jwt.verify(body.inviteToken, config.secretKey);
@@ -72,10 +74,11 @@ router.post("/", async ({ user, body }, res) => {
 			email = inviteToken.email;
 		}
 	} else if (user && user.role && user.role.name) {
-		accessible = await RBAC.can(user.role.name, CREATE, resources.users);
+		accessible = await RBAC.can(user.role.name, CREATE, resources.users, role);
+		console.log(user.role.name, CREATE, resources.users, role);
+		console.log(accessible);
 	}
 	if (accessible || inviteTokenUsed) {
-		let role = await db.Role.findByPk(body.roleId);
 		let guestRole = await db.Role.findOne({ where: { name: ROLES.GUEST } });
 
 		try {
