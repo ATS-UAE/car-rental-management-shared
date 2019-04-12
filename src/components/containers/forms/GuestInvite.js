@@ -9,7 +9,10 @@ export default function GuestInviteContainer() {
 			value={email}
 			onChange={e => setEmail(e.target.value)}
 			onSubmit={() => {
-				api.inviteGuest(email);
+				api.inviteGuest({
+					email,
+					url: `${process.env.REACT_APP_CAR_BOOKING_API_DOMAIN}/signup`
+				});
 			}}
 		/>
 	);

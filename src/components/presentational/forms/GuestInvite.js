@@ -8,8 +8,14 @@ function GuestInvite({ value, onChange, onSubmit, classes }) {
 		<Paper className={classes.paper}>
 			<form>
 				<Grid container spacing={24} alignItems="center">
-					<Grid item>
-						<EmailField value={value} onChange={onChange} />
+					<Grid item className={classes.emailField}>
+						<EmailField
+							TextFieldProps={{
+								fullWidth: true
+							}}
+							value={value}
+							onChange={onChange}
+						/>
 					</Grid>
 					<Grid item>
 						<Button
@@ -33,6 +39,9 @@ function GuestInvite({ value, onChange, onSubmit, classes }) {
 const style = theme => ({
 	paper: {
 		padding: theme.spacing.unit * 3
+	},
+	emailField: {
+		flexGrow: 1
 	}
 });
 

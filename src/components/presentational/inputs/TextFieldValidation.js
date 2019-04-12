@@ -63,7 +63,7 @@ export default function TextFieldValidation(props) {
 			value={value}
 			error={value.length > 0 && errored}
 			label={helperText && value && errored ? helperText : label}
-			required={required}	
+			required={required}
 			InputProps={{
 				endAdornment: inputAdornment
 			}}

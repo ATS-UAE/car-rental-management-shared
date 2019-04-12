@@ -157,8 +157,8 @@ export const api = {
 	updateUser: user =>
 		executeFromAPI("patch", `/api/carbooking/users/${user.id}`, user),
 
-	inviteGuest: email =>
-		executeFromAPI("post", "/api/carbooking/invites", { email }),
+	inviteGuest: invite =>
+		executeFromAPI("post", "/api/carbooking/invites", invite),
 
 	createVehicle: vehicle =>
 		executeFromAPI("post", "/api/carbooking/vehicles", vehicle),
