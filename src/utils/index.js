@@ -64,16 +64,14 @@ ResponseBuilder.prototype.getResponse = function() {
 	return ({ error, message, success, data } = this);
 };
 
-function sendInviteToken(email) {
+function sendInviteToken({ email, url }) {
 	// Send email invite
 	let token = jwt.sign({ email }, config.secretKey, { expiresIn: "7d" });
 	return getTransport().sendMail({
 		from: "no-reply@atsuae.net",
 		to: email,
 		subject: "You are invited to LeasePlan Car Booking!",
-		html: `<h1>Welcome</h1><a href="${
-			config.serverUrl
-		}/api/carbooking/invites/${token}">Click here to login!</a>`
+		html: `<h1>Welcome</h1><a href="${url}/${token}">Click here to sign up!</a>`
 	});
 }
 const toUnix = date => moment(date, "YYYY-MM-DDTHH:mm:ss").unix();

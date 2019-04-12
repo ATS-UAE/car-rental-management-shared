@@ -15,7 +15,7 @@ router.post("/", async ({ body }, res) => {
 	if (body.email) {
 		// Send email invite
 		try {
-			await sendInviteToken(body.email);
+			await sendInviteToken(body);
 			response.setCode(200);
 			response.setSuccess(true);
 			response.setMessage(`Invite has been sent to ${body.email}`);
