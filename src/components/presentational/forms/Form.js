@@ -9,6 +9,7 @@ import Select from "../inputs/SimpleSelect";
 import ErrorChip from "../display/ErrorChip";
 import Slider from "../inputs/Slider";
 import DateTimePicker from "../inputs/DateTimePicker";
+import EmailField from "../inputs/EmailField";
 
 export const FIELDS = {
 	USERNAME: UsernameField,
@@ -16,7 +17,8 @@ export const FIELDS = {
 	TEXT: TextField,
 	SELECT: Select,
 	SLIDER: Slider,
-	DATE_TIME_PICKER: DateTimePicker
+	DATE_TIME_PICKER: DateTimePicker,
+	EMAIL: EmailField
 };
 
 function Form({

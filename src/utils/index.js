@@ -132,10 +132,11 @@ export function toTitleWords(word, delimiter = "_") {
 	for (let word of splitWord) {
 		for (let i = 0; i < word.length; i++) {
 			let letter = word[i];
-			if ((i = 0)) {
+			if (i === 0) {
 				result += letter.toUpperCase();
+			} else {
+				result += letter.toLowerCase();
 			}
-			result += letter.toUpperCase();
 		}
 		result += " ";
 	}

@@ -12,7 +12,8 @@ export default function PasswordField({
 	onValid,
 	TextFieldProps,
 	required,
-	label
+	label,
+	id
 }) {
 	const [stateValue, setStateValue] = useState("");
 	return (
@@ -23,7 +24,7 @@ export default function PasswordField({
 				...TextFieldProps
 			}}
 			required={required}
-			id="email"
+			id={id}
 			label={label}
 			errors={errors}
 			showErrors={showErrors}
@@ -44,9 +45,11 @@ PasswordField.propTypes = {
 	onValid: PropTypes.func,
 	onChange: PropTypes.func,
 	TextFieldProps: PropTypes.object,
-	label: PropTypes.string
+	label: PropTypes.string,
+	id: PropTypes.string
 };
 
 PasswordField.defaultProps = {
-	label: "Email"
+	label: "Email",
+	id: "email"
 };

@@ -19,3 +19,9 @@ export const pages = [
 	{ id: "Vehicles", path: "/vehicles", component: Vehicles },
 	{ id: "Sandbox", path: "/sandbox", component: Sandbox }
 ];
+
+export const ROLES = {
+	GUEST: "GUEST",
+	KEY_MANAGER: "KEY_MANAGER",
+	ADMIN: "ADMIN"
+};
