@@ -1,13 +1,10 @@
 import React from "react";
-import { Redirect, withRouter } from "react-router-dom";
+import { withRouter, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
+import { compose } from "redux";
 
 function Home({ auth, history }) {
-	return auth === false && history.location.pathname !== "/login" ? (
-		<Redirect to="/login" />
-	) : (
-		renderPage()
-	);
+	return auth === false ? <Redirect to="/login" /> : renderPage();
 }
 
 function renderPage() {
@@ -16,7 +13,7 @@ function renderPage() {
 
 const mapStateToProps = ({ auth }) => ({ auth });
 
-export default connect(
-	mapStateToProps,
-	withRouter
+export default compose(
+	withRouter,
+	connect(mapStateToProps)
 )(Home);

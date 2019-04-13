@@ -1,31 +1,45 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { connect } from "react-redux";
+import { compose } from "redux";
+import { withRouter } from "react-router-dom";
+import * as actions from "../../../actions";
 import GuestSignUp from "../../presentational/forms/GuestSignUp";
 import { api } from "../../../utils";
 
-export default function GuestSignUpContainer() {
+function GuestSignUpContainer({ fetchUsers }) {
 	let [newUser, setNewUser] = useState({
 		username: "",
 		password: "",
+		email: "",
 		passwordConfirm: "",
 		firstName: "",
 		lastName: "",
-		email: "",
 		mobileNumber: "",
-		gender: "",
-		roleId: ""
+		gender: ""
 	});
-	let [inviteToken, setInviteToken] = useState("");
-	useEffect(() => {
-		// Get token from url.
-		const urlParams = new URLSearchParams(window.location.search);
-		const inviteToken = urlParams.get("inviteToken");
-		setInviteToken(inviteToken);
-	}, []);
+	let [errors, setErrors] = useState([]);
+	let inviteToken = new URLSearchParams(window.location.search).get("token");
+
 	return (
 		<GuestSignUp
+			title={"Sign Up"}
+			buttonLabel={"Confirm"}
 			values={newUser}
-			onChange={newUser => setNewUser(newUser)}
-			onSubmit={() => api.createUser({ inviteToken, ...newUser })}
+			onChange={data => setNewUser(data)}
+			onSubmit={() => {
+				api.createUser({ ...newUser, inviteToken });
+			}}
+			errorNotes={errors}
 		/>
 	);
 }
+
+const mapStateToProps = ({ enums }) => ({ enums });
+
+export default compose(
+	connect(
+		mapStateToProps,
+		actions
+	),
+	withRouter
+)(GuestSignUpContainer);

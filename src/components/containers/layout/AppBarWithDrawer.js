@@ -95,7 +95,7 @@ function AppBarWithDrawerContainer({
 		<Fragment>
 			<AppBarWithDrawer
 				onLogoClick={() => {
-					auth && history.push("/");
+					history.location.pathname !== "/" && history.push("/");
 				}}
 				showMenu={auth === null ? false : true}
 				list={menuList}

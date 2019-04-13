@@ -10,14 +10,29 @@ import All from "../components/pages/All";
 
 export const pages = [
 	{ id: "All", path: "/", component: All, exact: false },
-	{ id: "Bookings", path: "/bookings", component: Bookings },
-	{ id: "Home", path: "/", component: Home },
-	{ id: "Locations", path: "/locations", component: Locations },
+	{
+		id: "Bookings",
+		path: "/bookings",
+		component: Bookings,
+		requireLogin: true
+	},
+	{ id: "Home", path: "/", component: Home, exact: true },
+	{
+		id: "Locations",
+		path: "/locations",
+		component: Locations,
+		requireLogin: true
+	},
 	{ id: "Login", path: "/login", component: Login },
 	{ id: "SignUp", path: "/signup", component: SignUp },
-	{ id: "Users", path: "/users", component: Users },
-	{ id: "Vehicles", path: "/vehicles", component: Vehicles },
-	{ id: "Sandbox", path: "/sandbox", component: Sandbox }
+	{ id: "Users", path: "/users", component: Users, requireLogin: true },
+	{
+		id: "Vehicles",
+		path: "/vehicles",
+		component: Vehicles,
+		requireLogin: true
+	},
+	{ id: "Sandbox", path: "/sandbox", component: Sandbox, requireLogin: true }
 ];
 
 export const ROLES = {

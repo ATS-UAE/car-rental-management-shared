@@ -1,6 +1,7 @@
 import React from "react";
-import { Typography } from "@material-ui/core";
+
+import GuestSignUp from "../containers/forms/GuestSignUp";
 
 export default function SignUp() {
-	return <Typography variant="h1">SignUp Page</Typography>;
+	return <GuestSignUp />;
 }
