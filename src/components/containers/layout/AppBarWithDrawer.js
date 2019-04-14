@@ -1,55 +1,13 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { withRouter, Link } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { compose } from "redux";
+import { ExitToApp } from "@material-ui/icons";
+
 import AppBarWithDrawer from "../../presentational/layout/AppBarWithDrawer";
 import * as actions from "../../../actions";
-import {
-	DirectionsCar,
-	SupervisedUserCircle,
-	Place,
-	ChromeReaderMode,
-	Settings,
-	ExitToApp
-} from "@material-ui/icons";
 import { Typography } from "@material-ui/core";
-import { getPermissionData } from "../../../utils";
-
-const linkStyle = {
-	textDecoration: "none"
-};
-
-const pageMap = {
-	BOOKINGS: {
-		icon: <ChromeReaderMode />,
-		path: "/bookings",
-		text: <Typography>Bookings</Typography>
-	},
-	LOCATIONS: {
-		icon: <Place />,
-		path: "/locations",
-		text: <Typography>Locations</Typography>
-	},
-	USERS: {
-		icon: <SupervisedUserCircle />,
-		path: "/users",
-		text: <Typography>Users</Typography>
-	},
-	VEHICLES: {
-		icon: <DirectionsCar />,
-		path: "/vehicles",
-		text: <Typography>Vehicles</Typography>
-	},
-	SETTINGS: {
-		icon: <Settings />,
-		path: "/settings",
-		text: <Typography>Settings</Typography>
-	},
-	LOGOUT: {
-		icon: <ExitToApp />,
-		text: <Typography>Logout</Typography>
-	}
-};
+import { pages } from "../../../variables";
 
 function AppBarWithDrawerContainer({
 	auth,
@@ -66,30 +24,44 @@ function AppBarWithDrawerContainer({
 	let menuList = [];
 	let endList = [];
 	if (auth && enums) {
-		let permissionData = getPermissionData(enums, auth);
 		let pageList = [];
-		for (let key of Object.keys(permissionData)) {
-			if (pageMap[key]) {
-				pageList.push({
-					...pageMap[key],
-					onClick: () => history.push(pageMap[key].path)
-				});
+		let optionsList = [];
+		let role = auth.data.role;
+		for (let page of pages) {
+			if (page.sidebar !== undefined) {
+				if (
+					page.access === undefined ||
+					(page.access && page.access.includes(role.name))
+				) {
+					if (page.sidebar.location === "bottom") {
+						optionsList.push({
+							icon: <page.sidebar.icon />,
+							text: <Typography>{page.title}</Typography>,
+							onClick: () => history.push(page.path)
+						});
+					} else {
+						pageList.push({
+							icon: <page.sidebar.icon />,
+							text: <Typography>{page.title}</Typography>,
+							onClick: () => history.push(page.path)
+						});
+					}
+				}
 			}
 		}
 		if (pageList.length) {
 			menuList.push(pageList);
 		}
-		endList.push([
-			{ ...pageMap.SETTINGS },
-			{
-				...pageMap.LOGOUT,
-				onClick: () => {
-					authLogout().then(() => {
-						history.push("/");
-					});
-				}
+		optionsList.push({
+			icon: <ExitToApp />,
+			text: <Typography>Logout</Typography>,
+			onClick: () => {
+				authLogout().then(() => {
+					history.push("/");
+				});
 			}
-		]);
+		});
+		endList.push(optionsList);
 	}
 	return (
 		<Fragment>

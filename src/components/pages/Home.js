@@ -1,14 +1,11 @@
 import React from "react";
-import { withRouter, Redirect } from "react-router-dom";
+import { withRouter } from "react-router-dom";
+import { Typography } from "@material-ui/core";
 import { connect } from "react-redux";
 import { compose } from "redux";
 
-function Home({ auth, history }) {
-	return auth === false ? <Redirect to="/login" /> : renderPage();
-}
-
-function renderPage() {
-	return null;
+function Home({ auth }) {
+	return <Typography>Home Page</Typography>;
 }
 
 const mapStateToProps = ({ auth }) => ({ auth });

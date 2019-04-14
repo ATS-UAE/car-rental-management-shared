@@ -18,9 +18,12 @@ export const fetchCurrentUserDetails = () => dispatch =>
 		);
 
 export const authLogin = (username, password) => dispatch =>
-	api
-		.authLogin({ username, password })
-		.then(data => dispatch({ type: AUTH_LOGIN, payload: data }));
+	api.authLogin({ username, password }).then(() =>
+		api
+			.fetchCurrentUserDetails()
+			.then(data => dispatch({ type: AUTH_LOGIN, payload: data }))
+			.catch(() => dispatch({ type: AUTH_LOGIN, payload: false }))
+	);
 export const authLogout = () => dispatch =>
 	api.authLogout().then(() => dispatch({ type: AUTH_LOGOUT, payload: false }));
 
