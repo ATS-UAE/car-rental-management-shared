@@ -4,7 +4,7 @@ import VehicleForm from "../../presentational/forms/VehicleForm";
 import * as actions from "../../../actions";
 import { api } from "../../../utils";
 
-function VehicleUpdateContainer({ fetchVehicles, onChange, values }) {
+function VehicleUpdateContainer({ fetchVehicles, onChange, values, onSubmit }) {
 	return (
 		<VehicleForm
 			values={values}
@@ -12,6 +12,7 @@ function VehicleUpdateContainer({ fetchVehicles, onChange, values }) {
 			onSubmit={() =>
 				api.updateVehicle(values).then(() => {
 					fetchVehicles();
+					onSubmit && onSubmit();
 				})
 			}
 			buttonLabel="Update"

@@ -4,12 +4,11 @@ import * as actions from "../../../actions";
 import TableView from "../../presentational/forms/TableView";
 import VehicleUpdate from "../forms/VehicleUpdate";
 
-function VehicleTableView({ vehicles, fetchVehicles, onClick }) {
+function VehicleTableView({ vehicles, fetchVehicles, onSubmit }) {
 	useEffect(() => {
 		fetchVehicles();
 	}, []);
 	const [open, setOpen] = useState(false);
-
 	const [formData, setFormData] = useState({});
 
 	const tableBody = vehicles
@@ -49,7 +48,11 @@ function VehicleTableView({ vehicles, fetchVehicles, onClick }) {
 				body: tableBody
 			}}
 		>
-			<VehicleUpdate values={formData} onChange={setFormData} />
+			<VehicleUpdate
+				values={formData}
+				onChange={setFormData}
+				onSubmit={() => onSubmit && onSubmit()}
+			/>
 		</TableView>
 	);
 }

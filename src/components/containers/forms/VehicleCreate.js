@@ -4,7 +4,7 @@ import VehicleForm from "../../presentational/forms/VehicleForm";
 import * as actions from "../../../actions";
 import { api } from "../../../utils";
 
-function VehicleCreateContainer({ fetchVehicles }) {
+function VehicleCreateContainer({ fetchVehicles, onSubmit }) {
 	const [newVehicle, setNewVehicle] = useState({});
 	return (
 		<VehicleForm
@@ -13,6 +13,7 @@ function VehicleCreateContainer({ fetchVehicles }) {
 			onSubmit={() =>
 				api.createVehicle(newVehicle).then(() => {
 					fetchVehicles();
+					onSubmit && onSubmit();
 				})
 			}
 			buttonLabel="Create"

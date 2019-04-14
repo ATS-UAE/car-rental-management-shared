@@ -1,6 +1,8 @@
-import React from "react";
-import { Typography } from "@material-ui/core";
-
-export default function Bookings() {
-	return <Typography variant="h1">Bookings Page</Typography>;
+import React, { useState } from "react";
+import { withRouter } from "react-router-dom";
+import { Paper, Button, Dialog } from "@material-ui/core";
+function Bookings({ history }) {
+	return <Paper>Bookings Page</Paper>;
 }
+
+export default withRouter(Bookings);

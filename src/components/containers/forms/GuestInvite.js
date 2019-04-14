@@ -11,7 +11,7 @@ export default function GuestInviteContainer() {
 			onSubmit={() => {
 				api.inviteGuest({
 					email,
-					url: `${process.env.REACT_APP_CAR_BOOKING_API_DOMAIN}/signup`
+					url: `${process.env.REACT_APP_CAR_BOOKING_CLIENT_DOMAIN}/signup`
 				});
 			}}
 		/>
