@@ -1,29 +1,21 @@
-import React, { useState } from "react";
-import { Paper, Button, Dialog } from "@material-ui/core";
-import VehicleCreate from "../containers/forms/VehicleCreate";
+import React from "react";
+import { Paper } from "@material-ui/core";
+import { withStyles } from "@material-ui/core";
+import NewVehicleButtonDialog from "../containers/forms/NewVehicleButtonDialog";
 import VehicleTableView from "../containers/display/VehicleTableView";
-export default function Vehicles() {
-	let [open, setOpen] = useState(false);
+function Vehicles({ classes }) {
 	return (
-		<Paper>
+		<Paper className={classes.root}>
+			<NewVehicleButtonDialog />
 			<VehicleTableView />
-			<Button
-				color="primary"
-				variant="contained"
-				onClick={() => {
-					setOpen(true);
-				}}
-			>
-				New
-			</Button>
-			<Dialog
-				open={open}
-				onClose={() => {
-					setOpen(false);
-				}}
-			>
-				<VehicleCreate onSubmit={() => setOpen(false)} />
-			</Dialog>
 		</Paper>
 	);
 }
+const styles = theme => ({
+	root: {
+		padding: theme.spacing.unit * 3,
+		margin: theme.spacing.unit * 3
+	}
+});
+
+export default withStyles(styles)(Vehicles);

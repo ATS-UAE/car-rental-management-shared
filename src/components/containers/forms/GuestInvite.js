@@ -8,6 +8,7 @@ export default function GuestInviteContainer() {
 		<GuestInvite
 			value={email}
 			onChange={e => setEmail(e.target.value)}
+			title="Invite Customer"
 			onSubmit={() => {
 				api.inviteGuest({
 					email,

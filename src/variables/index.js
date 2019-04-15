@@ -14,7 +14,6 @@ import Login from "../components/pages/Login";
 import SignUp from "../components/pages/SignUp";
 import Users from "../components/pages/Users";
 import Vehicles from "../components/pages/Vehicles";
-import Sandbox from "../components/pages/Sandbox";
 import SettingsPage from "../components/pages/Settings";
 import All from "../components/pages/All";
 
@@ -75,11 +74,5 @@ export const pages = [
 		component: SettingsPage,
 		title: "Settings",
 		sidebar: { icon: Settings, location: "bottom" }
-	},
-	{
-		id: "Sandbox",
-		path: "/sandbox",
-		component: Sandbox,
-		requireLogin: true
 	}
 ];

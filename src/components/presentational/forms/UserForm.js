@@ -97,7 +97,7 @@ function UserCreate({
 		},
 		{
 			type: SELECT,
-			id: "roleId",
+			id: "role-id",
 			name: "roleId",
 			props: {
 				label: "Role",

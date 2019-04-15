@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { Dialog, Paper } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import UserUpdate from "./UserUpdate";
-import UserTable from "../../containers/display/UserTable";
+import UserTable from "../../containers/display/UserTableView";
 function UserUpdateTable({
 	classes,
 	onSubmit,

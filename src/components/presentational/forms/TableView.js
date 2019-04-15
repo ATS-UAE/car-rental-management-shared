@@ -1,27 +1,18 @@
-import React from "react";
+import React, { Fragment } from "react";
 import PropTypes from "prop-types";
 import { Dialog, Paper } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import Table from "../display/TableWithPagination";
-function TableView({
-	classes,
-	tableData,
-	open,
-	onClose,
-	children,
-	editable
-}) {
+function TableView({ tableData, open, onClose, children, editable, classes }) {
 	return (
-		<Paper className={classes.paper}>
-			<Table
-                data={tableData}
-			/>
+		<Fragment>
+			<Table data={tableData} />
 			{editable && (
 				<Dialog open={open} onClose={onClose}>
-					{children}
+					<Paper className={classes.paper}>{children}</Paper>
 				</Dialog>
 			)}
-		</Paper>
+		</Fragment>
 	);
 }
 
@@ -37,10 +28,10 @@ TableView.defaultProps = {
 	editable: false
 };
 
-const style = theme => ({
+const styles = theme => ({
 	paper: {
 		padding: theme.spacing.unit * 3
 	}
 });
 
-export default withStyles(style)(TableView);
+export default withStyles(styles)(TableView);

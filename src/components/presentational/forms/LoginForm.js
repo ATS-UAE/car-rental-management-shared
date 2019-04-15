@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, Fragment } from "react";
 import PropTypes from "prop-types";
 import { Paper, Button, Typography } from "@material-ui/core";
 import { withStyles } from "@material-ui/core";
@@ -45,7 +45,7 @@ function LoginForm(props) {
 	const isSubmitDisabled = Object.values(validFields).includes(false);
 
 	return (
-		<Paper className={classes.paper}>
+		<Fragment>
 			<form>
 				{errorNotes.map((e, i) => (
 					<ErrorChip key={i} label={e} className={classes.errorNotes} />
@@ -93,7 +93,7 @@ function LoginForm(props) {
 					</Button>
 				</div>
 			</form>
-		</Paper>
+		</Fragment>
 	);
 }
 
@@ -120,9 +120,6 @@ LoginForm.defaultProps = {
 };
 
 const styles = theme => ({
-	paper: {
-		padding: theme.spacing.unit * 3
-	},
 	textFields: {
 		"&:not(:last-child)": {
 			marginBottom: theme.spacing.unit

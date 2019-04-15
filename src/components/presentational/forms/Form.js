@@ -1,6 +1,6 @@
-import React from "react";
+import React, { Fragment } from "react";
 import PropTypes from "prop-types";
-import { Grid, Button, Paper, Typography } from "@material-ui/core";
+import { Grid, Button, Typography } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import UsernameField from "../inputs/UsernameField";
 import PasswordField from "../inputs/PasswordField";
@@ -51,7 +51,7 @@ function Form({
 		  )
 		: fields;
 	return (
-		<Paper className={classes.paper}>
+		<Fragment>
 			<form>
 				{errorNotes.map((e, i) => (
 					<ErrorChip key={i} label={e} />
@@ -103,7 +103,7 @@ function Form({
 					</Grid>
 				</Grid>
 			</form>
-		</Paper>
+		</Fragment>
 	);
 }
 

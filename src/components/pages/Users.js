@@ -1,21 +1,24 @@
 import React from "react";
-import { Grid } from "@material-ui/core";
-import UserCreate from "../containers/forms/UserCreate";
-import GuestInvite from "../containers/forms/GuestInvite";
-import UserTable from "../containers/display/UserTable";
+import { Paper } from "@material-ui/core";
+import { withStyles } from "@material-ui/core/styles";
+import classNames from "classnames";
+import NewUserButtonDialog from "../containers/forms/NewUserButtonDialog";
+import UserTableView from "../containers/display/UserTableView";
 
-export default function Users() {
+function Users({ classes }) {
 	return (
-		<div>
-			<div>
-				<GuestInvite />
-			</div>
-			<div>
-				<UserCreate />
-			</div>
-			<div>
-				<UserTable />
-			</div>
-		</div>
+		<Paper className={classNames(classes.paper, classes.root)}>
+			<NewUserButtonDialog />
+			<UserTableView />
+		</Paper>
 	);
 }
+
+const styles = theme => ({
+	root: {
+		padding: theme.spacing.unit * 3,
+		margin: theme.spacing.unit * 3
+	}
+});
+
+export default withStyles(styles)(Users);

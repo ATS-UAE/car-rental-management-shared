@@ -3,12 +3,13 @@ import { withStyles } from "@material-ui/core/styles";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { compose } from "redux";
+import { Paper } from "@material-ui/core";
 import LoginContainer from "../containers/forms/Login";
 import * as actions from "../../actions";
 
 function Login({ classes, history, fetchEnums, fetchCurrentUserDetails }) {
 	return (
-		<div className={classes.root}>
+		<Paper className={classes.root}>
 			<LoginContainer
 				onLogin={async () => {
 					await fetchEnums();
@@ -16,12 +17,13 @@ function Login({ classes, history, fetchEnums, fetchCurrentUserDetails }) {
 					history.push("/");
 				}}
 			/>
-		</div>
+		</Paper>
 	);
 }
 
-const styles = {
+const styles = (theme) => ({
 	root: {
+		padding: theme.spacing.unit * 3,
 		width: "80%",
 		maxWidth: "500px",
 		position: "absolute",
@@ -29,7 +31,7 @@ const styles = {
 		left: "50%",
 		transform: "translate(-50%, -50%)"
 	}
-};
+});
 
 export default compose(
 	connect(
