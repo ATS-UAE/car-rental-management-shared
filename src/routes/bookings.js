@@ -16,8 +16,6 @@ router.get("/", async ({ user }, res) => {
 	let bookings = await db.Booking.findAll();
 	let userBookings = [];
 	for (let booking of bookings) {
-		// Get own bookings.
-		console.log(booking);
 		let accessible = await RBAC.can(user.role.name, READ, resources.bookings, {
 			booking,
 			user
