@@ -10,7 +10,11 @@ function NewVehicleButtonDialog({ fetchVehicles, onSubmit }) {
 	let [open, setOpen] = useState(false);
 
 	return (
-		<DialogButton open={open} onClick={() => setOpen(true)}>
+		<DialogButton
+			open={open}
+			onClick={() => setOpen(true)}
+			onClose={() => setOpen(false)}
+		>
 			<VehicleForm
 				values={newVehicle}
 				onChange={setNewVehicle}
