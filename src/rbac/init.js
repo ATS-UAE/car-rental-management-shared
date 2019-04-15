@@ -34,9 +34,11 @@ guestRole.addPermission(
 	]
 );
 guestRole.addPermission(
-	new Action(READ, bookingsResource, ({ booking, user }) => {
-		// Bookings only own bookings.
-	})
+	new Action(
+		READ,
+		bookingsResource,
+		({ booking, user }) => booking.userId === user.id
+	)
 );
 guestRole.addPermission(
 	new Action(DELETE, bookingsResource, () => {

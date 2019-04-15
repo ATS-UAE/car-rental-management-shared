@@ -71,7 +71,7 @@ function sendInviteToken({ email, url }) {
 		from: "no-reply@atsuae.net",
 		to: email,
 		subject: "You are invited to LeasePlan Car Booking!",
-		html: `<h1>Welcome</h1><a href="${url}/${token}">Click here to sign up!</a>`
+		html: `<h1>Welcome</h1><a href="${url}?token=${token}">Click here to sign up!</a>`
 	});
 }
 const toUnix = date => moment(date, "YYYY-MM-DDTHH:mm:ss").unix();

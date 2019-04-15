@@ -5,7 +5,7 @@ const requireLogin = require("../middlewares/requireLogin");
 const { RBAC, OPERATIONS, resources } = require("../rbac/init");
 const { CREATE, READ, UPDATE, DELETE } = OPERATIONS;
 const db = require("../models");
-const { errorCodes } = require("../utils/variables");
+const { errorCodes, ROLES } = require("../utils/variables");
 const { ResponseBuilder, pickFields, toMySQLDate } = require("../utils");
 
 router.use(requireLogin);
@@ -17,6 +17,7 @@ router.get("/", async ({ user }, res) => {
 	let userBookings = [];
 	for (let booking of bookings) {
 		// Get own bookings.
+		console.log(booking);
 		let accessible = await RBAC.can(user.role.name, READ, resources.bookings, {
 			booking,
 			user
@@ -40,8 +41,10 @@ router.post("/", async ({ user, body }, res) => {
 	let accessible = await RBAC.can(user.role.name, CREATE, resources.bookings);
 	if (accessible) {
 		try {
+			let userId = user.role.name === ROLES.GUEST ? user.id : body.userId;
 			let createdBooking = await db.Booking.create({
-				...pickFields(["bookingTypeId", "userId", "vehicleId"], body),
+				...pickFields(["bookingTypeId", "vehicleId"], body),
+				userId,
 				to: toMySQLDate(body.to),
 				from: toMySQLDate(body.from)
 			});
