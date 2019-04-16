@@ -1,5 +1,6 @@
 import React, { Fragment } from "react";
-import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
+import { BrowserRouter, Route } from "react-router-dom";
+import { withStyles } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import LoginRequiredPage from "./components/pages/LoginRequiredPage";
 
@@ -41,4 +42,14 @@ function App() {
 	);
 }
 
-export default App;
+const styles = {
+	"@global": {
+		body: {
+			minHeight: "100vh",
+			background:
+				"linear-gradient(215deg, #FE6B8B, #EECDA3)" /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+		}
+	}
+};
+
+export default withStyles(styles)(App);

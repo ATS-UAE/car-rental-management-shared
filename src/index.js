@@ -15,13 +15,13 @@ import * as serviceWorker from "./serviceWorker";
 
 const theme = createMuiTheme({
 	palette: {
-		primary: { main: "#FF875D" }, // Purple and green play nicely together.
-		secondary: { main: "#11cb5f" } // This is just green.A700 as hex.
+		primary: { main: "#FF875D" },
+		secondary: { main: "#11cb5f" }
 	},
 	overrides: {
 		MuiAppBar: {
 			root: {
-				background: "linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)"
+				background: "linear-gradient(45deg, #FF8E53 30%, #FE6B8B 90%)"
 			}
 		}
 	},

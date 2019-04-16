@@ -33,9 +33,6 @@ function NewUserButtonDialog({ enums, fetchUsers, onSubmit, classes }) {
 			onClick={() => setOpen(true)}
 			onClose={() => setOpen(false)}
 		>
-			<div className={classes.invite}>
-				<GuestInvite />
-			</div>
 			<UserForm
 				title="Create User"
 				buttonLabel="Create"
