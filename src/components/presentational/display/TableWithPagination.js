@@ -114,22 +114,24 @@ function TableWithPagination(props) {
 	}
 
 	return (
-		<Table className="table">
-			{renderHeader(data.headers)}
-			{renderBody(data.body, currentPage, rowsPerPage, {
-				classes
-			})}
-			{renderFooter({
-				rowsPerPageOptions,
-				colSpan,
-				count,
-				rowsPerPage,
-				currentPage,
-				SelectProps,
-				onChangePage,
-				onChangeRowsPerPage
-			})}
-		</Table>
+		<div className={classes.root}>
+			<Table className="table">
+				{renderHeader(data.headers)}
+				{renderBody(data.body, currentPage, rowsPerPage, {
+					classes
+				})}
+				{renderFooter({
+					rowsPerPageOptions,
+					colSpan,
+					count,
+					rowsPerPage,
+					currentPage,
+					SelectProps,
+					onChangePage,
+					onChangeRowsPerPage
+				})}
+			</Table>
+		</div>
 	);
 }
 
@@ -179,6 +181,9 @@ const styles = {
 		"&:hover": {
 			cursor: "pointer"
 		}
+	},
+	root: {
+		overflowX: "auto"
 	}
 };
 

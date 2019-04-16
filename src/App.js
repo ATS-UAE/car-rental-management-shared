@@ -45,9 +45,10 @@ function App() {
 const styles = {
 	"@global": {
 		body: {
-			minHeight: "100vh",
-			background:
-				"linear-gradient(215deg, #FE6B8B, #EECDA3)" /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+			background: "linear-gradient(215deg, #FE6B8B, #EECDA3)"
+		},
+		html: {
+			height: "100%"
 		}
 	}
 };

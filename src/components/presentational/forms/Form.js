@@ -57,7 +57,12 @@ function Form({
 					<ErrorChip key={i} label={e} />
 				))}
 				{title && (
-					<Typography variant="h6" gutterBottom headlineMapping={{ h6: "h1" }}>
+					<Typography
+						variant="h6"
+						gutterBottom
+						headlineMapping={{ h6: "h1" }}
+						className={classes.title}
+					>
 						{title}
 					</Typography>
 				)}
@@ -96,7 +101,7 @@ function Form({
 									{buttonLabel}
 								</Button>
 							</Grid>
-							<Grid item>
+							<Grid item className={classes.notes}>
 								<Typography>*Required</Typography>
 							</Grid>
 						</Grid>
@@ -138,6 +143,12 @@ Form.defaultProps = {
 const style = theme => ({
 	paper: {
 		padding: theme.spacing.unit * 3
+	},
+	notes: {
+		alignSelf: "flex-end"
+	},
+	title: {
+		marginBottom: theme.spacing.unit * 3
 	}
 });
 
