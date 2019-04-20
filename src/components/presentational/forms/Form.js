@@ -33,7 +33,8 @@ function Form({
 	errors,
 	onError,
 	include,
-	buttonLabel
+	buttonLabel,
+	children
 }) {
 	const handleChange = name => event =>
 		onChange && onChange({ ...values, [name]: event.target.value });
@@ -89,6 +90,7 @@ function Form({
 							</Grid>
 						);
 					})}
+					{children}
 					<Grid item xs={12}>
 						<Grid container justify="space-between">
 							<Grid item>

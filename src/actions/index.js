@@ -5,7 +5,8 @@ import {
 	FETCH_VEHICLES,
 	FETCH_BOOKINGS,
 	FETCH_CURRENT_USER_DETAILS,
-	AUTH_LOGOUT
+	AUTH_LOGOUT,
+	FETCH_LOCATIONS
 } from "./types";
 import { api } from "../utils";
 
@@ -42,3 +43,8 @@ export const fetchBookings = () => dispatch =>
 	api
 		.fetchBookings()
 		.then(data => dispatch({ type: FETCH_BOOKINGS, payload: data }));
+
+export const fetchLocations = () => dispatch =>
+	api
+		.fetchLocations()
+		.then(data => dispatch({ type: FETCH_LOCATIONS, payload: data }));

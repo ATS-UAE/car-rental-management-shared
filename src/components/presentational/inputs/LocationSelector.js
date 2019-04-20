@@ -2,41 +2,50 @@ import React from "react";
 import GMaps from "../display/GMaps";
 import PropTypes from "prop-types";
 import { Marker } from "react-google-maps";
-import { Button } from "@material-ui/core";
+import { Button, Dialog } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 
 function LocationSelector({
-	googleMapsProps,
 	onClick,
+	onSelectorClick,
 	value,
+	selectorValue,
 	classes,
 	onSubmit,
 	buttonLabel,
-	mapContainerProps
+	onClose,
+	open
 }) {
-	const marker = value ? <Marker position={value} /> : null;
 	return (
 		<div className={classes.root}>
 			<GMaps
-				googleMapProps={{
-					onClick: e => {
-						onClick && onClick({ lat: e.latLng.lat(), lng: e.latLng.lng() });
-					},
-					...googleMapsProps
-				}}
-				mapContainerProps={mapContainerProps}
+				onClick={e =>
+					onClick && onClick({ lat: e.latLng.lat(), lng: e.latLng.lng() })
+				}
+				defaultCenter={value}
 			>
-				{marker}
+				{value && <Marker position={value} />}
 			</GMaps>
-			{onSubmit && (
-				<Button
-					variant="contained"
-					className={classes.button}
-					onClick={() => onSubmit()}
+			<Dialog open={open} onClose={onClose} fullWidth={true}>
+				<GMaps
+					onClick={e =>
+						onSelectorClick &&
+						onSelectorClick({ lat: e.latLng.lat(), lng: e.latLng.lng() })
+					}
+					defaultCenter={value}
 				>
-					{buttonLabel}
-				</Button>
-			)}
+					{selectorValue && <Marker position={selectorValue} />}
+				</GMaps>
+				{onSubmit && (
+					<Button
+						variant="contained"
+						className={classes.button}
+						onClick={() => onSubmit()}
+					>
+						{buttonLabel}
+					</Button>
+				)}
+			</Dialog>
 		</div>
 	);
 }
@@ -53,10 +62,10 @@ const styles = theme => ({
 });
 
 LocationSelector.propTypes = {
-	value: {
+	value: PropTypes.shape({
 		lng: PropTypes.number,
 		lat: PropTypes.number
-	},
+	}),
 	onClick: PropTypes.func,
 	onSubmit: PropTypes.func,
 	buttonLabel: PropTypes.string

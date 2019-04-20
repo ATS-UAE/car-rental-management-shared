@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from "react";
+import React, { Fragment } from "react";
 import { Paper, Button, Dialog } from "@material-ui/core";
 import { withStyles } from "@material-ui/core";
 import classNames from "classnames";
@@ -9,7 +9,8 @@ function DialogButton({
 	children,
 	open,
 	onClick,
-	onClose
+	onClose,
+	dialogProps
 }) {
 	return (
 		<Fragment>
@@ -17,10 +18,11 @@ function DialogButton({
 				color="primary"
 				variant="contained"
 				onClick={e => onClick && onClick(e)}
+				className={classes.button}
 			>
 				{buttonText}
 			</Button>
-			<Dialog open={open} onClose={() => onClose && onClose()}>
+			<Dialog open={open} onClose={() => onClose && onClose()} {...dialogProps}>
 				<Paper className={classes.paper}>{children}</Paper>
 			</Dialog>
 		</Fragment>
@@ -31,7 +33,8 @@ DialogButton.propTypes = {
 	buttonText: PropTypes.string,
 	open: PropTypes.bool,
 	onClick: PropTypes.func,
-	onClose: PropTypes.func
+	onClose: PropTypes.func,
+	dialogProps: PropTypes.object
 };
 
 DialogButton.defaultProps = {
@@ -41,7 +44,8 @@ DialogButton.defaultProps = {
 const styles = theme => ({
 	paper: {
 		padding: theme.spacing.unit * 3
-	}
+	},
+	button: {}
 });
 
 export default withStyles(styles)(DialogButton);

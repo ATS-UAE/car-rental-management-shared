@@ -3,7 +3,7 @@ import Form, { FIELDS } from "./Form";
 import { Validator } from "../../../utils";
 const { SELECT, USERNAME, PASSWORD, TEXT, EMAIL } = FIELDS;
 
-function UserCreate({
+function UserForm({
 	title,
 	include,
 	errorNotes,
@@ -124,4 +124,4 @@ function UserCreate({
 	);
 }
 
-export default UserCreate;
+export default UserForm;

@@ -1,9 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import { compose, withProps } from "recompose";
 import { withScriptjs, withGoogleMap, GoogleMap } from "react-google-maps";
 import { withStyles } from "@material-ui/core/styles";
-import classNames from "classnames";
+
+const ComposedMap = compose(
+	withProps({
+		googleMapURL:
+			"https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places"
+	}),
+	withScriptjs,
+	withGoogleMap
+)(GoogleMap);
 
 function GMaps({
 	defaultCenter,
@@ -12,7 +20,8 @@ function GMaps({
 	onLocationAsk,
 	mapContainerProps,
 	classes,
-	googleMapProps
+	onClick,
+	defaultZoom
 }) {
 	useEffect(() => {
 		askForLocation &&
@@ -26,30 +35,19 @@ function GMaps({
 				}
 			);
 	}, []);
-	const Component = function() {
-		return (
-			<GoogleMap
-				defaultZoom={8}
-				defaultCenter={defaultCenter}
-				{...googleMapProps}
-			>
-				{children}
-			</GoogleMap>
-		);
-	};
-	const MapBuild = compose(
-		withProps({
-			googleMapURL:
-				"https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places",
-			loadingElement: <div style={{ height: `100%` }} />,
-			containerElement: <div className={classes.root} />,
-			mapElement: <div style={{ height: `100%` }} {...mapContainerProps} />
-		}),
-		withScriptjs,
-		withGoogleMap
-	)(Component);
 
-	return <MapBuild />;
+	return (
+		<ComposedMap
+			loadingElement={<div style={{ height: `100%` }} />}
+			containerElement={<div className={classes.root} {...mapContainerProps} />}
+			mapElement={<div style={{ height: `100%` }} />}
+			defaultZoom={defaultZoom}
+			defaultCenter={defaultCenter}
+			onClick={e => onClick && onClick(e)}
+		>
+			{children}
+		</ComposedMap>
+	);
 }
 
 GMaps.propTypes = {
@@ -59,12 +57,16 @@ GMaps.propTypes = {
 	}),
 	askForLocation: PropTypes.bool,
 	onLocationAsk: PropTypes.func,
-	mapContainerProps: PropTypes.object
+	mapContainerProps: PropTypes.object,
+	googleMapsProps: PropTypes.object,
+	onClick: PropTypes.func,
+	defaultZoom: PropTypes.number
 };
 
 GMaps.defaultProps = {
 	askForLocation: true,
-	defaultCenter: { lat: 23.4241, lng: 53.8478 }
+	defaultCenter: { lat: 23.4241, lng: 53.8478 },
+	defaultZoom: 8
 };
 
 const styles = {

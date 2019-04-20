@@ -3,11 +3,13 @@ import { Paper } from "@material-ui/core";
 import { withStyles } from "@material-ui/core";
 import NewVehicleButtonDialog from "../containers/forms/NewVehicleButtonDialog";
 import VehicleTableView from "../containers/display/VehicleTableView";
+import LocationSelector from "../presentational/inputs/LocationSelector";
 function Vehicles({ classes }) {
 	return (
 		<Paper className={classes.root}>
 			<NewVehicleButtonDialog />
 			<VehicleTableView />
+			<LocationSelector />
 		</Paper>
 	);
 }
