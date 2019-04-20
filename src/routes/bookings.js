@@ -13,7 +13,7 @@ router.use(requireLogin);
 router.get("/", async ({ user }, res) => {
 	let response = new ResponseBuilder();
 
-	let bookings = await db.Booking.findAll();
+	let bookings = await db.Booking.findAll({ include: [{ all: true }] });
 	let userBookings = [];
 	for (let booking of bookings) {
 		let accessible = await RBAC.can(user.role.name, READ, resources.bookings, {

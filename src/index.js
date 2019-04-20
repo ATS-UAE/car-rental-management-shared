@@ -13,6 +13,7 @@ const enumRoutes = require("./routes/enums");
 const inviteRoutes = require("./routes/invites");
 const vehicleRoutes = require("./routes/vehicles");
 const bookingRoutes = require("./routes/bookings");
+const locationRoutes = require("./routes/locations");
 
 const app = express();
 
@@ -76,6 +77,7 @@ app.use("/api/carbooking/enums", enumRoutes);
 app.use("/api/carbooking/invites", inviteRoutes);
 app.use("/api/carbooking/vehicles", vehicleRoutes);
 app.use("/api/carbooking/bookings", bookingRoutes);
+app.use("/api/carbooking/locations", locationRoutes);
 
 app.listen(config.serverPort, () => {
 	console.log(`Listening on port ${config.serverPort}`);
