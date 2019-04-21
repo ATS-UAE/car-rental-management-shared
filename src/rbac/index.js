@@ -24,11 +24,23 @@ class RBAC {
 	getExcludedFields(role, action, resource) {
 		let $role = this.roles.find($role => $role.name === role);
 		if ($role) {
-			let $action = this.role.actions.find(
+			let excludedFields = [];
+			if ($role.extends) {
+				for (let role of $role.extends) {
+					let $action = role.actions.find(
+						$action =>
+							$action.name === action && $action.resource.name === resource
+					);
+					excludedFields.push(...$action.excludedFields);
+				}
+			}
+			let $action = $role.actions.find(
 				$action => $action.name === action && $action.resource.name === resource
 			);
-			if ($action) return $action.excludedFields;
-			else throw new Error("Action does not exist.");
+			if ($action) {
+				excludedFields.push(...$action.excludedFields);
+			}
+			return excludedFields;
 		} else throw new Error("Role does not exist.");
 	}
 	toObject() {
