@@ -21,12 +21,21 @@ class RBAC {
 			resolve(permitted);
 		});
 	}
+	getExcludedFields(role, action, resource) {
+		let $role = this.roles.find($role => $role.name === role);
+		if ($role) {
+			let $action = this.role.actions.find(
+				$action => $action.name === action && $action.resource.name === resource
+			);
+			if ($action) return $action.excludedFields;
+			else throw new Error("Action does not exist.");
+		} else throw new Error("Role does not exist.");
+	}
 	toObject() {
 		return {
 			name: this.name,
 			roles: this.roles.map(role => ({
 				name: role.name,
-				excludedFields: role.excludedFields,
 				access: role.actions.reduce(
 					(acc, action) => {
 						if (!acc.resources[action.resource.name]) {
@@ -35,9 +44,9 @@ class RBAC {
 							};
 						}
 						acc.resources[action.resource.name].permissions[action.name] = {
-							conditional: action.condition ? true : false
+							conditional: action.condition ? true : false,
+							excludedFields: action.excludedFields
 						};
-
 						return acc;
 					},
 					{
@@ -51,11 +60,10 @@ class RBAC {
 }
 
 class Role {
-	constructor(name, excludedFields = []) {
+	constructor(name) {
 		this.name = name;
 		this.actions = [];
 		this.extends = [];
-		this.excludedFields = excludedFields;
 	}
 	addPermission(action) {
 		let existingAction = this.actions.find(
@@ -63,12 +71,9 @@ class Role {
 				currentAction.name === action.name &&
 				currentAction.resource.name === action.resource.name
 		);
-		console.log(this.name);
-		console.log(existingAction);
 		if (existingAction) throw new Error("Action already exists.");
 		this.actions.push(action);
 	}
-	getExcludedFields(action, resource) {}
 	extend(role) {
 		this.extends.push(role);
 	}
@@ -88,7 +93,6 @@ class Role {
 					}
 				}
 			}
-			this.extends;
 			if (this.extends) {
 				for (let i = 0; i < this.extends.length; i++) {
 					let extendedRole = this.extends[i];
@@ -110,10 +114,11 @@ class Resource {
 }
 
 class Action {
-	constructor(name, resource, condition) {
+	constructor(name, resource, condition = null, excludedFields = []) {
 		this.name = name;
 		this.resource = resource;
 		this.condition = condition;
+		this.excludedFields = excludedFields;
 	}
 	perform(params) {
 		if (this.condition) {
