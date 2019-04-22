@@ -18,7 +18,8 @@ function LocationForm({
 	values,
 	buttonLabel,
 	onMapClick,
-	locationValue
+	locationValue,
+	existingLocations
 }) {
 	const fields = [
 		{
@@ -63,6 +64,10 @@ function LocationForm({
 					defaultCenter={locationValue}
 				>
 					{locationValue && <Marker position={locationValue} />}
+					{existingLocations &&
+						existingLocations.map(({ lat, lng, label }) => (
+							<Marker position={{ lat, lng }} label={label} />
+						))}
 				</GMaps>
 			</Grid>
 		</Form>
