@@ -1,6 +1,6 @@
 import React, { useState, Fragment } from "react";
 import PropTypes from "prop-types";
-import { Paper, Button, Typography } from "@material-ui/core";
+import { Button, Typography } from "@material-ui/core";
 import { withStyles } from "@material-ui/core";
 import ErrorChip from "../display/ErrorChip";
 import UsernameField from "../inputs/UsernameField";

@@ -7,9 +7,7 @@ import DialogButton from "../../presentational/forms/DialogButton";
 
 function NewLocationButtonDialog({ onSubmit, fetchLocations }) {
 	const [newLocation, setNewLocation] = useState();
-	const [markerValue, setMarkerValue] = useState();
 	let [open, setOpen] = useState(false);
-	let [selectorOpen, setSelectorOpen] = useState(false);
 
 	return (
 		<DialogButton
@@ -30,22 +28,11 @@ function NewLocationButtonDialog({ onSubmit, fetchLocations }) {
 				buttonLabel="Create"
 				title="Create Location"
 				locationValue={
-					markerValue && markerValue.lat && markerValue.lng
-						? { lat: markerValue.lat, lng: markerValue.lng }
+					newLocation && newLocation.lat && newLocation.lng
+						? { lat: newLocation.lat, lng: newLocation.lng }
 						: undefined
 				}
-				onMapClick={() => setSelectorOpen(true)}
-				selectorOpen={selectorOpen}
-				onSelectorClose={() => {
-					setSelectorOpen(false);
-					setMarkerValue(undefined);
-				}}
-				onSelectorSubmit={v => {
-					setNewLocation({ ...newLocation, ...markerValue });
-					setSelectorOpen(false);
-				}}
-				onSelectorClick={v => setMarkerValue(v)}
-				selectorValue={markerValue}
+				onMapClick={v => setNewLocation({ ...newLocation, ...v })}
 			/>
 		</DialogButton>
 	);

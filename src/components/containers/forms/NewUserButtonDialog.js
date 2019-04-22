@@ -7,12 +7,11 @@ import * as actions from "../../../actions";
 import { api, toTitleWords } from "../../../utils";
 import DialogButton from "../../presentational/forms/DialogButton";
 import { ROLES } from "../../../variables";
-import GuestInvite from "./GuestInvite";
 
 function NewUserButtonDialog({ enums, fetchUsers, onSubmit, classes }) {
 	const [newUser, setNewUser] = useState({});
 	let [open, setOpen] = useState(false);
-	let [errors, setErrors] = useState([]);
+	let [errors] = useState([]);
 	let roles = [
 		{
 			value: "",

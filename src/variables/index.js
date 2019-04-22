@@ -30,6 +30,7 @@ export const pages = [
 		path: "/",
 		component: HomePage,
 		exact: true,
+		requireLogin: true,
 		title: "Home",
 		sidebar: { icon: Home, location: "top" }
 	},

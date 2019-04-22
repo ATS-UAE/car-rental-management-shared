@@ -1,5 +1,4 @@
 import axios from "axios";
-import { access } from "fs";
 export function runIfExistFunction(func, parent, args) {
 	return function() {
 		if (typeof func === "function") {

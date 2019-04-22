@@ -7,8 +7,6 @@ import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import { Provider } from "react-redux";
 import "typeface-roboto";
 
-import { amber } from "@material-ui/core/colors";
-
 import reducers from "./reducers";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";

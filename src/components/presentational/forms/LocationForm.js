@@ -1,8 +1,8 @@
 import React from "react";
 import { Grid } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
-import LocationSelector from "../inputs/LocationSelector";
-import DialogButton from "./DialogButton";
+import { Marker } from "react-google-maps";
+import GMaps from "../display/GMaps";
 import Form, { FIELDS } from "./Form";
 const { TEXT } = FIELDS;
 
@@ -17,13 +17,8 @@ function LocationForm({
 	onError,
 	values,
 	buttonLabel,
-	onSelectorClick,
 	onMapClick,
-	onSelectorSubmit,
-	locationValue,
-	onSelectorClose,
-	selectorOpen,
-	selectorValue
+	locationValue
 }) {
 	const fields = [
 		{
@@ -60,15 +55,15 @@ function LocationForm({
 			buttonLabel={buttonLabel}
 		>
 			<Grid item xs={12}>
-				<LocationSelector
-					onSubmit={() => onSelectorSubmit && onSelectorSubmit()}
-					onSelectorClick={v => onSelectorClick && onSelectorClick(v)}
-					value={locationValue}
-					onClick={onMapClick}
-					open={selectorOpen}
-					onClose={() => onSelectorClose && onSelectorClose()}
-					selectorValue={selectorValue}
-				/>
+				<GMaps
+					onClick={e =>
+						onMapClick &&
+						onMapClick({ lat: e.latLng.lat(), lng: e.latLng.lng() })
+					}
+					defaultCenter={locationValue}
+				>
+					{locationValue && <Marker position={locationValue} />}
+				</GMaps>
 			</Grid>
 		</Form>
 	);
@@ -78,7 +73,6 @@ const styles = {
 	locationSelectDialogButton: {
 		width: "100%"
 	},
-
 	dialog: {
 		width: "100%"
 	}

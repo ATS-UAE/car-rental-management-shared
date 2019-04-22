@@ -2,11 +2,10 @@ import React, { useState } from "react";
 import { connect } from "react-redux";
 import { compose } from "redux";
 import { withRouter } from "react-router-dom";
-import * as actions from "../../../actions";
 import GuestSignUp from "../../presentational/forms/GuestSignUp";
 import { api } from "../../../utils";
 
-function GuestSignUpContainer({ fetchUsers }) {
+function GuestSignUpContainer() {
 	let [newUser, setNewUser] = useState({
 		username: "",
 		password: "",
@@ -17,7 +16,7 @@ function GuestSignUpContainer({ fetchUsers }) {
 		mobileNumber: "",
 		gender: ""
 	});
-	let [errors, setErrors] = useState([]);
+	let [errors] = useState([]);
 	let inviteToken = new URLSearchParams(window.location.search).get("token");
 
 	return (
@@ -37,9 +36,6 @@ function GuestSignUpContainer({ fetchUsers }) {
 const mapStateToProps = ({ enums }) => ({ enums });
 
 export default compose(
-	connect(
-		mapStateToProps,
-		actions
-	),
+	connect(mapStateToProps),
 	withRouter
 )(GuestSignUpContainer);
