@@ -23,6 +23,13 @@ export const ROLES = {
 	ADMIN: "ADMIN"
 };
 
+export const ACTIONS = {
+	CREATE: "CREATE",
+	READ: "READ",
+	UPDATE: "UPDATE",
+	DELETE: "DELETE"
+};
+
 export const pages = [
 	{ id: "All", path: "/", component: All, exact: false },
 	{

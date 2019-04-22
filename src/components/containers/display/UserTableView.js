@@ -4,12 +4,20 @@ import * as actions from "../../../actions";
 import TableView from "../../presentational/forms/TableView";
 import UserForm from "../../presentational/forms/UserForm";
 import { api, toTitleWords } from "../../../utils";
+import RBAC from "../../../utils/RBAC";
 import { ROLES } from "../../../variables";
-function UserTable({ users, enums, fetchEnums, fetchUsers, onSubmit }) {
+function UserTable({ users, auth, enums, fetchEnums, fetchUsers, onSubmit }) {
 	useEffect(() => {
 		fetchUsers();
 		fetchEnums();
 	}, []);
+	if (auth && enums && enums.data.permissions) {
+		let access = RBAC(enums.data.permissions).can(
+			"GUEST",
+			"UPDATE",
+			"VEHICLES"
+		);
+	}
 	const [open, setOpen] = useState(false);
 	const [formData, setFormData] = useState({});
 	const tableBody = users
@@ -87,7 +95,7 @@ function UserTable({ users, enums, fetchEnums, fetchUsers, onSubmit }) {
 	);
 }
 
-const mapStateToProps = ({ users, enums }) => ({ users, enums });
+const mapStateToProps = ({ users, auth, enums }) => ({ users, auth, enums });
 
 export default connect(
 	mapStateToProps,
