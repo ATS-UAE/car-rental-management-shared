@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
 			paid: { type: DataTypes.BOOLEAN, defaultValue: false },
 			from: { type: DataTypes.DATE, allowNull: false },
 			to: { type: DataTypes.DATE, allowNull: false },
-			approved: { type: DataTypes.BOOLEAN },
+			approved: { type: DataTypes.BOOLEAN, defaultValue: false },
 			finished: { type: DataTypes.BOOLEAN, defaultValue: false }
 		},
 		{
@@ -33,13 +33,21 @@ module.exports = (sequelize, DataTypes) => {
 	Booking.associate = models => {
 		models.Booking.belongsTo(models.User, {
 			foreignKey: {
-				name: "userId"
+				name: "userId",
+				allowNull: false,
+				validate: {
+					notNull: { msg: "User is required." }
+				}
 			},
 			as: "user"
 		});
 		models.Booking.belongsTo(models.BookingType, {
 			foreignKey: {
-				name: "bookingTypeId"
+				name: "bookingTypeId",
+				allowNull: false,
+				validate: {
+					notNull: { msg: "Booking type is required." }
+				}
 			},
 			as: "bookingType"
 		});
