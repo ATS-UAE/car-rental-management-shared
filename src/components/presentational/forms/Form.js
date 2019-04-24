@@ -29,28 +29,20 @@ function Form({
 	onValid,
 	values,
 	onChange,
-	onSubmit,
 	errors,
 	onError,
-	include,
-	buttonLabel,
-	children
+	exclude,
+	children,
+	footer,
+	readOnly
 }) {
 	const handleChange = name => event =>
 		onChange && onChange({ ...values, [name]: event.target.value });
 	const handleError = name => () => onError && onError(name);
-	const handleSubmit = event => {
-		event.preventDefault();
-		onSubmit && onSubmit();
-	};
 	const handleValid = name => event => {
 		onValid && onValid({ ...values, [name]: event.target.value });
 	};
-	const formFields = include.length
-		? fields.filter(
-				field => include.includes(field.name) || include.includes(field.id)
-		  )
-		: fields;
+	const formFields = fields.filter(field => !exclude.includes(field.name));
 	return (
 		<Fragment>
 			<form>
@@ -92,21 +84,10 @@ function Form({
 					})}
 					{children}
 					<Grid item xs={12}>
-						<Grid container justify="space-between">
-							<Grid item>
-								<Button
-									type="submit"
-									variant="contained"
-									color="primary"
-									onClick={handleSubmit}
-								>
-									{buttonLabel}
-								</Button>
-							</Grid>
-							<Grid item className={classes.notes}>
-								<Typography>*Required</Typography>
-							</Grid>
+						<Grid item className={classes.notes}>
+							<Typography>*Required</Typography>
 						</Grid>
+						{footer}
 					</Grid>
 				</Grid>
 			</form>
@@ -130,16 +111,20 @@ Form.propTypes = {
 	onError: PropTypes.func,
 	onValid: PropTypes.func,
 	title: PropTypes.string,
-	errors: PropTypes.arrayOf(PropTypes.string)
+	errors: PropTypes.arrayOf(PropTypes.string),
+	exclude: PropTypes.arrayOf(PropTypes.string),
+	readOnly: PropTypes.bool,
+	footer: PropTypes.node
 };
 
 Form.defaultProps = {
 	fields: [],
-	include: [],
+	exclude: [],
 	values: {},
 	errors: [],
 	errorNotes: [],
-	buttonLabel: "Confirm"
+	buttonLabel: "Confirm",
+	readOnly: false
 };
 
 const style = theme => ({
@@ -147,7 +132,7 @@ const style = theme => ({
 		padding: theme.spacing.unit * 3
 	},
 	notes: {
-		alignSelf: "flex-end"
+		float: "right"
 	},
 	title: {
 		marginBottom: theme.spacing.unit * 3

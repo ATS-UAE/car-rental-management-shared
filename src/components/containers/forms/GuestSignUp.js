@@ -2,22 +2,50 @@ import React, { useState } from "react";
 import { connect } from "react-redux";
 import { compose } from "redux";
 import { withRouter } from "react-router-dom";
+import { Button, Grid } from "@material-ui/core";
 import GuestSignUp from "../../presentational/forms/GuestSignUp";
 import { api } from "../../../utils";
 
-function GuestSignUpContainer() {
+function GuestSignUpContainer({ onSubmit }) {
 	let [newUser, setNewUser] = useState({
 		username: "",
 		password: "",
-		email: "",
 		passwordConfirm: "",
 		firstName: "",
 		lastName: "",
 		mobileNumber: "",
 		gender: ""
 	});
-	let [errors] = useState([]);
+	let [disableButton, setDisabledButton] = useState(false);
+	let [errorNotes, setErrorNotes] = useState([]);
 	let inviteToken = new URLSearchParams(window.location.search).get("token");
+
+	let footer = (
+		<Grid item>
+			<Button
+				disabled={disableButton}
+				type="submit"
+				variant="contained"
+				color="secondary"
+				onClick={e => {
+					e.preventDefault();
+					setDisabledButton(true);
+					api
+						.createUser({ ...newUser, inviteToken })
+						.then(() => {
+							onSubmit && onSubmit();
+						})
+						.catch(e => {
+							console.log(e);
+							setErrorNotes([e]);
+							setDisabledButton(false);
+						});
+				}}
+			>
+				Confirm
+			</Button>
+		</Grid>
+	);
 
 	return (
 		<GuestSignUp
@@ -25,10 +53,8 @@ function GuestSignUpContainer() {
 			buttonLabel={"Confirm"}
 			values={newUser}
 			onChange={data => setNewUser(data)}
-			onSubmit={() => {
-				api.createUser({ ...newUser, inviteToken });
-			}}
-			errorNotes={errors}
+			footer={footer}
+			errorNotes={errorNotes}
 		/>
 	);
 }

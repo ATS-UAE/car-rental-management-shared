@@ -1,12 +1,14 @@
 import React from "react";
+import { compose } from "recompose";
+import { withRouter } from "react-router";
 import { Paper } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import GuestSignUp from "../containers/forms/GuestSignUp";
 
-function SignUp({ classes }) {
+function SignUp({ classes, history }) {
 	return (
 		<Paper className={classes.root}>
-			<GuestSignUp />
+			<GuestSignUp onSubmit={() => history.push("/login")} />
 		</Paper>
 	);
 }
@@ -18,4 +20,7 @@ const styles = theme => ({
 	}
 });
 
-export default withStyles(styles)(SignUp);
+export default compose(
+	withRouter,
+	withStyles(styles)
+)(SignUp);

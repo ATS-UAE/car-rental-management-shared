@@ -5,7 +5,7 @@ const { SELECT, USERNAME, PASSWORD, TEXT, EMAIL } = FIELDS;
 
 function GuestSignUp({
 	title,
-	include,
+	exclude,
 	errorNotes,
 	errors,
 	onSubmit,
@@ -13,7 +13,8 @@ function GuestSignUp({
 	onChange,
 	onError,
 	values,
-	buttonLabel
+	buttonLabel,
+	footer
 }) {
 	let samePassword = new Validator(
 		password => password === values.password,
@@ -25,15 +26,6 @@ function GuestSignUp({
 			name: "username",
 			id: "username",
 			props: {
-				required: true
-			}
-		},
-		{
-			type: EMAIL,
-			id: "email",
-			name: "email",
-			props: {
-				label: "Email",
 				required: true
 			}
 		},
@@ -51,7 +43,7 @@ function GuestSignUp({
 			name: "passwordConfirm",
 			id: "password-confirm",
 			props: {
-				label: "Password",
+				label: "Confirm Password",
 				required: true,
 				validators: [samePassword]
 			}
@@ -99,7 +91,7 @@ function GuestSignUp({
 		<Form
 			title={title}
 			fields={fields}
-			include={include}
+			exclude={exclude}
 			errorNotes={errorNotes}
 			errors={errors}
 			onSubmit={onSubmit}
@@ -108,6 +100,7 @@ function GuestSignUp({
 			onError={onError}
 			values={values}
 			buttonLabel={buttonLabel}
+			footer={footer}
 		/>
 	);
 }
