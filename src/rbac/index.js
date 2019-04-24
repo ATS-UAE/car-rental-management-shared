@@ -92,11 +92,12 @@ class Role {
 	can(action, resource, params) {
 		return new Promise(async resolve => {
 			let actions = this.actions;
+			let resourceName = resource.name || resource;
 			for (let i = 0; i < actions.length; i++) {
 				let currentAction = actions[i];
 				if (
 					action === currentAction.name &&
-					currentAction.resource.name === resource.name
+					currentAction.resource.name === resourceName
 				) {
 					let permitted = await currentAction.perform(params);
 					// Contine looking for matching actions, incase role is extended.
