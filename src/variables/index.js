@@ -30,6 +30,13 @@ export const ACTIONS = {
 	DELETE: "DELETE"
 };
 
+export const RESOURCES = {
+	VEHICLES: "VEHICLES",
+	LOCATIONS: "LOCATIONS",
+	BOOKINGS: "BOOKINGS",
+	USERS: "USERS"
+};
+
 export const pages = [
 	{ id: "All", path: "/", component: All, exact: false },
 	{

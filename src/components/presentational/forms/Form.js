@@ -1,24 +1,20 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect } from "react";
 import PropTypes from "prop-types";
-import { Grid, Button, Typography } from "@material-ui/core";
+import { Grid, Typography, TextField } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
-import UsernameField from "../inputs/UsernameField";
 import PasswordField from "../inputs/PasswordField";
-import TextField from "../inputs/GenericTextField";
 import Select from "../inputs/SimpleSelect";
 import ErrorChip from "../display/ErrorChip";
 import Slider from "../inputs/Slider";
 import DateTimePicker from "../inputs/DateTimePicker";
-import EmailField from "../inputs/EmailField";
+import { Validator } from "../../../utils";
 
 export const FIELDS = {
-	USERNAME: UsernameField,
 	PASSWORD: PasswordField,
 	TEXT: TextField,
 	SELECT: Select,
 	SLIDER: Slider,
-	DATE_TIME_PICKER: DateTimePicker,
-	EMAIL: EmailField
+	DATE_TIME_PICKER: DateTimePicker
 };
 
 function Form({
@@ -26,22 +22,15 @@ function Form({
 	classes,
 	errorNotes,
 	title,
-	onValid,
 	values,
 	onChange,
-	errors,
-	onError,
+
 	exclude,
 	children,
-	footer,
-	readOnly
+	footer
 }) {
-	const handleChange = name => event =>
-		onChange && onChange({ ...values, [name]: event.target.value });
-	const handleError = name => () => onError && onError(name);
-	const handleValid = name => event => {
-		onValid && onValid({ ...values, [name]: event.target.value });
-	};
+	const handleChange = (name, errors) => e =>
+		onChange && onChange({ ...values, [name]: e.target.value }, name, errors);
 	const formFields = fields.filter(field => !exclude.includes(field.name));
 	return (
 		<Fragment>
@@ -63,21 +52,33 @@ function Form({
 					{formFields.map(field => {
 						const Component = field.type;
 						const { props = {}, name, id } = field;
-						const { TextFieldProps = {} } = props;
+						const errors = Validator.runThroughValidators(
+							field.validators,
+							values[name]
+						).map(error => error.error);
+						useEffect(() => {
+							handleChange(name, errors)({ target: { value: values[name] } });
+						}, []);
 						return (
 							<Grid item xs={12} sm={6} key={name}>
 								<Component
 									id={id}
-									value={values[name]}
-									errors={errors[name]}
-									onError={handleError(name)}
-									onChange={handleChange(name)}
-									onValid={handleValid(name)}
-									{...props}
-									TextFieldProps={{
-										fullWidth: true,
-										...TextFieldProps
+									value={values[name] || ""}
+									onChange={e => {
+										const errors = Validator.runThroughValidators(
+											field.validators,
+											e.target.value
+										).map(error => error.error);
+										handleChange(name, errors)(e);
 									}}
+									{...props}
+									label={
+										errors[0] && values[name] ? errors[0] : props.label
+									}
+									error={
+										errors.length && values[name] !== undefined ? true : false
+									}
+									fullWidth
 								/>
 							</Grid>
 						);

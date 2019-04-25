@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import moment from "moment";
+import { Grid, Button } from "@material-ui/core";
 import BookingForm from "../../presentational/forms/BookingForm";
 import * as actions from "../../../actions";
 import { api } from "../../../utils";
@@ -11,10 +12,8 @@ function NewBookingButtonDialog({
 	fetchBookings,
 	onSubmit,
 	enums,
-	users,
 	vehicles,
 	fetchEnums,
-	fetchUsers,
 	fetchVehicles
 }) {
 	const [newBooking, setNewBooking] = useState({
@@ -30,15 +29,12 @@ function NewBookingButtonDialog({
 		if (!enums) {
 			fetchEnums();
 		}
-		if (!users) {
-			fetchUsers();
-		}
+
 		if (!vehicles) {
 			fetchVehicles();
 		}
 	}, []);
 
-	let userList = [{ value: "", label: "No users available..." }];
 	let bookingTypeList = [{ value: "", label: "Loading..." }];
 	let vehicleList = [{ value: "", label: "No vehicles available" }];
 
@@ -51,20 +47,6 @@ function NewBookingButtonDialog({
 			bookingTypeList = $bookingTypeList;
 		}
 	}
-	if (users && users.data) {
-		let $userList = users.data.reduce((acc, user) => {
-			if (user.role.name === ROLES.GUEST) {
-				acc.push({
-					value: user.id,
-					label: `${user.firstName} ${user.lastName} - ${user.username}`
-				});
-			}
-			return acc;
-		}, []);
-		if ($userList.length) {
-			userList = $userList.length;
-		}
-	}
 	if (vehicles && vehicles.data) {
 		let $vehicleList = vehicles.data.map(vehicle => ({
 			value: vehicle.id,
@@ -74,6 +56,25 @@ function NewBookingButtonDialog({
 			vehicleList = $vehicleList;
 		}
 	}
+	let footer = (
+		<Grid item>
+			<Button
+				type="submit"
+				variant="contained"
+				color="secondary"
+				onClick={e => {
+					e.preventDefault();
+					api.createBooking(newBooking).then(() => {
+						fetchBookings();
+						setOpen(false);
+						onSubmit && onSubmit();
+					});
+				}}
+			>
+				Confirm
+			</Button>
+		</Grid>
+	);
 
 	return (
 		<DialogButton
@@ -83,7 +84,7 @@ function NewBookingButtonDialog({
 		>
 			<BookingForm
 				values={newBooking}
-				userList={userList}
+				exclude={["userId"]}
 				bookingTypeList={bookingTypeList}
 				vehicleList={vehicleList}
 				onChange={newBooking => {
@@ -96,16 +97,8 @@ function NewBookingButtonDialog({
 					}
 					setNewBooking({ ...newBooking, from, to });
 				}}
-				onSubmit={() =>
-					api.createBooking(newBooking).then(() => {
-						fetchBookings();
-						setOpen(false);
-						onSubmit && onSubmit();
-					})
-				}
-				buttonLabel="Create"
-				title="Create Booking"
-				include={["from", "to", "userId", "bookingTypeId", "vehicleId"]}
+				title="Book a Vehicle"
+				footer={footer}
 			/>
 		</DialogButton>
 	);

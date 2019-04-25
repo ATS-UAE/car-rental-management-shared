@@ -1,17 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Fragment } from "react";
 import { connect } from "react-redux";
 import moment from "moment";
 import * as actions from "../../../actions";
 import TableView from "../../presentational/forms/TableView";
-import VehicleUpdate from "../forms/VehicleUpdate";
+import Can from "../layout/Can";
+import BookingForm from "../../presentational/forms/BookingForm";
 import { toTitleWords } from "../../../utils";
+import { RESOURCES, ACTIONS } from "../../../variables";
 
-function VehicleTableView({
+function BookingTableView({
 	bookings,
 	vehicles,
 	fetchBookings,
-	fetchVehicles,
-	onSubmit
+	fetchVehicles
 }) {
 	useEffect(() => {
 		fetchBookings();
@@ -25,6 +26,17 @@ function VehicleTableView({
 					let bookingVehicle = vehicles.data.find(
 						vehicle => vehicle.id === booking.vehicleId
 					);
+					let bookingStatus = "";
+
+					if (booking.approved) {
+						if (moment(booking.from, "X").isSameOrBefore(moment()))
+							bookingStatus = "Ongoing";
+						else bookingStatus = "Approved";
+					} else {
+						if (moment(booking.from, "X").isSameOrBefore(moment()))
+							bookingStatus = "Expired";
+						else bookingStatus = "Denied";
+					}
 					let row = {
 						metadata: booking,
 						values: [
@@ -42,48 +54,63 @@ function VehicleTableView({
 							},
 							{
 								value: moment(booking.to, "X").calendar()
+							},
+							{
+								value: bookingStatus
 							}
 						]
 					};
 					return row;
 			  })
 			: [];
+
 	return (
-		<TableView
-			open={open}
-			onClose={() => setOpen(false)}
-			editable={true}
-			tableData={{
-				headers: [
-					{
-						values: [
-							{ value: "User" },
-							{ value: "Booking Type" },
-							{ value: "Vehicle" },
-							{ value: "Starting Time" },
-							{ value: "Finishing Time" }
-						]
-					}
-				],
-				body: tableBody
-			}}
-		>
-			<VehicleUpdate
-				values={formData}
-				onChange={setFormData}
-				onSubmit={() => onSubmit && onSubmit()}
+		<Fragment>
+			<Can
+				action={ACTIONS.READ}
+				resource={RESOURCES.BOOKINGS}
+				params={{}}
+				yes={access => (
+					<TableView
+						open={open}
+						onClose={() => setOpen(false)}
+						editable={true}
+						tableData={{
+							headers: [
+								{
+									values: [
+										{ value: "User" },
+										{ value: "Booking Type" },
+										{ value: "Vehicle" },
+										{ value: "Starting Time" },
+										{ value: "Finishing Time" },
+										{ value: "Status" }
+									]
+								}
+							],
+							body: tableBody
+						}}
+					>
+						<BookingForm
+							values={formData}
+							onChange={setFormData}
+							exclude={access.excludedFields}
+						/>
+					</TableView>
+				)}
 			/>
-		</TableView>
+		</Fragment>
 	);
 }
 
-const mapStateToProps = ({ bookings, vehicles, enums }) => ({
+const mapStateToProps = ({ bookings, vehicles, enums, auth }) => ({
 	bookings,
 	vehicles,
-	enums
+	enums,
+	auth
 });
 
 export default connect(
 	mapStateToProps,
 	actions
-)(VehicleTableView);
+)(BookingTableView);

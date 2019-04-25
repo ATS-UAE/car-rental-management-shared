@@ -22,8 +22,13 @@ export default function SimpleSelect({
 	fullWidth,
 	FormControlProps,
 	SelectProps,
-	InputProps
+	InputProps,
+	onValid,
+	onError
 }) {
+	if (required && (value === undefined || value === "")) {
+		onError && onError(value);
+	}
 	return (
 		<FormControl
 			required={required}
@@ -35,7 +40,10 @@ export default function SimpleSelect({
 				{...SelectProps}
 				value={value === undefined ? "" : value}
 				autoWidth
-				onChange={onChange}
+				onChange={e => {
+					onChange && onChange(e);
+					onValid && onValid(e);
+				}}
 				name={name}
 				input={<Input {...InputProps} name={name} id={id} />}
 			>

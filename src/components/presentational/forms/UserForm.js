@@ -1,20 +1,16 @@
 import React from "react";
 import Form, { FIELDS } from "./Form";
-import { Validator } from "../../../utils";
-const { SELECT, USERNAME, PASSWORD, TEXT, EMAIL } = FIELDS;
+import { validators, Validator } from "../../../utils";
+const { SELECT, PASSWORD, TEXT } = FIELDS;
 
 function UserForm({
 	title,
-	include,
+	exclude,
 	errorNotes,
-	errors,
-	onSubmit,
-	onValid,
 	onChange,
-	onError,
 	values,
-	buttonLabel,
-	roleList
+	roleList,
+	footer
 }) {
 	let samePassword = new Validator(
 		password => password === values.password,
@@ -22,17 +18,20 @@ function UserForm({
 	);
 	const fields = [
 		{
-			type: USERNAME,
+			type: TEXT,
 			name: "username",
 			id: "username",
+			validators: [validators.username],
 			props: {
+				label: "Username",
 				required: true
 			}
 		},
 		{
-			type: EMAIL,
+			type: TEXT,
 			id: "email",
 			name: "email",
+			validators: [validators.email],
 			props: {
 				label: "Email",
 				required: true
@@ -42,25 +41,28 @@ function UserForm({
 			type: PASSWORD,
 			name: "password",
 			id: "password",
+			validators: [validators.password],
 			props: {
 				label: "Password",
-				required: true
+				required: true,
+				type: "password"
 			}
 		},
 		{
 			type: PASSWORD,
 			name: "passwordConfirm",
 			id: "password-confirm",
+			validators: [samePassword],
 			props: {
 				label: "Password",
-				required: true,
-				validators: [samePassword]
+				required: true
 			}
 		},
 		{
 			type: TEXT,
 			id: "first-name",
 			name: "firstName",
+			validators: [validators.requiredField],
 			props: {
 				label: "First Name",
 				required: true
@@ -70,6 +72,7 @@ function UserForm({
 			type: TEXT,
 			id: "last-name",
 			name: "lastName",
+			validators: [validators.requiredField],
 			props: {
 				label: "Last Name",
 				required: true
@@ -79,6 +82,7 @@ function UserForm({
 			type: TEXT,
 			id: "mobile-number",
 			name: "mobileNumber",
+			validators: [validators.requiredField],
 			props: {
 				label: "Mobile Number",
 				required: true
@@ -88,6 +92,7 @@ function UserForm({
 			type: SELECT,
 			id: "gender",
 			name: "gender",
+			validators: [validators.requiredField],
 			props: {
 				label: "Gender",
 				fullWidth: true,
@@ -99,6 +104,7 @@ function UserForm({
 			type: SELECT,
 			id: "role-id",
 			name: "roleId",
+			validators: [validators.requiredField],
 			props: {
 				label: "Role",
 				fullWidth: true,
@@ -111,15 +117,11 @@ function UserForm({
 		<Form
 			title={title}
 			fields={fields}
-			include={include}
+			exclude={exclude}
 			errorNotes={errorNotes}
-			errors={errors}
-			onSubmit={onSubmit}
-			onValid={onValid}
 			onChange={onChange}
-			onError={onError}
 			values={values}
-			buttonLabel={buttonLabel}
+			footer={footer}
 		/>
 	);
 }

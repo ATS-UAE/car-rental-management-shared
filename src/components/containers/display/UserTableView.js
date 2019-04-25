@@ -4,22 +4,18 @@ import * as actions from "../../../actions";
 import TableView from "../../presentational/forms/TableView";
 import UserForm from "../../presentational/forms/UserForm";
 import { api, toTitleWords } from "../../../utils";
-import RBAC from "../../../utils/RBAC";
-import { ROLES } from "../../../variables";
+import { Button, Grid } from "@material-ui/core";
+import { ROLES, ACTIONS, RESOURCES } from "../../../variables";
+import Can from "../layout/Can";
 function UserTable({ users, auth, enums, fetchEnums, fetchUsers, onSubmit }) {
 	useEffect(() => {
 		fetchUsers();
 		fetchEnums();
 	}, []);
-	if (auth && enums && enums.data.permissions) {
-		let access = RBAC(enums.data.permissions).can(
-			"GUEST",
-			"UPDATE",
-			"VEHICLES"
-		);
-	}
 	const [open, setOpen] = useState(false);
 	const [formData, setFormData] = useState({});
+	let [disableButton, setDisabledButton] = useState(false);
+	let [errorNotes, setErrorNotes] = useState([]);
 	const tableBody = users
 		? users.data.map(user => {
 				let row = {
@@ -30,11 +26,15 @@ function UserTable({ users, auth, enums, fetchEnums, fetchUsers, onSubmit }) {
 						{ value: user.lastName },
 						{ value: user.gender },
 						{ value: user.email },
-						{ value: user.mobileNumber }
+						{ value: user.mobileNumber },
+						{ value: toTitleWords(user.role.name) }
 					],
 					onClick: () => {
 						setOpen(true);
-						setFormData({ ...user, roleId: user.role.id });
+						api.fetchUser(user.id).then(res => {
+							console.log(res);
+							setFormData({ ...res.data, roleId: user.role.id });
+						});
 					}
 				};
 
@@ -43,55 +43,106 @@ function UserTable({ users, auth, enums, fetchEnums, fetchUsers, onSubmit }) {
 		: [];
 	let roleList = [{ value: "", label: "Loading..." }];
 	if (enums && enums.data) {
-		let userRole = enums.data.roles.find(role => role.id === formData.roleId);
-		if (userRole) {
-			roleList = [{ value: userRole.id, label: toTitleWords(userRole.name) }];
-		} else {
-			roleList = enums.data.roles.reduce((acc, role) => {
-				if (role.name !== ROLES.GUEST) {
-					acc.push({ value: role.id, label: toTitleWords(role.name) });
-				}
-				return acc;
-			}, []);
-		}
+		roleList = enums.data.roles.reduce((acc, role) => {
+			if (role.name !== ROLES.GUEST) {
+				acc.push({ value: role.id, label: toTitleWords(role.name) });
+			}
+			return acc;
+		}, []);
 	}
+	let footer = (
+		<Grid item>
+			<Button
+				disabled={disableButton}
+				type="submit"
+				variant="contained"
+				color="primary"
+				onClick={e => {
+					e.preventDefault();
+					setDisabledButton(true);
+					api
+						.updateUser(formData)
+						.then(() => {
+							fetchUsers();
+							onSubmit && onSubmit();
+							setOpen(false);
+							setDisabledButton(false);
+						})
 
+						.catch(e => {
+							setErrorNotes([e]);
+							setDisabledButton(false);
+						});
+				}}
+			>
+				Confirm
+			</Button>
+		</Grid>
+	);
 	return (
-		<TableView
-			editable={true}
-			open={open}
-			onClose={() => setOpen(false)}
-			tableData={{
-				headers: [
-					{
-						values: [
-							{ value: "Username" },
-							{ value: "First Name" },
-							{ value: "Last Name" },
-							{ value: "Gender" },
-							{ value: "Email" },
-							{ value: "Mobile Number" },
-							{ value: "Role" }
-						]
-					}
-				],
-				body: tableBody
-			}}
-		>
-			<UserForm
-				values={formData}
-				onChange={setFormData}
-				onSubmit={() =>
-					api.updateUser(formData).then(() => {
-						fetchUsers();
-						onSubmit && onSubmit();
-					})
-				}
-				roleList={roleList}
-				buttonLabel="Update"
-				title="Update User"
-			/>
-		</TableView>
+		<Can
+			action={ACTIONS.READ}
+			resource={RESOURCES.USERS}
+			yes={access => (
+				<TableView
+					editable={true}
+					open={open}
+					onClose={() => setOpen(false)}
+					tableData={{
+						headers: [
+							{
+								values: [
+									{ value: "Username" },
+									{ value: "First Name" },
+									{ value: "Last Name" },
+									{ value: "Gender" },
+									{ value: "Email" },
+									{ value: "Mobile Number" },
+									{ value: "Role" }
+								]
+							}
+						],
+						body: tableBody
+					}}
+				>
+					<Can
+						action={ACTIONS.UPDATE}
+						resource={RESOURCES.USERS}
+						params={{
+							currentUser: {
+								id: auth.data.id
+							},
+							updateUser: {
+								id: formData.id
+							},
+							role: {
+								name: formData.role ? formData.role.name : null
+							}
+						}}
+						yes={() => (
+							<UserForm
+								values={formData}
+								onChange={setFormData}
+								exclude={[...access.excludedFields, "passwordConfirm"]}
+								roleList={roleList}
+								title="Update User"
+								errorNotes={errorNotes}
+								footer={footer}
+							/>
+						)}
+						no={() => (
+							<UserForm
+								values={formData}
+								onChange={setFormData}
+								exclude={[...access.excludedFields, "passwordConfirm"]}
+								roleList={roleList}
+								title="Update User"
+							/>
+						)}
+					/>
+				</TableView>
+			)}
+		/>
 	);
 }
 

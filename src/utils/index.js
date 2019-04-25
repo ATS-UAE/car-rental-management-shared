@@ -18,13 +18,12 @@ export function Validator(test, errorMessage) {
 // Returns errored validators.
 Validator.runThroughValidators = function runThroughValidators(
 	validators = [],
-	validatee
+	validatee = ""
 ) {
 	let errors = [];
 	for (let i = 0; i < validators.length; i++) {
 		let validator = validators[i].test.bind(validators[i].test);
-		if (validatee !== undefined && !validator(validatee))
-			errors.push(validators[i]);
+		if (!validator(validatee)) errors.push(validators[i]);
 	}
 	return errors;
 };
@@ -44,6 +43,10 @@ export const validators = {
 				v
 			),
 		"Invalid email."
+	),
+	requiredField: new Validator(
+		v => (v ? true : false),
+		"This field is required."
 	)
 };
 
@@ -152,6 +155,7 @@ export const api = {
 	fetchEnums: () => executeFromAPI("get", "/api/carbooking/enums"),
 
 	fetchUsers: () => executeFromAPI("get", "/api/carbooking/users"),
+	fetchUser: id => executeFromAPI("get", `/api/carbooking/users/${id}`),
 	createUser: user => executeFromAPI("post", "/api/carbooking/users", user),
 	updateUser: user =>
 		executeFromAPI("patch", `/api/carbooking/users/${user.id}`, user),
@@ -162,12 +166,16 @@ export const api = {
 	createVehicle: vehicle =>
 		executeFromAPI("post", "/api/carbooking/vehicles", vehicle),
 	fetchVehicles: () => executeFromAPI("get", "/api/carbooking/vehicles"),
+	fetchVehicle: id => executeFromAPI("get", `/api/carbooking/vehicles/${id}`),
 	updateVehicle: vehicle =>
 		executeFromAPI("patch", `/api/carbooking/vehicles/${vehicle.id}`, vehicle),
 
 	createBooking: booking =>
 		executeFromAPI("post", "/api/carbooking/bookings/", booking),
 	fetchBookings: () => executeFromAPI("get", "/api/carbooking/bookings"),
+	fetchBooking: id => executeFromAPI("get", `/api/carbooking/bookings/${id}`),
+	updateBooking: booking =>
+		executeFromAPI("get", `/api/carbooking/bookings/${booking.id}`, booking),
 
 	createLocation: location =>
 		executeFromAPI("post", "/api/carbooking/locations", location),
@@ -177,5 +185,8 @@ export const api = {
 			"patch",
 			`/api/carbooking/locations/${location.id}`,
 			location
-		)
+		),
+
+	checkAccess: accessParams =>
+		executeFromAPI("post", "/api/carbooking/access", accessParams)
 };

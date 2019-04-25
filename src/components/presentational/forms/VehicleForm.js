@@ -1,7 +1,7 @@
 import React from "react";
 
 import Form, { FIELDS } from "./Form";
-const { TEXT } = FIELDS;
+const { TEXT, SELECT } = FIELDS;
 
 function VehicleForm({
 	values,
@@ -16,6 +16,15 @@ function VehicleForm({
 	title
 }) {
 	const fields = [
+		{
+			type: TEXT,
+			id: "object-id",
+			name: "objectId",
+			props: {
+				label: "Object Number",
+				required: true
+			}
+		},
 		{
 			type: TEXT,
 			id: "brand",
@@ -50,6 +59,24 @@ function VehicleForm({
 			props: {
 				label: "VIN",
 				required: true
+			}
+		},
+		{
+			type: TEXT,
+			id: "parking-location",
+			name: "parkingLocation",
+			props: {
+				label: "Parking Location Description"
+			}
+		},
+		{
+			type: SELECT,
+			id: "location-id",
+			name: "locationId",
+			props: {
+				label: "Location",
+				fullWidth: true,
+				items: [{ value: 1, label: "ATS Office" }]
 			}
 		}
 	];

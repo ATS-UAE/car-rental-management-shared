@@ -1,7 +1,6 @@
 export default function RBAC(permissionData) {
 	return {
 		can: function(role, action, resource) {
-			console.log(role, action, resource);
 			let $role = permissionData.roles.find(roleItem => roleItem.name === role);
 			let access = {
 				can: false,

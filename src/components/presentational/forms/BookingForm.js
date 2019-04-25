@@ -1,10 +1,12 @@
 import React from "react";
+import { Grid } from "@material-ui/core";
+import LocationsView from "../../containers/display/LocationsView";
 import Form, { FIELDS } from "./Form";
-const { SELECT, DATE_TIME_PICKER } = FIELDS;
+const { SELECT, DATE_TIME_PICKER, TEXT } = FIELDS;
 
 function BookingForm({
 	title,
-	include,
+	exclude,
 	errorNotes,
 	errors,
 	onSubmit,
@@ -15,7 +17,8 @@ function BookingForm({
 	buttonLabel,
 	userList,
 	bookingTypeList,
-	vehicleList
+	vehicleList,
+	footer
 }) {
 	const fields = [
 		{
@@ -49,13 +52,12 @@ function BookingForm({
 			}
 		},
 		{
-			type: SELECT,
+			type: TEXT,
 			id: "user-id",
 			name: "userId",
 			props: {
 				label: "User",
 				items: userList,
-				fullWidth: true,
 				required: true
 			}
 		},
@@ -86,7 +88,7 @@ function BookingForm({
 		<Form
 			title={title}
 			fields={fields}
-			include={include}
+			exclude={exclude}
 			errorNotes={errorNotes}
 			errors={errors}
 			onSubmit={onSubmit}
@@ -95,7 +97,12 @@ function BookingForm({
 			onError={onError}
 			values={values}
 			buttonLabel={buttonLabel}
-		/>
+			footer={footer}
+		>
+			<Grid item xs={12}>
+				<LocationsView />
+			</Grid>
+		</Form>
 	);
 }
 

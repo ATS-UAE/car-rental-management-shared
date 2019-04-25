@@ -26,7 +26,7 @@ function GuestSignUpContainer({ onSubmit }) {
 				disabled={disableButton}
 				type="submit"
 				variant="contained"
-				color="secondary"
+				color="primary"
 				onClick={e => {
 					e.preventDefault();
 					setDisabledButton(true);
@@ -36,7 +36,6 @@ function GuestSignUpContainer({ onSubmit }) {
 							onSubmit && onSubmit();
 						})
 						.catch(e => {
-							console.log(e);
 							setErrorNotes([e]);
 							setDisabledButton(false);
 						});
