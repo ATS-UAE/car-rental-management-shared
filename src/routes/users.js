@@ -75,8 +75,6 @@ router.post("/", async ({ user, body }, res) => {
 		}
 	} else if (user && user.role && user.role.name) {
 		accessible = await RBAC.can(user.role.name, CREATE, resources.users, role);
-		console.log(user.role.name, CREATE, resources.users, role);
-		console.log(accessible);
 	}
 	if (accessible || inviteTokenUsed) {
 		let guestRole = await db.Role.findOne({ where: { name: ROLES.GUEST } });
@@ -127,9 +125,11 @@ router.post("/", async ({ user, body }, res) => {
 			response.setMessage("User has been created.");
 			response.setCode(200);
 			response.setSuccess(true);
+			res.status(200)
 		} catch (e) {
 			response.setMessage(e.message);
 			response.setCode(422);
+			res.status(422)
 			if (e.errors && e.errors.length > 0) {
 				e.errors.forEach(error => response.appendError(error.path));
 			}
@@ -274,6 +274,7 @@ router.patch("/:id", requireLogin, async (req, res) => {
 			} catch (e) {
 				response.setMessage(e.message);
 				response.setCode(422);
+				res.status(422);
 				if (e.errors && e.errors.length > 0) {
 					e.errors.forEach(error => response.appendError(error.path));
 				}
@@ -282,6 +283,7 @@ router.patch("/:id", requireLogin, async (req, res) => {
 			res.status(404);
 			response.setCode(404);
 			response.setMessage(`User with ID ${req.params.id} not found.`);
+			res.status(404);
 		}
 	} else {
 		response.setMessage(errorCodes.UNAUTHORIZED.message);
