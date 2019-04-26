@@ -83,7 +83,6 @@ function NewUserButtonDialog({ enums, fetchUsers, onSubmit, classes }) {
 					>
 						<UserForm
 							title="Create User"
-							buttonLabel="Create"
 							values={newUser}
 							onChange={(data, name, errors) => {
 								setNewUser(data);

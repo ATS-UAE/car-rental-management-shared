@@ -16,6 +16,17 @@ function UserTable({ users, auth, enums, fetchEnums, fetchUsers, onSubmit }) {
 	const [formData, setFormData] = useState({});
 	let [disableButton, setDisabledButton] = useState(false);
 	let [errorNotes, setErrorNotes] = useState([]);
+	let [fieldErrors, setFieldErrors] = useState({});
+	useEffect(() => {
+		let validForm = true;
+		for (let key in fieldErrors) {
+			if (fieldErrors[key].length) {
+				validForm = false;
+			}
+		}
+		setDisabledButton(!validForm);
+	}, [fieldErrors]);
+
 	const tableBody = users
 		? users.data.map(user => {
 				let row = {
@@ -32,7 +43,6 @@ function UserTable({ users, auth, enums, fetchEnums, fetchUsers, onSubmit }) {
 					onClick: () => {
 						setOpen(true);
 						api.fetchUser(user.id).then(res => {
-							console.log(res);
 							setFormData({ ...res.data, roleId: user.role.id });
 						});
 					}
@@ -41,44 +51,22 @@ function UserTable({ users, auth, enums, fetchEnums, fetchUsers, onSubmit }) {
 				return row;
 		  })
 		: [];
-	let roleList = [{ value: "", label: "Loading..." }];
+
+	let roles = [
+		{
+			value: "",
+			label: "Loading"
+		}
+	];
 	if (enums && enums.data) {
-		roleList = enums.data.roles.reduce((acc, role) => {
+		roles = enums.data.roles.reduce((acc, role) => {
 			if (role.name !== ROLES.GUEST) {
 				acc.push({ value: role.id, label: toTitleWords(role.name) });
 			}
 			return acc;
 		}, []);
 	}
-	let footer = (
-		<Grid item>
-			<Button
-				disabled={disableButton}
-				type="submit"
-				variant="contained"
-				color="primary"
-				onClick={e => {
-					e.preventDefault();
-					setDisabledButton(true);
-					api
-						.updateUser(formData)
-						.then(() => {
-							fetchUsers();
-							onSubmit && onSubmit();
-							setOpen(false);
-							setDisabledButton(false);
-						})
 
-						.catch(e => {
-							setErrorNotes([e]);
-							setDisabledButton(false);
-						});
-				}}
-			>
-				Confirm
-			</Button>
-		</Grid>
-	);
 	return (
 		<Can
 			action={ACTIONS.READ}
@@ -119,24 +107,60 @@ function UserTable({ users, auth, enums, fetchEnums, fetchUsers, onSubmit }) {
 								name: formData.role ? formData.role.name : null
 							}
 						}}
-						yes={() => (
-							<UserForm
-								values={formData}
-								onChange={setFormData}
-								exclude={[...access.excludedFields, "passwordConfirm"]}
-								roleList={roleList}
-								title="Update User"
-								errorNotes={errorNotes}
-								footer={footer}
-							/>
-						)}
+						yes={() => {
+							let footer = (
+								<Grid item>
+									<Button
+										disabled={disableButton}
+										type="submit"
+										variant="contained"
+										color="primary"
+										onClick={e => {
+											e.preventDefault();
+											setDisabledButton(true);
+											api
+												.updateUser(formData)
+												.then(() => {
+													fetchUsers();
+													onSubmit && onSubmit();
+													setOpen(false);
+													setDisabledButton(false);
+												})
+
+												.catch(e => {
+													setErrorNotes([e]);
+													setDisabledButton(false);
+												});
+										}}
+									>
+										Confirm
+									</Button>
+								</Grid>
+							);
+							return (
+								<UserForm
+									title="Create User"
+									values={formData}
+									onChange={(data, name, errors) => {
+										setFormData(data);
+										setFieldErrors({ ...fieldErrors, [name]: errors });
+									}}
+									errorNotes={errorNotes}
+									roleList={roles}
+									footer={footer}
+								/>
+							);
+						}}
 						no={() => (
 							<UserForm
+								title="Create User"
 								values={formData}
-								onChange={setFormData}
-								exclude={[...access.excludedFields, "passwordConfirm"]}
-								roleList={roleList}
-								title="Update User"
+								onChange={(data, name, errors) => {
+									setFormData(data);
+									setFieldErrors({ ...fieldErrors, [name]: errors });
+								}}
+								errorNotes={errorNotes}
+								roleList={roles}
 							/>
 						)}
 					/>

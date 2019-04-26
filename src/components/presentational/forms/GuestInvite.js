@@ -1,53 +1,36 @@
 import React from "react";
-import PropTypes from "prop-types";
-import { Button, Grid, Typography } from "@material-ui/core";
-import { withStyles } from "@material-ui/core/styles";
-import EmailField from "../inputs/EmailField";
+import Form, { FIELDS } from "./Form";
+import { validators } from "../../../utils";
+const { TEXT } = FIELDS;
 
-function GuestInvite({ value, onChange, onSubmit, classes, title }) {
+function GuestInvite({ title, exclude, errorNotes, onChange, values, footer }) {
+	const fields = [
+		{
+			type: TEXT,
+			name: "email",
+			id: "email",
+			validators: [validators.email],
+			props: {
+				label: "Email Address",
+				required: true
+			},
+			GridProps: {
+				xs: 12,
+				md: 12
+			}
+		}
+	];
 	return (
-		<form>
-			{title && (
-				<Typography variant="h6" gutterBottom headlineMapping={{ h6: "h1" }}>
-					{title}
-				</Typography>
-			)}
-			<Grid container spacing={24} alignItems="center">
-				<Grid item className={classes.emailField}>
-					<EmailField
-						TextFieldProps={{
-							fullWidth: true
-						}}
-						value={value}
-						onChange={onChange}
-					/>
-				</Grid>
-				<Grid item>
-					<Button
-						type="submit"
-						variant="contained"
-						color="primary"
-						onClick={e => {
-							e.preventDefault();
-							onSubmit(e);
-						}}
-					>
-						Invite
-					</Button>
-				</Grid>
-			</Grid>
-		</form>
+		<Form
+			title={title}
+			fields={fields}
+			exclude={exclude}
+			errorNotes={errorNotes}
+			onChange={onChange}
+			values={values}
+			footer={footer}
+		/>
 	);
 }
 
-GuestInvite.propTypes = {
-	title: PropTypes.string
-};
-
-const style = theme => ({
-	emailField: {
-		flexGrow: 1
-	}
-});
-
-export default withStyles(style)(GuestInvite);
+export default GuestInvite;

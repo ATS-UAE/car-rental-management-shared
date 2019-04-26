@@ -51,7 +51,7 @@ function Form({
 				<Grid container spacing={24}>
 					{formFields.map(field => {
 						const Component = field.type;
-						const { props = {}, name, id } = field;
+						const { props = {}, name, id, GridProps } = field;
 						const errors = Validator.runThroughValidators(
 							field.validators,
 							values[name]
@@ -60,7 +60,7 @@ function Form({
 							handleChange(name, errors)({ target: { value: values[name] } });
 						}, []);
 						return (
-							<Grid item xs={12} sm={6} key={name}>
+							<Grid item xs={12} sm={6} key={name} {...GridProps}>
 								<Component
 									id={id}
 									value={values[name] || ""}
@@ -72,9 +72,7 @@ function Form({
 										handleChange(name, errors)(e);
 									}}
 									{...props}
-									label={
-										errors[0] && values[name] ? errors[0] : props.label
-									}
+									label={errors[0] && values[name] ? errors[0] : props.label}
 									error={
 										errors.length && values[name] !== undefined ? true : false
 									}

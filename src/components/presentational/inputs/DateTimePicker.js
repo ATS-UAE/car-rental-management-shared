@@ -1,9 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
 import moment from "moment";
-import GenericTextField from "./GenericTextField";
+import { withStyles } from "@material-ui/core/styles";
+import { TextField } from "@material-ui/core";
 import Slider from "./Slider";
-import { withStyles } from "@material-ui/core";
 
 function DateTimePicker({ value, id, onChange, classes, label }) {
 	let DateTime = moment(value, "X");
@@ -40,13 +40,13 @@ function DateTimePicker({ value, id, onChange, classes, label }) {
 
 	return (
 		<div>
-
 			<div className={classes.textField}>
-				<GenericTextField
+				<TextField
 					id={id + "-picker"}
 					value={date}
 					label={label}
-					TextFieldProps={{ type: "date", fullWidth: true}}
+					type="date"
+					fullWidth
 					onChange={handleDateChange}
 				/>
 			</div>
