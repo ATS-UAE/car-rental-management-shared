@@ -34,8 +34,8 @@ function Can({
 		}
 	}, [auth]);
 	if (access !== null) {
-		if (yes !== undefined) return yes(access) || null;
-		if (no !== undefined) return no(access) || null;
+		if (access.access && yes !== undefined) return yes(access) || null;
+		else if (no !== undefined) return no(access) || null;
 	}
 	return loading || null;
 }

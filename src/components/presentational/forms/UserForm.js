@@ -12,7 +12,9 @@ function UserForm({
 	roleList,
 	footer,
 	onError,
-	errors
+	errors,
+	readOnly,
+	hints
 }) {
 	let samePassword = new Validator(
 		password => password === values.password,
@@ -127,6 +129,8 @@ function UserForm({
 			footer={footer}
 			onError={onError}
 			errors={errors}
+			readOnly={readOnly}
+			hints={hints}
 		/>
 	);
 }

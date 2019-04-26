@@ -24,7 +24,8 @@ export default function SimpleSelect({
 	SelectProps,
 	InputProps,
 	onValid,
-	onError
+	onError,
+	disabled
 }) {
 	if (required && (value === undefined || value === "")) {
 		onError && onError(value);
@@ -46,6 +47,7 @@ export default function SimpleSelect({
 				}}
 				name={name}
 				input={<Input {...InputProps} name={name} id={id} />}
+				disabled={disabled}
 			>
 				{haveNone && (
 					<MenuItem value="">

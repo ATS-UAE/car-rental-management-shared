@@ -16,16 +16,16 @@ function UserTable({ users, auth, enums, fetchEnums, fetchUsers, onSubmit }) {
 	const [formData, setFormData] = useState({});
 	let [disableButton, setDisabledButton] = useState(false);
 	let [errorNotes, setErrorNotes] = useState([]);
-	let [fieldErrors, setFieldErrors] = useState({});
+	let [errors, setErrors] = useState({});
 	useEffect(() => {
 		let validForm = true;
-		for (let key in fieldErrors) {
-			if (fieldErrors[key].length) {
+		for (let key in errors) {
+			if (errors[key].length) {
 				validForm = false;
 			}
 		}
 		setDisabledButton(!validForm);
-	}, [fieldErrors]);
+	}, [errors]);
 
 	const tableBody = users
 		? users.data.map(user => {
@@ -107,7 +107,7 @@ function UserTable({ users, auth, enums, fetchEnums, fetchUsers, onSubmit }) {
 								name: formData.role ? formData.role.name : null
 							}
 						}}
-						yes={() => {
+						yes={access => {
 							let footer = (
 								<Grid item>
 									<Button
@@ -139,28 +139,30 @@ function UserTable({ users, auth, enums, fetchEnums, fetchUsers, onSubmit }) {
 							);
 							return (
 								<UserForm
-									title="Create User"
+									title="Update User"
 									values={formData}
-									onChange={(data, name, errors) => {
-										setFormData(data);
-										setFieldErrors({ ...fieldErrors, [name]: errors });
-									}}
+									errors={errors}
+									onError={setErrors}
+									onChange={setFormData}
 									errorNotes={errorNotes}
 									roleList={roles}
 									footer={footer}
+									exclude={access.excludedFields}
 								/>
 							);
 						}}
 						no={() => (
 							<UserForm
-								title="Create User"
+								title="User"
 								values={formData}
-								onChange={(data, name, errors) => {
-									setFormData(data);
-									setFieldErrors({ ...fieldErrors, [name]: errors });
-								}}
+								errors={errors}
+								onError={setErrors}
+								onChange={setFormData}
 								errorNotes={errorNotes}
 								roleList={roles}
+								readOnly={true}
+								exclude={["password", "passwordConfirm"]}
+								hints=""
 							/>
 						)}
 					/>

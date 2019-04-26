@@ -28,11 +28,13 @@ function Form({
 	children,
 	footer,
 	onError,
-	errors
+	errors,
+	readOnly,
+	hints
 }) {
 	const handleChange = name => e =>
 		onChange && onChange({ ...values, [name]: e.target.value });
-	const handleError = name => e => onError && onError({ ...errors, [name]: e });
+	// const handleError = name => e => onError && onError({ ...errors, [name]: e });
 	const formFields = fields.filter(field => !exclude.includes(field.name));
 	useEffect(() => {
 		let fieldErrors = {};
@@ -46,7 +48,7 @@ function Form({
 			}
 		}
 		onError && onError(fieldErrors);
-	}, []);
+	}, [values]);
 	return (
 		<Fragment>
 			<form>
@@ -73,14 +75,8 @@ function Form({
 								<Component
 									id={id}
 									value={values[name] || ""}
-									onChange={e => {
-										let errors = Validator.runThroughValidators(
-											field.validators,
-											e.target.value
-										).map(validator => validator.error);
-										handleError(name)(errors);
-										handleChange(name)(e);
-									}}
+									onChange={handleChange(name)}
+									disabled={readOnly ? true : false}
 									{...props}
 									label={
 										errors[name] && errors[name][0] && values[name]
@@ -101,9 +97,11 @@ function Form({
 					})}
 					{children}
 					<Grid item xs={12}>
-						<Grid item className={classes.notes}>
-							<Typography>*Required</Typography>
-						</Grid>
+						{hints && (
+							<Grid item className={classes.hints}>
+								<Typography>{hints}</Typography>
+							</Grid>
+						)}
 						{footer}
 					</Grid>
 				</Grid>
@@ -121,17 +119,16 @@ Form.propTypes = {
 			id: PropTypes.string.isRequired
 		})
 	),
-	buttonLabel: PropTypes.string,
 	errorNotes: PropTypes.arrayOf(PropTypes.string),
-	onSubmit: PropTypes.func,
 	onChange: PropTypes.func,
 	onError: PropTypes.func,
-	onValid: PropTypes.func,
 	title: PropTypes.string,
 	errors: PropTypes.object,
+	values: PropTypes.object,
 	exclude: PropTypes.arrayOf(PropTypes.string),
 	readOnly: PropTypes.bool,
-	footer: PropTypes.node
+	footer: PropTypes.node,
+	hints: PropTypes.string
 };
 
 Form.defaultProps = {
@@ -141,14 +138,15 @@ Form.defaultProps = {
 	errors: {},
 	errorNotes: [],
 	buttonLabel: "Confirm",
-	readOnly: false
+	readOnly: false,
+	hints: "*Required"
 };
 
 const style = theme => ({
 	paper: {
 		padding: theme.spacing.unit * 3
 	},
-	notes: {
+	hints: {
 		float: "right"
 	},
 	title: {
