@@ -8,16 +8,16 @@ function Login({ authLogin, onLogin }) {
 	let [auth, setAuth] = useState({});
 	let [authErrors, setAuthErrors] = useState([]);
 	let [disableButton, setDisabledButton] = useState(false);
-	let [fieldErrors, setFieldErrors] = useState({});
+	let [errors, setErrors] = useState({});
 	useEffect(() => {
 		let validForm = true;
-		for (let key in fieldErrors) {
-			if (fieldErrors[key].length) {
+		for (let key in errors) {
+			if (errors[key].length) {
 				validForm = false;
 			}
 		}
 		setDisabledButton(!validForm);
-	}, [fieldErrors]);
+	}, [errors]);
 	const footer = (
 		<Grid item>
 			<Button
@@ -44,10 +44,9 @@ function Login({ authLogin, onLogin }) {
 	return (
 		<LoginForm
 			values={auth}
-			onChange={(data, name, errors) => {
-				setAuth(data);
-				setFieldErrors({ ...fieldErrors, [name]: errors });
-			}}
+			onChange={setAuth}
+			onError={setErrors}
+			errors={errors}
 			title="Login"
 			footer={footer}
 			errorNotes={authErrors}

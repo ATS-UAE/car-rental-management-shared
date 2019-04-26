@@ -30,8 +30,8 @@ function Form({
 	onError,
 	errors
 }) {
-	const handleChange = (name, errors) => e =>
-		onChange && onChange({ ...values, [name]: e.target.value }, name, errors);
+	const handleChange = name => e =>
+		onChange && onChange({ ...values, [name]: e.target.value });
 	const handleError = name => e => onError && onError({ ...errors, [name]: e });
 	const formFields = fields.filter(field => !exclude.includes(field.name));
 	useEffect(() => {
@@ -78,7 +78,7 @@ function Form({
 											e.target.value
 										).map(validator => validator.error);
 										handleError(name)(errors);
-										handleChange(name, errors)(e);
+										handleChange(name)(e);
 									}}
 									{...props}
 									label={

@@ -3,7 +3,16 @@ import Form, { FIELDS } from "./Form";
 import { validators } from "../../../utils";
 const { PASSWORD, TEXT } = FIELDS;
 
-function LoginForm({ title, exclude, errorNotes, onChange, values, footer }) {
+function LoginForm({
+	title,
+	exclude,
+	errorNotes,
+	onChange,
+	values,
+	footer,
+	onError,
+	errors
+}) {
 	const fields = [
 		{
 			type: TEXT,
@@ -34,8 +43,10 @@ function LoginForm({ title, exclude, errorNotes, onChange, values, footer }) {
 			exclude={exclude}
 			errorNotes={errorNotes}
 			onChange={onChange}
+			onError={onError}
 			values={values}
 			footer={footer}
+			errors={errors}
 		/>
 	);
 }
