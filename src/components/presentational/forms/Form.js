@@ -38,9 +38,10 @@ function Form({
 		let fieldErrors = {};
 		for (let field of formFields) {
 			if (field.validators) {
-				let errors = Validator.runThroughValidators(field.validators).map(
-					validator => validator.error
-				);
+				let errors = Validator.runThroughValidators(
+					field.validators,
+					values[field.name]
+				).map(validator => validator.error);
 				fieldErrors[field.name] = errors;
 			}
 		}
