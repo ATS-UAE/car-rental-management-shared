@@ -4,28 +4,27 @@ import { withStyles } from "@material-ui/core/styles";
 import { Marker } from "react-google-maps";
 import GMaps from "../display/GMaps";
 import Form, { FIELDS } from "./Form";
+import { validators } from "../../../utils";
+
 const { TEXT } = FIELDS;
 
 function LocationForm({
 	title,
-	include,
+	exclude,
 	errorNotes,
-	errors,
-	onSubmit,
-	onValid,
 	onChange,
-	onError,
 	values,
-	buttonLabel,
 	onMapClick,
 	locationValue,
-	existingLocations
+	existingLocations,
+	footer
 }) {
 	const fields = [
 		{
 			type: TEXT,
 			id: "location-name",
 			name: "name",
+			validators: [validators.requiredField],
 			props: {
 				label: "Location Name",
 				required: true
@@ -35,6 +34,7 @@ function LocationForm({
 			type: TEXT,
 			id: "full-address",
 			name: "address",
+			validators: [validators.requiredField],
 			props: {
 				label: "Full Address",
 				required: true
@@ -45,15 +45,11 @@ function LocationForm({
 		<Form
 			title={title}
 			fields={fields}
-			include={include}
+			exclude={exclude}
 			errorNotes={errorNotes}
-			errors={errors}
-			onSubmit={onSubmit}
-			onValid={onValid}
 			onChange={onChange}
-			onError={onError}
 			values={values}
-			buttonLabel={buttonLabel}
+			footer={footer}
 		>
 			<Grid item xs={12}>
 				<GMaps
@@ -66,7 +62,11 @@ function LocationForm({
 					{locationValue && <Marker position={locationValue} />}
 					{existingLocations &&
 						existingLocations.map(({ lat, lng, label }) => (
-							<Marker position={{ lat, lng }} label={label} />
+							<Marker
+								position={{ lat, lng }}
+								label={label}
+								key={lat + lng + label}
+							/>
 						))}
 				</GMaps>
 			</Grid>
