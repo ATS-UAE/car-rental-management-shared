@@ -3,7 +3,16 @@ import Form, { FIELDS } from "./Form";
 import { validators } from "../../../utils";
 const { TEXT } = FIELDS;
 
-function GuestInvite({ title, exclude, errorNotes, onChange, values, footer }) {
+function GuestInvite({
+	title,
+	exclude,
+	errorNotes,
+	onChange,
+	values,
+	footer,
+	onError,
+	errors
+}) {
 	const fields = [
 		{
 			type: TEXT,
@@ -29,6 +38,8 @@ function GuestInvite({ title, exclude, errorNotes, onChange, values, footer }) {
 			onChange={onChange}
 			values={values}
 			footer={footer}
+			onError={onError}
+			errors={errors}
 		/>
 	);
 }

@@ -8,17 +8,17 @@ export default function InviteGuestButtonDialog({ onSubmit }) {
 	let [formData, setFormData] = useState({});
 	let [errorNotes, setErrorNotes] = useState([]);
 	let [disableButton, setDisabledButton] = useState(false);
-	let [fieldErrors, setFieldErrors] = useState({});
+	let [errors, setErrors] = useState({});
 	let [open, setOpen] = useState(false);
 	useEffect(() => {
 		let validForm = true;
-		for (let key in fieldErrors) {
-			if (fieldErrors[key].length) {
+		for (let key in errors) {
+			if (errors[key].length) {
 				validForm = false;
 			}
 		}
 		setDisabledButton(!validForm);
-	}, [fieldErrors]);
+	}, [errors]);
 	const footer = (
 		<Grid item>
 			<Button
@@ -45,7 +45,7 @@ export default function InviteGuestButtonDialog({ onSubmit }) {
 						});
 				}}
 			>
-				Login
+				Invite
 			</Button>
 		</Grid>
 	);
@@ -61,10 +61,9 @@ export default function InviteGuestButtonDialog({ onSubmit }) {
 				title="Invite Customer"
 				onSubmit={() => {}}
 				values={formData}
-				onChange={(data, name, errors) => {
-					setFormData(data);
-					setFieldErrors({ ...fieldErrors, [name]: errors });
-				}}
+				onChange={setFormData}
+				errors={errors}
+				onError={setErrors}
 				footer={footer}
 				errorNotes={errorNotes}
 			/>
