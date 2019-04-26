@@ -17,7 +17,9 @@ function LocationForm({
 	onMapClick,
 	locationValue,
 	existingLocations,
-	footer
+	footer,
+	errors,
+	onError
 }) {
 	const fields = [
 		{
@@ -50,6 +52,8 @@ function LocationForm({
 			onChange={onChange}
 			values={values}
 			footer={footer}
+			errors={errors}
+			onError={onError}
 		>
 			<Grid item xs={12}>
 				<GMaps

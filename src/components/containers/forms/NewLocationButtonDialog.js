@@ -4,8 +4,9 @@ import { Grid, Button } from "@material-ui/core";
 import LocationForm from "../../presentational/forms/LocationForm";
 import * as actions from "../../../actions";
 import { api } from "../../../utils";
+import { RESOURCES, ACTIONS } from "../../../variables";
 import DialogButton from "../../presentational/forms/DialogButton";
-
+import Can from "../layout/Can";
 function NewLocationButtonDialog({ onSubmit, fetchLocations, locations }) {
 	useEffect(() => {
 		if (!locations) {
@@ -16,11 +17,11 @@ function NewLocationButtonDialog({ onSubmit, fetchLocations, locations }) {
 	let [open, setOpen] = useState(false);
 	let [disableButton, setDisabledButton] = useState(false);
 	let [errorNotes, setErrorNotes] = useState([]);
-	let [fieldErrors, setFieldErrors] = useState({});
+	let [errors, setErrors] = useState({});
 	useEffect(() => {
 		let validForm = true;
-		for (let key in fieldErrors) {
-			if (fieldErrors[key].length) {
+		for (let key in errors) {
+			if (errors[key].length) {
 				validForm = false;
 			}
 		}
@@ -28,7 +29,7 @@ function NewLocationButtonDialog({ onSubmit, fetchLocations, locations }) {
 			validForm = false;
 		}
 		setDisabledButton(!validForm);
-	}, [fieldErrors, newLocation]);
+	}, [errors, newLocation]);
 	let existingLocations = [];
 	if (locations && locations.data) {
 		existingLocations = locations.data.map(location => ({
@@ -67,30 +68,36 @@ function NewLocationButtonDialog({ onSubmit, fetchLocations, locations }) {
 		</Grid>
 	);
 	return (
-		<DialogButton
-			open={open}
-			onClick={() => setOpen(true)}
-			onClose={() => setOpen(false)}
-		>
-			<LocationForm
-				values={newLocation}
-				onChange={(data, name, errors) => {
-					setNewLocation({ newLocation, ...data });
-					setFieldErrors({ ...fieldErrors, [name]: errors });
-				}}
-				errorNotes={errorNotes}
-				footer={footer}
-				buttonLabel="Create"
-				title="Create Location"
-				locationValue={
-					newLocation && newLocation.lat && newLocation.lng
-						? { lat: newLocation.lat, lng: newLocation.lng }
-						: undefined
-				}
-				existingLocations={existingLocations}
-				onMapClick={v => setNewLocation({ ...newLocation, ...v })}
-			/>
-		</DialogButton>
+		<Can
+			resource={RESOURCES.LOCATIONS}
+			action={ACTIONS.CREATE}
+			yes={access => (
+				<DialogButton
+					open={open}
+					onClick={() => setOpen(true)}
+					onClose={() => setOpen(false)}
+				>
+					<LocationForm
+						values={newLocation}
+						onChange={setNewLocation}
+						onError={setErrors}
+						errors={errors}
+						errorNotes={errorNotes}
+						footer={footer}
+						buttonLabel="Create"
+						title="Create Location"
+						locationValue={
+							newLocation && newLocation.lat && newLocation.lng
+								? { lat: newLocation.lat, lng: newLocation.lng }
+								: undefined
+						}
+						existingLocations={existingLocations}
+						onMapClick={v => setNewLocation({ ...newLocation, ...v })}
+						exclude={access.excludedFields}
+					/>
+				</DialogButton>
+			)}
+		/>
 	);
 }
 
