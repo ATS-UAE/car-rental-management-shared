@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { compose } from "redux";
 import { withRouter } from "react-router-dom";
@@ -6,18 +6,20 @@ import { Button, Grid } from "@material-ui/core";
 import GuestSignUp from "../../presentational/forms/GuestSignUp";
 import { api } from "../../../utils";
 
-function GuestSignUpContainer({ onSubmit }) {
-	let [newUser, setNewUser] = useState({
-		username: "",
-		password: "",
-		passwordConfirm: "",
-		firstName: "",
-		lastName: "",
-		mobileNumber: "",
-		gender: ""
-	});
+function GuestSignUpContainer({ onSubmit, history }) {
+	let [newUser, setNewUser] = useState({});
 	let [disableButton, setDisabledButton] = useState(false);
 	let [errorNotes, setErrorNotes] = useState([]);
+	let [fieldErrors, setFieldErrors] = useState({});
+	useEffect(() => {
+		let validForm = true;
+		for (let key in fieldErrors) {
+			if (fieldErrors[key].length) {
+				validForm = false;
+			}
+		}
+		setDisabledButton(!validForm);
+	}, [fieldErrors]);
 	let inviteToken = new URLSearchParams(window.location.search).get("token");
 
 	let footer = (
@@ -33,6 +35,7 @@ function GuestSignUpContainer({ onSubmit }) {
 					api
 						.createUser({ ...newUser, inviteToken })
 						.then(() => {
+							history.push("/");
 							onSubmit && onSubmit();
 						})
 						.catch(e => {
@@ -51,7 +54,10 @@ function GuestSignUpContainer({ onSubmit }) {
 			title={"Sign Up"}
 			buttonLabel={"Confirm"}
 			values={newUser}
-			onChange={data => setNewUser(data)}
+			onChange={(data, name, errors) => {
+				setNewUser(data);
+				setFieldErrors({ ...fieldErrors, [name]: errors });
+			}}
 			footer={footer}
 			errorNotes={errorNotes}
 		/>

@@ -1,7 +1,7 @@
 import React from "react";
 import Form, { FIELDS } from "./Form";
-import { Validator } from "../../../utils";
-const { SELECT, USERNAME, PASSWORD, TEXT, EMAIL } = FIELDS;
+import { Validator, validators } from "../../../utils";
+const { SELECT, PASSWORD, TEXT } = FIELDS;
 
 function GuestSignUp({
 	title,
@@ -22,10 +22,12 @@ function GuestSignUp({
 	);
 	const fields = [
 		{
-			type: USERNAME,
+			type: TEXT,
 			name: "username",
 			id: "username",
+			validators: [validators.username],
 			props: {
+				label: "Username",
 				required: true
 			}
 		},
@@ -33,6 +35,7 @@ function GuestSignUp({
 			type: PASSWORD,
 			name: "password",
 			id: "password",
+			validators: [validators.password],
 			props: {
 				label: "Password",
 				required: true
@@ -42,16 +45,17 @@ function GuestSignUp({
 			type: PASSWORD,
 			name: "passwordConfirm",
 			id: "password-confirm",
+			validators: [samePassword],
 			props: {
 				label: "Confirm Password",
-				required: true,
-				validators: [samePassword]
+				required: true
 			}
 		},
 		{
 			type: TEXT,
 			id: "first-name",
 			name: "firstName",
+			validators: [validators.requiredField],
 			props: {
 				label: "First Name",
 				required: true
@@ -61,6 +65,7 @@ function GuestSignUp({
 			type: TEXT,
 			id: "last-name",
 			name: "lastName",
+			validators: [validators.requiredField],
 			props: {
 				label: "Last Name",
 				required: true
@@ -70,6 +75,7 @@ function GuestSignUp({
 			type: TEXT,
 			id: "mobile-number",
 			name: "mobileNumber",
+			validators: [validators.requiredField],
 			props: {
 				label: "Mobile Number",
 				required: true
@@ -79,6 +85,7 @@ function GuestSignUp({
 			type: SELECT,
 			id: "gender",
 			name: "gender",
+			validators: [validators.requiredField],
 			props: {
 				label: "Gender",
 				fullWidth: true,
