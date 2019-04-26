@@ -1,25 +1,23 @@
 import React from "react";
-
+import { validators } from "../../../utils";
 import Form, { FIELDS } from "./Form";
 const { TEXT, SELECT } = FIELDS;
 
 function VehicleForm({
 	values,
 	errorNotes,
-	errors,
-	onSubmit,
-	onValid,
 	onChange,
-	onError,
-	include,
-	buttonLabel,
-	title
+	exclude,
+	title,
+	footer,
+	locations
 }) {
 	const fields = [
 		{
 			type: TEXT,
 			id: "object-id",
 			name: "objectId",
+			validators: [validators.requiredField],
 			props: {
 				label: "Object Number",
 				required: true
@@ -29,6 +27,7 @@ function VehicleForm({
 			type: TEXT,
 			id: "brand",
 			name: "brand",
+			validators: [validators.requiredField],
 			props: {
 				label: "Vehicle Brand",
 				required: true
@@ -38,6 +37,7 @@ function VehicleForm({
 			type: TEXT,
 			id: "model",
 			name: "model",
+			validators: [validators.requiredField],
 			props: {
 				label: "Vehicle Model",
 				required: true
@@ -47,6 +47,7 @@ function VehicleForm({
 			type: TEXT,
 			id: "plate-number",
 			name: "plateNumber",
+			validators: [validators.requiredField],
 			props: {
 				label: "Plate Number",
 				required: true
@@ -56,6 +57,7 @@ function VehicleForm({
 			type: TEXT,
 			id: "vin",
 			name: "vin",
+			validators: [validators.requiredField],
 			props: {
 				label: "VIN",
 				required: true
@@ -76,7 +78,7 @@ function VehicleForm({
 			props: {
 				label: "Location",
 				fullWidth: true,
-				items: [{ value: 1, label: "ATS Office" }]
+				items: locations
 			}
 		}
 	];
@@ -85,15 +87,11 @@ function VehicleForm({
 		<Form
 			title={title}
 			fields={fields}
-			include={include}
+			exclude={exclude}
 			errorNotes={errorNotes}
-			errors={errors}
-			onSubmit={onSubmit}
-			onValid={onValid}
 			onChange={onChange}
-			onError={onError}
 			values={values}
-			buttonLabel={buttonLabel}
+			footer={footer}
 		/>
 	);
 }

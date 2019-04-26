@@ -1,29 +1,28 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { Grid, Button } from "@material-ui/core";
-import { withStyles } from "@material-ui/core/styles";
-import { compose } from "redux";
 import UserForm from "../../presentational/forms/UserForm";
 import * as actions from "../../../actions";
 import { api, toTitleWords } from "../../../utils";
 import DialogButton from "../../presentational/forms/DialogButton";
 import { ROLES, ACTIONS, RESOURCES } from "../../../variables";
 import Can from "../layout/Can";
-function NewUserButtonDialog({ enums, fetchUsers, onSubmit, classes }) {
+function NewUserButtonDialog({ enums, fetchUsers, onSubmit }) {
 	const [newUser, setNewUser] = useState({});
 	let [open, setOpen] = useState(false);
-	let [disableButton, setDisabledButton] = useState(false);
+	let [disableButton, setDisabledButton] = useState(true);
 	let [errorNotes, setErrorNotes] = useState([]);
-	let [fieldErrors, setFieldErrors] = useState({});
+	let [errors, setErrors] = useState({});
+
 	useEffect(() => {
 		let validForm = true;
-		for (let key in fieldErrors) {
-			if (fieldErrors[key].length) {
+		for (let key in errors) {
+			if (errors[key].length) {
 				validForm = false;
 			}
 		}
 		setDisabledButton(!validForm);
-	}, [fieldErrors]);
+	}, [errors]);
 
 	let roles = [
 		{
@@ -39,13 +38,12 @@ function NewUserButtonDialog({ enums, fetchUsers, onSubmit, classes }) {
 			return acc;
 		}, []);
 	}
-
 	return (
 		<Can
 			action={ACTIONS.CREATE}
 			resource={RESOURCES.USERS}
 			params={{ role: { name: ROLES.ADMIN } }}
-			yes={() => {
+			yes={access => {
 				const footer = (
 					<Grid item>
 						<Button
@@ -71,7 +69,7 @@ function NewUserButtonDialog({ enums, fetchUsers, onSubmit, classes }) {
 									});
 							}}
 						>
-							Confirm
+							Create
 						</Button>
 					</Grid>
 				);
@@ -82,15 +80,15 @@ function NewUserButtonDialog({ enums, fetchUsers, onSubmit, classes }) {
 						onClose={() => setOpen(false)}
 					>
 						<UserForm
+							exclude={access.excludedFields}
 							title="Create User"
 							values={newUser}
-							onChange={(data, name, errors) => {
-								setNewUser(data);
-								setFieldErrors({ ...fieldErrors, [name]: errors });
-							}}
+							onChange={data => setNewUser(data)}
 							errorNotes={errorNotes}
 							roleList={roles}
 							footer={footer}
+							onError={errors => setErrors(errors)}
+							errors={errors}
 						/>
 					</DialogButton>
 				);
@@ -101,16 +99,7 @@ function NewUserButtonDialog({ enums, fetchUsers, onSubmit, classes }) {
 
 const mapStateToProps = ({ enums }) => ({ enums });
 
-const styles = theme => ({
-	invite: {
-		marginBottom: theme.spacing.unit * 3
-	}
-});
-
-export default compose(
-	withStyles(styles),
-	connect(
-		mapStateToProps,
-		actions
-	)
+export default connect(
+	mapStateToProps,
+	actions
 )(NewUserButtonDialog);

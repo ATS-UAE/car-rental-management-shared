@@ -10,7 +10,9 @@ function UserForm({
 	onChange,
 	values,
 	roleList,
-	footer
+	footer,
+	onError,
+	errors
 }) {
 	let samePassword = new Validator(
 		password => password === values.password,
@@ -88,18 +90,7 @@ function UserForm({
 				required: true
 			}
 		},
-		{
-			type: SELECT,
-			id: "gender",
-			name: "gender",
-			validators: [validators.requiredField],
-			props: {
-				label: "Gender",
-				fullWidth: true,
-				items: [{ value: "m", label: "Male" }, { value: "f", label: "Female" }],
-				required: true
-			}
-		},
+
 		{
 			type: SELECT,
 			id: "role-id",
@@ -109,6 +100,18 @@ function UserForm({
 				label: "Role",
 				fullWidth: true,
 				items: roleList,
+				required: true
+			}
+		},
+		{
+			type: SELECT,
+			id: "gender",
+			name: "gender",
+			validators: [validators.requiredField],
+			props: {
+				label: "Gender",
+				fullWidth: true,
+				items: [{ value: "m", label: "Male" }, { value: "f", label: "Female" }],
 				required: true
 			}
 		}
@@ -122,6 +125,8 @@ function UserForm({
 			onChange={onChange}
 			values={values}
 			footer={footer}
+			onError={onError}
+			errors={errors}
 		/>
 	);
 }

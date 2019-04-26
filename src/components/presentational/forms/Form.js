@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { Grid, Typography, TextField } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
@@ -24,14 +24,28 @@ function Form({
 	title,
 	values,
 	onChange,
-
 	exclude,
 	children,
-	footer
+	footer,
+	onError,
+	errors
 }) {
 	const handleChange = (name, errors) => e =>
 		onChange && onChange({ ...values, [name]: e.target.value }, name, errors);
+	const handleError = name => e => onError && onError({ ...errors, [name]: e });
 	const formFields = fields.filter(field => !exclude.includes(field.name));
+	useEffect(() => {
+		let fieldErrors = {};
+		for (let field of formFields) {
+			if (field.validators) {
+				let errors = Validator.runThroughValidators(field.validators).map(
+					validator => validator.error
+				);
+				fieldErrors[field.name] = errors;
+			}
+		}
+		onError && onError(fieldErrors);
+	}, []);
 	return (
 		<Fragment>
 			<form>
@@ -52,29 +66,32 @@ function Form({
 					{formFields.map(field => {
 						const Component = field.type;
 						const { props = {}, name, id, GridProps } = field;
-						const errors = Validator.runThroughValidators(
-							field.validators,
-							values[name]
-						).map(error => error.error);
-						useEffect(() => {
-							handleChange(name, errors)({ target: { value: values[name] } });
-						}, []);
+
 						return (
 							<Grid item xs={12} sm={6} key={name} {...GridProps}>
 								<Component
 									id={id}
 									value={values[name] || ""}
 									onChange={e => {
-										const errors = Validator.runThroughValidators(
+										let errors = Validator.runThroughValidators(
 											field.validators,
 											e.target.value
-										).map(error => error.error);
+										).map(validator => validator.error);
+										handleError(name)(errors);
 										handleChange(name, errors)(e);
 									}}
 									{...props}
-									label={errors[0] && values[name] ? errors[0] : props.label}
+									label={
+										errors[name] && errors[name][0] && values[name]
+											? errors[name][0]
+											: props.label
+									}
 									error={
-										errors.length && values[name] !== undefined ? true : false
+										errors[name] &&
+										errors[name].length &&
+										values[name] !== undefined
+											? true
+											: false
 									}
 									fullWidth
 								/>
@@ -110,7 +127,7 @@ Form.propTypes = {
 	onError: PropTypes.func,
 	onValid: PropTypes.func,
 	title: PropTypes.string,
-	errors: PropTypes.arrayOf(PropTypes.string),
+	errors: PropTypes.object,
 	exclude: PropTypes.arrayOf(PropTypes.string),
 	readOnly: PropTypes.bool,
 	footer: PropTypes.node
@@ -120,7 +137,7 @@ Form.defaultProps = {
 	fields: [],
 	exclude: [],
 	values: {},
-	errors: [],
+	errors: {},
 	errorNotes: [],
 	buttonLabel: "Confirm",
 	readOnly: false
