@@ -15,10 +15,11 @@ function LocationsView({ locations, fetchLocations }) {
 		<GMaps>
 			{locations &&
 				locations.data &&
-				locations.data.map(location => (
+				locations.data.map(({ lat, lng, name }) => (
 					<Marker
-						position={{ lat: location.lat, lng: location.lng }}
-						label={location.name}
+						position={{ lat: lat, lng: lng }}
+						label={name}
+						key={lat + lng + name}
 					/>
 				))}
 		</GMaps>
