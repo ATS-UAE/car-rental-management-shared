@@ -10,16 +10,16 @@ function GuestSignUpContainer({ onSubmit, history }) {
 	let [newUser, setNewUser] = useState({});
 	let [disableButton, setDisabledButton] = useState(false);
 	let [errorNotes, setErrorNotes] = useState([]);
-	let [fieldErrors, setFieldErrors] = useState({});
+	let [errors, setErrors] = useState({});
 	useEffect(() => {
 		let validForm = true;
-		for (let key in fieldErrors) {
-			if (fieldErrors[key].length) {
+		for (let key in errors) {
+			if (errors[key].length) {
 				validForm = false;
 			}
 		}
 		setDisabledButton(!validForm);
-	}, [fieldErrors]);
+	}, [errors]);
 	let inviteToken = new URLSearchParams(window.location.search).get("token");
 
 	let footer = (
@@ -54,10 +54,9 @@ function GuestSignUpContainer({ onSubmit, history }) {
 			title={"Sign Up"}
 			buttonLabel={"Confirm"}
 			values={newUser}
-			onChange={(data, name, errors) => {
-				setNewUser(data);
-				setFieldErrors({ ...fieldErrors, [name]: errors });
-			}}
+			onChange={setNewUser}
+			onError={setErrors}
+			errors={errors}
 			footer={footer}
 			errorNotes={errorNotes}
 		/>

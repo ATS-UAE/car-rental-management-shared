@@ -71,7 +71,7 @@ function UserTable({ users, auth, enums, fetchEnums, fetchUsers, onSubmit }) {
 		<Can
 			action={ACTIONS.READ}
 			resource={RESOURCES.USERS}
-			yes={access => (
+			yes={() => (
 				<TableView
 					editable={true}
 					open={open}
