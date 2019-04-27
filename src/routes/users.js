@@ -74,7 +74,9 @@ router.post("/", async ({ user, body }, res) => {
 			email = inviteToken.email;
 		}
 	} else if (user && user.role && user.role.name) {
-		accessible = await RBAC.can(user.role.name, CREATE, resources.users, role);
+		accessible = await RBAC.can(user.role.name, CREATE, resources.users, {
+			role
+		});
 	}
 	if (accessible || inviteTokenUsed) {
 		let guestRole = await db.Role.findOne({ where: { name: ROLES.GUEST } });
@@ -125,11 +127,11 @@ router.post("/", async ({ user, body }, res) => {
 			response.setMessage("User has been created.");
 			response.setCode(200);
 			response.setSuccess(true);
-			res.status(200)
+			res.status(200);
 		} catch (e) {
 			response.setMessage(e.message);
 			response.setCode(422);
-			res.status(422)
+			res.status(422);
 			if (e.errors && e.errors.length > 0) {
 				e.errors.forEach(error => response.appendError(error.path));
 			}
@@ -143,79 +145,84 @@ router.post("/", async ({ user, body }, res) => {
 	res.json(response);
 });
 
-router.get("/:id", requireLogin, disallowGuests, async (req, res) => {
-	let response = new ResponseBuilder();
-	let accessible = await RBAC.can(user.role.name, READ, resources.users);
-	if (accessible) {
-		try {
-			let foundUser = await db.User.findByPk(req.params.id, {
-				include: [{ model: db.Role, as: "role" }]
-			});
-			if (foundUser) {
-				let { role } = foundUser;
-				response.setData({
-					...pickFields(
-						[
-							"id",
-							"username",
-							"firstName",
-							"lastName",
-							"gender",
-							"email",
-							"mobileNumber",
-							"lastLogin",
-							"userImageSrc",
-							"licenseImageSrc",
-							"approved",
-							"blocked",
-							"createdAt",
-							"updatedAt",
-							"userCreatorId"
-						],
-						foundUser
-					),
-					role: {
-						id: role.id,
-						name: role.name
-					}
+router.get(
+	"/:id",
+	requireLogin,
+	disallowGuests,
+	async ({ user, params }, res) => {
+		let response = new ResponseBuilder();
+		let accessible = await RBAC.can(user.role.name, READ, resources.users);
+		if (accessible) {
+			try {
+				let foundUser = await db.User.findByPk(params.id, {
+					include: [{ all: true }]
 				});
-				response.setCode(200);
-				response.setMessage(`User with ID ${req.params.id} found.`);
-				response.setSuccess(true);
-			} else {
-				res.status(404);
-				response.setCode(404);
-				response.setMessage(`User with ID ${req.params.id} not found.`);
+				if (foundUser) {
+					let { role } = foundUser;
+					response.setData({
+						...pickFields(
+							[
+								"id",
+								"username",
+								"firstName",
+								"lastName",
+								"gender",
+								"email",
+								"mobileNumber",
+								"lastLogin",
+								"userImageSrc",
+								"licenseImageSrc",
+								"approved",
+								"blocked",
+								"createdAt",
+								"updatedAt",
+								"userCreatorId"
+							],
+							foundUser.get({ plain: true })
+						),
+						role: {
+							id: role.id,
+							name: role.name
+						}
+					});
+					response.setCode(200);
+					response.setMessage(`User with ID ${params.id} found.`);
+					response.setSuccess(true);
+				} else {
+					res.status(404);
+					response.setCode(404);
+					response.setMessage(`User with ID ${params.id} not found.`);
+				}
+			} catch (e) {
+				res.status(errorCodes.UNAUTHORIZED.statusCode);
+				response.setCode(errorCodes.UNAUTHORIZED.statusCode);
+				response.setMessage(e.message || errorCodes.UNAUTHORIZED.message);
 			}
-		} catch (e) {
-			res.status(errorCodes.UNAUTHORIZED.statusCode);
+		} else {
+			response.setMessage(errorCodes.UNAUTHORIZED.message);
 			response.setCode(errorCodes.UNAUTHORIZED.statusCode);
-			response.setMessage(e.message || errorCodes.UNAUTHORIZED.message);
+			res.status(errorCodes.UNAUTHORIZED.statusCode);
 		}
-	} else {
-		response.setMessage(errorCodes.UNAUTHORIZED.message);
-		response.setCode(errorCodes.UNAUTHORIZED.statusCode);
-		res.status(errorCodes.UNAUTHORIZED.statusCode);
-	}
 
-	res.json(response);
-});
+		res.json(response);
+	}
+);
 
 router.patch("/:id", requireLogin, async (req, res) => {
 	let response = new ResponseBuilder();
-
+	let foundUser = await db.User.findByPk(req.params.id, {
+		include: [{ model: db.Role, as: "role" }]
+	});
 	let accessible = await RBAC.can(req.user.role.name, UPDATE, resources.users, {
 		updateUser: {
 			id: req.params.id
 		},
 		currentUser: {
 			id: req.user.id
-		}
+		},
+		role: foundUser.role
 	});
 	if (accessible) {
-		let foundUser = await db.User.findByPk(req.params.id, {
-			include: [{ model: db.Role, as: "role" }]
-		});
 		if (foundUser) {
 			try {
 				let updatedUser = await foundUser.update(
@@ -241,7 +248,7 @@ router.patch("/:id", requireLogin, async (req, res) => {
 					),
 					{ include: [{ model: db.Role, as: "role" }] }
 				);
-				let role = updatedUser.getDataValue(role);
+				let role = updatedUser.role;
 				response.setData({
 					...pickFields(
 						[
@@ -272,6 +279,7 @@ router.patch("/:id", requireLogin, async (req, res) => {
 				response.setMessage(`User with ID ${req.params.id} updated.`);
 				response.setSuccess(true);
 			} catch (e) {
+				console.log(e);
 				response.setMessage(e.message);
 				response.setCode(422);
 				res.status(422);

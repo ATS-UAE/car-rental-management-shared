@@ -2,6 +2,7 @@ const { RBAC, Role, Resource, Action } = require("./");
 const { ROLES, RESOURCES } = require("../utils/variables");
 const { READ, UPDATE, DELETE, CREATE } = Action.OPERATIONS;
 const accessControl = new RBAC("Car Booking");
+const generalRole = new Role("GENERAL");
 const adminRole = new Role(ROLES.ADMIN);
 const keyManagerRole = new Role(ROLES.KEY_MANAGER);
 const guestRole = new Role(ROLES.GUEST);
@@ -12,49 +13,58 @@ const bookingsResource = new Resource(RESOURCES.BOOKINGS);
 const usersResource = new Resource(RESOURCES.USERS);
 const enumsResource = new Resource(RESOURCES.ENUMS);
 
-////////////////////////
-// GUESTS ROLE CONFIG //
-////////////////////////
+/////////////////////////
+// GENERAL ROLE CONFIG //
+/////////////////////////
+// All roles will extend this role.
 // Vehicle permissions.
-guestRole.addPermission(new Action(READ, vehicleResource), [
+generalRole.addPermission(new Action(READ, vehicleResource), [
 	/*Do not include sensitive data*/
 ]);
-guestRole.addPermission(new Action(UPDATE, vehicleResource), [
-	/*Do not include sensitive data*/
-]);
-guestRole.addPermission(new Action(READ, locationsResource));
+generalRole.addPermission(new Action(READ, locationsResource));
 // Booking permissions.
-guestRole.addPermission(new Action(CREATE, bookingsResource));
-guestRole.addPermission(
+generalRole.addPermission(
 	new Action(UPDATE, bookingsResource, () => {
 		// Bookings that are not yet finalized / ongoing / approved.
 	})
 );
-guestRole.addPermission(
-	new Action(
-		READ,
-		bookingsResource,
-		({ booking, user }) => booking.userId === user.id
-	)
-);
-guestRole.addPermission(
+
+generalRole.addPermission(
 	new Action(DELETE, bookingsResource, () => {
 		// Bookings that are not yet finalized / paid / ongoing / approved.
 	})
 );
-guestRole.addPermission(
+
+generalRole.addPermission(new Action(READ, enumsResource));
+
+////////////////////////
+// GUESTS ROLE CONFIG //
+////////////////////////
+guestRole.extend(generalRole);
+// Bookings permissions.
+generalRole.addPermission(new Action(CREATE, bookingsResource));
+
+generalRole.addPermission(
+	new Action(
+		READ,
+		bookingsResource,
+		({ booking, user }) => booking.userId === user.id,
+		["userId"]
+	)
+);
+
+generalRole.addPermission(
 	new Action(
 		UPDATE,
 		usersResource,
-		(updateUser, currentUser) => updateUser.id === currentUser.id
+		({ updateUser, currentUser }) => updateUser.id === currentUser.id
 	)
 );
-guestRole.addPermission(new Action(READ, enumsResource));
 
 /////////////////////////////
 // KEY_MANAGER ROLE CONFIG //
 /////////////////////////////
-keyManagerRole.extend(guestRole);
+keyManagerRole.extend(generalRole);
 // Vehicle Permissions. Extended from guest.
 
 keyManagerRole.addPermission(new Action(UPDATE, vehicleResource), [
@@ -72,9 +82,6 @@ keyManagerRole.addPermission(new Action(READ, bookingsResource));
 keyManagerRole.addPermission(
 	new Action(READ, usersResource, null, ["password"])
 );
-keyManagerRole.addPermission(
-	new Action(CREATE, usersResource, role => role && role.name !== ROLES.GUEST)
-);
 
 ///////////////////////
 // ADMIN ROLE CONFIG //
@@ -89,9 +96,18 @@ adminRole.addPermission(new Action(DELETE, vehicleResource));
 adminRole.addPermission(new Action(READ, bookingsResource));
 
 adminRole.addPermission(
-	new Action(UPDATE, usersResource, () => {
-		// Do not allow guest updating.
-	})
+	new Action(
+		CREATE,
+		usersResource,
+		({ role }) => role && role.name !== ROLES.GUEST
+	)
+);
+adminRole.addPermission(
+	new Action(
+		UPDATE,
+		usersResource,
+		({ role }) => role && role.name !== ROLES.GUEST
+	)
 );
 
 accessControl.addRole(adminRole);

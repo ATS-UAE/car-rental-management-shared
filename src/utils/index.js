@@ -82,6 +82,19 @@ const toMySQLDate = unixS => {
 	return moment(unixS, "X").format("YYYY-MM-DD HH:mm:ss");
 };
 
+function sendPasswordResetToken({ email, url }) {
+	// Send email invite
+	let token = jwt.sign({ email, passwordReset: true }, config.secretKey, {
+		expiresIn: "7d"
+	});
+	return getTransport().sendMail({
+		from: "no-reply@atsuae.net",
+		to: email,
+		subject: "Password Reset",
+		html: `<h1>Welcome</h1><a href="${url}?token=${token}">Click here to sign up!</a>`
+	});
+}
+
 module.exports = {
 	asyncForEach,
 	ResponseBuilder,

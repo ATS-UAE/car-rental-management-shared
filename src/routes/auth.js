@@ -3,7 +3,7 @@ const express = require("express");
 const router = express.Router();
 const moment = require("moment");
 
-const { ResponseBuilder } = require("../utils");
+const { ResponseBuilder, get } = require("../utils");
 const db = require("../models");
 const requireLogin = require("../middlewares/requireLogin");
 
@@ -15,6 +15,14 @@ router.get("/me", requireLogin, function(req, res) {
 	response.setCode(200);
 	res.json(response);
 });
+
+// router.patch("/me", requireLogin, function(req, res) {
+// 	let response = new ResponseBuilder();
+// 	let me = db.findByPk(req.user.id);
+// 	if (me) {
+// 		me.update(req.body);
+// 	}
+// });
 
 router.post(
 	"/login",

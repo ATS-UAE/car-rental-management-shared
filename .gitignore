@@ -2,3 +2,4 @@ node_modules
 src/config/development.js
 .env
 sqliteDB
+todo.txt
