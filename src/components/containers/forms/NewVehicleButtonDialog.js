@@ -5,6 +5,8 @@ import VehicleForm from "../../presentational/forms/VehicleForm";
 import * as actions from "../../../actions";
 import { api } from "../../../utils";
 import DialogButton from "../../presentational/forms/DialogButton";
+import { RESOURCES, ACTIONS } from "../../../variables";
+import Can from "../layout/Can";
 
 function NewVehicleButtonDialog({
 	fetchVehicles,
@@ -16,16 +18,16 @@ function NewVehicleButtonDialog({
 	let [open, setOpen] = useState(false);
 	let [disableButton, setDisabledButton] = useState(false);
 	let [errorNotes, setErrorNotes] = useState([]);
-	let [fieldErrors, setFieldErrors] = useState({});
+	let [errors, setErrors] = useState({});
 	useEffect(() => {
 		let validForm = true;
-		for (let key in fieldErrors) {
-			if (fieldErrors[key].length) {
+		for (let key in errors) {
+			if (errors[key].length) {
 				validForm = false;
 			}
 		}
 		setDisabledButton(!validForm);
-	}, [fieldErrors]);
+	}, [errors]);
 
 	useEffect(() => {
 		if (!locations) {
@@ -63,7 +65,6 @@ function NewVehicleButtonDialog({
 							setOpen(false);
 							setNewVehicle({});
 							setDisabledButton(false);
-							setOpen(false);
 							onSubmit && onSubmit();
 						})
 						.catch(e => {
@@ -76,26 +77,29 @@ function NewVehicleButtonDialog({
 			</Button>
 		</Grid>
 	);
-	console.log(fieldErrors);
 	return (
-		<DialogButton
-			open={open}
-			onClick={() => setOpen(true)}
-			onClose={() => setOpen(false)}
-		>
-			<VehicleForm
-				values={newVehicle}
-				onChange={(data, name, errors) => {
-					setNewVehicle(data);
-
-					setFieldErrors({ ...fieldErrors, [name]: errors });
-				}}
-				footer={footer}
-				errorNotes={errorNotes}
-				title="Create Vehicle"
-				locations={parkingLocations}
-			/>
-		</DialogButton>
+		<Can
+			action={ACTIONS.CREATE}
+			resource={RESOURCES.VEHICLES}
+			yes={() => (
+				<DialogButton
+					open={open}
+					onClick={() => setOpen(true)}
+					onClose={() => setOpen(false)}
+				>
+					<VehicleForm
+						values={newVehicle}
+						onChange={setNewVehicle}
+						errors={errors}
+						onError={setErrors}
+						footer={footer}
+						errorNotes={errorNotes}
+						title="Create Vehicle"
+						locations={parkingLocations}
+					/>
+				</DialogButton>
+			)}
+		/>
 	);
 }
 

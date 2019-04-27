@@ -153,7 +153,6 @@ function UserTable({ users, auth, enums, fetchEnums, fetchUsers, onSubmit }) {
 						}}
 						no={() => (
 							<UserForm
-								title="User"
 								values={formData}
 								errors={errors}
 								onError={setErrors}

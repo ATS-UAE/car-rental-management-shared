@@ -10,7 +10,11 @@ function VehicleForm({
 	exclude,
 	title,
 	footer,
-	locations
+	locations,
+	errors,
+	onError,
+	hints,
+	readOnly
 }) {
 	const fields = [
 		{
@@ -92,6 +96,10 @@ function VehicleForm({
 			onChange={onChange}
 			values={values}
 			footer={footer}
+			errors={errors}
+			onError={onError}
+			hints={hints}
+			readOnly={readOnly}
 		/>
 	);
 }
