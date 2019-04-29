@@ -14,7 +14,9 @@ function DateRuler({ dateRange, classes }) {
 	let dates = [];
 	let count = 1;
 	let ticks = 10;
-	const secondDifference = dateEnd.subtract(59, "seconds").diff(dateStart, "seconds");
+	const secondDifference = dateEnd
+		.subtract(59, "seconds")
+		.diff(dateStart, "seconds");
 
 	if (secondDifference >= 34214399) {
 		// >= 13 Months
@@ -60,14 +62,16 @@ function DateRuler({ dateRange, classes }) {
 
 	return (
 		<div className={classes.container}>
-			{dates.map(date => (
-				<div className={classes.ticks}>
+			{dates.map(date => {
+				let dateString = date.format(formatting);
+				return(
+				<div key={dateString} className={classes.ticks}>
 					<div className={classes.label}>
-						<div className={classes.labelText}>{date.format(formatting)}</div>
+						<div className={classes.labelText}>{dateString}</div>
 						<ArrowDropDown className={classes.labelText} />
 					</div>
 				</div>
-			))}
+			)})}
 		</div>
 	);
 }

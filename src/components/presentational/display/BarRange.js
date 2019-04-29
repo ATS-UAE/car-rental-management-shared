@@ -31,7 +31,7 @@ function generateSegment(width, key, isPrimary, label) {
 	return <StyledSegment key={key} />;
 }
 
-export default function BarRange({ values, label }) {
+export default function BarRange({ values }) {
 	return (
 		<div>
 			{values.reduce((acc, value, index, array) => {
@@ -41,7 +41,12 @@ export default function BarRange({ values, label }) {
 					generateSegment(value.min - previousValue.max, `${key}-empty`, false)
 				);
 				acc.push(
-					generateSegment(value.max - value.min, `${key}-value`, true, label)
+					generateSegment(
+						value.max - value.min,
+						`${key}-value`,
+						true,
+						value.label
+					)
 				);
 				if (index === array.length - 1) {
 					acc.push(

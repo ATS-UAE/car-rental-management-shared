@@ -1,34 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { connect } from "react-redux";
 import moment from "moment";
+import * as actions from "../../../actions";
 import VehicleBookingRange from "../../presentational/display/VehicleBookingRange";
 
-export default function VehicleBookingRangeContainer() {
-	let [vehicles, setVehicles] = useState([
-		{
-			id: 1,
-			brand: "Kia",
-			model: "Rio",
-			bookings: [
-				{
-					from: 1554258215,
-					to: 1554430998
-				}
-			],
-			plateNumber: "A00001"
-		},
-		{
-			id: 2,
-			brand: "Toyota",
-			model: "Corolla",
-			bookings: [
-				{
-					from: 1554158215,
-					to: 1554330998
-				}
-			],
-			plateNumber: "A00000"
+function VehicleBookingRangeContainer({ fetchVehicles, vehicles }) {
+	useEffect(() => {
+		if (!vehicles) {
+			fetchVehicles();
 		}
-	]);
+	}, []);
 
 	let [dateRange, setDateRange] = useState({
 		from: moment()
@@ -37,11 +18,23 @@ export default function VehicleBookingRangeContainer() {
 		to: moment().unix() - 1
 	});
 
+	let vehicleList = [];
+	if(vehicles&& vehicles.data) {
+		vehicleList=vehicles.data
+	}
+
 	return (
 		<VehicleBookingRange
-			vehicles={vehicles}
+			vehicles={vehicleList}
 			dateRange={dateRange}
 			onDateChange={setDateRange}
 		/>
 	);
 }
+
+const mapStateToProps = ({ vehicles }) => ({ vehicles });
+
+export default connect(
+	mapStateToProps,
+	actions
+)(VehicleBookingRangeContainer);

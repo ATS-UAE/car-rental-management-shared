@@ -1,5 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
+import moment from "moment";
 import DateTimePicker from "../inputs/DateTimePicker";
 import { Paper, Typography } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
@@ -8,9 +9,13 @@ import DateRuler from "./DateRuler";
 
 const normalize = (value, min, max) => ((value - min) * 100) / (max - min);
 
-function VehicleBookingRange({ classes, vehicles, dateRange, onDateChange }) {
-	const getLabel = vehicleId => vehicleId;
-
+function VehicleBookingRange({
+	classes,
+	vehicles,
+	dateRange,
+	onDateChange,
+	onClick
+}) {
 	return (
 		<Paper className={classes.root}>
 			<DateTimePicker
@@ -36,13 +41,17 @@ function VehicleBookingRange({ classes, vehicles, dateRange, onDateChange }) {
 							let max = normalize(booking.to, dateRange.from, dateRange.to);
 							return {
 								min: min < 0 ? 0 : min > 100 ? 100 : min,
-								max: max < 0 ? 0 : max > 100 ? 100 : max
+								max: max < 0 ? 0 : max > 100 ? 100 : max,
+								label: `${moment(booking.from, "X").format("lll")} - ${moment(
+									booking.to,
+									"X"
+								).format("lll")}`
 							};
 						});
 						return (
-							<div key={vehicle.id}>
+							<div key={vehicle.id} onClick={() => onClick && onClick(vehicle)}>
 								<Typography>{`${vehicle.brand} ${vehicle.model}`}</Typography>
-								<BarRange values={values} label={getLabel(vehicle.id)} />
+								<BarRange values={values} />
 							</div>
 						);
 					})}
