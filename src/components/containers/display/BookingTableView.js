@@ -1,25 +1,73 @@
 import React, { useEffect, useState, Fragment } from "react";
 import { connect } from "react-redux";
 import moment from "moment";
+import { Button, Grid } from "@material-ui/core";
 import * as actions from "../../../actions";
 import TableView from "../../presentational/forms/TableView";
 import Can from "../layout/Can";
 import BookingForm from "../../presentational/forms/BookingForm";
-import { toTitleWords } from "../../../utils";
+import { toTitleWords, api } from "../../../utils";
 import { RESOURCES, ACTIONS } from "../../../variables";
 
 function BookingTableView({
 	bookings,
 	vehicles,
+	enums,
+	fetchEnums,
 	fetchBookings,
-	fetchVehicles
+	fetchVehicles,
+	onSubmit
 }) {
-	useEffect(() => {
-		fetchBookings();
-		fetchVehicles();
-	}, []);
 	const [open, setOpen] = useState(false);
 	const [formData, setFormData] = useState({});
+	let [disableButton, setDisabledButton] = useState(false);
+	let [errorNotes, setErrorNotes] = useState([]);
+	let [errors, setErrors] = useState({});
+
+	useEffect(() => {
+		let validForm = true;
+		for (let key in errors) {
+			if (errors[key].length) {
+				validForm = false;
+			}
+		}
+		setDisabledButton(!validForm);
+	}, [errors, formData]);
+	useEffect(() => {
+		if (!bookings) {
+			fetchBookings();
+		}
+		if (!enums) {
+			fetchEnums();
+		}
+
+		if (!vehicles) {
+			fetchVehicles();
+		}
+	}, []);
+
+	let bookingTypeList = [{ value: "", label: "Loading..." }];
+	let vehicleList = [{ value: "", label: "No vehicles available" }];
+
+	if (enums && enums.data) {
+		let $bookingTypeList = enums.data.bookingTypes.map(item => ({
+			value: item.id,
+			label: toTitleWords(item.name)
+		}));
+		if ($bookingTypeList.length) {
+			bookingTypeList = $bookingTypeList;
+		}
+	}
+	if (vehicles && vehicles.data) {
+		let $vehicleList = vehicles.data.map(vehicle => ({
+			value: vehicle.id,
+			label: `${vehicle.brand} ${vehicle.model} - ${vehicle.plateNumber}`
+		}));
+		if ($vehicleList.length) {
+			vehicleList = $vehicleList;
+		}
+	}
+
 	const tableBody =
 		bookings && bookings.data && vehicles
 			? bookings.data.map(booking => {
@@ -58,7 +106,18 @@ function BookingTableView({
 							{
 								value: bookingStatus
 							}
-						]
+						],
+						onClick: () => {
+							setOpen(true);
+							api.fetchBooking(booking.id).then(res => {
+								setFormData({
+									...res.data,
+									userId: res.data.user.id,
+									bookingTypeId: res.data.bookingType.id,
+									vehicleId: res.data.vehicle.id
+								});
+							});
+						}
 					};
 					return row;
 			  })
@@ -69,7 +128,7 @@ function BookingTableView({
 			<Can
 				action={ACTIONS.READ}
 				resource={RESOURCES.BOOKINGS}
-				params={{}}
+				params={{ booking: { userId: 1 }, user: { id: 1 } }}
 				yes={access => (
 					<TableView
 						open={open}
@@ -91,10 +150,68 @@ function BookingTableView({
 							body: tableBody
 						}}
 					>
-						<BookingForm
-							values={formData}
-							onChange={setFormData}
-							exclude={access.excludedFields}
+						<Can
+							action={ACTIONS.UPDATE}
+							resource={RESOURCES.BOOKINGS}
+							yes={access => {
+								let footer = (
+									<Grid item>
+										<Button
+											disabled={disableButton}
+											type="submit"
+											variant="contained"
+											color="primary"
+											onClick={e => {
+												e.preventDefault();
+												setDisabledButton(true);
+												api
+													.updateUser(formData)
+													.then(() => {
+														fetchBookings();
+														onSubmit && onSubmit();
+														setOpen(false);
+														setDisabledButton(false);
+													})
+
+													.catch(e => {
+														setErrorNotes([e]);
+														setDisabledButton(false);
+													});
+											}}
+										>
+											Confirm
+										</Button>
+									</Grid>
+								);
+								return (
+									<BookingForm
+										values={formData}
+										errors={errors}
+										onError={setErrors}
+										onChange={setFormData}
+										errorNotes={errorNotes}
+										vehicleList={vehicleList}
+										bookingTypeList={bookingTypeList}
+										exclude={access.excludedFields}
+										hints=""
+										footer={footer}
+									/>
+								);
+							}}
+							no={() => (
+								<BookingForm
+									values={formData}
+									errors={errors}
+									onError={setErrors}
+									onChange={setFormData}
+									errorNotes={errorNotes}
+									vehicleList={vehicleList}
+									bookingTypeList={bookingTypeList}
+									readOnly={true}
+									exclude={access.excludedFields}
+									hints=""
+								/>
+							)}
 						/>
 					</TableView>
 				)}

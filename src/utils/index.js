@@ -45,7 +45,7 @@ export const validators = {
 		"Invalid email."
 	),
 	requiredField: new Validator(
-		v => (v ? true : false),
+		v => (v === undefined || v === "" ? false : true),
 		"This field is required."
 	)
 };

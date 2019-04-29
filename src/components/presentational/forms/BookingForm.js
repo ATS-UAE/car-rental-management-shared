@@ -2,6 +2,7 @@ import React from "react";
 import { Grid } from "@material-ui/core";
 import LocationsView from "../../containers/display/LocationsView";
 import Form, { FIELDS } from "./Form";
+import { validators, Validator } from "../../../utils";
 const { SELECT, DATE_TIME_PICKER, TEXT } = FIELDS;
 
 function BookingForm({
@@ -9,22 +10,22 @@ function BookingForm({
 	exclude,
 	errorNotes,
 	errors,
-	onSubmit,
-	onValid,
-	onChange,
 	onError,
 	values,
-	buttonLabel,
 	userList,
 	bookingTypeList,
 	vehicleList,
-	footer
+	footer,
+	hints,
+	onChange,
+	readOnly
 }) {
 	const fields = [
 		{
 			type: DATE_TIME_PICKER,
 			id: "from",
 			name: "from",
+			validators: [validators.requiredField],
 			props: {
 				label: "Book Start"
 			}
@@ -33,6 +34,7 @@ function BookingForm({
 			type: DATE_TIME_PICKER,
 			id: "to",
 			name: "to",
+			validators: [validators.requiredField],
 			props: {
 				label: "Book End"
 			}
@@ -41,6 +43,7 @@ function BookingForm({
 			type: SELECT,
 			id: "payment-status",
 			name: "paid",
+			validators: [validators.requiredField],
 			props: {
 				label: "Payment Status",
 				items: [
@@ -55,6 +58,7 @@ function BookingForm({
 			type: TEXT,
 			id: "user-id",
 			name: "userId",
+			validators: [validators.requiredField],
 			props: {
 				label: "User",
 				items: userList,
@@ -65,6 +69,7 @@ function BookingForm({
 			type: SELECT,
 			id: "booking-type-id",
 			name: "bookingTypeId",
+			validators: [validators.requiredField],
 			props: {
 				label: "Booking Type",
 				items: bookingTypeList,
@@ -76,6 +81,7 @@ function BookingForm({
 			type: SELECT,
 			id: "vehicle-id",
 			name: "vehicleId",
+			validators: [validators.requiredField],
 			props: {
 				label: "Vehicle",
 				items: vehicleList,
@@ -91,13 +97,12 @@ function BookingForm({
 			exclude={exclude}
 			errorNotes={errorNotes}
 			errors={errors}
-			onSubmit={onSubmit}
-			onValid={onValid}
-			onChange={onChange}
 			onError={onError}
 			values={values}
-			buttonLabel={buttonLabel}
 			footer={footer}
+			hints={hints}
+			onChange={onChange}
+			readOnly={readOnly}
 		>
 			<Grid item xs={12}>
 				<LocationsView />

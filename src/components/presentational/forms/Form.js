@@ -74,7 +74,7 @@ function Form({
 							<Grid item xs={12} sm={6} key={name} {...GridProps}>
 								<Component
 									id={id}
-									value={values[name] || ""}
+									value={values[name] === undefined ? "" : values[name]}
 									onChange={handleChange(name)}
 									disabled={readOnly ? true : false}
 									{...props}

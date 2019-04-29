@@ -20,7 +20,6 @@ function VehicleTableView({
 	}, []);
 	const [open, setOpen] = useState(false);
 	const [formData, setFormData] = useState({});
-	const [newVehicle, setNewVehicle] = useState({});
 	let [disableButton, setDisabledButton] = useState(false);
 	let [errorNotes, setErrorNotes] = useState([]);
 	let [errors, setErrors] = useState({});
@@ -65,7 +64,12 @@ function VehicleTableView({
 					],
 					onClick: () => {
 						setOpen(true);
-						setFormData(vehicle);
+						api.fetchVehicle(vehicle.id).then(res => {
+							console.log(res);
+							setFormData({
+								...res.data
+							});
+						});
 					}
 				};
 				return row;
@@ -112,7 +116,7 @@ function VehicleTableView({
 										.then(() => {
 											fetchVehicles();
 											setOpen(false);
-											setNewVehicle({});
+											setFormData({});
 											setDisabledButton(false);
 											onSubmit && onSubmit();
 										})
@@ -128,8 +132,8 @@ function VehicleTableView({
 					);
 					return (
 						<VehicleForm
-							values={newVehicle}
-							onChange={setNewVehicle}
+							values={formData}
+							onChange={setFormData}
 							errors={errors}
 							onError={setErrors}
 							footer={footer}
@@ -141,8 +145,8 @@ function VehicleTableView({
 				}}
 				no={access => (
 					<VehicleForm
-						values={newVehicle}
-						onChange={setNewVehicle}
+						values={formData}
+						onChange={setFormData}
 						errors={errors}
 						onError={setErrors}
 						errorNotes={errorNotes}

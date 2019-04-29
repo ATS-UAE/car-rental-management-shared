@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, cloneElement } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as actions from "../../../actions";
@@ -12,6 +12,7 @@ function Can({
 	params,
 	yes,
 	no,
+	whatever,
 	loading,
 	fetchCurrentUserDetails
 }) {
@@ -34,8 +35,19 @@ function Can({
 		}
 	}, [auth]);
 	if (access !== null) {
-		if (access.access && yes !== undefined) return yes(access) || null;
-		else if (no !== undefined) return no(access) || null;
+		let children = [];
+		if (whatever !== undefined) {
+			let child = whatever(access);
+			if (child) children.push(cloneElement(child, { key: "whatever" }));
+		}
+		if (access.access && yes !== undefined) {
+			let child = yes(access);
+			if (child) children.push(cloneElement(child, { key: "yes" }));
+		} else if (no !== undefined) {
+			let child = no(access);
+			if (child) children.push(cloneElement(child, { key: "no" }));
+		}
+		return children;
 	}
 	return loading || null;
 }
@@ -47,6 +59,7 @@ Can.propTypes = {
 	params: PropTypes.object,
 	yes: PropTypes.func,
 	no: PropTypes.func,
+	whatever: PropTypes.func,
 	loading: PropTypes.node
 };
 

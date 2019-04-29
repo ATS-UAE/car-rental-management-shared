@@ -4,8 +4,9 @@ import moment from "moment";
 import { Grid, Button } from "@material-ui/core";
 import BookingForm from "../../presentational/forms/BookingForm";
 import * as actions from "../../../actions";
-import { api } from "../../../utils";
-import { ROLES } from "../../../variables";
+import { api, toTitleWords } from "../../../utils";
+import { ACTIONS, RESOURCES } from "../../../variables";
+import Can from "../layout/Can";
 import DialogButton from "../../presentational/forms/DialogButton";
 
 function NewBookingButtonDialog({
@@ -25,6 +26,18 @@ function NewBookingButtonDialog({
 			.unix()
 	});
 	let [open, setOpen] = useState(false);
+	let [errors, setErrors] = useState({});
+	let [errorNotes, setErrorNotes] = useState([]);
+	let [disableButton, setDisabledButton] = useState(false);
+	useEffect(() => {
+		let validForm = true;
+		for (let key in errors) {
+			if (errors[key].length) {
+				validForm = false;
+			}
+		}
+		setDisabledButton(!validForm);
+	}, [errors, newBooking]);
 	useEffect(() => {
 		if (!enums) {
 			fetchEnums();
@@ -41,7 +54,7 @@ function NewBookingButtonDialog({
 	if (enums && enums.data) {
 		let $bookingTypeList = enums.data.bookingTypes.map(item => ({
 			value: item.id,
-			label: item.name
+			label: toTitleWords(item.name)
 		}));
 		if ($bookingTypeList.length) {
 			bookingTypeList = $bookingTypeList;
@@ -59,48 +72,73 @@ function NewBookingButtonDialog({
 	let footer = (
 		<Grid item>
 			<Button
+				disabled={disableButton}
 				type="submit"
 				variant="contained"
-				color="secondary"
+				color="primary"
 				onClick={e => {
 					e.preventDefault();
-					api.createBooking(newBooking).then(() => {
-						fetchBookings();
-						setOpen(false);
-						onSubmit && onSubmit();
-					});
+					api
+						.createBooking(newBooking)
+						.then(() => {
+							fetchBookings();
+							setDisabledButton(false);
+							setNewBooking({
+								from: moment()
+									.startOf("day")
+									.unix(),
+								to: moment()
+									.endOf("day")
+									.unix()
+							});
+							setOpen(false);
+							onSubmit && onSubmit();
+						})
+						.catch(e => {
+							setErrorNotes([e]);
+							setDisabledButton(false);
+						});
 				}}
 			>
 				Confirm
 			</Button>
 		</Grid>
 	);
-
 	return (
-		<DialogButton
-			open={open}
-			onClick={() => setOpen(true)}
-			onClose={() => setOpen(false)}
-		>
-			<BookingForm
-				values={newBooking}
-				exclude={["userId"]}
-				bookingTypeList={bookingTypeList}
-				vehicleList={vehicleList}
-				onChange={newBooking => {
-					let from = newBooking.from;
-					let to = newBooking.to;
-					if (to < from) {
-						let temp = to;
-						to = from;
-						from = temp;
-					}
-					setNewBooking({ ...newBooking, from, to });
-				}}
-				title="Book a Vehicle"
-				footer={footer}
-			/>
-		</DialogButton>
+		<Can
+			action={ACTIONS.CREATE}
+			resource={RESOURCES.BOOKINGS}
+			yes={access => (
+				<DialogButton
+					open={open}
+					onClick={() => setOpen(true)}
+					onClose={() => setOpen(false)}
+				>
+					<BookingForm
+						values={newBooking}
+						exclude={access.excludedFields}
+						bookingTypeList={bookingTypeList}
+						vehicleList={vehicleList}
+						onChange={newBooking => {
+							let from = newBooking.from;
+							let to = newBooking.to;
+							if (to < from) {
+								let temp = to;
+								to = from;
+								from = temp;
+							}
+							console.log(newBooking);
+							setNewBooking({ ...newBooking, from, to });
+						}}
+						errorNotes={errorNotes}
+						errors={errors}
+						onError={setErrors}
+						title="Book a Vehicle"
+						footer={footer}
+					/>
+				</DialogButton>
+			)}
+		/>
 	);
 }
 
