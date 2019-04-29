@@ -54,7 +54,7 @@ const createStore = () => {
 	});
 	db.sequelize = sequelize;
 	db.Sequelize = Sequelize;
-	init(db /*, { sync: { options: { force: true } } } */).then(() => {
+	init(db , { sync: { options: { force: true } } } ).then(() => {
 		sequelize
 			.authenticate()
 			.then(() => {

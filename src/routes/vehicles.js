@@ -69,21 +69,22 @@ router.post("/", disallowGuests, async ({ user, body }, res) => {
 	res.json(response);
 });
 
-router.get("/:id", disallowGuests, async ({ user }, res) => {
+router.get("/:id", async ({ user, params }, res) => {
 	let response = new ResponseBuilder();
 	let accessible = await RBAC.can(user.role.name, READ, resources.vehicles);
+	console.log("accessible: ", accessible);
 	if (accessible) {
 		try {
-			let foundVehicle = await db.Vehicle.findByPk(req.params.id);
+			let foundVehicle = await db.Vehicle.findByPk(params.id);
 			if (foundVehicle) {
 				response.setData(foundVehicle);
 				response.setCode(200);
-				response.setMessage(`Vehicle with ID ${req.params.id} found.`);
+				response.setMessage(`Vehicle with ID ${params.id} found.`);
 				response.setSuccess(true);
 			} else {
 				res.status(404);
 				response.setCode(404);
-				response.setMessage(`Vehicle with ID ${req.params.id} not found.`);
+				response.setMessage(`Vehicle with ID ${params.id} not found.`);
 			}
 		} catch (e) {
 			res.status(errorCodes.UNAUTHORIZED.statusCode);

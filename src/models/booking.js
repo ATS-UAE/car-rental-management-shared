@@ -29,7 +29,6 @@ module.exports = (sequelize, DataTypes) => {
 			}
 		}
 	);
-
 	Booking.associate = models => {
 		models.Booking.belongsTo(models.User, {
 			foreignKey: {
@@ -40,6 +39,16 @@ module.exports = (sequelize, DataTypes) => {
 				}
 			},
 			as: "user"
+		});
+		models.Booking.belongsTo(models.Vehicle, {
+			foreignKey: {
+				name: "vehicleId",
+				allowNull: false,
+				validate: {
+					notNull: { msg: "Booking type is required." }
+				}
+			},
+			as: "vehicle"
 		});
 		models.Booking.belongsTo(models.BookingType, {
 			foreignKey: {

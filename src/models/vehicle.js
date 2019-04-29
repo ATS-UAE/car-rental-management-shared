@@ -1,5 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
 	let Vehicle = sequelize.define("Vehicle", {
+		objectId: { type: DataTypes.STRING, allowNull: false },
 		brand: { type: DataTypes.STRING, allowNull: false },
 		model: { type: DataTypes.STRING, allowNull: false },
 		plateNumber: { type: DataTypes.STRING, allowNull: false, unique: true },

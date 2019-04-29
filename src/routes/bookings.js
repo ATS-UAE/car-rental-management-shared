@@ -69,7 +69,9 @@ router.post("/", async ({ user, body }, res) => {
 router.get("/:id", async ({ user, params }, res) => {
 	let response = new ResponseBuilder();
 
-	let booking = await db.Booking.findByPk(params.id);
+	let booking = await db.Booking.findByPk(params.id, {
+		include: [{ all: true }]
+	});
 	// Allow only on own bookings.
 	let accessible = await RBAC.can(user.role.name, READ, resources.bookings, {
 		booking,
@@ -79,7 +81,7 @@ router.get("/:id", async ({ user, params }, res) => {
 	if (accessible) {
 		response.setSuccess(true);
 		response.setCode(200);
-		response.setMessage(`Found ${userBookings.length} bookings.`);
+		response.setMessage(`Found booking with ID of ${booking.id}.`);
 		response.setData(booking.get({ plain: true }));
 	} else {
 		response.setMessage(errorCodes.UNAUTHORIZED.message);

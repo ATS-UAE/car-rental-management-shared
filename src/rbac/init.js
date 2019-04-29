@@ -18,9 +18,9 @@ const enumsResource = new Resource(RESOURCES.ENUMS);
 /////////////////////////
 // All roles will extend this role.
 // Vehicle permissions.
-generalRole.addPermission(new Action(READ, vehicleResource), [
-	/*Do not include sensitive data*/
-]);
+generalRole.addPermission(
+	new Action(READ, vehicleResource, null, ["objectId"])
+);
 generalRole.addPermission(new Action(READ, locationsResource));
 // Booking permissions.
 generalRole.addPermission(
@@ -34,16 +34,6 @@ generalRole.addPermission(
 		// Bookings that are not yet finalized / paid / ongoing / approved.
 	})
 );
-
-generalRole.addPermission(new Action(READ, enumsResource));
-
-////////////////////////
-// GUESTS ROLE CONFIG //
-////////////////////////
-guestRole.extend(generalRole);
-// Bookings permissions.
-generalRole.addPermission(new Action(CREATE, bookingsResource));
-
 generalRole.addPermission(
 	new Action(
 		READ,
@@ -59,6 +49,18 @@ generalRole.addPermission(
 		usersResource,
 		({ updateUser, currentUser }) => updateUser.id === currentUser.id
 	)
+);
+
+generalRole.addPermission(new Action(READ, enumsResource));
+
+////////////////////////
+// GUESTS ROLE CONFIG //
+////////////////////////
+guestRole.extend(generalRole);
+// Bookings permissions.
+// Only guests can create bookings.
+guestRole.addPermission(
+	new Action(CREATE, bookingsResource, null, ["userId", "paid"])
 );
 
 /////////////////////////////
