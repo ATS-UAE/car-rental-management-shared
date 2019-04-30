@@ -1,22 +1,28 @@
 import React, { useEffect, useState, Fragment } from "react";
 import { connect } from "react-redux";
+import { compose } from "recompose";
+import classNames from "classnames";
 import moment from "moment";
 import { Button, Grid } from "@material-ui/core";
+import { withStyles } from "@material-ui/core/styles";
 import * as actions from "../../../actions";
 import TableView from "../../presentational/forms/TableView";
 import Can from "../layout/Can";
 import BookingForm from "../../presentational/forms/BookingForm";
 import { toTitleWords, api } from "../../../utils";
-import { RESOURCES, ACTIONS } from "../../../variables";
+import { RESOURCES, ACTIONS, ROLES } from "../../../variables";
 
 function BookingTableView({
 	bookings,
 	vehicles,
 	enums,
+	auth,
 	fetchEnums,
 	fetchBookings,
 	fetchVehicles,
-	onSubmit
+	fetchCurrentUserDetails,
+	onSubmit,
+	classes
 }) {
 	const [open, setOpen] = useState(false);
 	const [formData, setFormData] = useState({});
@@ -44,6 +50,9 @@ function BookingTableView({
 		if (!vehicles) {
 			fetchVehicles();
 		}
+		if (!auth) {
+			fetchCurrentUserDetails();
+		}
 	}, []);
 
 	let bookingTypeList = [{ value: "", label: "Loading..." }];
@@ -68,6 +77,43 @@ function BookingTableView({
 		}
 	}
 
+	let bookingActions = null;
+
+	if (auth && auth.data) {
+		if (auth.data.role.name !== ROLES.GUEST) {
+			bookingActions = (
+				<Fragment>
+					<Button
+						className={classNames(
+							classes.actionButton,
+							classes.actionButtonApprove
+						)}
+						disabled={disableButton}
+						type="submit"
+						variant="contained"
+						color="primary"
+						fullWidth
+					>
+						Approve
+					</Button>
+					<Button
+						className={classNames(
+							classes.actionButton,
+							classes.actionButtonReject
+						)}
+						disabled={disableButton}
+						type="submit"
+						variant="contained"
+						color="secondary"
+						fullWidth
+					>
+						Deny
+					</Button>
+				</Fragment>
+			);
+		}
+	}
+
 	const tableBody =
 		bookings && bookings.data && vehicles
 			? bookings.data.map(booking => {
@@ -81,9 +127,13 @@ function BookingTableView({
 							bookingStatus = "Ongoing";
 						else bookingStatus = "Approved";
 					} else {
-						if (moment(booking.from, "X").isSameOrBefore(moment()))
-							bookingStatus = "Expired";
-						else bookingStatus = "Denied";
+						if (booking.approved === null) {
+							if (moment(booking.from, "X").isSameOrBefore(moment()))
+								bookingStatus = "Expired";
+							else bookingStatus = "Pending";
+						} else if (booking.approved === false) {
+							bookingStatus = "Denied";
+						}
 					}
 					let row = {
 						metadata: booking,
@@ -119,6 +169,11 @@ function BookingTableView({
 							});
 						}
 					};
+					if (bookingActions && booking.approved === null) {
+						row.values.push({ value: bookingActions });
+					} else if (bookingActions) {
+						row.values.push({ value: "" });
+					}
 					return row;
 			  })
 			: [];
@@ -143,7 +198,10 @@ function BookingTableView({
 										{ value: "Vehicle" },
 										{ value: "Starting Time" },
 										{ value: "Finishing Time" },
-										{ value: "Status" }
+										{ value: "Status" },
+										(() => {
+											if (bookingActions) return { value: "Actions" };
+										})()
 									]
 								}
 							],
@@ -227,7 +285,25 @@ const mapStateToProps = ({ bookings, vehicles, enums, auth }) => ({
 	auth
 });
 
-export default connect(
-	mapStateToProps,
-	actions
+const styles = theme => ({
+	actionButton: {
+		padding: theme.spacing.unit,
+		height: "auto",
+		color: "white"
+	},
+	actionButtonApprove: {
+		marginBottom: theme.spacing.unit,
+		background: "#11cb5f"
+	},
+	actionButtonReject: {
+		background: "#FE6B8B"
+	}
+});
+
+export default compose(
+	withStyles(styles),
+	connect(
+		mapStateToProps,
+		actions
+	)
 )(BookingTableView);

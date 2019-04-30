@@ -1,11 +1,10 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Paper } from "@material-ui/core/";
 import { ArrowDropDown } from "@material-ui/icons";
 import moment from "moment";
 import { withStyles } from "@material-ui/core/styles";
 
-function DateRuler({ dateRange, classes }) {
+function DateRuler({ dateRange, classes, ticks }) {
 	const dateStart = moment(dateRange.from, "X");
 	const dateEnd = moment(dateRange.to, "X");
 
@@ -13,7 +12,6 @@ function DateRuler({ dateRange, classes }) {
 	let division;
 	let dates = [];
 	let count = 1;
-	let ticks = 10;
 	const secondDifference = dateEnd
 		.subtract(59, "seconds")
 		.diff(dateStart, "seconds");
@@ -62,16 +60,17 @@ function DateRuler({ dateRange, classes }) {
 
 	return (
 		<div className={classes.container}>
-			{dates.map(date => {
+			{dates.map((date, index) => {
 				let dateString = date.format(formatting);
-				return(
-				<div key={dateString} className={classes.ticks}>
-					<div className={classes.label}>
-						<div className={classes.labelText}>{dateString}</div>
-						<ArrowDropDown className={classes.labelText} />
+				return (
+					<div key={dateString + index} className={classes.ticks}>
+						<div className={classes.label}>
+							<div className={classes.labelText}>{dateString}</div>
+							<ArrowDropDown className={classes.labelText} />
+						</div>
 					</div>
-				</div>
-			)})}
+				);
+			})}
 		</div>
 	);
 }
@@ -101,9 +100,9 @@ DateRuler.propTypes = {
 		from: PropTypes.number,
 		to: PropTypes.number
 	}).isRequired,
-	maxTicks: PropTypes.number
+	ticks: PropTypes.number
 };
 
 DateRuler.defaultProps = {
-	maxTicks: 10
+	ticks: 10
 };

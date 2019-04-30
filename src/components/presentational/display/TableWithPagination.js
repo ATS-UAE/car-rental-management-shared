@@ -141,7 +141,7 @@ TableWithPagination.propTypes = {
 			PropTypes.shape({
 				values: PropTypes.arrayOf(
 					PropTypes.shape({
-						value: PropTypes.string,
+						value: PropTypes.node,
 						colSpan: PropTypes.number
 					}).isRequired
 				),
@@ -153,7 +153,7 @@ TableWithPagination.propTypes = {
 			PropTypes.shape({
 				values: PropTypes.arrayOf(
 					PropTypes.shape({
-						value: PropTypes.string,
+						value: PropTypes.node,
 						colSpan: PropTypes.number
 					}).isRequired
 				),

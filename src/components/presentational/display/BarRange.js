@@ -35,7 +35,7 @@ export default function BarRange({ values }) {
 	return (
 		<div>
 			{values.reduce((acc, value, index, array) => {
-				let key = `${value.min}-${value.max}`;
+				let key = `${index}-${value.min}-${value.max}`;
 				let previousValue = index > 0 ? array[index - 1] : { min: 0, max: 0 };
 				acc.push(
 					generateSegment(value.min - previousValue.max, `${key}-empty`, false)

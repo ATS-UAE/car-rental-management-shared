@@ -1,8 +1,8 @@
-import React from "react";
+import React, { Fragment } from "react";
 import PropTypes from "prop-types";
 import moment from "moment";
 import DateTimePicker from "../inputs/DateTimePicker";
-import { Paper, Typography } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import BarRange from "./BarRange";
 import DateRuler from "./DateRuler";
@@ -14,27 +14,44 @@ function VehicleBookingRange({
 	vehicles,
 	dateRange,
 	onDateChange,
-	onClick
+	onClick,
+	title,
+	includeDatePicker,
+	ticks
 }) {
 	return (
-		<Paper className={classes.root}>
-			<DateTimePicker
-				value={dateRange.from}
-				label="Bookings From"
-				onChange={e => {
-					onDateChange({ ...dateRange, from: e.target.value });
-				}}
-			/>
-			<DateTimePicker
-				value={dateRange.to}
-				label="Bookings To"
-				onChange={e => {
-					onDateChange({ ...dateRange, to: e.target.value });
-				}}
-			/>
+		<div className={classes.root}>
+			{title && (
+				<Typography
+					variant="h6"
+					gutterBottom
+					headlineMapping={{ h6: "h1" }}
+					className={classes.title}
+				>
+					{title}
+				</Typography>
+			)}
+			{includeDatePicker && (
+				<Fragment>
+					<DateTimePicker
+						value={dateRange.from}
+						label="Bookings From"
+						onChange={e => {
+							onDateChange({ ...dateRange, from: e.target.value });
+						}}
+					/>
+					<DateTimePicker
+						value={dateRange.to}
+						label="Bookings To"
+						onChange={e => {
+							onDateChange({ ...dateRange, to: e.target.value });
+						}}
+					/>
+				</Fragment>
+			)}
 			<div className={classes.graphContainer}>
 				<div className={classes.graph}>
-					<DateRuler dateRange={dateRange} />
+					<DateRuler dateRange={dateRange} ticks={ticks} />
 					{vehicles.map(vehicle => {
 						let values = vehicle.bookings.map(booking => {
 							let min = normalize(booking.from, dateRange.from, dateRange.to);
@@ -57,7 +74,7 @@ function VehicleBookingRange({
 					})}
 				</div>
 			</div>
-		</Paper>
+		</div>
 	);
 }
 
@@ -66,11 +83,13 @@ VehicleBookingRange.propTypes = {
 	dateRange: PropTypes.shape({
 		from: PropTypes.number.isRequired,
 		to: PropTypes.number.isRequired
-	}).isRequired
+	}).isRequired,
+	includeDatePicker: PropTypes.bool
 };
 
 VehicleBookingRange.defaultProps = {
-	vehicles: []
+	vehicles: [],
+	includeDatePicker: true
 };
 
 const styles = theme => ({
@@ -85,6 +104,9 @@ const styles = theme => ({
 		overflowX: "auto",
 		paddingLeft: theme.spacing.unit * 10,
 		paddingRight: theme.spacing.unit * 10
+	},
+	title: {
+		marginBottom: theme.spacing.unit * 3
 	}
 });
 

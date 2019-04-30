@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import { connect } from "react-redux";
 import moment from "moment";
 import { Grid, Button } from "@material-ui/core";
@@ -8,6 +8,7 @@ import { api, toTitleWords } from "../../../utils";
 import { ACTIONS, RESOURCES } from "../../../variables";
 import Can from "../layout/Can";
 import DialogButton from "../../presentational/forms/DialogButton";
+import VehicleBookingRange from "../../presentational/display/VehicleBookingRange";
 
 function NewBookingButtonDialog({
 	fetchBookings,
@@ -70,39 +71,49 @@ function NewBookingButtonDialog({
 		}
 	}
 	let footer = (
-		<Grid item>
-			<Button
-				disabled={disableButton}
-				type="submit"
-				variant="contained"
-				color="primary"
-				onClick={e => {
-					e.preventDefault();
-					api
-						.createBooking(newBooking)
-						.then(() => {
-							fetchBookings();
-							setDisabledButton(false);
-							setNewBooking({
-								from: moment()
-									.startOf("day")
-									.unix(),
-								to: moment()
-									.endOf("day")
-									.unix()
+		<Fragment>
+			<Grid item>
+				<VehicleBookingRange
+					includeDatePicker={false}
+					dateRange={{ from: newBooking.from, to: newBooking.to }}
+					vehicles={vehicles && vehicles.data ? vehicles.data : []}
+					ticks={4}
+				/>
+			</Grid>
+			<Grid item>
+				<Button
+					disabled={disableButton}
+					type="submit"
+					variant="contained"
+					color="primary"
+					onClick={e => {
+						e.preventDefault();
+						api
+							.createBooking(newBooking)
+							.then(() => {
+								fetchBookings();
+								setDisabledButton(false);
+								setNewBooking({
+									from: moment()
+										.startOf("day")
+										.unix(),
+									to: moment()
+										.endOf("day")
+										.unix()
+								});
+								setOpen(false);
+								onSubmit && onSubmit();
+							})
+							.catch(e => {
+								setErrorNotes([e]);
+								setDisabledButton(false);
 							});
-							setOpen(false);
-							onSubmit && onSubmit();
-						})
-						.catch(e => {
-							setErrorNotes([e]);
-							setDisabledButton(false);
-						});
-				}}
-			>
-				Confirm
-			</Button>
-		</Grid>
+					}}
+				>
+					Confirm
+				</Button>
+			</Grid>
+		</Fragment>
 	);
 	return (
 		<Can
@@ -127,7 +138,6 @@ function NewBookingButtonDialog({
 								to = from;
 								from = temp;
 							}
-							console.log(newBooking);
 							setNewBooking({ ...newBooking, from, to });
 						}}
 						errorNotes={errorNotes}

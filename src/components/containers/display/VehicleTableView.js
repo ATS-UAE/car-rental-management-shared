@@ -65,7 +65,6 @@ function VehicleTableView({
 					onClick: () => {
 						setOpen(true);
 						api.fetchVehicle(vehicle.id).then(res => {
-							console.log(res);
 							setFormData({
 								...res.data
 							});
