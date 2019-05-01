@@ -1,34 +1,28 @@
-const moment = require("moment");
-
-let toUnix = date => {
-	return moment(date, "YYYY-MM-DDTHH:mm:ss").unix();
-};
+const {
+	DATABASE_NAME,
+	DATABASE_USERNAME,
+	DATABASE_PASSWORD,
+	DATABASE_HOST,
+	DATABASE_PORT,
+	MAIL_USER,
+	MAIL_PASS,
+	MAIL_PORT,
+	MAIL_HOST,
+	SERVER_PORT,
+	SERVER_URL,
+	SECRET_KEY
+} = process.env;
 
 module.exports = {
 	database: {
-		name: "CarBooking",
-		username: "root",
-		password: process.env.DATABASE_PASS,
-		host: process.env.DATABASE_HOST,
-		port: process.env.DATABASE_PORT,
+		name: DATABASE_NAME,
+		username: DATABASE_USERNAME,
+		password: DATABASE_PASSWORD,
+		host: DATABASE_HOST,
+		port: DATABASE_PORT,
+		password: DATABASE_PASSWORD,
 		sequelize: {
 			dialect: "mysql",
-			hooks: {
-				afterFind: results => {
-					if (results) {
-						let isArray = Array.isArray(results);
-						if (isArray) {
-							return results.map(result => {
-								result.dataValues["createdAt"] = toUnix(result["createdAt"]);
-								result.dataValues["updatedAt"] = toUnix(result["updatedAt"]);
-							});
-						}
-						results.dataValues["createdAt"] = toUnix(results["createdAt"]);
-						results.dataValues["updatedAt"] = toUnix(results["updatedAt"]);
-					}
-					return results;
-				}
-			},
 			pool: {
 				max: 5,
 				min: 0,
@@ -39,12 +33,14 @@ module.exports = {
 	},
 	mail: {
 		auth: {
-			user: process.env.MAIL_USER,
-			pass: process.env.MAIL_PASS
+			user: MAIL_USER,
+			pass: MAIL_PASS
 		},
-		port: 465,
+		port: MAIL_PORT,
 		secure: true,
-		host: process.env.EMAIL_HOST
+		host: MAIL_HOST
 	},
-	serverPort: 5000
+	serverPort: SERVER_PORT,
+	serverUrl: SERVER_URL,
+	secretKey: SERVER_KEY
 };
