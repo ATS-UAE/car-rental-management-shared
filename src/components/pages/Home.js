@@ -5,7 +5,7 @@ import { compose } from "redux";
 
 import GMaps from "../presentational/display/GMaps";
 function Home({ auth }) {
-	return <GMaps />;
+	return null;
 }
 
 const mapStateToProps = ({ auth }) => ({ auth });

@@ -12,6 +12,58 @@ import BookingForm from "../../presentational/forms/BookingForm";
 import { toTitleWords, api } from "../../../utils";
 import { RESOURCES, ACTIONS, ROLES } from "../../../variables";
 
+const styles = theme => ({
+	actionButton: {
+		padding: theme.spacing.unit,
+		height: "auto",
+		color: "white"
+	},
+	actionButtonApprove: {
+		marginBottom: theme.spacing.unit,
+		background: "#11cb5f"
+	},
+	actionButtonReject: {
+		background: "#FE6B8B"
+	}
+});
+
+const BookingActions = withStyles(styles)(function({
+	onApprove,
+	onDeny,
+	isDisabled,
+	classes
+}) {
+	return (
+		<Fragment>
+			<Button
+				className={classNames(
+					classes.actionButton,
+					classes.actionButtonApprove
+				)}
+				disabled={isDisabled}
+				onClick={onApprove}
+				type="submit"
+				variant="contained"
+				color="primary"
+				fullWidth
+			>
+				Approve
+			</Button>
+			<Button
+				className={classNames(classes.actionButton, classes.actionButtonReject)}
+				onClick={onDeny}
+				disabled={isDisabled}
+				type="submit"
+				variant="contained"
+				color="secondary"
+				fullWidth
+			>
+				Deny
+			</Button>
+		</Fragment>
+	);
+});
+
 function BookingTableView({
 	bookings,
 	vehicles,
@@ -21,14 +73,14 @@ function BookingTableView({
 	fetchBookings,
 	fetchVehicles,
 	fetchCurrentUserDetails,
-	onSubmit,
-	classes
+	onSubmit
 }) {
 	const [open, setOpen] = useState(false);
 	const [formData, setFormData] = useState({});
 	let [disableButton, setDisabledButton] = useState(false);
 	let [errorNotes, setErrorNotes] = useState([]);
 	let [errors, setErrors] = useState({});
+	let [actionStatus, setActionStatus] = useState([]);
 
 	useEffect(() => {
 		let validForm = true;
@@ -77,107 +129,116 @@ function BookingTableView({
 		}
 	}
 
-	let bookingActions = null;
+	let showBookingActions = false;
 
 	if (auth && auth.data) {
 		if (auth.data.role.name !== ROLES.GUEST) {
-			bookingActions = (
-				<Fragment>
-					<Button
-						className={classNames(
-							classes.actionButton,
-							classes.actionButtonApprove
-						)}
-						disabled={disableButton}
-						type="submit"
-						variant="contained"
-						color="primary"
-						fullWidth
-					>
-						Approve
-					</Button>
-					<Button
-						className={classNames(
-							classes.actionButton,
-							classes.actionButtonReject
-						)}
-						disabled={disableButton}
-						type="submit"
-						variant="contained"
-						color="secondary"
-						fullWidth
-					>
-						Deny
-					</Button>
-				</Fragment>
-			);
+			showBookingActions = true;
 		}
 	}
 
-	const tableBody =
-		bookings && bookings.data && vehicles
-			? bookings.data.map(booking => {
-					let bookingVehicle = vehicles.data.find(
-						vehicle => vehicle.id === booking.vehicleId
-					);
-					let bookingStatus = "";
+	let tableBody = [];
+	let actions = [];
+	if (bookings && bookings.data && vehicles && vehicles.data) {
+		tableBody = bookings.data.map((booking, index) => {
+			let bookingVehicle = vehicles.data.find(
+				vehicle => vehicle.id === booking.vehicleId
+			);
+			let bookingStatus = "";
 
-					if (booking.approved) {
-						if (moment(booking.from, "X").isSameOrBefore(moment()))
-							bookingStatus = "Ongoing";
-						else bookingStatus = "Approved";
-					} else {
-						if (booking.approved === null) {
-							if (moment(booking.from, "X").isSameOrBefore(moment()))
-								bookingStatus = "Expired";
-							else bookingStatus = "Pending";
-						} else if (booking.approved === false) {
-							bookingStatus = "Denied";
-						}
+			if (booking.approved) {
+				if (moment(booking.from, "X").isSameOrBefore(moment()))
+					bookingStatus = "Ongoing";
+				else bookingStatus = "Approved";
+			} else {
+				if (booking.approved === null) {
+					if (moment(booking.from, "X").isSameOrBefore(moment()))
+						bookingStatus = "Expired";
+					else bookingStatus = "Pending";
+				} else if (booking.approved === false) {
+					bookingStatus = "Denied";
+				}
+			}
+			let row = {
+				metadata: booking,
+				values: [
+					{
+						value: `${booking.user.firstName} ${booking.user.lastName}`
+					},
+					{
+						value: toTitleWords(booking.bookingType.name)
+					},
+					{
+						value: `${bookingVehicle.brand} ${bookingVehicle.model}`
+					},
+					{
+						value: moment(booking.from, "X").calendar()
+					},
+					{
+						value: moment(booking.to, "X").calendar()
+					},
+					{
+						value: bookingStatus
 					}
-					let row = {
-						metadata: booking,
-						values: [
-							{
-								value: `${booking.user.firstName} ${booking.user.lastName}`
-							},
-							{
-								value: toTitleWords(booking.bookingType.name)
-							},
-							{
-								value: `${bookingVehicle.brand} ${bookingVehicle.model}`
-							},
-							{
-								value: moment(booking.from, "X").calendar()
-							},
-							{
-								value: moment(booking.to, "X").calendar()
-							},
-							{
-								value: bookingStatus
+				],
+				onClick: () => {
+					setOpen(true);
+					api.fetchBooking(booking.id).then(res => {
+						setFormData({
+							...res.data,
+							userId: res.data.user.id,
+							bookingTypeId: res.data.bookingType.id,
+							vehicleId: res.data.vehicle.id
+						});
+					});
+				}
+			};
+			if (showBookingActions && booking.approved === null) {
+				row.values.push({
+					value: (
+						<BookingActions
+							onApprove={() => {
+								let status = actionStatus;
+								status[index] = true;
+								setActionStatus(status);
+								api
+									.updateBooking({ id: booking.id, approved: true })
+									.then(() => {
+										let status = actionStatus;
+										status[index] = false;
+										setActionStatus(status);
+										fetchBookings();
+									});
+							}}
+							onDeny={() => {
+								let status = actionStatus;
+								status[index] = true;
+								setActionStatus(status);
+								api
+									.updateBooking({ id: booking.id, approved: false })
+									.then(() => {
+										let status = actionStatus;
+										status[index] = false;
+										setActionStatus(status);
+										fetchBookings();
+									});
+							}}
+							isDisabled={
+								actionStatus[index] === undefined ? true : actionStatus[index]
 							}
-						],
-						onClick: () => {
-							setOpen(true);
-							api.fetchBooking(booking.id).then(res => {
-								setFormData({
-									...res.data,
-									userId: res.data.user.id,
-									bookingTypeId: res.data.bookingType.id,
-									vehicleId: res.data.vehicle.id
-								});
-							});
-						}
-					};
-					if (bookingActions && booking.approved === null) {
-						row.values.push({ value: bookingActions });
-					} else if (bookingActions) {
-						row.values.push({ value: "" });
-					}
-					return row;
-			  })
-			: [];
-
+						/>
+					)
+				});
+			} else if (showBookingActions) {
+				row.values.push({ value: "" });
+			}
+			actionStatus.push(false);
+			return row;
+		});
+	}
+	useEffect(() => {
+		setActionStatus(actions);
+	}, [bookings]);
 	return (
 		<Fragment>
 			<Can
@@ -200,7 +261,7 @@ function BookingTableView({
 										{ value: "Finishing Time" },
 										{ value: "Status" },
 										(() => {
-											if (bookingActions) return { value: "Actions" };
+											if (showBookingActions) return { value: "Actions" };
 										})()
 									]
 								}
@@ -285,23 +346,7 @@ const mapStateToProps = ({ bookings, vehicles, enums, auth }) => ({
 	auth
 });
 
-const styles = theme => ({
-	actionButton: {
-		padding: theme.spacing.unit,
-		height: "auto",
-		color: "white"
-	},
-	actionButtonApprove: {
-		marginBottom: theme.spacing.unit,
-		background: "#11cb5f"
-	},
-	actionButtonReject: {
-		background: "#FE6B8B"
-	}
-});
-
 export default compose(
-	withStyles(styles),
 	connect(
 		mapStateToProps,
 		actions

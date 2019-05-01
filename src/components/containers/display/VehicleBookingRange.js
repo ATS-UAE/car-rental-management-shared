@@ -4,10 +4,7 @@ import moment from "moment";
 import * as actions from "../../../actions";
 import VehicleBookingRange from "../../presentational/display/VehicleBookingRange";
 
-function VehicleBookingRangeContainer({
-	fetchVehicles,
-	vehicles
-}) {
+function VehicleBookingRangeContainer({ fetchVehicles, vehicles }) {
 	useEffect(() => {
 		if (!vehicles) {
 			fetchVehicles();
@@ -30,7 +27,14 @@ function VehicleBookingRangeContainer({
 		<VehicleBookingRange
 			vehicles={vehicleList}
 			dateRange={dateRange}
-			onDateChange={setDateRange}
+			onDateChange={date => {
+				if (date.from > date.to) {
+					setDateRange({ to: date.from, from: date.to });
+				} else {
+					setDateRange(date);
+				}
+			}}
+			ticks={4}
 			title="Vehicle Bookings"
 		/>
 	);

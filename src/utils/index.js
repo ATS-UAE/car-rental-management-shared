@@ -175,7 +175,7 @@ export const api = {
 	fetchBookings: () => executeFromAPI("get", "/api/carbooking/bookings"),
 	fetchBooking: id => executeFromAPI("get", `/api/carbooking/bookings/${id}`),
 	updateBooking: booking =>
-		executeFromAPI("get", `/api/carbooking/bookings/${booking.id}`, booking),
+		executeFromAPI("patch", `/api/carbooking/bookings/${booking.id}`, booking),
 
 	createLocation: location =>
 		executeFromAPI("post", "/api/carbooking/locations", location),
