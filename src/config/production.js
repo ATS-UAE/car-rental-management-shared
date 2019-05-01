@@ -42,5 +42,5 @@ module.exports = {
 	},
 	serverPort: SERVER_PORT,
 	serverUrl: SERVER_URL,
-	secretKey: SERVER_KEY
+	secretKey: SECRET_KEY
 };
