@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
 			paid: { type: DataTypes.BOOLEAN, defaultValue: false },
 			from: { type: DataTypes.DATE, allowNull: false },
 			to: { type: DataTypes.DATE, allowNull: false },
-			approved: { type: DataTypes.BOOLEAN, defaultValue: false },
+			approved: { type: DataTypes.BOOLEAN, defaultValue: null },
 			finished: { type: DataTypes.BOOLEAN, defaultValue: false }
 		},
 		{

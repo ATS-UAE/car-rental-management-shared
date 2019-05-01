@@ -98,16 +98,15 @@ router.patch("/:id", async ({ user, params, body }, res) => {
 		include: [{ all: true }]
 	});
 	// Allow only on own bookings.
-	let accessible = await RBAC.can(user.role.name, UPDATE, resource.bookings, {
+	let accessible = await RBAC.can(user.role.name, UPDATE, resources.bookings, {
 		booking,
 		user
 	});
-
 	if (accessible) {
-		booking.update({ ...pickFields([], body) });
+		booking.update(body);
 		response.setSuccess(true);
 		response.setCode(200);
-		response.setMessage(`Found ${userBookings.length} bookings.`);
+		response.setMessage(`Booking with ID of ${booking.id} has been updated.`);
 		response.setData(booking.get({ plain: true }));
 	} else {
 		response.setMessage(errorCodes.UNAUTHORIZED.message);
