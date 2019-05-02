@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const passport = require("passport");
 const { Strategy } = require("passport-local");
-const bcrypt = require("bcrypt-nodejs");
+const bcrypt = require("bcryptjs");
 const cors = require("cors");
 
 const config = require("./config");
