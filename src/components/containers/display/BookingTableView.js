@@ -1,9 +1,9 @@
 import React, { useEffect, useState, Fragment } from "react";
 import { connect } from "react-redux";
 import { compose } from "recompose";
-import classNames from "classnames";
 import moment from "moment";
-import { Button, Grid } from "@material-ui/core";
+import { Button, IconButton, Grid } from "@material-ui/core";
+import { Edit, Delete, Check, Close } from "@material-ui/icons";
 import { withStyles } from "@material-ui/core/styles";
 import * as actions from "../../../actions";
 import TableView from "../../presentational/forms/TableView";
@@ -30,36 +30,68 @@ const styles = theme => ({
 const BookingActions = withStyles(styles)(function({
 	onApprove,
 	onDeny,
-	isDisabled,
-	classes
+	onDelete,
+	onUpdate,
+	isDisabled
 }) {
 	return (
 		<Fragment>
-			<Button
-				className={classNames(
-					classes.actionButton,
-					classes.actionButtonApprove
-				)}
+			<IconButton
 				disabled={isDisabled}
 				onClick={onApprove}
 				type="submit"
 				variant="contained"
-				color="primary"
-				fullWidth
+				color="secondary"
+				size="small"
 			>
-				Approve
-			</Button>
-			<Button
-				className={classNames(classes.actionButton, classes.actionButtonReject)}
+				<Check />
+			</IconButton>
+			<IconButton
 				onClick={onDeny}
 				disabled={isDisabled}
 				type="submit"
 				variant="contained"
-				color="secondary"
-				fullWidth
+				color="primary"
+				size="small"
 			>
-				Deny
-			</Button>
+				<Close />
+			</IconButton>
+			<Can
+				action={ACTIONS.DELETE}
+				resource={RESOURCES.BOOKINGS}
+				yes={access => (
+					<IconButton
+						disabled={isDisabled}
+						onClick={onApprove}
+						type="submit"
+						variant="contained"
+						size="small"
+						onClick={e => {
+							onDelete(e, access);
+						}}
+					>
+						<Delete />
+					</IconButton>
+				)}
+			/>
+			<Can
+				action={ACTIONS.UPDATE}
+				resource={RESOURCES.BOOKINGS}
+				yes={access => (
+					<IconButton
+						disabled={isDisabled}
+						onClick={onApprove}
+						type="submit"
+						variant="contained"
+						size="small"
+						onClick={e => {
+							onUpdate(e, access);
+						}}
+					>
+						<Edit />
+					</IconButton>
+				)}
+			/>
 		</Fragment>
 	);
 });
@@ -180,18 +212,7 @@ function BookingTableView({
 					{
 						value: bookingStatus
 					}
-				],
-				onClick: () => {
-					setOpen(true);
-					api.fetchBooking(booking.id).then(res => {
-						setFormData({
-							...res.data,
-							userId: res.data.user.id,
-							bookingTypeId: res.data.bookingType.id,
-							vehicleId: res.data.vehicle.id
-						});
-					});
-				}
+				]
 			};
 			if (showBookingActions && booking.approved === null) {
 				row.values.push({
@@ -205,9 +226,9 @@ function BookingTableView({
 									.updateBooking({ id: booking.id, approved: true })
 									.then(() => {
 										let status = actionStatus;
+										fetchBookings();
 										status[index] = false;
 										setActionStatus(status);
-										fetchBookings();
 									});
 							}}
 							onDeny={() => {
@@ -218,13 +239,40 @@ function BookingTableView({
 									.updateBooking({ id: booking.id, approved: false })
 									.then(() => {
 										let status = actionStatus;
+										fetchBookings();
 										status[index] = false;
 										setActionStatus(status);
-										fetchBookings();
 									});
 							}}
+							onUpdate={() => {
+								let status = actionStatus;
+								status[index] = true;
+								setActionStatus(status);
+								setOpen(true);
+								api.fetchBooking(booking.id).then(res => {
+									setFormData({
+										...res.data,
+										userId: res.data.user.id,
+										bookingTypeId: res.data.bookingType.id,
+										vehicleId: res.data.vehicle.id
+									});
+									status[index] = false;
+									setActionStatus(status);
+								});
+							}}
+							onDelete={() => {
+								let status = actionStatus;
+								status[index] = true;
+								setActionStatus(status);
+								api.deleteBooking({ id: booking.id }).then(() => {
+									let status = actionStatus;
+									fetchBookings();
+									status[index] = false;
+									setActionStatus(status);
+								});
+							}}
 							isDisabled={
-								actionStatus[index] === undefined ? true : actionStatus[index]
+								actionStatus[index] === undefined ? false : actionStatus[index]
 							}
 						/>
 					)
@@ -232,7 +280,6 @@ function BookingTableView({
 			} else if (showBookingActions) {
 				row.values.push({ value: "" });
 			}
-			actionStatus.push(false);
 			return row;
 		});
 	}
@@ -284,7 +331,7 @@ function BookingTableView({
 												e.preventDefault();
 												setDisabledButton(true);
 												api
-													.updateUser(formData)
+													.updateBooking(formData)
 													.then(() => {
 														fetchBookings();
 														onSubmit && onSubmit();
