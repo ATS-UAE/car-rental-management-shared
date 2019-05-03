@@ -54,8 +54,9 @@ const API_URL = process.env.REACT_APP_CAR_BOOKING_API_DOMAIN;
 
 const executeFromAPI = (action, url, body) =>
 	new Promise((resolve, reject) => {
-		if (action !== "get") {
-			axios[action](`${API_URL}${url}`, body, { withCredentials: true })
+		const config = { withCredentials: true };
+		if (action !== "get" && action !== "delete") {
+			axios[action](`${API_URL}${url}`, body, config)
 				.then(data => resolve(data.data))
 				.catch(error => {
 					if (
@@ -68,9 +69,8 @@ const executeFromAPI = (action, url, body) =>
 					}
 					reject(error.message || "Unknown error has occurred.", error);
 				});
-		} else if (action === "get") {
-			axios
-				.get(`${API_URL}${url}`, { withCredentials: true })
+		} else if (action === "get" || action === "delete") {
+			axios[action](`${API_URL}${url}`, config)
 				.then(data => resolve(data.data))
 				.catch(error => {
 					if (
@@ -176,6 +176,8 @@ export const api = {
 	fetchBooking: id => executeFromAPI("get", `/api/carbooking/bookings/${id}`),
 	updateBooking: booking =>
 		executeFromAPI("patch", `/api/carbooking/bookings/${booking.id}`, booking),
+	deleteBooking: booking =>
+		executeFromAPI("delete", `/api/carbooking/bookings/${booking.id}`),
 
 	createLocation: location =>
 		executeFromAPI("post", "/api/carbooking/locations", location),
@@ -186,6 +188,8 @@ export const api = {
 			`/api/carbooking/locations/${location.id}`,
 			location
 		),
+	deleteLocation: location =>
+		executeFromAPI("delete", `/api/carbooking/locations/${location.id}`),
 
 	checkAccess: accessParams =>
 		executeFromAPI("post", "/api/carbooking/access", accessParams)
