@@ -119,11 +119,7 @@ router.patch("/:id", async ({ user, params, body }, res) => {
 router.delete("/:id", async ({ user, params }, res) => {
 	let response = new ResponseBuilder();
 
-	let accessible = await accessControl.can(
-		user.role.name,
-		DELETE,
-		resources.bookings
-	);
+	let accessible = await RBAC.can(user.role.name, DELETE, resources.bookings);
 
 	if (accessible) {
 		let foundBooking = await db.Booking.findByPk(params.id);

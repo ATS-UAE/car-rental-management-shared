@@ -46,12 +46,15 @@ passport.serializeUser(function(user, cb) {
 	cb(null, user.id);
 });
 
-passport.deserializeUser(function(id, cb) {
-	db.User.findByPk(id, {
-		include: [{ model: db.Role, as: "role" }]
-	})
-		.then(user => cb(null, user.get({ plain: true })))
-		.catch(err => cb(err));
+passport.deserializeUser(async (id, cb) => {
+	try {
+		let user = await db.User.findByPk(id, {
+			include: [{ model: db.Role, as: "role" }]
+		});
+		cb(null, user.get({ plain: true }));
+	} catch (e) {
+		cb(e);
+	}
 });
 
 // EXPRESS CONFIGURATIONS
@@ -65,7 +68,8 @@ app.use(
 );
 app.use(express.json());
 // TODO: Use config.js for cors options.
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
+
 // Initialize Passport and restore authentication state, if any, from the
 // session.
 app.use(passport.initialize());

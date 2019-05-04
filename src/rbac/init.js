@@ -96,7 +96,7 @@ adminRole.addPermission(new Action(READ, vehicleResource));
 adminRole.addPermission(new Action(UPDATE, vehicleResource));
 adminRole.addPermission(new Action(DELETE, vehicleResource));
 
-adminRole.addPermission(new Action(READ, bookingsResource));
+adminRole.addPermission(new Action(DELETE, bookingsResource));
 
 adminRole.addPermission(
 	new Action(

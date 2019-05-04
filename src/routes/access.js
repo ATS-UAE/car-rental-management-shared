@@ -9,7 +9,6 @@ router.post("/", requireLogin, async ({ body }, res) => {
 	const { resource, action, role, params } = body;
 	let access = await RBAC.can(role, action, resource, params);
 	let excludedFields = RBAC.getExcludedFields(role, action, resource);
-	console.log(access);
 	response.setData({ access, excludedFields });
 	response.setSuccess(true);
 	response.setCode(200);
