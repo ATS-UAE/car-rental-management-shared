@@ -1,6 +1,7 @@
 import React from "react";
 import { Grid } from "@material-ui/core";
-import LocationsView from "../../containers/display/LocationsView";
+import { Marker } from "react-google-maps";
+import GMaps from "../display/GMaps";
 import Form, { FIELDS } from "./Form";
 import { validators, Validator } from "../../../utils";
 const { SELECT, DATE_TIME_PICKER, TEXT } = FIELDS;
@@ -18,7 +19,9 @@ function BookingForm({
 	footer,
 	hints,
 	onChange,
-	readOnly
+	locations,
+	readOnly,
+	onLocationClick
 }) {
 	const fields = [
 		{
@@ -105,7 +108,20 @@ function BookingForm({
 			readOnly={readOnly}
 		>
 			<Grid item xs={12}>
-				<LocationsView />
+				<GMaps>
+					{locations &&
+						locations.map(location => {
+							const { lat, lng, name } = location;
+							return (
+								<Marker
+									position={{ lat: lat, lng: lng }}
+									label={name}
+									key={lat + lng + name}
+									onClick={() => onLocationClick && onLocationClick(location)}
+								/>
+							);
+						})}
+				</GMaps>
 			</Grid>
 		</Form>
 	);

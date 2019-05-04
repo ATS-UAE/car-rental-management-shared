@@ -194,3 +194,7 @@ export const api = {
 	checkAccess: accessParams =>
 		executeFromAPI("post", "/api/carbooking/access", accessParams)
 };
+
+export const rangeOverlap = (x1, x2, y1, y2) => {
+	return Math.max(x1, y1) <= Math.min(x2, y2);
+};

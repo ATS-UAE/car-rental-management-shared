@@ -14,7 +14,7 @@ function generateSegment(width, key, isPrimary, label) {
 			backfaceVisibility: "hidden",
 			"&:hover": isPrimary
 				? {
-						border: "red 1px solid"
+						boxShadow: "inset 0px 0px 0px 2px red"
 				  }
 				: {}
 		}

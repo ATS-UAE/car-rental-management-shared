@@ -62,13 +62,10 @@ const BookingActions = withStyles(styles)(function({
 				yes={access => (
 					<IconButton
 						disabled={isDisabled}
-						onClick={onApprove}
 						type="submit"
 						variant="contained"
 						size="small"
-						onClick={e => {
-							onDelete(e, access);
-						}}
+						onClick={e => onDelete(e, access)}
 					>
 						<Delete />
 					</IconButton>
@@ -80,13 +77,10 @@ const BookingActions = withStyles(styles)(function({
 				yes={access => (
 					<IconButton
 						disabled={isDisabled}
-						onClick={onApprove}
 						type="submit"
 						variant="contained"
 						size="small"
-						onClick={e => {
-							onUpdate(e, access);
-						}}
+						onClick={e => onUpdate(e, access)}
 					>
 						<Edit />
 					</IconButton>
@@ -141,6 +135,18 @@ function BookingTableView({
 
 	let bookingTypeList = [{ value: "", label: "Loading..." }];
 	let vehicleList = [{ value: "", label: "No vehicles available" }];
+	let tableHeaders = [
+		{
+			values: [
+				{ value: "User" },
+				{ value: "Booking Type" },
+				{ value: "Vehicle" },
+				{ value: "Starting Time" },
+				{ value: "Finishing Time" },
+				{ value: "Status" }
+			]
+		}
+	];
 
 	if (enums && enums.data) {
 		let $bookingTypeList = enums.data.bookingTypes.map(item => ({
@@ -283,6 +289,9 @@ function BookingTableView({
 			return row;
 		});
 	}
+	if (showBookingActions) {
+		tableHeaders[0].values.push({ value: "Actions" });
+	}
 	useEffect(() => {
 		setActionStatus(actions);
 	}, [bookings]);
@@ -298,21 +307,7 @@ function BookingTableView({
 						onClose={() => setOpen(false)}
 						editable={true}
 						tableData={{
-							headers: [
-								{
-									values: [
-										{ value: "User" },
-										{ value: "Booking Type" },
-										{ value: "Vehicle" },
-										{ value: "Starting Time" },
-										{ value: "Finishing Time" },
-										{ value: "Status" },
-										(() => {
-											if (showBookingActions) return { value: "Actions" };
-										})()
-									]
-								}
-							],
+							headers: tableHeaders,
 							body: tableBody
 						}}
 					>

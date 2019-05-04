@@ -4,7 +4,7 @@ import moment from "moment";
 import { Grid, Button } from "@material-ui/core";
 import BookingForm from "../../presentational/forms/BookingForm";
 import * as actions from "../../../actions";
-import { api, toTitleWords } from "../../../utils";
+import { api, toTitleWords, rangeOverlap } from "../../../utils";
 import { ACTIONS, RESOURCES } from "../../../variables";
 import Can from "../layout/Can";
 import DialogButton from "../../presentational/forms/DialogButton";
@@ -14,9 +14,11 @@ function NewBookingButtonDialog({
 	fetchBookings,
 	onSubmit,
 	enums,
+	locations,
 	vehicles,
 	fetchEnums,
-	fetchVehicles
+	fetchVehicles,
+	fetchLocations
 }) {
 	const [newBooking, setNewBooking] = useState({
 		from: moment()
@@ -26,6 +28,7 @@ function NewBookingButtonDialog({
 			.endOf("day")
 			.unix()
 	});
+	let [selectedLocation, setSelectedLocation] = useState(null);
 	let [open, setOpen] = useState(false);
 	let [errors, setErrors] = useState({});
 	let [errorNotes, setErrorNotes] = useState([]);
@@ -47,10 +50,15 @@ function NewBookingButtonDialog({
 		if (!vehicles) {
 			fetchVehicles();
 		}
+		if (!locations) {
+			fetchLocations();
+		}
 	}, []);
 
 	let bookingTypeList = [{ value: "", label: "Loading..." }];
-	let vehicleList = [{ value: "", label: "No vehicles available" }];
+	let vehicleList = selectedLocation
+		? [{ value: "", label: "No vehicles available." }]
+		: [{ value: "", label: "Please select a location." }];
 
 	if (enums && enums.data) {
 		let $bookingTypeList = enums.data.bookingTypes.map(item => ({
@@ -62,10 +70,29 @@ function NewBookingButtonDialog({
 		}
 	}
 	if (vehicles && vehicles.data) {
-		let $vehicleList = vehicles.data.map(vehicle => ({
-			value: vehicle.id,
-			label: `${vehicle.brand} ${vehicle.model} - ${vehicle.plateNumber}`
-		}));
+		let $vehicleList = vehicles.data.reduce((acc, vehicle) => {
+			const { from, to } = newBooking;
+			let available = false;
+			let inLocation = false;
+			if (selectedLocation) {
+				inLocation = vehicle.locationId === selectedLocation.id;
+			}
+			if (inLocation) {
+				available = vehicle.bookings.every(booking => {
+					if (rangeOverlap(from, to, booking.to, booking.to)) {
+						return false;
+					}
+					return true;
+				});
+			}
+			if (available && inLocation) {
+				acc.push({
+					value: vehicle.id,
+					label: `${vehicle.brand} ${vehicle.model} - ${vehicle.plateNumber}`
+				});
+			}
+			return acc;
+		}, []);
 		if ($vehicleList.length) {
 			vehicleList = $vehicleList;
 		}
@@ -145,6 +172,8 @@ function NewBookingButtonDialog({
 						onError={setErrors}
 						title="Book a Vehicle"
 						footer={footer}
+						locations={locations && locations.data ? locations.data : []}
+						onLocationClick={setSelectedLocation}
 					/>
 				</DialogButton>
 			)}
@@ -152,10 +181,11 @@ function NewBookingButtonDialog({
 	);
 }
 
-const mapStateToProps = ({ users, enums, vehicles }) => ({
+const mapStateToProps = ({ users, enums, vehicles, locations }) => ({
 	users,
 	enums,
-	vehicles
+	vehicles,
+	locations
 });
 
 export default connect(
