@@ -1,4 +1,5 @@
 import React from "react";
+import moment from "moment";
 import { Grid } from "@material-ui/core";
 import { Marker } from "react-google-maps";
 import GMaps from "../display/GMaps";
@@ -23,12 +24,16 @@ function BookingForm({
 	readOnly,
 	onLocationClick
 }) {
+	const notBefore = new Validator(
+		() => values.from > moment().unix(),
+		"Value should not be before current date."
+	);
 	const fields = [
 		{
 			type: DATE_TIME_PICKER,
 			id: "from",
 			name: "from",
-			validators: [validators.requiredField],
+			validators: [validators.requiredField, notBefore],
 			props: {
 				label: "Book Start"
 			}

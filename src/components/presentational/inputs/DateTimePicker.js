@@ -5,7 +5,7 @@ import { withStyles } from "@material-ui/core/styles";
 import { TextField } from "@material-ui/core";
 import Slider from "./Slider";
 
-function DateTimePicker({ value, id, onChange, classes, label }) {
+function DateTimePicker({ value, id, onChange, classes, label, error }) {
 	let DateTime = moment(value, "X");
 
 	let date = DateTime.format("YYYY-MM-DD"); // Parse date for input.
@@ -48,6 +48,7 @@ function DateTimePicker({ value, id, onChange, classes, label }) {
 					type="date"
 					fullWidth
 					onChange={handleDateChange}
+					error={error}
 				/>
 			</div>
 			<div className={classes.slider}>
@@ -59,6 +60,7 @@ function DateTimePicker({ value, id, onChange, classes, label }) {
 					id={id + "-slider"}
 					value={timeUnix}
 					onChange={handleTimeChange}
+					error={error}
 				/>
 			</div>
 		</div>

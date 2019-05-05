@@ -22,7 +22,7 @@ function NewBookingButtonDialog({
 }) {
 	const [newBooking, setNewBooking] = useState({
 		from: moment()
-			.startOf("day")
+			.add(30, "minutes")
 			.unix(),
 		to: moment()
 			.endOf("day")
