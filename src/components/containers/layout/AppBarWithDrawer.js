@@ -8,6 +8,7 @@ import AppBarWithDrawer from "../../presentational/layout/AppBarWithDrawer";
 import * as actions from "../../../actions";
 import { Typography } from "@material-ui/core";
 import { pages } from "../../../variables";
+import { toTitleWords } from "../../../utils";
 
 function AppBarWithDrawerContainer({
 	auth,
@@ -23,10 +24,17 @@ function AppBarWithDrawerContainer({
 	}, []);
 	let menuList = [];
 	let endList = [];
+	let profile;
 	if (auth && enums) {
 		let pageList = [];
 		let optionsList = [];
 		let role = auth.data.role;
+		profile = {
+			title: `${auth.data.firstName} ${auth.data.lastName}`,
+			subtitle: `${toTitleWords(auth.data.role.name)}`,
+			initials: `${auth.data.firstName[0]}${auth.data.lastName[0]}`,
+			imgSrc: auth.data.imgSrc || null
+		};
 		for (let page of pages) {
 			if (page.sidebar !== undefined) {
 				if (
@@ -72,6 +80,7 @@ function AppBarWithDrawerContainer({
 				showMenu={auth === null ? false : true}
 				list={menuList}
 				endList={endList}
+				profile={profile}
 			/>
 		</Fragment>
 	);

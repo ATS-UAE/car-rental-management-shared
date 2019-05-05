@@ -9,7 +9,8 @@ export default function AppBarWithDrawer({
 	title,
 	onLogoClick,
 	showMenu,
-	endList
+	endList,
+	profile
 }) {
 	const [isDrawerOpen, setDrawerOpenState] = useState(false);
 	return (
@@ -25,6 +26,7 @@ export default function AppBarWithDrawer({
 				onLogoClick={onLogoClick}
 			/>
 			<Drawer
+				profile={profile}
 				anchor="right"
 				isOpen={isDrawerOpen}
 				list={list}

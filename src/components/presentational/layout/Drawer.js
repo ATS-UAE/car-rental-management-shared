@@ -1,16 +1,22 @@
 import React, { Fragment } from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
-import Drawer from "@material-ui/core/Drawer";
-import List from "@material-ui/core/List";
-import Divider from "@material-ui/core/Divider";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
+
+import {
+	Drawer,
+	List,
+	Divider,
+	ListItem,
+	ListItemIcon,
+	ListItemText,
+	ListItemAvatar,
+	Avatar,
+	Typography
+} from "@material-ui/core";
 
 import { runIfExistFunction } from "../../../utils";
 
-const styles = {
+const styles = theme => ({
 	list: {
 		width: 250,
 		display: "flex",
@@ -20,32 +26,72 @@ const styles = {
 	},
 	text: {
 		textDecoration: "none"
+	},
+	profile: {
+		display: "flex",
+		margin: theme.spacing.unit * 2,
+		alignItems: "center"
+	},
+	picture: {
+		marginRight: theme.spacing.unit
 	}
-};
+});
 
-function TemporaryDrawer({ classes, list, isOpen, onClick, onClose, endList }) {
+const renderProfile = ({ title, subtitle, imgSrc, initials }, classes) => (
+	<Fragment>
+		<div className={classes.profile}>
+			{imgSrc ? (
+				<Avatar alt={title} src={imgSrc} className={classes.picture} />
+			) : (
+				<Avatar className={classes.picture}>{initials}</Avatar>
+			)}
+			<div>
+				<Typography component="h1" variant="subtitle1">
+					{title}
+				</Typography>
+				<Typography component="h2" variant="caption">
+					{subtitle}
+				</Typography>
+			</div>
+		</div>
+		<Divider />
+	</Fragment>
+);
+
+function TemporaryDrawer({
+	classes,
+	list,
+	isOpen,
+	onClick,
+	onClose,
+	endList,
+	profile
+}) {
 	const sideList = (
 		<div className={classes.list}>
 			<div>
-				{list.map((listGroup, index, array) => (
-					<Fragment key={index}>
-						<List>
-							{listGroup.map((listItem, index) => (
-								<ListItem
-									button
-									key={index}
-									onClick={() => listItem.onClick && listItem.onClick()}
-								>
-									<ListItemIcon>{listItem.icon}</ListItemIcon>
-									<ListItemText className={classes.text}>
-										{listItem.text}
-									</ListItemText>
-								</ListItem>
-							))}
-						</List>
-						{index !== array.length - 1 && <Divider />}
-					</Fragment>
-				))}
+				{profile && renderProfile(profile, classes)}
+				<div>
+					{list.map((listGroup, index, array) => (
+						<Fragment key={index}>
+							<List>
+								{listGroup.map((listItem, index) => (
+									<ListItem
+										button
+										key={index}
+										onClick={() => listItem.onClick && listItem.onClick()}
+									>
+										<ListItemIcon>{listItem.icon}</ListItemIcon>
+										<ListItemText className={classes.text}>
+											{listItem.text}
+										</ListItemText>
+									</ListItem>
+								))}
+							</List>
+							{index !== array.length - 1 && <Divider />}
+						</Fragment>
+					))}
+				</div>
 			</div>
 			{endList.length > 0 && (
 				<div>
@@ -95,6 +141,12 @@ TemporaryDrawer.propTypes = {
 			})
 		)
 	),
+	profile: PropTypes.shape({
+		title: PropTypes.string.isRequired,
+		subtitle: PropTypes.string.isRequired,
+		imgSrc: PropTypes.string,
+		initials: PropTypes.string.isRequired
+	}),
 	isOpen: PropTypes.bool.isRequired,
 	onClose: PropTypes.func,
 	onClick: PropTypes.func
