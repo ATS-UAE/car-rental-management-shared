@@ -16,6 +16,7 @@ import Users from "../components/pages/Users";
 import Vehicles from "../components/pages/Vehicles";
 import SettingsPage from "../components/pages/Settings";
 import All from "../components/pages/All";
+import UnknownPage from "../components/pages/404";
 
 export const ROLES = {
 	GUEST: "GUEST",
@@ -38,7 +39,6 @@ export const RESOURCES = {
 };
 
 export const pages = [
-	{ id: "All", path: "/", component: All, exact: false },
 	{
 		id: "Home",
 		path: "/",
@@ -64,8 +64,8 @@ export const pages = [
 		title: "Locations",
 		sidebar: { icon: Place, location: "top" }
 	},
-	{ id: "Login", path: "/login", component: Login, title: {} },
-	{ id: "SignUp", path: "/signup", component: SignUp, title: {} },
+	{ id: "Login", path: "/login", component: Login },
+	{ id: "SignUp", path: "/signup", component: SignUp },
 	{
 		id: "Users",
 		path: "/users",
@@ -89,5 +89,6 @@ export const pages = [
 		component: SettingsPage,
 		title: "Settings",
 		sidebar: { icon: Settings, location: "bottom" }
-	}
+	},
+	{ id: "All", path: "/", component: UnknownPage, exact: false }
 ];

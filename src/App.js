@@ -1,8 +1,9 @@
 import React, { Fragment } from "react";
-import { BrowserRouter, Route } from "react-router-dom";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 import { withStyles } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import LoginRequiredPage from "./components/pages/LoginRequiredPage";
+import All from "./components/pages/All";
 
 import { pages } from "./variables";
 
@@ -11,30 +12,33 @@ function App() {
 		<div className="App">
 			<BrowserRouter>
 				<Fragment>
-					{pages.map(page => {
-						if (page.requireLogin) {
+					<Route path="/" exact={false} component={All} />
+					<Switch>
+						{pages.map(page => {
+							if (page.requireLogin) {
+								return (
+									<Route
+										key={page.id}
+										path={page.path}
+										exact={page.exact}
+										render={() => (
+											<LoginRequiredPage>
+												<page.component />
+											</LoginRequiredPage>
+										)}
+									/>
+								);
+							}
 							return (
 								<Route
 									key={page.id}
 									path={page.path}
 									exact={page.exact}
-									render={() => (
-										<LoginRequiredPage>
-											<page.component />
-										</LoginRequiredPage>
-									)}
+									render={() => <page.component />}
 								/>
 							);
-						}
-						return (
-							<Route
-								key={page.id}
-								path={page.path}
-								exact={page.exact}
-								render={() => <page.component />}
-							/>
-						);
-					})}
+						})}
+					</Switch>
 				</Fragment>
 			</BrowserRouter>
 			<CssBaseline />
