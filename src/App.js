@@ -49,10 +49,11 @@ function App() {
 const styles = {
 	"@global": {
 		body: {
-			background: "linear-gradient(215deg, #FE6B8B, #EECDA3)"
+			background: "linear-gradient(215deg, #FE6B8B, #EECDA3)",
+			minHeight: "100%"
 		},
 		html: {
-			height: "100%"
+			minHeight: "100%"
 		}
 	}
 };
