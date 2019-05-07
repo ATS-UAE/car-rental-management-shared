@@ -15,8 +15,22 @@ import SignUp from "../components/pages/SignUp";
 import Users from "../components/pages/Users";
 import Vehicles from "../components/pages/Vehicles";
 import SettingsPage from "../components/pages/Settings";
-import All from "../components/pages/All";
 import UnknownPage from "../components/pages/404";
+
+export const RESOURCES = {
+	BOOKINGS: "BOOKINGS",
+	LOCATIONS: "LOCATIONS",
+	VEHICLES: "VEHICLES",
+	USERS: "USERS",
+	ENUMS: "ENUMS",
+	INVITES: "INVITES"
+};
+
+export const BOOKING_TYPES = {
+	PRIVATE: "PRIVATE",
+	BUSINESS: "BUSINESS",
+	SERVICE: "SERVICE"
+};
 
 export const ROLES = {
 	GUEST: "GUEST",
@@ -29,13 +43,6 @@ export const ACTIONS = {
 	READ: "READ",
 	UPDATE: "UPDATE",
 	DELETE: "DELETE"
-};
-
-export const RESOURCES = {
-	VEHICLES: "VEHICLES",
-	LOCATIONS: "LOCATIONS",
-	BOOKINGS: "BOOKINGS",
-	USERS: "USERS"
 };
 
 export const pages = [
