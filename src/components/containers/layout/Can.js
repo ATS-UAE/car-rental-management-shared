@@ -26,8 +26,12 @@ function Can({
 	}, []);
 	useEffect(() => {
 		if (auth) {
-			RBAC.can(role || auth.data.role.name, action, resource, params).then(
-				res => setAccess(res.data)
+			let $role = role || auth.data.role.name;
+			RBAC.can($role, action, resource, params).then(access =>
+				setAccess({
+					access,
+					excludedFields: RBAC.getExcludedFields($role, action, resource)
+				})
 			);
 		}
 	}, [auth, role, action, resource, params]);
