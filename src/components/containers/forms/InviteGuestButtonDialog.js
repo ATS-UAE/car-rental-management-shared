@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import GuestInvite from "../../presentational/forms/GuestInvite";
 import { Grid, Button } from "@material-ui/core";
 import { api } from "../../../utils";
-import { RESOURCES, ACTIONS } from "../../../variables";
+import { resources, actions } from "../../../variables/enums";
 import DialogButton from "../../presentational/forms/DialogButton";
 import Can from "../layout/Can";
 
@@ -53,8 +53,8 @@ export default function InviteGuestButtonDialog({ onSubmit }) {
 	);
 	return (
 		<Can
-			action={ACTIONS.READ}
-			resource={RESOURCES.USERS}
+			action={actions.READ}
+			resource={resources.USERS}
 			yes={() => (
 				<DialogButton
 					open={open}

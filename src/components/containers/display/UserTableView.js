@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import * as actions from "../../../actions";
+import * as reduxActions from "../../../actions";
 import TableView from "../../presentational/forms/TableView";
 import UserForm from "../../presentational/forms/UserForm";
 import { api, toTitleWords } from "../../../utils";
 import { Button, Grid } from "@material-ui/core";
-import { ROLES, ACTIONS, RESOURCES } from "../../../variables";
+import { roles, actions, resources } from "../../../variables/enums";
 import Can from "../layout/Can";
 function UserTable({ users, auth, enums, fetchEnums, fetchUsers, onSubmit }) {
 	useEffect(() => {
@@ -52,15 +52,15 @@ function UserTable({ users, auth, enums, fetchEnums, fetchUsers, onSubmit }) {
 		  })
 		: [];
 
-	let roles = [
+	let roleList = [
 		{
 			value: "",
 			label: "Loading"
 		}
 	];
 	if (enums && enums.data) {
-		roles = enums.data.roles.reduce((acc, role) => {
-			if (role.name !== ROLES.GUEST) {
+		roleList = enums.data.roles.reduce((acc, role) => {
+			if (role.name !== roles.GUEST) {
 				acc.push({ value: role.id, label: toTitleWords(role.name) });
 			}
 			return acc;
@@ -69,8 +69,8 @@ function UserTable({ users, auth, enums, fetchEnums, fetchUsers, onSubmit }) {
 
 	return (
 		<Can
-			action={ACTIONS.READ}
-			resource={RESOURCES.USERS}
+			action={actions.READ}
+			resource={resources.USERS}
 			yes={() => (
 				<TableView
 					editable={true}
@@ -94,8 +94,8 @@ function UserTable({ users, auth, enums, fetchEnums, fetchUsers, onSubmit }) {
 					}}
 				>
 					<Can
-						action={ACTIONS.UPDATE}
-						resource={RESOURCES.USERS}
+						action={actions.UPDATE}
+						resource={resources.USERS}
 						params={{
 							currentUser: {
 								id: auth.data.id
@@ -145,7 +145,7 @@ function UserTable({ users, auth, enums, fetchEnums, fetchUsers, onSubmit }) {
 									onError={setErrors}
 									onChange={setFormData}
 									errorNotes={errorNotes}
-									roleList={roles}
+									roleList={roleList}
 									footer={footer}
 									exclude={access.excludedFields}
 								/>
@@ -158,7 +158,7 @@ function UserTable({ users, auth, enums, fetchEnums, fetchUsers, onSubmit }) {
 								onError={setErrors}
 								onChange={setFormData}
 								errorNotes={errorNotes}
-								roleList={roles}
+								roleList={roleList}
 								readOnly={true}
 								exclude={["password", "passwordConfirm"]}
 								hints=""
@@ -175,5 +175,5 @@ const mapStateToProps = ({ users, auth, enums }) => ({ users, auth, enums });
 
 export default connect(
 	mapStateToProps,
-	actions
+	reduxActions
 )(UserTable);

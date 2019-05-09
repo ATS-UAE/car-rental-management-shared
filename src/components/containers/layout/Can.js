@@ -2,7 +2,9 @@ import { useEffect, useState, cloneElement } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import * as actions from "../../../actions";
-import { api } from "../../../utils";
+import accessControl from "../../../config/rbac";
+
+const { RBAC } = accessControl;
 
 function Can({
 	auth,
@@ -24,30 +26,25 @@ function Can({
 	}, []);
 	useEffect(() => {
 		if (auth) {
-			api
-				.checkAccess({
-					role: role || auth.data.role.name,
-					action,
-					resource,
-					params
-				})
-				.then(res => setAccess(res.data));
+			RBAC.can(role || auth.data.role.name, action, resource, params).then(
+				res => setAccess(res.data)
+			);
 		}
-	}, [auth]);
+	}, [auth, role, action, resource, params]);
 	if (access !== null) {
-		let children = [];
+		let components = [];
 		if (whatever !== undefined) {
 			let child = whatever(access);
-			if (child) children.push(cloneElement(child, { key: "whatever" }));
+			if (child) components.push(cloneElement(child, { key: "whatever" }));
 		}
 		if (access.access && yes !== undefined) {
 			let child = yes(access);
-			if (child) children.push(cloneElement(child, { key: "yes" }));
+			if (child) components.push(cloneElement(child, { key: "yes" }));
 		} else if (no !== undefined) {
 			let child = no(access);
-			if (child) children.push(cloneElement(child, { key: "no" }));
+			if (child) components.push(cloneElement(child, { key: "no" }));
 		}
-		return children;
+		return components;
 	}
 	return loading || null;
 }

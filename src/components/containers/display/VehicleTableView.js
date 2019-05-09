@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { Grid, Button } from "@material-ui/core";
-import * as actions from "../../../actions";
+import * as reduxActions from "../../../actions";
 import TableView from "../../presentational/forms/TableView";
 import VehicleForm from "../../presentational/forms/VehicleForm";
 import { api } from "../../../utils";
-import { RESOURCES, ACTIONS } from "../../../variables";
+import { resources, actions } from "../../../variables/enums";
 import Can from "../layout/Can";
 
 function VehicleTableView({
@@ -97,8 +97,8 @@ function VehicleTableView({
 			}}
 		>
 			<Can
-				action={ACTIONS.UPDATE}
-				resource={RESOURCES.VEHICLES}
+				action={actions.UPDATE}
+				resource={resources.VEHICLES}
 				yes={() => {
 					const footer = (
 						<Grid item>
@@ -168,5 +168,5 @@ const mapStateToProps = ({ vehicles, locations, enums }) => ({
 
 export default connect(
 	mapStateToProps,
-	actions
+	reduxActions
 )(VehicleTableView);

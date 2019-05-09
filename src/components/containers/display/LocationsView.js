@@ -4,10 +4,10 @@ import { Marker } from "react-google-maps";
 import { Dialog, Grid, Button } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import { compose } from "recompose";
-import * as actions from "../../../actions";
+import * as reduxActions from "../../../actions";
 import GMaps from "../../presentational/display/GMaps";
 import LocationForm from "../../presentational/forms/LocationForm";
-import { RESOURCES, ACTIONS } from "../../../variables";
+import { resources, actions } from "../../../variables/enums";
 import { api } from "../../../utils";
 import Can from "../layout/Can";
 
@@ -102,13 +102,13 @@ function LocationsView({ locations, fetchLocations, classes }) {
 	);
 	return (
 		<Can
-			resource={RESOURCES.LOCATIONS}
-			action={ACTIONS.READ}
+			resource={resources.LOCATIONS}
+			action={actions.READ}
 			yes={() => (
 				<Fragment>
 					<Can
-						action={ACTIONS.UPDATE}
-						resource={RESOURCES.LOCATIONS}
+						action={actions.UPDATE}
+						resource={resources.LOCATIONS}
 						yes={access => (
 							<Dialog
 								open={open}
@@ -179,6 +179,6 @@ export default compose(
 	withStyles(styles),
 	connect(
 		mapStateToProps,
-		actions
+		reduxActions
 	)
 )(LocationsView);

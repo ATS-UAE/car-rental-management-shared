@@ -1,17 +1,17 @@
-import { RBAC, Role, Resource, Action } from "./";
-import { ROLES, RESOURCES } from "../utils/variables";
+import { RBAC, Role, Resource, Action } from "../utils/rbac";
+import { roles, resources } from "../variables/enums";
 const { READ, UPDATE, DELETE, CREATE } = Action.OPERATIONS;
 const accessControl = new RBAC("Car Booking");
 const generalRole = new Role("GENERAL");
-const adminRole = new Role(ROLES.ADMIN);
-const keyManagerRole = new Role(ROLES.KEY_MANAGER);
-const guestRole = new Role(ROLES.GUEST);
+const adminRole = new Role(roles.ADMIN);
+const keyManagerRole = new Role(roles.KEY_MANAGER);
+const guestRole = new Role(roles.GUEST);
 
-const vehicleResource = new Resource(RESOURCES.VEHICLES);
-const locationsResource = new Resource(RESOURCES.LOCATIONS);
-const bookingsResource = new Resource(RESOURCES.BOOKINGS);
-const usersResource = new Resource(RESOURCES.USERS);
-const enumsResource = new Resource(RESOURCES.ENUMS);
+const vehicleResource = new Resource(resources.VEHICLES);
+const locationsResource = new Resource(resources.LOCATIONS);
+const bookingsResource = new Resource(resources.BOOKINGS);
+const usersResource = new Resource(resources.USERS);
+const enumsResource = new Resource(resources.ENUMS);
 
 /////////////////////////
 // GENERAL ROLE CONFIG //
@@ -102,14 +102,14 @@ adminRole.addPermission(
 	new Action(
 		CREATE,
 		usersResource,
-		({ role }) => role && role.name !== ROLES.GUEST
+		({ role }) => role && role.name !== roles.GUEST
 	)
 );
 adminRole.addPermission(
 	new Action(
 		UPDATE,
 		usersResource,
-		({ role }) => role && role.name !== ROLES.GUEST
+		({ role }) => role && role.name !== roles.GUEST
 	)
 );
 

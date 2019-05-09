@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { Grid, Button } from "@material-ui/core";
 import LocationForm from "../../presentational/forms/LocationForm";
-import * as actions from "../../../actions";
+import * as reduxActions from "../../../actions";
 import { api } from "../../../utils";
-import { RESOURCES, ACTIONS } from "../../../variables";
+import { resources, actions } from "../../../variables/enums";
 import DialogButton from "../../presentational/forms/DialogButton";
 import Can from "../layout/Can";
 function NewLocationButtonDialog({ onSubmit, fetchLocations, locations }) {
@@ -69,8 +69,8 @@ function NewLocationButtonDialog({ onSubmit, fetchLocations, locations }) {
 	);
 	return (
 		<Can
-			resource={RESOURCES.LOCATIONS}
-			action={ACTIONS.CREATE}
+			resource={resources.LOCATIONS}
+			action={actions.CREATE}
 			yes={access => (
 				<DialogButton
 					open={open}
@@ -107,5 +107,5 @@ const mapStateToProps = ({ locations }) => ({
 
 export default connect(
 	mapStateToProps,
-	actions
+	reduxActions
 )(NewLocationButtonDialog);

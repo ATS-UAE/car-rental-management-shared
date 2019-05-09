@@ -1,0 +1,5 @@
+export default {
+	PRIVATE: "PRIVATE",
+	BUSINESS: "BUSINESS",
+	SERVICE: "SERVICE"
+};

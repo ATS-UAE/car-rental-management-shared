@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { Grid, Button } from "@material-ui/core";
 import VehicleForm from "../../presentational/forms/VehicleForm";
-import * as actions from "../../../actions";
+import * as reduxActions from "../../../actions";
 import { api } from "../../../utils";
 import DialogButton from "../../presentational/forms/DialogButton";
-import { RESOURCES, ACTIONS } from "../../../variables";
+import { resources, actions } from "../../../variables/enums";
 import Can from "../layout/Can";
 
 function NewVehicleButtonDialog({
@@ -79,8 +79,8 @@ function NewVehicleButtonDialog({
 	);
 	return (
 		<Can
-			action={ACTIONS.CREATE}
-			resource={RESOURCES.VEHICLES}
+			action={actions.CREATE}
+			resource={resources.VEHICLES}
 			yes={() => (
 				<DialogButton
 					open={open}
@@ -107,5 +107,5 @@ const mapStateToProps = ({ locations }) => ({ locations });
 
 export default connect(
 	mapStateToProps,
-	actions
+	reduxActions
 )(NewVehicleButtonDialog);

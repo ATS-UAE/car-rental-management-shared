@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { Grid, Button } from "@material-ui/core";
 import UserForm from "../../presentational/forms/UserForm";
-import * as actions from "../../../actions";
+import * as reduxActions from "../../../actions";
 import { api, toTitleWords } from "../../../utils";
 import DialogButton from "../../presentational/forms/DialogButton";
-import { ROLES, ACTIONS, RESOURCES } from "../../../variables";
+import { roles, actions, resources } from "../../../variables/enums";
 import Can from "../layout/Can";
 function NewUserButtonDialog({ enums, fetchUsers, onSubmit }) {
 	const [newUser, setNewUser] = useState({});
@@ -24,15 +24,15 @@ function NewUserButtonDialog({ enums, fetchUsers, onSubmit }) {
 		setDisabledButton(!validForm);
 	}, [errors]);
 
-	let roles = [
+	let roleList = [
 		{
 			value: "",
 			label: "Loading"
 		}
 	];
 	if (enums && enums.data) {
-		roles = enums.data.roles.reduce((acc, role) => {
-			if (role.name !== ROLES.GUEST) {
+		roleList = enums.data.roles.reduce((acc, role) => {
+			if (role.name !== roles.GUEST) {
 				acc.push({ value: role.id, label: toTitleWords(role.name) });
 			}
 			return acc;
@@ -40,9 +40,9 @@ function NewUserButtonDialog({ enums, fetchUsers, onSubmit }) {
 	}
 	return (
 		<Can
-			action={ACTIONS.CREATE}
-			resource={RESOURCES.USERS}
-			params={{ role: { name: ROLES.ADMIN } }}
+			action={actions.CREATE}
+			resource={resources.USERS}
+			params={{ role: { name: roles.ADMIN } }}
 			yes={access => {
 				const footer = (
 					<Grid item>
@@ -85,7 +85,7 @@ function NewUserButtonDialog({ enums, fetchUsers, onSubmit }) {
 							values={newUser}
 							onChange={data => setNewUser(data)}
 							errorNotes={errorNotes}
-							roleList={roles}
+							roleList={roleList}
 							footer={footer}
 							onError={errors => setErrors(errors)}
 							errors={errors}
@@ -101,5 +101,5 @@ const mapStateToProps = ({ enums }) => ({ enums });
 
 export default connect(
 	mapStateToProps,
-	actions
+	reduxActions
 )(NewUserButtonDialog);

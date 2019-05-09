@@ -3,9 +3,9 @@ import { connect } from "react-redux";
 import moment from "moment";
 import { Grid, Button } from "@material-ui/core";
 import BookingForm from "../../presentational/forms/BookingForm";
-import * as actions from "../../../actions";
+import * as reduxActions from "../../../actions";
 import { api, toTitleWords, rangeOverlap } from "../../../utils";
-import { ACTIONS, RESOURCES } from "../../../variables";
+import { actions, resources } from "../../../variables/enums";
 import Can from "../layout/Can";
 import DialogButton from "../../presentational/forms/DialogButton";
 import VehicleBookingRange from "../../presentational/display/VehicleBookingRange";
@@ -144,8 +144,8 @@ function NewBookingButtonDialog({
 	);
 	return (
 		<Can
-			action={ACTIONS.CREATE}
-			resource={RESOURCES.BOOKINGS}
+			action={actions.CREATE}
+			resource={resources.BOOKINGS}
 			yes={access => (
 				<DialogButton
 					open={open}
@@ -190,5 +190,5 @@ const mapStateToProps = ({ users, enums, vehicles, locations }) => ({
 
 export default connect(
 	mapStateToProps,
-	actions
+	reduxActions
 )(NewBookingButtonDialog);

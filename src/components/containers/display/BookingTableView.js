@@ -5,12 +5,13 @@ import moment from "moment";
 import { Button, IconButton, Grid } from "@material-ui/core";
 import { Edit, Delete, Check, Close } from "@material-ui/icons";
 import { withStyles } from "@material-ui/core/styles";
-import * as actions from "../../../actions";
+import PropTypes from "prop-types";
+import * as reduxActions from "../../../actions";
 import TableView from "../../presentational/forms/TableView";
 import Can from "../layout/Can";
 import BookingForm from "../../presentational/forms/BookingForm";
 import { toTitleWords, api } from "../../../utils";
-import { RESOURCES, ACTIONS, ROLES } from "../../../variables";
+import { resources, actions, roles } from "../../../variables/enums";
 
 const styles = theme => ({
 	actionButton: {
@@ -32,63 +33,75 @@ const BookingActions = withStyles(styles)(function({
 	onDeny,
 	onDelete,
 	onUpdate,
-	isDisabled
+	isDisabled,
+	approve,
+	deny,
+	destroy,
+	update
 }) {
 	return (
 		<Fragment>
-			<IconButton
-				disabled={isDisabled}
-				onClick={onApprove}
-				type="submit"
-				variant="contained"
-				color="secondary"
-				size="small"
-			>
-				<Check />
-			</IconButton>
-			<IconButton
-				onClick={onDeny}
-				disabled={isDisabled}
-				type="submit"
-				variant="contained"
-				color="primary"
-				size="small"
-			>
-				<Close />
-			</IconButton>
-			<Can
-				action={ACTIONS.DELETE}
-				resource={RESOURCES.BOOKINGS}
-				yes={access => (
-					<IconButton
-						disabled={isDisabled}
-						type="submit"
-						variant="contained"
-						size="small"
-						onClick={e => onDelete(e, access)}
-					>
-						<Delete />
-					</IconButton>
-				)}
-			/>
-			<Can
-				action={ACTIONS.UPDATE}
-				resource={RESOURCES.BOOKINGS}
-				yes={access => (
-					<IconButton
-						disabled={isDisabled}
-						type="submit"
-						variant="contained"
-						size="small"
-						onClick={e => onUpdate(e, access)}
-					>
-						<Edit />
-					</IconButton>
-				)}
-			/>
+			{approve && (
+				<IconButton
+					disabled={isDisabled}
+					onClick={onApprove}
+					type="submit"
+					variant="contained"
+					color="secondary"
+					size="small"
+				>
+					<Check />
+				</IconButton>
+			)}
+			{deny && (
+				<IconButton
+					onClick={onDeny}
+					disabled={isDisabled}
+					type="submit"
+					variant="contained"
+					color="primary"
+					size="small"
+				>
+					<Close />
+				</IconButton>
+			)}
+			{destroy && (
+				<IconButton
+					disabled={isDisabled}
+					type="submit"
+					variant="contained"
+					size="small"
+					onClick={onDelete}
+				>
+					<Delete />
+				</IconButton>
+			)}
+			{update && (
+				<IconButton
+					disabled={isDisabled}
+					type="submit"
+					variant="contained"
+					size="small"
+					onClick={onUpdate}
+				>
+					<Edit />
+				</IconButton>
+			)}
 		</Fragment>
 	);
 });
+
+BookingActions.propsTypes = {
+	onApprove: PropTypes.func,
+	onDeny: PropTypes.func,
+	onDelete: PropTypes.func,
+	onUpdate: PropTypes.func,
+	isDisabled: PropTypes.bool,
+	approve: PropTypes.bool,
+	deny: PropTypes.bool,
+	destroy: PropTypes.bool,
+	update: PropTypes.bool
+};
 
 function BookingTableView({
 	bookings,
@@ -170,13 +183,12 @@ function BookingTableView({
 	let showBookingActions = false;
 
 	if (auth && auth.data) {
-		if (auth.data.role.name !== ROLES.GUEST) {
+		if (auth.data.role.name !== roles.GUEST) {
 			showBookingActions = true;
 		}
 	}
 
 	let tableBody = [];
-	let actions = [];
 	if (bookings && bookings.data && vehicles && vehicles.data) {
 		tableBody = bookings.data.map((booking, index) => {
 			let bookingVehicle = vehicles.data.find(
@@ -292,14 +304,11 @@ function BookingTableView({
 	if (showBookingActions) {
 		tableHeaders[0].values.push({ value: "Actions" });
 	}
-	useEffect(() => {
-		setActionStatus(actions);
-	}, [bookings]);
 	return (
 		<Fragment>
 			<Can
-				action={ACTIONS.READ}
-				resource={RESOURCES.BOOKINGS}
+				action={actions.READ}
+				resource={resources.BOOKINGS}
 				params={{ booking: { userId: 1 }, user: { id: 1 } }}
 				yes={access => (
 					<TableView
@@ -312,8 +321,8 @@ function BookingTableView({
 						}}
 					>
 						<Can
-							action={ACTIONS.UPDATE}
-							resource={RESOURCES.BOOKINGS}
+							action={actions.UPDATE}
+							resource={resources.BOOKINGS}
 							yes={access => {
 								let footer = (
 									<Grid item>
@@ -391,6 +400,6 @@ const mapStateToProps = ({ bookings, vehicles, enums, auth }) => ({
 export default compose(
 	connect(
 		mapStateToProps,
-		actions
+		reduxActions
 	)
 )(BookingTableView);

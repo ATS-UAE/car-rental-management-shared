@@ -1,4 +1,4 @@
-class RBAC {
+export class RBAC {
 	constructor(name) {
 		this.name = name;
 		this.roles = [];
@@ -73,7 +73,7 @@ class RBAC {
 	}
 }
 
-class Role {
+export class Role {
 	constructor(name) {
 		this.name = name;
 		this.actions = [];
@@ -127,13 +127,13 @@ class Role {
 	}
 }
 
-class Resource {
+export class Resource {
 	constructor(name) {
 		this.name = name;
 	}
 }
 
-class Action {
+export class Action {
 	constructor(name, resource, condition = null, excludedFields = []) {
 		this.name = name;
 		this.resource = resource;
@@ -154,5 +154,3 @@ Action.OPERATIONS = {
 	DELETE: "DELETE",
 	CREATE: "CREATE"
 };
-
-module.exports = { RBAC, Role, Resource, Action };
