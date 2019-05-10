@@ -1,17 +1,17 @@
-import { RBAC, Role, Resource, Action } from "../utils/rbac";
-import { roles, resources } from "../variables/enums";
+import { RBAC as AccessControl, Role, Resource, Action } from "../utils/rbac";
+import { roles as roleEnums, resources as resourceEnums } from "../variables/enums";
 const { READ, UPDATE, DELETE, CREATE } = Action.OPERATIONS;
-const accessControl = new RBAC("Car Booking");
+const accessControl = new AccessControl("Car Booking");
 const generalRole = new Role("GENERAL");
-const adminRole = new Role(roles.ADMIN);
-const keyManagerRole = new Role(roles.KEY_MANAGER);
-const guestRole = new Role(roles.GUEST);
+const adminRole = new Role(roleEnums.ADMIN);
+const keyManagerRole = new Role(roleEnums.KEY_MANAGER);
+const guestRole = new Role(roleEnums.GUEST);
 
-const vehicleResource = new Resource(resources.VEHICLES);
-const locationsResource = new Resource(resources.LOCATIONS);
-const bookingsResource = new Resource(resources.BOOKINGS);
-const usersResource = new Resource(resources.USERS);
-const enumsResource = new Resource(resources.ENUMS);
+const vehicleResource = new Resource(resourceEnums.VEHICLES);
+const locationsResource = new Resource(resourceEnums.LOCATIONS);
+const bookingsResource = new Resource(resourceEnums.BOOKINGS);
+const usersResource = new Resource(resourceEnums.USERS);
+const enumsResource = new Resource(resourceEnums.ENUMS);
 
 /////////////////////////
 // GENERAL ROLE CONFIG //
@@ -102,20 +102,38 @@ adminRole.addPermission(
 	new Action(
 		CREATE,
 		usersResource,
-		({ role }) => role && role.name !== roles.GUEST
+		({ role }) => role && role.name !== roleEnums.GUEST
 	)
 );
 adminRole.addPermission(
 	new Action(
 		UPDATE,
 		usersResource,
-		({ role }) => role && role.name !== roles.GUEST
+		({ role }) => role && role.name !== roleEnums.GUEST
 	)
 );
 
 accessControl.addRole(adminRole);
 accessControl.addRole(keyManagerRole);
 accessControl.addRole(guestRole);
+
+export const RBAC = accessControl;
+
+export const OPERATIONS = Action.OPERATIONS;
+
+export const roles = {
+	admin: adminRole,
+	keyManager: keyManagerRole,
+	guest: guestRole
+};
+
+export const resources = {
+	bookings: bookingsResource,
+	vehicles: vehicleResource,
+	locations: locationsResource,
+	users: usersResource,
+	enums: enumsResource
+};
 
 export default {
 	RBAC: accessControl,

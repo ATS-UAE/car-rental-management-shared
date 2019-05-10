@@ -2,106 +2,15 @@ import React, { useEffect, useState, Fragment } from "react";
 import { connect } from "react-redux";
 import { compose } from "recompose";
 import moment from "moment";
-import { Button, IconButton, Grid } from "@material-ui/core";
-import { Edit, Delete, Check, Close } from "@material-ui/icons";
-import { withStyles } from "@material-ui/core/styles";
-import PropTypes from "prop-types";
+import { Button, Grid } from "@material-ui/core";
 import * as reduxActions from "../../../actions";
 import TableView from "../../presentational/forms/TableView";
+import BookingActions from "../../presentational/inputs/BookingActions";
 import Can from "../layout/Can";
 import BookingForm from "../../presentational/forms/BookingForm";
-import { toTitleWords, api } from "../../../utils";
+import { toTitleWords, api, waitForAll } from "../../../utils";
 import { resources, actions, roles } from "../../../variables/enums";
-
-const styles = theme => ({
-	actionButton: {
-		padding: theme.spacing.unit,
-		height: "auto",
-		color: "white"
-	},
-	actionButtonApprove: {
-		marginBottom: theme.spacing.unit,
-		background: "#11cb5f"
-	},
-	actionButtonReject: {
-		background: "#FE6B8B"
-	}
-});
-
-const BookingActions = withStyles(styles)(function({
-	onApprove,
-	onDeny,
-	onDelete,
-	onUpdate,
-	isDisabled,
-	approve,
-	deny,
-	destroy,
-	update
-}) {
-	return (
-		<Fragment>
-			{approve && (
-				<IconButton
-					disabled={isDisabled}
-					onClick={onApprove}
-					type="submit"
-					variant="contained"
-					color="secondary"
-					size="small"
-				>
-					<Check />
-				</IconButton>
-			)}
-			{deny && (
-				<IconButton
-					onClick={onDeny}
-					disabled={isDisabled}
-					type="submit"
-					variant="contained"
-					color="primary"
-					size="small"
-				>
-					<Close />
-				</IconButton>
-			)}
-			{destroy && (
-				<IconButton
-					disabled={isDisabled}
-					type="submit"
-					variant="contained"
-					size="small"
-					onClick={onDelete}
-				>
-					<Delete />
-				</IconButton>
-			)}
-			{update && (
-				<IconButton
-					disabled={isDisabled}
-					type="submit"
-					variant="contained"
-					size="small"
-					onClick={onUpdate}
-				>
-					<Edit />
-				</IconButton>
-			)}
-		</Fragment>
-	);
-});
-
-BookingActions.propsTypes = {
-	onApprove: PropTypes.func,
-	onDeny: PropTypes.func,
-	onDelete: PropTypes.func,
-	onUpdate: PropTypes.func,
-	isDisabled: PropTypes.bool,
-	approve: PropTypes.bool,
-	deny: PropTypes.bool,
-	destroy: PropTypes.bool,
-	update: PropTypes.bool
-};
+import { RBAC } from "../../../config/rbac";
 
 function BookingTableView({
 	bookings,
@@ -121,6 +30,48 @@ function BookingTableView({
 	let [errors, setErrors] = useState({});
 	let [actionStatus, setActionStatus] = useState([]);
 
+	useEffect(() => {
+		const resetActionStatus = async () => {
+			if (auth && auth.data && bookings && bookings.data) {
+				let userRole = auth.data.role.name;
+				let actionStatus = [];
+				if (bookings && bookings.data) {
+					for (let booking of bookings.data) {
+						let showApprove = await RBAC.can(
+							userRole,
+							actions.UPDATE,
+							resources.BOOKINGS
+						);
+						let showDeny = await RBAC.can(
+							userRole,
+							actions.UPDATE,
+							resources.BOOKINGS
+						);
+						let showDelete = await RBAC.can(
+							userRole,
+							actions.UPDATE,
+							resources.BOOKINGS
+						);
+						let showUpdate = await RBAC.can(
+							userRole,
+							actions.UPDATE,
+							resources.BOOKINGS
+						);
+						actionStatus.push({
+							isDisabled: false,
+							showApprove,
+							showDeny,
+							showDelete,
+							showUpdate
+						});
+					}
+					let actionsStatus = await waitForAll(actionStatus);
+					setActionStatus(actionsStatus);
+				}
+			}
+		};
+		resetActionStatus();
+	}, [bookings, auth]);
 	useEffect(() => {
 		let validForm = true;
 		for (let key in errors) {
@@ -236,35 +187,47 @@ function BookingTableView({
 				row.values.push({
 					value: (
 						<BookingActions
+							showApprove={
+								actionStatus[index] ? actionStatus[index].showApprove : false
+							}
+							showDeny={
+								actionStatus[index] ? actionStatus[index].showDeny : false
+							}
+							showDelete={
+								actionStatus[index] ? actionStatus[index].showDelete : false
+							}
+							showUpdate={
+								actionStatus[index] ? actionStatus[index].showUpdate : false
+							}
 							onApprove={() => {
 								let status = actionStatus;
-								status[index] = true;
+								status[index].isDisabled = true;
 								setActionStatus(status);
 								api
 									.updateBooking({ id: booking.id, approved: true })
 									.then(() => {
 										let status = actionStatus;
 										fetchBookings();
-										status[index] = false;
+										status[index].isDisabled = false;
 										setActionStatus(status);
 									});
 							}}
 							onDeny={() => {
 								let status = actionStatus;
-								status[index] = true;
+								status[index].isDisabled = true;
 								setActionStatus(status);
 								api
 									.updateBooking({ id: booking.id, approved: false })
 									.then(() => {
 										let status = actionStatus;
 										fetchBookings();
-										status[index] = false;
+										status[index].isDisabled = false;
 										setActionStatus(status);
 									});
 							}}
 							onUpdate={() => {
 								let status = actionStatus;
-								status[index] = true;
+								status[index].isDisabled = true;
 								setActionStatus(status);
 								setOpen(true);
 								api.fetchBooking(booking.id).then(res => {
@@ -274,23 +237,25 @@ function BookingTableView({
 										bookingTypeId: res.data.bookingType.id,
 										vehicleId: res.data.vehicle.id
 									});
-									status[index] = false;
+									status[index].isDisabled = false;
 									setActionStatus(status);
 								});
 							}}
 							onDelete={() => {
 								let status = actionStatus;
-								status[index] = true;
+								status[index].isDisabled = true;
 								setActionStatus(status);
 								api.deleteBooking({ id: booking.id }).then(() => {
 									let status = actionStatus;
 									fetchBookings();
-									status[index] = false;
+									status[index].isDisabled = false;
 									setActionStatus(status);
 								});
 							}}
 							isDisabled={
-								actionStatus[index] === undefined ? false : actionStatus[index]
+								actionStatus[index] === undefined
+									? false
+									: actionStatus[index].isDisabled
 							}
 						/>
 					)

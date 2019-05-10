@@ -198,3 +198,25 @@ export const api = {
 export const rangeOverlap = (x1, x2, y1, y2) => {
 	return Math.max(x1, y1) <= Math.min(x2, y2);
 };
+
+export const waitForAll = async obj => {
+	if (obj instanceof Array) {
+		for (let e of obj) {
+			await waitForAll(e);
+		}
+	} else {
+		for (let prop in obj) {
+			if (obj[prop]) {
+				// If the propriety has a 'then' function it's a Promise
+				if (typeof obj[prop].then === "function") {
+					obj[prop] = await obj[prop];
+				}
+				if (obj)
+					if (typeof obj[prop] === "object") {
+						obj[prop] = await waitForAll(obj[prop]);
+					}
+			}
+		}
+	}
+	return obj;
+};
