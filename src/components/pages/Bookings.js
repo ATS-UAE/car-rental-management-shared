@@ -1,13 +1,13 @@
 import React from "react";
 import { Paper } from "@material-ui/core";
 import { withStyles } from "@material-ui/core";
-import NewBookingButtonDialog from "../containers/forms/NewBookingButtonDialog";
+import BookingFormCreateButtonDialog from "../containers/forms/bookings/BookingFormCreateButtonDialog";
 import BookingTableView from "../containers/display/BookingTableView";
 
 function Bookings({ classes }) {
 	return (
 		<Paper className={classes.root}>
-			<NewBookingButtonDialog />
+			<BookingFormCreateButtonDialog />
 			<BookingTableView />
 		</Paper>
 	);

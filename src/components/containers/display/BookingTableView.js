@@ -7,7 +7,7 @@ import * as reduxActions from "../../../actions";
 import TableView from "../../presentational/forms/TableView";
 import BookingActions from "../../presentational/inputs/BookingActions";
 import Can from "../layout/Can";
-import BookingForm from "../../presentational/forms/BookingForm";
+import BookingFormUpdate from "../forms/bookings/BookingFormUpdate";
 import { toTitleWords, api, waitForAll } from "../../../utils";
 import { resources, actions, roles } from "../../../variables/enums";
 import { RBAC } from "../../../config/rbac";
@@ -25,9 +25,6 @@ function BookingTableView({
 }) {
 	const [open, setOpen] = useState(false);
 	const [formData, setFormData] = useState({});
-	let [disableButton, setDisabledButton] = useState(false);
-	let [errorNotes, setErrorNotes] = useState([]);
-	let [errors, setErrors] = useState({});
 	let [actionStatus, setActionStatus] = useState([]);
 
 	useEffect(() => {
@@ -37,16 +34,13 @@ function BookingTableView({
 				let actionStatus = [];
 				if (bookings && bookings.data) {
 					for (let booking of bookings.data) {
-						let showApprove = await RBAC.can(
-							userRole,
-							actions.UPDATE,
-							resources.BOOKINGS
-						);
-						let showDeny = await RBAC.can(
-							userRole,
-							actions.UPDATE,
-							resources.BOOKINGS
-						);
+						let expiredBooking = booking.from < moment().unix();
+						let showApprove =
+							!expiredBooking &&
+							(await RBAC.can(userRole, actions.UPDATE, resources.BOOKINGS));
+						let showDeny =
+							!expiredBooking &&
+							(await RBAC.can(userRole, actions.UPDATE, resources.BOOKINGS));
 						let showDelete = await RBAC.can(
 							userRole,
 							actions.UPDATE,
@@ -73,15 +67,6 @@ function BookingTableView({
 		resetActionStatus();
 	}, [bookings, auth]);
 	useEffect(() => {
-		let validForm = true;
-		for (let key in errors) {
-			if (errors[key].length) {
-				validForm = false;
-			}
-		}
-		setDisabledButton(!validForm);
-	}, [errors, formData]);
-	useEffect(() => {
 		if (!bookings) {
 			fetchBookings();
 		}
@@ -97,8 +82,6 @@ function BookingTableView({
 		}
 	}, []);
 
-	let bookingTypeList = [{ value: "", label: "Loading..." }];
-	let vehicleList = [{ value: "", label: "No vehicles available" }];
 	let tableHeaders = [
 		{
 			values: [
@@ -111,25 +94,6 @@ function BookingTableView({
 			]
 		}
 	];
-
-	if (enums && enums.data) {
-		let $bookingTypeList = enums.data.bookingTypes.map(item => ({
-			value: item.id,
-			label: toTitleWords(item.name)
-		}));
-		if ($bookingTypeList.length) {
-			bookingTypeList = $bookingTypeList;
-		}
-	}
-	if (vehicles && vehicles.data) {
-		let $vehicleList = vehicles.data.map(vehicle => ({
-			value: vehicle.id,
-			label: `${vehicle.brand} ${vehicle.model} - ${vehicle.plateNumber}`
-		}));
-		if ($vehicleList.length) {
-			vehicleList = $vehicleList;
-		}
-	}
 
 	let showBookingActions = false;
 
@@ -229,14 +193,15 @@ function BookingTableView({
 								let status = actionStatus;
 								status[index].isDisabled = true;
 								setActionStatus(status);
-								setOpen(true);
 								api.fetchBooking(booking.id).then(res => {
 									setFormData({
 										...res.data,
 										userId: res.data.user.id,
 										bookingTypeId: res.data.bookingType.id,
-										vehicleId: res.data.vehicle.id
+										vehicleId: res.data.vehicle.id,
+										locationId: res.data.vehicle.locationId
 									});
+									setOpen(true);
 									status[index].isDisabled = false;
 									setActionStatus(status);
 								});
@@ -269,6 +234,7 @@ function BookingTableView({
 	if (showBookingActions) {
 		tableHeaders[0].values.push({ value: "Actions" });
 	}
+
 	return (
 		<Fragment>
 			<Can
@@ -289,59 +255,19 @@ function BookingTableView({
 							action={actions.UPDATE}
 							resource={resources.BOOKINGS}
 							yes={access => {
-								let footer = (
-									<Grid item>
-										<Button
-											disabled={disableButton}
-											type="submit"
-											variant="contained"
-											color="primary"
-											onClick={e => {
-												e.preventDefault();
-												setDisabledButton(true);
-												api
-													.updateBooking(formData)
-													.then(() => {
-														fetchBookings();
-														onSubmit && onSubmit();
-														setOpen(false);
-														setDisabledButton(false);
-													})
-
-													.catch(e => {
-														setErrorNotes([e]);
-														setDisabledButton(false);
-													});
-											}}
-										>
-											Confirm
-										</Button>
-									</Grid>
-								);
 								return (
-									<BookingForm
+									<BookingFormUpdate
 										values={formData}
-										errors={errors}
-										onError={setErrors}
 										onChange={setFormData}
-										errorNotes={errorNotes}
-										vehicleList={vehicleList}
-										bookingTypeList={bookingTypeList}
 										exclude={access.excludedFields}
-										hints=""
-										footer={footer}
+										onSubmit={() => setOpen(false)}
 									/>
 								);
 							}}
 							no={() => (
-								<BookingForm
+								<BookingFormUpdate
 									values={formData}
-									errors={errors}
-									onError={setErrors}
 									onChange={setFormData}
-									errorNotes={errorNotes}
-									vehicleList={vehicleList}
-									bookingTypeList={bookingTypeList}
 									readOnly={true}
 									exclude={access.excludedFields}
 									hints=""
