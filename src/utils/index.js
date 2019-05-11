@@ -192,7 +192,9 @@ export const api = {
 		executeFromAPI("delete", `/api/carbooking/locations/${location.id}`),
 
 	checkAccess: accessParams =>
-		executeFromAPI("post", "/api/carbooking/access", accessParams)
+		executeFromAPI("post", "/api/carbooking/access", accessParams),
+
+	updateMe: data => executeFromAPI("patch", "/api/carbooking/auth/me", data)
 };
 
 export const rangeOverlap = (x1, x2, y1, y2) => {

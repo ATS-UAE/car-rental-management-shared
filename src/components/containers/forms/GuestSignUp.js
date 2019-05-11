@@ -51,8 +51,7 @@ function GuestSignUpContainer({ onSubmit, history }) {
 
 	return (
 		<GuestSignUp
-			title={"Sign Up"}
-			buttonLabel={"Confirm"}
+			title="Sign Up"
 			values={newUser}
 			onChange={setNewUser}
 			onError={setErrors}
