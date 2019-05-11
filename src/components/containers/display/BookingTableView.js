@@ -2,7 +2,6 @@ import React, { useEffect, useState, Fragment } from "react";
 import { connect } from "react-redux";
 import { compose } from "recompose";
 import moment from "moment";
-import { Button, Grid } from "@material-ui/core";
 import * as reduxActions from "../../../actions";
 import TableView from "../../presentational/forms/TableView";
 import BookingActions from "../../presentational/inputs/BookingActions";
