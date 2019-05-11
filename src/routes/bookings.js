@@ -6,7 +6,12 @@ const { RBAC, OPERATIONS, resources } = require("../rbac/init");
 const { CREATE, READ, UPDATE, DELETE } = OPERATIONS;
 const db = require("../models");
 const { errorCodes, ROLES } = require("../utils/variables");
-const { ResponseBuilder, pickFields, toMySQLDate } = require("../utils");
+const {
+	ResponseBuilder,
+	pickFields,
+	toMySQLDate,
+	exceptFields
+} = require("../utils");
 
 router.use(requireLogin);
 
@@ -103,7 +108,11 @@ router.patch("/:id", async ({ user, params, body }, res) => {
 		user
 	});
 	if (accessible) {
-		booking.update(body);
+		booking.update({
+			...body,
+			to: toMySQLDate(body.to),
+			from: toMySQLDate(body.from)
+		});
 		response.setSuccess(true);
 		response.setCode(200);
 		response.setMessage(`Booking with ID of ${booking.id} has been updated.`);
