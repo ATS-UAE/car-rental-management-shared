@@ -259,7 +259,10 @@ function BookingTableView({
 										values={formData}
 										onChange={setFormData}
 										exclude={access.excludedFields}
-										onSubmit={() => setOpen(false)}
+										onSubmit={() => {
+											setOpen(false);
+											onSubmit && onSubmit();
+										}}
 									/>
 								);
 							}}
