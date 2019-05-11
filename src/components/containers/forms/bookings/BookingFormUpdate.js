@@ -20,7 +20,7 @@ function BookingFormUpdate({
 			values={values}
 			exclude={exclude}
 			errorNotes={errorNotes}
-			title="Update Vehicle"
+			title="Update Booking"
 			onChange={onChange}
             loading={loading}
             readOnly={readOnly}
