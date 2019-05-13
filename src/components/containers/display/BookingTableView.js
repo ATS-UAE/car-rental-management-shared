@@ -111,17 +111,20 @@ function BookingTableView({
 			let bookingStatus = "";
 
 			if (booking.approved) {
-				if (moment(booking.from, "X").isSameOrBefore(moment()))
-					bookingStatus = "Ongoing";
+				let currentTime = moment();
+				let hasPassedFrom = moment(booking.from, "X").isSameOrBefore(
+					currentTime
+				);
+				let hasPassedTo = moment(booking.to, "X").isAfter(currentTime);
+				if (hasPassedFrom && !hasPassedTo) bookingStatus = "Ongoing";
+				else if (hasPassedTo) bookingStatus = "Finished";
 				else bookingStatus = "Approved";
 			} else {
 				if (booking.approved === null) {
 					if (moment(booking.from, "X").isSameOrBefore(moment()))
 						bookingStatus = "Expired";
 					else bookingStatus = "Pending";
-				} else if (booking.approved === false) {
-					bookingStatus = "Denied";
-				}
+				} else if (booking.approved === false) bookingStatus = "Denied";
 			}
 			let row = {
 				metadata: booking,
