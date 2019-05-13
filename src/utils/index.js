@@ -1,7 +1,6 @@
-const jwt = require("jsonwebtoken");
 const moment = require("moment");
 const config = require("../config");
-const getTransport = require("../mail");
+const { getTransport } = require("../mail/utils");
 
 const asyncForEach = async (array, cb) => {
 	for (let i = 0; i < array.length; i++) {

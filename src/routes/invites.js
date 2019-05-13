@@ -1,7 +1,8 @@
 const express = require("express");
 const router = express.Router();
 
-const { ResponseBuilder, sendInviteToken } = require("../utils");
+const { ResponseBuilder } = require("../utils");
+const { sendInvite } = require("../mail/utils");
 const requireLogin = require("../middlewares/requireLogin");
 const disallowGuests = require("../middlewares/disallowGuests");
 router.use(requireLogin);
@@ -16,7 +17,7 @@ router.post("/", async ({ body }, res) => {
 	if (body.email) {
 		// Send email invite
 		try {
-			await sendInviteToken(body);
+			await sendInvite({ email: body.email, });
 			response.setCode(200);
 			response.setSuccess(true);
 			response.setMessage(`Invite has been sent to ${body.email}`);

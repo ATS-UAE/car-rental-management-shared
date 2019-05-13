@@ -4,6 +4,7 @@ const passport = require("passport");
 const { Strategy } = require("passport-local");
 const bcrypt = require("bcryptjs");
 const cors = require("cors");
+const path = require("path");
 
 const config = require("./config");
 const db = require("./models");
@@ -84,6 +85,8 @@ app.use("/api/carbooking/vehicles", vehicleRoutes);
 app.use("/api/carbooking/bookings", bookingRoutes);
 app.use("/api/carbooking/locations", locationRoutes);
 app.use("/api/carbooking/access", accessRoutes);
+
+app.use("/static", express.static(path.join(__dirname, "public")));
 
 app.listen(config.serverPort, () => {
 	console.log(`Listening on port ${config.serverPort}`);
