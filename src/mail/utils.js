@@ -20,7 +20,7 @@ function sendInvite({ email }) {
 	const compiled = compileTemplate(getTemplate("invite"), {
 		company: "LeasePlan",
 		contactEmail: "support@atsuae.net",
-		logoSrc: `${process.env.SERVER_URL}/static/images/logo-navigation.png`,
+		logoSrc: `${process.env.SERVER_URL}/static/images/mail-header.png`,
 		signUpLink: `${process.env.CLIENT_URL}/signup?token=${token}`
 	});
 	const template = mjml2html(compiled);

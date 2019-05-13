@@ -5,6 +5,8 @@ const { ResponseBuilder } = require("../utils");
 const { sendInvite } = require("../mail/utils");
 const requireLogin = require("../middlewares/requireLogin");
 const disallowGuests = require("../middlewares/disallowGuests");
+const { db } = require("../models");
+
 router.use(requireLogin);
 router.use(disallowGuests);
 
@@ -17,10 +19,17 @@ router.post("/", async ({ body }, res) => {
 	if (body.email) {
 		// Send email invite
 		try {
-			await sendInvite({ email: body.email, });
-			response.setCode(200);
-			response.setSuccess(true);
-			response.setMessage(`Invite has been sent to ${body.email}`);
+			let existingEmail = await db.User.find({ email: body.email });
+			if (existingEmail) {
+				await sendInvite({ email: body.email });
+				response.setCode(200);
+				response.setSuccess(true);
+				response.setMessage(`Invite has been sent to ${body.email}`);
+			} else {
+				response.setCode(422);
+				response.setSuccess(true);
+				response.setMessage(`Email address has already been used.`);
+			}
 		} catch (e) {
 			response.appendError(e.message || "Cannot send invite.");
 			res.status(500);
