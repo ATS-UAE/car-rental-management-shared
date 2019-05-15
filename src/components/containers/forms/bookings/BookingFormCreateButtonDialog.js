@@ -20,6 +20,13 @@ export default function BookingCreateButtonDialog() {
 					<BookingFormCreate
 						exclude={access.excludedFields}
 						onSubmit={() => setOpen(false)}
+						ticksMap={{
+							xs: 3,
+							sm: 4,
+							md: 4,
+							lg: 4,
+							xl: 4
+						}}
 					/>
 				</DialogButton>
 			)}

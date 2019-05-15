@@ -5,7 +5,7 @@ import BookingForm from "./BookingForm";
 import * as reduxActions from "../../../../actions";
 import { api } from "../../../../utils";
 
-function BookingFromCreate({ fetchBookings, exclude, onSubmit }) {
+function BookingFromCreate({ fetchBookings, exclude, onSubmit, ticksMap }) {
 	let [errorNotes, setErrorNotes] = useState([]);
 	const [values, setValues] = useState({
 		from: moment()
@@ -46,6 +46,7 @@ function BookingFromCreate({ fetchBookings, exclude, onSubmit }) {
 						setLoading(false);
 					});
 			}}
+			ticksMap={ticksMap}
 		/>
 	);
 }

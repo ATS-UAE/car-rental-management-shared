@@ -21,7 +21,8 @@ function BookingFormContainer({
 	values,
 	onChange,
 	loading,
-	readOnly
+	readOnly,
+	ticksMap
 }) {
 	let [errors, setErrors] = useState({});
 	let [disableButton, setDisabledButton] = useState(false);
@@ -99,7 +100,7 @@ function BookingFormContainer({
 					includeDatePicker={false}
 					dateRange={{ from: values.from, to: values.to }}
 					vehicles={vehicles && vehicles.data ? vehicles.data : []}
-					ticks={4}
+					ticksMap={ticksMap}
 				/>
 			</Grid>
 			<Grid item>

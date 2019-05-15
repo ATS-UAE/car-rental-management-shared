@@ -9,8 +9,8 @@ function BookingFormUpdate({
 	exclude,
 	onSubmit,
 	values,
-    onChange,
-    readOnly
+	onChange,
+	readOnly
 }) {
 	let [errorNotes, setErrorNotes] = useState([]);
 	let [loading, setLoading] = useState(false);
@@ -22,8 +22,8 @@ function BookingFormUpdate({
 			errorNotes={errorNotes}
 			title="Update Booking"
 			onChange={onChange}
-            loading={loading}
-            readOnly={readOnly}
+			loading={loading}
+			readOnly={readOnly}
 			onSubmit={() => {
 				setLoading(true);
 				api
@@ -37,6 +37,13 @@ function BookingFormUpdate({
 						setErrorNotes([e]);
 						setLoading(false);
 					});
+			}}
+			ticksMap={{
+				xs: 3,
+				sm: 4,
+				md: 4,
+				lg: 4,
+				xl: 4
 			}}
 		/>
 	);
