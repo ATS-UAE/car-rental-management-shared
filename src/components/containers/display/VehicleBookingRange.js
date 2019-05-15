@@ -34,7 +34,6 @@ function VehicleBookingRangeContainer({ fetchVehicles, vehicles }) {
 					setDateRange(date);
 				}
 			}}
-			ticks={4}
 			title="Vehicle Bookings"
 		/>
 	);

@@ -2,71 +2,39 @@ import React from "react";
 import PropTypes from "prop-types";
 import { ArrowDropDown } from "@material-ui/icons";
 import moment from "moment";
+import { Typography } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 
 function DateRuler({ dateRange, classes, ticks }) {
 	const dateStart = moment(dateRange.from, "X");
 	const dateEnd = moment(dateRange.to, "X");
+	// Minimum 2 ticks.
+	let $ticks = ticks < 2 ? 2 : ticks;
+	let increment = (dateEnd.unix() - dateStart.unix()) / $ticks;
+	let markers = [];
+	markers.push(dateStart);
 
-	let formatting;
-	let division;
-	let dates = [];
-	let count = 1;
-	const secondDifference = dateEnd
-		.subtract(59, "seconds")
-		.diff(dateStart, "seconds");
-
-	if (secondDifference >= 34214399) {
-		// >= 13 Months
-		formatting = "YYYY";
-		division = "seconds";
-		count = secondDifference / ticks;
-	} else if (secondDifference >= 2591999) {
-		// >= 1 Month
-		formatting = "MMM YYYY";
-		division = "seconds";
-		ticks = dateEnd.diff(dateStart, "months");
-		count = secondDifference / ticks;
-	} else if (secondDifference >= 86399) {
-		// >= 1 day
-		formatting = "MMM DD";
-		division = "seconds";
-		ticks = dateEnd.diff(dateStart, "days");
-		count = secondDifference / ticks;
-	} else if (secondDifference >= 43199) {
-		// >= 12 hours
-		formatting = "LT";
-		division = "seconds";
-		count = secondDifference / ticks;
-	} else if (secondDifference >= 21599) {
-		// >= 6 hours
-		formatting = "LT";
-		division = "seconds";
-
-		count = secondDifference / ticks;
-	} else {
-		// < 6 hours
-		formatting = "LT";
-		division = "seconds";
-		count = secondDifference / ticks;
+	for (let i = 2, incrementDate = dateStart.clone(); i < $ticks; i++) {
+		let markerDate = incrementDate.add(increment, "seconds");
+		markers.push(markerDate.clone());
 	}
-	for (
-		let dateIterator = dateStart.clone();
-		dateIterator.isBefore(dateEnd.clone().add(count, division));
-		dateIterator.add(count, division)
-	) {
-		dates.push(dateIterator.clone());
-	}
+	markers.push(dateEnd);
 
 	return (
 		<div className={classes.container}>
-			{dates.map((date, index) => {
-				let dateString = date.format(formatting);
+			{markers.map((marker, index) => {
 				return (
-					<div key={dateString + index} className={classes.ticks}>
+					<div key={index} className={classes.ticks}>
 						<div className={classes.label}>
-							<div className={classes.labelText}>{dateString}</div>
-							<ArrowDropDown className={classes.labelText} />
+							<div className={classes.labelText}>
+								<Typography variant="subtitle2">
+									{marker.format("YYYY-MM-DD")}
+								</Typography>
+								<Typography variant="caption">
+									{marker.format("h:mm a")}
+								</Typography>
+							</div>
+							<ArrowDropDown />
 						</div>
 					</div>
 				);
@@ -81,15 +49,17 @@ const styles = theme => ({
 	},
 	label: {
 		position: "absolute",
-		whiteSpace: "nowrap"
+		whiteSpace: "nowrap",
+		transform: "translateX(-50%)",
+		textAlign: "center"
 	},
 	labelText: {
-		transform: "translateX(-50%)"
+		alignText: "center"
 	},
 	container: {
 		display: "flex",
 		justifyContent: "space-between",
-		marginBottom: theme.spacing.unit * 4
+		marginBottom: theme.spacing.unit * 7
 	}
 });
 

@@ -1,9 +1,11 @@
 import React, { Fragment } from "react";
 import PropTypes from "prop-types";
 import moment from "moment";
-import DateTimePicker from "../inputs/DateTimePicker";
-import { Typography } from "@material-ui/core";
+import { Typography, withWidth } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
+import { compose } from "recompose";
+
+import DateTimePicker from "../inputs/DateTimePicker";
 import BarRange from "./BarRange";
 import DateRuler from "./DateRuler";
 
@@ -17,7 +19,8 @@ function VehicleBookingRange({
 	onClick,
 	title,
 	includeDatePicker,
-	ticks
+	ticksMap,
+	width
 }) {
 	let currentTime = moment();
 	return (
@@ -52,7 +55,7 @@ function VehicleBookingRange({
 			)}
 			<div className={classes.graphContainer}>
 				<div className={classes.graph}>
-					<DateRuler dateRange={dateRange} ticks={ticks} />
+					<DateRuler dateRange={dateRange} ticks={ticksMap[width]} />
 					{vehicles.map(vehicle => {
 						let values = vehicle.bookings.reduce((acc, booking) => {
 							if (
@@ -91,12 +94,20 @@ VehicleBookingRange.propTypes = {
 		from: PropTypes.number.isRequired,
 		to: PropTypes.number.isRequired
 	}).isRequired,
-	includeDatePicker: PropTypes.bool
+	includeDatePicker: PropTypes.bool,
+	ticksMap: PropTypes.object
 };
 
 VehicleBookingRange.defaultProps = {
 	vehicles: [],
-	includeDatePicker: true
+	includeDatePicker: true,
+	ticksMap: {
+		xs: 3,
+		sm: 4,
+		md: 6,
+		lg: 10,
+		xl: 12
+	}
 };
 
 const styles = theme => ({
@@ -109,12 +120,15 @@ const styles = theme => ({
 	},
 	graphContainer: {
 		overflowX: "auto",
-		paddingLeft: theme.spacing.unit * 10,
-		paddingRight: theme.spacing.unit * 10
+		paddingLeft: theme.spacing.unit * 6,
+		paddingRight: theme.spacing.unit * 6
 	},
 	title: {
 		marginBottom: theme.spacing.unit * 3
 	}
 });
 
-export default withStyles(styles)(VehicleBookingRange);
+export default compose(
+	withWidth(),
+	withStyles(styles)
+)(VehicleBookingRange);
