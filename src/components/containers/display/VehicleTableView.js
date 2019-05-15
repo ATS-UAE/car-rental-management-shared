@@ -17,6 +17,7 @@ function VehicleTableView({
 }) {
 	useEffect(() => {
 		fetchVehicles();
+		fetchLocations();
 	}, []);
 	const [open, setOpen] = useState(false);
 	const [formData, setFormData] = useState({});
@@ -32,12 +33,6 @@ function VehicleTableView({
 		}
 		setDisabledButton(!validForm);
 	}, [errors]);
-
-	useEffect(() => {
-		if (!locations) {
-			fetchLocations();
-		}
-	});
 
 	let parkingLocations = [
 		{

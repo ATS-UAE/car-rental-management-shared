@@ -6,9 +6,7 @@ import VehicleBookingRange from "../../presentational/display/VehicleBookingRang
 
 function VehicleBookingRangeContainer({ fetchVehicles, vehicles }) {
 	useEffect(() => {
-		if (!vehicles) {
-			fetchVehicles();
-		}
+		fetchVehicles();
 	}, []);
 
 	let [dateRange, setDateRange] = useState({

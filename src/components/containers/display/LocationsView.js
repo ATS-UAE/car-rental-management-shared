@@ -13,9 +13,7 @@ import Can from "../layout/Can";
 
 function LocationsView({ locations, fetchLocations, classes }) {
 	useEffect(() => {
-		if (!locations) {
-			fetchLocations();
-		}
+		fetchLocations();
 	}, []);
 	const [formData, setFormData] = useState({});
 	let [open, setOpen] = useState(false);

@@ -30,10 +30,8 @@ function NewVehicleButtonDialog({
 	}, [errors]);
 
 	useEffect(() => {
-		if (!locations) {
-			fetchLocations();
-		}
-	});
+		fetchLocations();
+	}, []);
 
 	let parkingLocations = [
 		{

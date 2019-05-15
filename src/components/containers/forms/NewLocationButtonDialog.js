@@ -9,10 +9,8 @@ import DialogButton from "../../presentational/forms/DialogButton";
 import Can from "../layout/Can";
 function NewLocationButtonDialog({ onSubmit, fetchLocations, locations }) {
 	useEffect(() => {
-		if (!locations) {
-			fetchLocations();
-		}
-	});
+		fetchLocations();
+	}, []);
 	const [newLocation, setNewLocation] = useState({});
 	let [open, setOpen] = useState(false);
 	let [disableButton, setDisabledButton] = useState(false);

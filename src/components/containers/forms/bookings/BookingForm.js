@@ -36,16 +36,9 @@ function BookingFormContainer({
 		setDisabledButton(!validForm);
 	}, [errors, values]);
 	useEffect(() => {
-		if (!enums) {
-			fetchEnums();
-		}
-
-		if (!vehicles) {
-			fetchVehicles();
-		}
-		if (!locations) {
-			fetchLocations();
-		}
+		fetchEnums();
+		fetchVehicles();
+		fetchLocations();
 	}, []);
 
 	let bookingTypeList = [{ value: "", label: "Loading..." }];

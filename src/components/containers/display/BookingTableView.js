@@ -14,7 +14,6 @@ import { RBAC } from "../../../config/rbac";
 function BookingTableView({
 	bookings,
 	vehicles,
-	enums,
 	auth,
 	fetchEnums,
 	fetchBookings,
@@ -66,19 +65,10 @@ function BookingTableView({
 		resetActionStatus();
 	}, [bookings, auth]);
 	useEffect(() => {
-		if (!bookings) {
-			fetchBookings();
-		}
-		if (!enums) {
-			fetchEnums();
-		}
-
-		if (!vehicles) {
-			fetchVehicles();
-		}
-		if (!auth) {
-			fetchCurrentUserDetails();
-		}
+		fetchBookings();
+		fetchEnums();
+		fetchVehicles();
+		fetchCurrentUserDetails();
 	}, []);
 
 	let tableHeaders = [
@@ -109,9 +99,8 @@ function BookingTableView({
 				vehicle => vehicle.id === booking.vehicleId
 			);
 			let bookingStatus = "";
-
+			let currentTime = moment();
 			if (booking.approved) {
-				let currentTime = moment();
 				let hasPassedFrom = moment(booking.from, "X").isSameOrBefore(
 					currentTime
 				);
@@ -121,7 +110,7 @@ function BookingTableView({
 				else bookingStatus = "Approved";
 			} else {
 				if (booking.approved === null) {
-					if (moment(booking.from, "X").isSameOrBefore(moment()))
+					if (moment(booking.from, "X").isSameOrBefore(currentTime))
 						bookingStatus = "Expired";
 					else bookingStatus = "Pending";
 				} else if (booking.approved === false) bookingStatus = "Denied";
