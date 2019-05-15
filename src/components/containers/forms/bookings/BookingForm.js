@@ -73,7 +73,7 @@ function BookingFormContainer({
 			if (inLocation) {
 				available = vehicle.bookings.every(booking => {
 					if (
-						rangeOverlap(from, to, booking.to, booking.to) &&
+						rangeOverlap(from, to, booking.from, booking.to) &&
 						values.id !== booking.id
 					) {
 						return false;
