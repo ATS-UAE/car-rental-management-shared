@@ -5,6 +5,7 @@ const router = express.Router();
 
 const requireLogin = require("../middlewares/requireLogin");
 const disallowGuests = require("../middlewares/disallowGuests");
+const upload = require("../middlewares/multerUpload");
 const { RBAC, OPERATIONS, resources } = require("../rbac/init");
 const { CREATE, READ, UPDATE, DELETE } = OPERATIONS;
 const db = require("../models");
@@ -12,6 +13,9 @@ const { errorCodes } = require("../utils/variables");
 const { ResponseBuilder, pickFields } = require("../utils");
 const { ROLES } = require("../utils/variables");
 const config = require("../config");
+const { s3 } = require("../utils/aws");
+const { aws } = config;
+const { bucket } = aws.s3;
 
 router.get("/", requireLogin, disallowGuests, async ({ user }, res) => {
 	let response = new ResponseBuilder();
@@ -57,93 +61,123 @@ router.get("/", requireLogin, disallowGuests, async ({ user }, res) => {
 	res.json(response);
 });
 
-router.post("/", async ({ user, body }, res) => {
-	// If user being created is a guest role,
-	// an email will be sent to the invitee.
-	// Else, create directly with approved = true.
-	let response = new ResponseBuilder();
-	let accessible = false;
-	let inviteTokenUsed = false;
-	let email = body.email;
-	let role = await db.Role.findByPk(body.roleId);
-	if (body.inviteToken) {
-		// Consume invite token
-		let inviteToken = jwt.verify(body.inviteToken, config.secretKey);
-		if (inviteToken) {
-			inviteTokenUsed = true;
-			email = inviteToken.email;
-		}
-	} else if (user && user.role && user.role.name) {
-		accessible = await RBAC.can(user.role.name, CREATE, resources.users, {
-			role
-		});
-	}
-	if (accessible || inviteTokenUsed) {
-		let guestRole = await db.Role.findOne({ where: { name: ROLES.GUEST } });
-
-		try {
-			// Immediately create the user otherwise.
-			let approved = !inviteTokenUsed; // Approve if userCreated is not guest
-			let hashedPassword = await bcrypt.hash(body.password, 10);
-			let createdUser = await db.User.create({
-				...pickFields(
-					[
-						"username",
-						"firstName",
-						"lastName",
-						"gender",
-						"mobileNumber",
-						"userImageSrc",
-						"licenseImageSrc"
-					],
-					body
-				),
-				email,
-				roleId: inviteTokenUsed ? guestRole.id : role.id,
-				approved,
-				password: hashedPassword
-			});
-			response.setData({
-				...pickFields(
-					[
-						"id",
-						"username",
-						"firstName",
-						"lastName",
-						"gender",
-						"email",
-						"mobileNumber",
-						"userImageSrc",
-						"licenseImageSrc"
-					],
-					createdUser.get({ plain: true })
-				),
-				role: {
-					id: inviteTokenUsed ? guestRole.id : role.id,
-					name: inviteTokenUsed ? guestRole.name : role.name
-				}
-			});
-
-			response.setMessage("User has been created.");
-			response.setCode(200);
-			response.setSuccess(true);
-			res.status(200);
-		} catch (e) {
-			response.setMessage(e.message);
-			response.setCode(422);
-			res.status(422);
-			if (e.errors && e.errors.length > 0) {
-				e.errors.forEach(error => response.appendError(error.path));
+router.post(
+	"/",
+	upload("carbooking/users/profile").single("userImageSrc"),
+	async (req, res) => {
+		const { user, body } = req;
+		console.log("body:", body);
+		console.log("file:", req.file);
+		const file = req.file;
+		const { location: fileLocation = null, key: fileKey = null } = file;
+		// If user being created is a guest role,
+		// an email will be sent to the invitee.
+		// Else, create directly with approved = true.
+		let response = new ResponseBuilder();
+		let accessible = false;
+		let inviteTokenUsed = false;
+		let email = body.email;
+		let role = await db.Role.findByPk(body.roleId);
+		if (body.inviteToken) {
+			// Consume invite token
+			let inviteToken = jwt.verify(body.inviteToken, config.secretKey);
+			if (inviteToken) {
+				inviteTokenUsed = true;
+				email = inviteToken.email;
 			}
+		} else if (user && user.role && user.role.name) {
+			accessible = await RBAC.can(user.role.name, CREATE, resources.users, {
+				role
+			});
 		}
-	} else {
-		response.setMessage(errorCodes.UNAUTHORIZED.message);
-		response.setCode(errorCodes.UNAUTHORIZED.statusCode);
-		res.status(errorCodes.UNAUTHORIZED.statusCode);
-	}
+		if (accessible || inviteTokenUsed) {
+			let guestRole = await db.Role.findOne({ where: { name: ROLES.GUEST } });
 
-	res.json(response);
-});
+			try {
+				// Immediately create the user otherwise.
+				let approved = !inviteTokenUsed; // Approve if userCreated is not guest
+				let hashedPassword = await bcrypt.hash(body.password, 10);
+				let createdUser = await db.User.create({
+					...pickFields(
+						[
+							"username",
+							"firstName",
+							"lastName",
+							"gender",
+							"mobileNumber",
+							"userImageSrc",
+							"licenseImageSrc"
+						],
+						body
+					),
+					userImageSrc: fileLocation,
+					email,
+					roleId: inviteTokenUsed ? guestRole.id : role.id,
+					approved,
+					password: hashedPassword
+				});
+				response.setData({
+					...pickFields(
+						[
+							"id",
+							"username",
+							"firstName",
+							"lastName",
+							"gender",
+							"email",
+							"mobileNumber",
+							"userImageSrc",
+							"licenseImageSrc"
+						],
+						createdUser.get({ plain: true })
+					),
+					role: {
+						id: inviteTokenUsed ? guestRole.id : role.id,
+						name: inviteTokenUsed ? guestRole.name : role.name
+					}
+				});
+
+				response.setMessage("User has been created.");
+				response.setCode(200);
+				response.setSuccess(true);
+				res.status(200);
+			} catch (e) {
+				fileKey &&
+					s3.deleteObject(
+						{
+							Bucket: bucket,
+							Key: fileKey
+						},
+						function(err, data) {
+							if (err) console.log("Error cancelling upload:", err);
+						}
+					);
+				response.setMessage(e.message);
+				response.setCode(422);
+				res.status(422);
+				if (e.errors && e.errors.length > 0) {
+					e.errors.forEach(error => response.appendError(error.path));
+				}
+			}
+		} else {
+			fileKey &&
+				s3.deleteObject(
+					{
+						Bucket: bucket,
+						Key: fileKey
+					},
+					function(err, data) {
+						if (err) console.log("Error cancelling upload:", err);
+					}
+				);
+			response.setMessage(errorCodes.UNAUTHORIZED.message);
+			response.setCode(errorCodes.UNAUTHORIZED.statusCode);
+			res.status(errorCodes.UNAUTHORIZED.statusCode);
+		}
+
+		res.json(response);
+	}
+);
 
 router.get(
 	"/:id",

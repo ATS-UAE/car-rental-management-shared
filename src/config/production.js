@@ -10,7 +10,10 @@ const {
 	MAIL_HOST,
 	SERVER_PORT,
 	SERVER_URL,
-	SECRET_KEY
+	SECRET_KEY,
+	AWS_ACCESS_KEY_ID,
+	AWS_SECRET_ACCESS_KEY,
+	AWS_S3_BUCKET
 } = process.env;
 
 module.exports = {
@@ -39,6 +42,13 @@ module.exports = {
 		port: MAIL_PORT,
 		secure: true,
 		host: MAIL_HOST
+	},
+	aws: {
+		accessKeyId: AWS_ACCESS_KEY_ID,
+		secretAccessKey: AWS_SECRET_ACCESS_KEY,
+		s3: {
+			bucket: AWS_S3_BUCKET
+		}
 	},
 	serverPort: SERVER_PORT,
 	serverUrl: SERVER_URL,

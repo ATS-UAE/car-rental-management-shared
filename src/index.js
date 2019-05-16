@@ -4,6 +4,7 @@ const passport = require("passport");
 const { Strategy } = require("passport-local");
 const bcrypt = require("bcryptjs");
 const cors = require("cors");
+const multer = require("multer");
 const path = require("path");
 
 const config = require("./config");
@@ -16,8 +17,27 @@ const vehicleRoutes = require("./routes/vehicles");
 const bookingRoutes = require("./routes/bookings");
 const locationRoutes = require("./routes/locations");
 const accessRoutes = require("./routes/access");
+const multipartFormDataHandler = multer();
 
 const app = express();
+
+// // MULTER CONFIGURATIONS
+// const s3 = new aws.S3({
+// 	/* ... */
+// });
+
+// const upload = multer({
+// 	storage: multerS3({
+// 		s3: s3,
+// 		bucket: "some-bucket",
+// 		metadata: function(req, file, cb) {
+// 			cb(null, { fieldName: file.fieldname });
+// 		},
+// 		key: function(req, file, cb) {
+// 			cb(null, Date.now().toString());
+// 		}
+// 	})
+// });
 
 // PASSPORT CONFIGURATIONS
 passport.use(
@@ -59,6 +79,7 @@ passport.deserializeUser(async (id, cb) => {
 });
 
 // EXPRESS CONFIGURATIONS
+
 app.use(require("body-parser").urlencoded({ extended: true }));
 app.use(
 	require("express-session")({
