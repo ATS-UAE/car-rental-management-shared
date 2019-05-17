@@ -26,7 +26,8 @@ export default [
 		exact: true,
 		requireLogin: true,
 		title: "Home",
-		sidebar: { icon: Home, location: "top" }
+		sidebar: { icon: Home, location: "top" },
+		wrapPaper: true
 	},
 	{
 		id: "Bookings",
@@ -34,7 +35,8 @@ export default [
 		component: Bookings,
 		requireLogin: true,
 		title: "Bookings",
-		sidebar: { icon: ChromeReaderMode, location: "top" }
+		sidebar: { icon: ChromeReaderMode, location: "top" },
+		wrapPaper: true
 	},
 	{
 		id: "Locations",
@@ -42,10 +44,11 @@ export default [
 		component: Locations,
 		requireLogin: true,
 		title: "Locations",
-		sidebar: { icon: Place, location: "top" }
+		sidebar: { icon: Place, location: "top" },
+		wrapPaper: true
 	},
 	{ id: "Login", path: "/login", component: Login },
-	{ id: "SignUp", path: "/signup", component: SignUp },
+	{ id: "SignUp", path: "/signup", component: SignUp, wrapPaper: true },
 	{
 		id: "Users",
 		path: "/users",
@@ -53,7 +56,8 @@ export default [
 		requireLogin: true,
 		access: [roles.KEY_MANAGER, roles.ADMIN],
 		title: "Users",
-		sidebar: { icon: SupervisedUserCircle, location: "top" }
+		sidebar: { icon: SupervisedUserCircle, location: "top" },
+		wrapPaper: true
 	},
 	{
 		id: "Vehicles",
@@ -61,14 +65,16 @@ export default [
 		component: Vehicles,
 		requireLogin: true,
 		title: "Vehicles",
-		sidebar: { icon: DirectionsCar, location: "top" }
+		sidebar: { icon: DirectionsCar, location: "top" },
+		wrapPaper: true
 	},
 	{
 		id: "Settings",
 		path: "/settings",
 		component: SettingsPage,
 		title: "Settings",
-		sidebar: { icon: Settings, location: "bottom" }
+		sidebar: { icon: Settings, location: "bottom" },
+		wrapPaper: true
 	},
 	{ id: "All", path: "/", component: UnknownPage, exact: false }
 ];
