@@ -33,7 +33,7 @@ function AppBarWithDrawerContainer({
 			title: `${auth.data.firstName} ${auth.data.lastName}`,
 			subtitle: `${toTitleWords(auth.data.role.name)}`,
 			initials: `${auth.data.firstName[0]}${auth.data.lastName[0]}`,
-			imgSrc: auth.data.imgSrc || null
+			imgSrc: auth.data.userImageSrc || null
 		};
 		for (let page of pages) {
 			if (page.sidebar !== undefined) {

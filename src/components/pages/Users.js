@@ -2,7 +2,7 @@ import React from "react";
 import { Paper } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import classNames from "classnames";
-import NewUserButtonDialog from "../containers/forms/NewUserButtonDialog";
+import UserFormCreateButtonDialog from "../containers/forms/users/UserFormCreateButtonDialog";
 import InviteGuestButtonDialog from "../containers/forms/InviteGuestButtonDialog";
 import UserTableView from "../containers/display/UserTableView";
 
@@ -10,8 +10,7 @@ function Users({ classes }) {
 	return (
 		<Paper className={classNames(classes.paper, classes.root)}>
 			<div className={classes.actions}>
-				<NewUserButtonDialog />
-
+				<UserFormCreateButtonDialog />
 				<InviteGuestButtonDialog />
 			</div>
 			<UserTableView />

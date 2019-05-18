@@ -30,7 +30,12 @@ function Can({
 			RBAC.can($role, action, resource, params).then(access =>
 				setAccess({
 					access,
-					excludedFields: RBAC.getExcludedFields($role, action, resource)
+					excludedFields: RBAC.getExcludedFields($role, action, resource),
+					params,
+					resource,
+					action,
+					role,
+					auth
 				})
 			);
 		}

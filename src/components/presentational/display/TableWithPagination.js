@@ -99,8 +99,7 @@ function renderFooter(options = {}) {
 	);
 }
 
-function TableWithPagination(props) {
-	const { data, pagination, classes } = props;
+function TableWithPagination({ data, pagination, classes, filter, sortIndex }) {
 	const count = data.body.length;
 	const { rowsPerPageOptions, colSpan, SelectProps } = pagination;
 	const [currentPage, setCurrentPage] = useState(0);

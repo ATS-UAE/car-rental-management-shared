@@ -3,12 +3,12 @@ import { compose } from "recompose";
 import { withRouter } from "react-router";
 import { Paper } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
-import GuestSignUp from "../containers/forms/GuestSignUp";
+import UserFormGuestSignUp from "../containers/forms/users/UserFormGuestSignUp";
 
 function SignUp({ classes, history }) {
 	return (
 		<Paper className={classes.root}>
-			<GuestSignUp onSubmit={() => history.push("/login")} />
+			<UserFormGuestSignUp onSubmit={() => history.push("/login")} />
 		</Paper>
 	);
 }

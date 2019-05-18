@@ -1,32 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Fragment } from "react";
+import { withRouter } from "react-router";
+import { compose } from "recompose";
+import { IconButton } from "@material-ui/core";
+import { Edit, Visibility } from "@material-ui/icons";
 import { connect } from "react-redux";
 import * as reduxActions from "../../../actions";
 import TableView from "../../presentational/forms/TableView";
-import UserForm from "../../presentational/forms/UserForm";
+import UserFormUpdate from "../forms/users/UserFormUpdate";
+import FormUpdatePage from "../../pages/FormUpdatePage";
 import { api, toTitleWords } from "../../../utils";
-import { Button, Grid } from "@material-ui/core";
-import { roles, actions, resources } from "../../../variables/enums";
+import { actions, resources } from "../../../variables/enums";
 import Can from "../layout/Can";
-function UserTable({ users, auth, enums, fetchEnums, fetchUsers, onSubmit }) {
+function UserTable({ users, auth, fetchEnums, fetchUsers, history }) {
 	useEffect(() => {
 		fetchUsers();
 		fetchEnums();
 	}, []);
 	const [open, setOpen] = useState(false);
 	const [formData, setFormData] = useState({});
-	let [disableButton, setDisabledButton] = useState(false);
-	let [errorNotes, setErrorNotes] = useState([]);
-	let [errors, setErrors] = useState({});
-	useEffect(() => {
-		let validForm = true;
-		for (let key in errors) {
-			if (errors[key].length) {
-				validForm = false;
-			}
-		}
-		setDisabledButton(!validForm);
-	}, [errors]);
-
 	const tableBody = users
 		? users.data.map(user => {
 				let row = {
@@ -38,142 +29,132 @@ function UserTable({ users, auth, enums, fetchEnums, fetchUsers, onSubmit }) {
 						{ value: user.gender },
 						{ value: user.email },
 						{ value: user.mobileNumber },
-						{ value: toTitleWords(user.role.name) }
-					],
-					onClick: () => {
-						setOpen(true);
-						api.fetchUser(user.id).then(res => {
-							setFormData({ ...res.data, roleId: user.role.id });
-						});
-					}
+						{ value: toTitleWords(user.role.name) },
+						{
+							value: (
+								<Can
+									action={actions.READ}
+									resource={resources.USERS}
+									yes={readAccess => (
+										<Can
+											action={actions.UPDATE}
+											resource={resources.USERS}
+											params={{
+												role: user.role,
+												updateUser: { id: user.id },
+												currentUser: { id: auth.data.id }
+											}}
+											yes={updateAccess => (
+												<IconButton
+													onClick={() => {
+														api.fetchUser(user.id).then(() =>
+															history.push(`/users/${user.id}/edit`, {
+																user: { ...user, roleId: user.role.id },
+																updateAccess,
+																readAccess
+															})
+														);
+													}}
+												>
+													<Edit />
+												</IconButton>
+											)}
+											no={() => (
+												<IconButton
+													onClick={() => {
+														api.fetchUser(user.id).then(() =>
+															history.push(`/users/${user.id}/edit`, {
+																user: { ...user, roleId: user.role.id },
+																readAccess
+															})
+														);
+													}}
+												>
+													<Visibility />
+												</IconButton>
+											)}
+										/>
+									)}
+								/>
+							)
+						}
+					]
 				};
 
 				return row;
 		  })
 		: [];
-
-	let roleList = [
-		{
-			value: "",
-			label: "Loading"
-		}
-	];
-	if (enums && enums.data) {
-		roleList = enums.data.roles.reduce((acc, role) => {
-			if (role.name !== roles.GUEST) {
-				acc.push({ value: role.id, label: toTitleWords(role.name) });
-			}
-			return acc;
-		}, []);
-	}
-
 	return (
-		<Can
-			action={actions.READ}
-			resource={resources.USERS}
-			yes={() => (
-				<TableView
-					editable={true}
-					open={open}
-					onClose={() => setOpen(false)}
-					tableData={{
-						headers: [
-							{
-								values: [
-									{ value: "Username" },
-									{ value: "First Name" },
-									{ value: "Last Name" },
-									{ value: "Gender" },
-									{ value: "Email" },
-									{ value: "Mobile Number" },
-									{ value: "Role" }
-								]
+		<Fragment>
+			<FormUpdatePage
+				path="/users/:id"
+				exitPath="/users"
+				onMount={({ location }) => setFormData(location.state.user)}
+				render={({ location }) => {
+					let readOnly = [];
+					let exclude = [];
+					let showFooter = false;
+					if (location.state.updateAccess) {
+						exclude = location.state.readAccess.excludedFields;
+						readOnly = location.state.updateAccess.excludedFields;
+						showFooter = true;
+					} else {
+						exclude = location.state.readAccess.excludedFields;
+						readOnly = true;
+					}
+					return (
+						<UserFormUpdate
+							values={formData}
+							readOnly={readOnly}
+							exclude={exclude}
+							showFooter={showFooter}
+							onChangeEvent={(data, name, event) =>
+								event.target.files
+									? setFormData({
+											...data,
+											[name]: event.target.files[0] || ""
+									  })
+									: setFormData(data)
 							}
-						],
-						body: tableBody
-					}}
-				>
-					<Can
-						action={actions.UPDATE}
-						resource={resources.USERS}
-						params={{
-							currentUser: {
-								id: auth.data.id
-							},
-							updateUser: {
-								id: formData.id
-							},
-							role: {
-								name: formData.role ? formData.role.name : null
-							}
-						}}
-						yes={access => {
-							let footer = (
-								<Grid item>
-									<Button
-										disabled={disableButton}
-										type="submit"
-										variant="contained"
-										color="primary"
-										onClick={e => {
-											e.preventDefault();
-											setDisabledButton(true);
-											api
-												.updateUser(formData)
-												.then(() => {
-													fetchUsers();
-													onSubmit && onSubmit();
-													setOpen(false);
-													setDisabledButton(false);
-												})
-
-												.catch(e => {
-													setErrorNotes([e]);
-													setDisabledButton(false);
-												});
-										}}
-									>
-										Confirm
-									</Button>
-								</Grid>
-							);
-							return (
-								<UserForm
-									title="Update User"
-									values={formData}
-									errors={errors}
-									onError={setErrors}
-									onChange={setFormData}
-									errorNotes={errorNotes}
-									roleList={roleList}
-									footer={footer}
-									exclude={access.excludedFields}
-								/>
-							);
-						}}
-						no={() => (
-							<UserForm
-								values={formData}
-								errors={errors}
-								onError={setErrors}
-								onChange={setFormData}
-								errorNotes={errorNotes}
-								roleList={roleList}
-								readOnly={true}
-								exclude={["password", "passwordConfirm"]}
-								hints=""
-							/>
-						)}
-					/>
-				</TableView>
-			)}
-		/>
+							title={showFooter ? "Update User" : "User Details"}
+							hints={showFooter ? "*Required" : ""}
+							onSubmit={() => history.push("/users")}
+						/>
+					);
+				}}
+			/>
+			<TableView
+				editable={true}
+				open={open}
+				onClose={() => setOpen(false)}
+				tableData={{
+					headers: [
+						{
+							values: [
+								{ value: "Username" },
+								{ value: "First Name" },
+								{ value: "Last Name" },
+								{ value: "Gender" },
+								{ value: "Email" },
+								{ value: "Mobile Number" },
+								{ value: "Role" },
+								{ value: "Actions" }
+							]
+						}
+					],
+					body: tableBody
+				}}
+			/>
+		</Fragment>
 	);
 }
 
 const mapStateToProps = ({ users, auth, enums }) => ({ users, auth, enums });
 
-export default connect(
-	mapStateToProps,
-	reduxActions
+export default compose(
+	withRouter,
+	connect(
+		mapStateToProps,
+		reduxActions
+	)
 )(UserTable);

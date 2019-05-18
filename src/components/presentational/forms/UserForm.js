@@ -1,26 +1,39 @@
 import React from "react";
 import Form, { FIELDS } from "./Form";
 import { validators, Validator } from "../../../utils";
-const { SELECT, PASSWORD, TEXT } = FIELDS;
+const { SELECT, PASSWORD, TEXT, IMAGE } = FIELDS;
 
 function UserForm({
 	title,
 	exclude,
 	errorNotes,
 	onChange,
+	onChangeEvent,
 	values,
 	roleList,
 	footer,
 	onError,
 	errors,
 	readOnly,
-	hints
+	hints,
+	ticksMap
 }) {
 	let samePassword = new Validator(
 		password => password === values.password,
 		"Password does not match."
 	);
 	const fields = [
+		{
+			type: IMAGE,
+			name: "userImageSrc",
+			id: "profile-picture",
+			persistEvent: true,
+			validators: [validators.requiredField],
+			props: {
+				label: "Select profile picture",
+				required: true
+			}
+		},
 		{
 			type: TEXT,
 			name: "username",
@@ -131,6 +144,8 @@ function UserForm({
 			errors={errors}
 			readOnly={readOnly}
 			hints={hints}
+			onChangeEvent={onChangeEvent}
+			ticksMap={ticksMap}
 		/>
 	);
 }

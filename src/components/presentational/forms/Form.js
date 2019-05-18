@@ -8,13 +8,15 @@ import ErrorChip from "../display/ErrorChip";
 import Slider from "../inputs/Slider";
 import DateTimePicker from "../inputs/DateTimePicker";
 import { Validator } from "../../../utils";
+import ImageInput from "../inputs/ImageInput";
 
 export const FIELDS = {
 	PASSWORD: PasswordField,
 	TEXT: TextField,
 	SELECT: Select,
 	SLIDER: Slider,
-	DATE_TIME_PICKER: DateTimePicker
+	DATE_TIME_PICKER: DateTimePicker,
+	IMAGE: ImageInput
 };
 
 function Form({
@@ -30,11 +32,15 @@ function Form({
 	onError,
 	errors,
 	readOnly,
-	hints
+	hints,
+	onChangeEvent
 }) {
-	const handleChange = name => e =>
+	const handleChange = (name, persistEvent) => e => {
+		persistEvent && e.persist();
 		onChange && onChange({ ...values, [name]: e.target.value });
-	// const handleError = name => e => onError && onError({ ...errors, [name]: e });
+		onChangeEvent &&
+			onChangeEvent({ ...values, [name]: e.target.value }, name, e);
+	};
 	const formFields = fields.filter(field => !exclude.includes(field.name));
 	useEffect(() => {
 		let fieldErrors = {};
@@ -68,15 +74,20 @@ function Form({
 				<Grid container spacing={24}>
 					{formFields.map(field => {
 						const Component = field.type;
-						const { props = {}, name, id, GridProps } = field;
-
+						const { props = {}, name, id, GridProps, persistEvent } = field;
+						let disabled;
+						if (readOnly.length)
+							disabled = readOnly.find(field => field === name || field === id)
+								? true
+								: false;
+						else if (typeof readOnly === "boolean") disabled = readOnly;
 						return (
 							<Grid item xs={12} sm={6} key={name} {...GridProps}>
 								<Component
 									id={id}
 									value={values[name] === undefined ? "" : values[name]}
-									onChange={handleChange(name)}
-									disabled={readOnly ? true : false}
+									onChange={handleChange(name, persistEvent)}
+									disabled={disabled}
 									{...props}
 									label={
 										errors[name] && errors[name][0] && values[name]
@@ -121,12 +132,16 @@ Form.propTypes = {
 	),
 	errorNotes: PropTypes.arrayOf(PropTypes.string),
 	onChange: PropTypes.func,
+	onChangeEvent: PropTypes.func,
 	onError: PropTypes.func,
 	title: PropTypes.string,
 	errors: PropTypes.object,
 	values: PropTypes.object,
 	exclude: PropTypes.arrayOf(PropTypes.string),
-	readOnly: PropTypes.bool,
+	readOnly: PropTypes.oneOfType([
+		PropTypes.bool,
+		PropTypes.arrayOf(PropTypes.string)
+	]),
 	footer: PropTypes.node,
 	hints: PropTypes.string
 };
