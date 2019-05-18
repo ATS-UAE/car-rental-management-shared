@@ -1,4 +1,5 @@
 import axios from "axios";
+
 export function runIfExistFunction(func, parent, args) {
 	return function() {
 		if (typeof func === "function") {
@@ -52,11 +53,24 @@ export const validators = {
 
 const API_URL = process.env.REACT_APP_CAR_BOOKING_API_DOMAIN;
 
-const executeFromAPI = (action, url, body) =>
+const executeFromAPI = (action, url, body, config) =>
 	new Promise((resolve, reject) => {
-		const config = { withCredentials: true };
+		let formData = body;
+		const axiosConfig = {
+			withCredentials: true
+		};
+		if (body && config && config.formData) {
+			formData = new FormData();
+			for (let key in body) {
+				if (body[key] instanceof Blob) formData.append(key, body[key]);
+				else formData.append(key, JSON.stringify(body[key]));
+			}
+			axiosConfig.headers = {
+				"Content-Type": "multipart/form-data"
+			};
+		}
 		if (action !== "get" && action !== "delete") {
-			axios[action](`${API_URL}${url}`, body, config)
+			axios[action](`${API_URL}${url}`, formData, axiosConfig)
 				.then(data => resolve(data.data))
 				.catch(error => {
 					if (
@@ -70,7 +84,7 @@ const executeFromAPI = (action, url, body) =>
 					reject(error.message || "Unknown error has occurred.", error);
 				});
 		} else if (action === "get" || action === "delete") {
-			axios[action](`${API_URL}${url}`, config)
+			axios[action](`${API_URL}${url}`, axiosConfig)
 				.then(data => resolve(data.data))
 				.catch(error => {
 					if (
@@ -156,9 +170,12 @@ export const api = {
 
 	fetchUsers: () => executeFromAPI("get", "/api/carbooking/users"),
 	fetchUser: id => executeFromAPI("get", `/api/carbooking/users/${id}`),
-	createUser: user => executeFromAPI("post", "/api/carbooking/users", user),
+	createUser: user =>
+		executeFromAPI("post", "/api/carbooking/users", user, { formData: true }),
 	updateUser: user =>
-		executeFromAPI("patch", `/api/carbooking/users/${user.id}`, user),
+		executeFromAPI("patch", `/api/carbooking/users/${user.id}`, user, {
+			formData: true
+		}),
 
 	inviteGuest: invite =>
 		executeFromAPI("post", "/api/carbooking/invites", invite),
