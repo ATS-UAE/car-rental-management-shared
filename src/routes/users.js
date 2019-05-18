@@ -5,6 +5,7 @@ const router = express.Router();
 
 const requireLogin = require("../middlewares/requireLogin");
 const disallowGuests = require("../middlewares/disallowGuests");
+const parseBody = require("../middlewares/parseBody");
 const upload = require("../middlewares/multerUpload");
 const { RBAC, OPERATIONS, resources } = require("../rbac/init");
 const { CREATE, READ, UPDATE, DELETE } = OPERATIONS;
@@ -13,7 +14,7 @@ const { errorCodes } = require("../utils/variables");
 const { ResponseBuilder, pickFields } = require("../utils");
 const { ROLES } = require("../utils/variables");
 const config = require("../config");
-const { s3 } = require("../utils/aws");
+const { s3, s3GetKeyFromLocation } = require("../utils/aws");
 const { aws } = config;
 const { bucket } = aws.s3;
 
@@ -41,7 +42,8 @@ router.get("/", requireLogin, disallowGuests, async ({ user }, res) => {
 					"blocked",
 					"createdAt",
 					"updatedAt",
-					"userCreatorId"
+					"userCreatorId",
+					"roleId"
 				],
 				user.get({ plain: true })
 			),
@@ -64,11 +66,8 @@ router.get("/", requireLogin, disallowGuests, async ({ user }, res) => {
 router.post(
 	"/",
 	upload("carbooking/users/profile").single("userImageSrc"),
-	async (req, res) => {
-		const { user, body } = req;
-		console.log("body:", body);
-		console.log("file:", req.file);
-		const file = req.file;
+	parseBody,
+	async ({ user, body, file = {} }, res) => {
 		const { location: fileLocation = null, key: fileKey = null } = file;
 		// If user being created is a guest role,
 		// an email will be sent to the invitee.
@@ -106,7 +105,8 @@ router.post(
 							"gender",
 							"mobileNumber",
 							"userImageSrc",
-							"licenseImageSrc"
+							"licenseImageSrc",
+							"roleId"
 						],
 						body
 					),
@@ -210,7 +210,8 @@ router.get(
 								"blocked",
 								"createdAt",
 								"updatedAt",
-								"userCreatorId"
+								"userCreatorId",
+								"roleId"
 							],
 							foundUser.get({ plain: true })
 						),
@@ -242,99 +243,145 @@ router.get(
 	}
 );
 
-router.patch("/:id", requireLogin, async (req, res) => {
-	let response = new ResponseBuilder();
-	let foundUser = await db.User.findByPk(req.params.id, {
-		include: [{ model: db.Role, as: "role" }]
-	});
-	let accessible = await RBAC.can(req.user.role.name, UPDATE, resources.users, {
-		updateUser: {
-			id: req.params.id
-		},
-		currentUser: {
-			id: req.user.id
-		},
-		role: foundUser.role
-	});
-	if (accessible) {
-		if (foundUser) {
-			try {
-				let updatedUser = await foundUser.update(
-					pickFields(
-						[
-							"id",
-							"username",
-							"firstName",
-							"lastName",
-							"gender",
-							"email",
-							"mobileNumber",
-							"lastLogin",
-							"userImageSrc",
-							"licenseImageSrc",
-							"blocked",
-							"createdAt",
-							"updatedAt",
-							"userCreatorId",
-							"roleId"
-						],
-						req.body
-					),
-					{ include: [{ model: db.Role, as: "role" }] }
-				);
-				let role = updatedUser.role;
-				response.setData({
-					...pickFields(
-						[
-							"id",
-							"username",
-							"firstName",
-							"lastName",
-							"gender",
-							"email",
-							"mobileNumber",
-							"lastLogin",
-							"userImageSrc",
-							"licenseImageSrc",
-							"approved",
-							"blocked",
-							"createdAt",
-							"updatedAt",
-							"userCreatorId"
-						],
-						updatedUser.get({ plain: true })
-					),
-					role: {
-						id: role.id,
-						name: role.name
+router.patch(
+	"/:id",
+	requireLogin,
+	upload("carbooking/users/profile").single("userImageSrc"),
+	parseBody,
+	async ({ user, body, file = {}, params }, res) => {
+		const { location: fileLocation = null, key: fileKey = null } = file;
+		let response = new ResponseBuilder();
+		let foundUser = await db.User.findByPk(params.id, {
+			include: [{ model: db.Role, as: "role" }]
+		});
+		let accessible = await RBAC.can(user.role.name, UPDATE, resources.users, {
+			updateUser: {
+				id: params.id
+			},
+			currentUser: {
+				id: user.id
+			},
+			role: foundUser.role
+		});
+		if (accessible) {
+			if (foundUser) {
+				fileLocation &&
+					foundUser.userImageSrc &&
+					s3.deleteObject(
+						{
+							Bucket: bucket,
+							Key: s3GetKeyFromLocation(foundUser.userImageSrc)
+						},
+						function(err, data) {
+							if (err) console.log("Error Deleting old upload:", err);
+						}
+					);
+				try {
+					let updatedUser = await foundUser.update(
+						{
+							...pickFields(
+								[
+									"username",
+									"firstName",
+									"lastName",
+									"gender",
+									"email",
+									"mobileNumber",
+									"userImageSrc",
+									"licenseImageSrc",
+									"blocked",
+									"roleId"
+								],
+								body
+							),
+							userImageSrc: fileLocation || foundUser.userImageSrc
+						},
+						{ include: [{ model: db.Role, as: "role" }] }
+					);
+					let role = updatedUser.role;
+					response.setData({
+						...pickFields(
+							[
+								"id",
+								"username",
+								"firstName",
+								"lastName",
+								"gender",
+								"email",
+								"mobileNumber",
+								"lastLogin",
+								"userImageSrc",
+								"licenseImageSrc",
+								"approved",
+								"blocked",
+								"createdAt",
+								"updatedAt",
+								"userCreatorId",
+								"roleId"
+							],
+							updatedUser.get({ plain: true })
+						),
+						role: {
+							id: role.id,
+							name: role.name
+						}
+					});
+					response.setCode(200);
+					response.setMessage(`User with ID ${params.id} updated.`);
+					response.setSuccess(true);
+				} catch (e) {
+					fileKey &&
+						s3.deleteObject(
+							{
+								Bucket: bucket,
+								Key: fileKey
+							},
+							function(err, data) {
+								if (err) console.log("Error cancelling upload:", err);
+							}
+						);
+					response.setMessage(e.message);
+					response.setCode(422);
+					res.status(422);
+					if (e.errors && e.errors.length > 0) {
+						e.errors.forEach(error => response.appendError(error.path));
 					}
-				});
-				response.setCode(200);
-				response.setMessage(`User with ID ${req.params.id} updated.`);
-				response.setSuccess(true);
-			} catch (e) {
-				console.log(e);
-				response.setMessage(e.message);
-				response.setCode(422);
-				res.status(422);
-				if (e.errors && e.errors.length > 0) {
-					e.errors.forEach(error => response.appendError(error.path));
 				}
+			} else {
+				fileKey &&
+					s3.deleteObject(
+						{
+							Bucket: bucket,
+							Key: fileKey
+						},
+						function(err, data) {
+							if (err) console.log("Error cancelling upload:", err);
+						}
+					);
+				res.status(404);
+				response.setCode(404);
+				response.setMessage(`User with ID ${params.id} not found.`);
+				res.status(404);
 			}
 		} else {
-			res.status(404);
-			response.setCode(404);
-			response.setMessage(`User with ID ${req.params.id} not found.`);
-			res.status(404);
+			fileKey &&
+				s3.deleteObject(
+					{
+						Bucket: bucket,
+						Key: fileKey
+					},
+					function(err, data) {
+						if (err) console.log("Error cancelling upload:", err);
+					}
+				);
+			response.setMessage(errorCodes.UNAUTHORIZED.message);
+			response.setCode(errorCodes.UNAUTHORIZED.statusCode);
+			res.status(errorCodes.UNAUTHORIZED.statusCode);
 		}
-	} else {
-		response.setMessage(errorCodes.UNAUTHORIZED.message);
-		response.setCode(errorCodes.UNAUTHORIZED.statusCode);
-		res.status(errorCodes.UNAUTHORIZED.statusCode);
-	}
 
-	res.json(response);
-});
+		res.json(response);
+	}
+);
 
 router.delete(
 	"/:id",

@@ -102,5 +102,6 @@ module.exports = {
 	pickFields,
 	toUnix,
 	toMySQLDate,
-	containsField
+	containsField,
+	sendPasswordResetToken
 };
