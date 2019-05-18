@@ -1,5 +1,8 @@
 import { RBAC as AccessControl, Role, Resource, Action } from "../utils/rbac";
-import { roles as roleEnums, resources as resourceEnums } from "../variables/enums";
+import {
+	roles as roleEnums,
+	resources as resourceEnums
+} from "../variables/enums";
 const { READ, UPDATE, DELETE, CREATE } = Action.OPERATIONS;
 const accessControl = new AccessControl("Car Booking");
 const generalRole = new Role("GENERAL");
@@ -83,7 +86,7 @@ keyManagerRole.addPermission(new Action(UPDATE, bookingsResource));
 
 // Users permission
 keyManagerRole.addPermission(
-	new Action(READ, usersResource, null, ["password"])
+	new Action(READ, usersResource, null, ["password", "passwordConfirm"])
 );
 
 ///////////////////////
@@ -109,7 +112,8 @@ adminRole.addPermission(
 	new Action(
 		UPDATE,
 		usersResource,
-		({ role }) => role && role.name !== roleEnums.GUEST
+		({ role }) => role && role.name !== roleEnums.GUEST,
+		["password", "passwordConfirm"]
 	)
 );
 
