@@ -16,38 +16,32 @@ function App({ classes }) {
 					<Route path="/" exact={false} component={All} />
 
 					<Switch>
-						{pages.map(page => {
-							let component;
-							if (page.wrapPaper) {
-								component = (
-									<Paper className={classes.body}>
-										<page.component />
-									</Paper>
-								);
-							} else {
-								component = <page.component />;
-							}
-							if (page.requireLogin) {
+						{pages.map(
+							({ requireLogin, wrapPaper, id, path, exact, component }) => {
+								const renderWrappedComponent = props => {
+									let proppedComponent = React.createElement(component, props);
+									let wrapped = wrapPaper ? (
+										<Paper className={classes.body}>{proppedComponent}</Paper>
+									) : (
+										proppedComponent
+									);
+									wrapped = requireLogin ? (
+										<LoginRequiredPage>{wrapped}</LoginRequiredPage>
+									) : (
+										wrapped
+									);
+									return wrapped;
+								};
 								return (
 									<Route
-										key={page.id}
-										path={page.path}
-										exact={page.exact}
-										render={() => (
-											<LoginRequiredPage>{component}</LoginRequiredPage>
-										)}
+										key={id}
+										path={path}
+										exact={exact}
+										render={renderWrappedComponent}
 									/>
 								);
 							}
-							return (
-								<Route
-									key={page.id}
-									path={page.path}
-									exact={page.exact}
-									render={() => component}
-								/>
-							);
-						})}
+						)}
 					</Switch>
 				</Fragment>
 			</BrowserRouter>
@@ -68,11 +62,12 @@ const styles = theme => ({
 		"#root": { height: "100%" },
 		/* width */
 		"::-webkit-scrollbar": {
-			width: "10px"
+			width: "10px",
+			height: "10px"
 		},
 		/* Track */
 		"::-webkit-scrollbar-track": {
-			opacity: 0,
+			background: "rgba(125, 125, 125, 0.1)",
 			borderRadius: "1000px"
 		},
 		/* Handle */
