@@ -83,7 +83,7 @@ keyManagerRole.addPermission(new Action(UPDATE, bookingsResource));
 
 // Users permission
 keyManagerRole.addPermission(
-	new Action(READ, usersResource, null, ["password"])
+	new Action(READ, usersResource, null, ["password", "passwordConfirm"])
 );
 
 ///////////////////////
@@ -102,14 +102,15 @@ adminRole.addPermission(
 	new Action(
 		CREATE,
 		usersResource,
-		({ role }) => role && role.name !== ROLES.GUEST
+		({ role }) => role && role.name !== roleEnums.GUEST
 	)
 );
 adminRole.addPermission(
 	new Action(
 		UPDATE,
 		usersResource,
-		({ role }) => role && role.name !== ROLES.GUEST
+		({ role }) => role && role.name !== roleEnums.GUEST,
+		["password", "passwordConfirm"]
 	)
 );
 

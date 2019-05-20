@@ -23,7 +23,6 @@ module.exports = {
 		password: DATABASE_PASSWORD,
 		host: DATABASE_HOST,
 		port: DATABASE_PORT,
-		password: DATABASE_PASSWORD,
 		sequelize: {
 			dialect: "mysql",
 			pool: {

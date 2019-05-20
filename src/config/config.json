@@ -1,0 +1,16 @@
+{
+	"development": {
+		"username": "root",
+		"password": "atsuae2014",
+		"database": "CarBooking",
+		"dialect": "sqlite",
+		"storage": "../sqliteDB"
+	},
+	"production": {
+		"username": "root",
+		"password": "atsuae2014",
+		"database": "CarBooking",
+		"host": "127.0.0.1",
+		"dialect": "mysql"
+	}
+}

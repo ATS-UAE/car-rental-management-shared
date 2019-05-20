@@ -8,6 +8,11 @@ const asyncForEach = async (array, cb) => {
 	}
 };
 
+const getGoogleMapsStaticURL = ({ lat, lng, key }) =>
+	`https://maps.googleapis.com/maps/api/staticmap?size=600x300&markers=color:0xFF8E53|${lat},${lng}&key=${
+		config.google.key
+	}`;
+
 function ResponseBuilder() {
 	this.code = 500;
 	this.errors = [];
@@ -103,5 +108,6 @@ module.exports = {
 	toUnix,
 	toMySQLDate,
 	containsField,
-	sendPasswordResetToken
+	sendPasswordResetToken,
+	getGoogleMapsStaticURL
 };

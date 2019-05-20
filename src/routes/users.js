@@ -254,15 +254,18 @@ router.patch(
 		let foundUser = await db.User.findByPk(params.id, {
 			include: [{ model: db.Role, as: "role" }]
 		});
-		let accessible = await RBAC.can(user.role.name, UPDATE, resources.users, {
-			updateUser: {
-				id: params.id
-			},
-			currentUser: {
-				id: user.id
-			},
-			role: foundUser.role
-		});
+		let accessible = false;
+		if (foundUser) {
+			accessible = await RBAC.can(user.role.name, UPDATE, resources.users, {
+				updateUser: {
+					id: foundUser.id
+				},
+				currentUser: {
+					id: user.id
+				},
+				role: foundUser.role
+			});
+		}
 		if (accessible) {
 			if (foundUser) {
 				fileLocation &&

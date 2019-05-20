@@ -5,8 +5,10 @@ module.exports = (sequelize, DataTypes) => {
 		"Booking",
 		{
 			paid: { type: DataTypes.BOOLEAN, defaultValue: false },
+			amount: { type: DataTypes.FLOAT, defaultValue: null },
 			from: { type: DataTypes.DATE, allowNull: false },
 			to: { type: DataTypes.DATE, allowNull: false },
+			// null means pending, false means denied, true means approved.
 			approved: { type: DataTypes.BOOLEAN, defaultValue: null },
 			finished: { type: DataTypes.BOOLEAN, defaultValue: false }
 		},
