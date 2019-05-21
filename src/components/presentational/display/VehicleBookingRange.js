@@ -56,32 +56,42 @@ function VehicleBookingRange({
 			<div className={classes.graphContainer}>
 				<div className={classes.graph}>
 					<DateRuler dateRange={dateRange} ticks={ticksMap[width]} />
-					{vehicles.map(vehicle => {
-						let values = vehicle.bookings.reduce((acc, booking) => {
-							if (
-								booking.approved === true ||
-								(booking.approved === null && booking.from > currentTime.unix())
-							) {
-								let min = normalize(booking.from, dateRange.from, dateRange.to);
-								let max = normalize(booking.to, dateRange.from, dateRange.to);
-								acc.push({
-									min: min < 0 ? 0 : min > 100 ? 100 : min,
-									max: max < 0 ? 0 : max > 100 ? 100 : max,
-									label: `${moment(booking.from, "X").format("lll")} - ${moment(
-										booking.to,
-										"X"
-									).format("lll")}`
-								});
-							}
-							return acc;
-						}, []);
-						return (
-							<div key={vehicle.id} onClick={() => onClick && onClick(vehicle)}>
-								<Typography>{`${vehicle.brand} ${vehicle.model}`}</Typography>
-								<BarRange values={values} />
-							</div>
-						);
-					})}
+					{vehicles.reduce((vehicleAcc, vehicle) => {
+						if (vehicle.bookings.length) {
+							let values = vehicle.bookings.reduce((acc, booking) => {
+								if (
+									booking.approved === true ||
+									(booking.approved === null &&
+										booking.from > currentTime.unix())
+								) {
+									let min = normalize(
+										booking.from,
+										dateRange.from,
+										dateRange.to
+									);
+									let max = normalize(booking.to, dateRange.from, dateRange.to);
+									acc.push({
+										min: min < 0 ? 0 : min > 100 ? 100 : min,
+										max: max < 0 ? 0 : max > 100 ? 100 : max,
+										label: `${moment(booking.from, "X").format(
+											"lll"
+										)} - ${moment(booking.to, "X").format("lll")}`
+									});
+								}
+								return acc;
+							}, []);
+							vehicleAcc.push(
+								<div
+									key={vehicle.id}
+									onClick={() => onClick && onClick(vehicle)}
+								>
+									<Typography>{`${vehicle.brand} ${vehicle.model}`}</Typography>
+									<BarRange values={values} />
+								</div>
+							);
+						}
+						return vehicleAcc;
+					}, [])}
 				</div>
 			</div>
 		</div>

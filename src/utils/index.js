@@ -181,11 +181,15 @@ export const api = {
 		executeFromAPI("post", "/api/carbooking/invites", invite),
 
 	createVehicle: vehicle =>
-		executeFromAPI("post", "/api/carbooking/vehicles", vehicle),
+		executeFromAPI("post", "/api/carbooking/vehicles", vehicle, {
+			formData: true
+		}),
 	fetchVehicles: () => executeFromAPI("get", "/api/carbooking/vehicles"),
 	fetchVehicle: id => executeFromAPI("get", `/api/carbooking/vehicles/${id}`),
 	updateVehicle: vehicle =>
-		executeFromAPI("patch", `/api/carbooking/vehicles/${vehicle.id}`, vehicle),
+		executeFromAPI("patch", `/api/carbooking/vehicles/${vehicle.id}`, vehicle, {
+			formData: true
+		}),
 
 	createBooking: booking =>
 		executeFromAPI("post", "/api/carbooking/bookings/", booking),
@@ -197,13 +201,18 @@ export const api = {
 		executeFromAPI("delete", `/api/carbooking/bookings/${booking.id}`),
 
 	createLocation: location =>
-		executeFromAPI("post", "/api/carbooking/locations", location),
+		executeFromAPI("post", "/api/carbooking/locations", location, {
+			formData: true
+		}),
 	fetchLocations: () => executeFromAPI("get", "/api/carbooking/locations"),
 	updateLocation: location =>
 		executeFromAPI(
 			"patch",
 			`/api/carbooking/locations/${location.id}`,
-			location
+			location,
+			{
+				formData: true
+			}
 		),
 	deleteLocation: location =>
 		executeFromAPI("delete", `/api/carbooking/locations/${location.id}`),

@@ -1,13 +1,11 @@
 import React from "react";
 import moment from "moment";
-import { Grid } from "@material-ui/core";
-import { Marker } from "react-google-maps";
-import GMaps from "../display/GMaps";
+
 import Form, { FIELDS } from "./Form";
 import { validators, Validator } from "../../../utils";
 const { SELECT, DATE_TIME_PICKER, TEXT } = FIELDS;
 
-function BookingForm({
+function BookingFinalizeForm({
 	title,
 	exclude,
 	errorNotes,
@@ -20,9 +18,7 @@ function BookingForm({
 	footer,
 	hints,
 	onChange,
-	locations,
-	readOnly,
-	onLocationClick
+	readOnly
 }) {
 	const notBefore = new Validator(
 		() => values.from > moment().unix(),
@@ -48,7 +44,7 @@ function BookingForm({
 			}
 		},
 		{
-			type: TEXT,
+			type: SELECT,
 			id: "user-id",
 			name: "userId",
 			validators: [validators.requiredField],
@@ -56,6 +52,18 @@ function BookingForm({
 				label: "User",
 				items: userList,
 				required: true
+			}
+		},
+		{
+			type: TEXT,
+			id: "amount",
+			name: "amount",
+			validators: [validators.requiredField],
+			props: {
+				label: "Payment Amount	",
+				items: userList,
+				required: true,
+				type: "number"
 			}
 		},
 		{
@@ -96,25 +104,8 @@ function BookingForm({
 			hints={hints}
 			onChange={onChange}
 			readOnly={readOnly}
-		>
-			<Grid item xs={12}>
-				<GMaps>
-					{locations &&
-						locations.map(location => {
-							const { lat, lng, name } = location;
-							return (
-								<Marker
-									position={{ lat: lat, lng: lng }}
-									label={name}
-									key={lat + lng + name}
-									onClick={() => onLocationClick && onLocationClick(location)}
-								/>
-							);
-						})}
-				</GMaps>
-			</Grid>
-		</Form>
+		/>
 	);
 }
 
-export default BookingForm;
+export default BookingFinalizeForm;

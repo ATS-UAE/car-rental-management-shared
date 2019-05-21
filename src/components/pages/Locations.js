@@ -7,15 +7,19 @@ import LocationsView from "../containers/display/LocationsView";
 function Locations({ classes }) {
 	return (
 		<Paper className={classes.root}>
-			<NewLocationButtonDialog />
+			<div>
+				<NewLocationButtonDialog />
+			</div>
 			<LocationsView />
 		</Paper>
 	);
 }
 const styles = theme => ({
 	root: {
+		display: "flex",
+		flexDirection: "column",
+		height: "100%",
 		padding: theme.spacing.unit * 3,
-		margin: theme.spacing.unit * 3,
 		"& > :not(:last-child)": {
 			marginBottom: theme.spacing.unit * 3
 		}

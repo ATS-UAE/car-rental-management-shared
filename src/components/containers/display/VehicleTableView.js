@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Fragment } from "react";
 import { connect } from "react-redux";
 import { Grid, Button } from "@material-ui/core";
 import * as reduxActions from "../../../actions";
@@ -70,88 +70,90 @@ function VehicleTableView({
 		  })
 		: [];
 	return (
-		<TableView
-			open={open}
-			onClose={() => {
-				setFormData({});
-				setOpen(false);
-			}}
-			editable={true}
-			tableData={{
-				headers: [
-					{
-						values: [
-							{ value: "Vehicle Brand" },
-							{ value: "Vehicle Model" },
-							{ value: "Plate Number" },
-							{ value: "VIN" }
-						]
-					}
-				],
-				body: tableBody
-			}}
-		>
-			<Can
-				action={actions.UPDATE}
-				resource={resources.VEHICLES}
-				yes={() => {
-					const footer = (
-						<Grid item>
-							<Button
-								disabled={disableButton}
-								type="submit"
-								variant="contained"
-								color="primary"
-								onClick={e => {
-									e.preventDefault();
-									setDisabledButton(true);
-									api
-										.updateVehicle(formData)
-										.then(() => {
-											fetchVehicles();
-											setOpen(false);
-											setFormData({});
-											setDisabledButton(false);
-											onSubmit && onSubmit();
-										})
-										.catch(e => {
-											setErrorNotes([e]);
-											setDisabledButton(false);
-										});
-								}}
-							>
-								Confirm
-							</Button>
-						</Grid>
-					);
-					return (
+		<Fragment>
+			<TableView
+				open={open}
+				onClose={() => {
+					setFormData({});
+					setOpen(false);
+				}}
+				editable={true}
+				tableData={{
+					headers: [
+						{
+							values: [
+								{ value: "Vehicle Brand" },
+								{ value: "Vehicle Model" },
+								{ value: "Plate Number" },
+								{ value: "VIN" }
+							]
+						}
+					],
+					body: tableBody
+				}}
+			>
+				<Can
+					action={actions.UPDATE}
+					resource={resources.VEHICLES}
+					yes={() => {
+						const footer = (
+							<Grid item>
+								<Button
+									disabled={disableButton}
+									type="submit"
+									variant="contained"
+									color="primary"
+									onClick={e => {
+										e.preventDefault();
+										setDisabledButton(true);
+										api
+											.updateVehicle(formData)
+											.then(() => {
+												fetchVehicles();
+												setOpen(false);
+												setFormData({});
+												setDisabledButton(false);
+												onSubmit && onSubmit();
+											})
+											.catch(e => {
+												setErrorNotes([e]);
+												setDisabledButton(false);
+											});
+									}}
+								>
+									Confirm
+								</Button>
+							</Grid>
+						);
+						return (
+							<VehicleForm
+								values={formData}
+								onChange={setFormData}
+								errors={errors}
+								onError={setErrors}
+								footer={footer}
+								errorNotes={errorNotes}
+								title="Update Vehicle"
+								locations={parkingLocations}
+							/>
+						);
+					}}
+					no={access => (
 						<VehicleForm
 							values={formData}
 							onChange={setFormData}
 							errors={errors}
 							onError={setErrors}
-							footer={footer}
 							errorNotes={errorNotes}
-							title="Update Vehicle"
 							locations={parkingLocations}
+							hints=""
+							readOnly={true}
+							exclude={access.excludedFields}
 						/>
-					);
-				}}
-				no={access => (
-					<VehicleForm
-						values={formData}
-						onChange={setFormData}
-						errors={errors}
-						onError={setErrors}
-						errorNotes={errorNotes}
-						locations={parkingLocations}
-						hints=""
-						readOnly={true}
-						exclude={access.excludedFields}
-					/>
-				)}
-			/>
-		</TableView>
+					)}
+				/>
+			</TableView>
+		</Fragment>
 	);
 }
 

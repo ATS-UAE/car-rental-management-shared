@@ -1,14 +1,10 @@
 import React, { useState, useEffect, Fragment } from "react";
 import { connect } from "react-redux";
 import { Grid, Button } from "@material-ui/core";
-import UserForm from "../../../presentational/forms/UserForm";
+import VehicleForm from "../../../presentational/forms/VehicleForm";
 import * as reduxActions from "../../../../actions";
-import { toTitleWords } from "../../../../utils";
 
-import { roles } from "../../../../variables/enums";
-
-function UserFormContainer({
-	enums,
+function VehicleFormContainer({
 	fetchEnums,
 	onSubmit,
 	values,
@@ -19,11 +15,12 @@ function UserFormContainer({
 	hints,
 	onChangeEvent,
 	errorNotes,
-	ticksMap,
+	locations,
 	showFooter
 }) {
 	let [errors, setErrors] = useState({});
 	let [disableButton, setDisabledButton] = useState(false);
+
 	useEffect(() => {
 		let validForm = true;
 		for (let key in errors) {
@@ -36,20 +33,19 @@ function UserFormContainer({
 	useEffect(() => {
 		fetchEnums();
 	}, []);
-	let roleList = [
-		{
-			value: "",
-			label: "Loading"
-		}
-	];
-	if (enums && enums.data) {
-		roleList = enums.data.roles.reduce((acc, role) => {
-			if (role.name !== roles.GUEST || readOnly === true) {
-				acc.push({ value: role.id, label: toTitleWords(role.name) });
-			}
-			return acc;
-		}, []);
+
+	let locationList = [{ value: "", label: "Loading..." }];
+
+	if (locations && locations.data) {
+		let $locationList = locations.data.map(({ id, name }) => ({
+			value: id,
+			label: name
+		}));
+		locationList = $locationList.length
+			? $locationList
+			: [{ value: "", label: "No locations found..." }];
 	}
+
 	let footer = showFooter && (
 		<Fragment>
 			<Grid item>
@@ -69,25 +65,22 @@ function UserFormContainer({
 		</Fragment>
 	);
 	return (
-		<UserForm
+		<VehicleForm
 			exclude={exclude}
 			title={title}
 			values={values}
+			locationList={locationList}
 			onChangeEvent={onChangeEvent}
 			errorNotes={errorNotes}
-			roleList={roleList}
 			footer={footer}
 			onError={setErrors}
 			errors={errors}
-			ticksMap={ticksMap}
 			hints={hints}
 			readOnly={readOnly}
 		/>
 	);
 }
-const mapStateToProps = ({ users, enums, vehicles, locations }) => ({
-	users,
-	enums,
+const mapStateToProps = ({ vehicles, locations }) => ({
 	vehicles,
 	locations
 });
@@ -95,4 +88,4 @@ const mapStateToProps = ({ users, enums, vehicles, locations }) => ({
 export default connect(
 	mapStateToProps,
 	reduxActions
-)(UserFormContainer);
+)(VehicleFormContainer);

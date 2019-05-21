@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import { IconButton } from "@material-ui/core";
-import { Edit, Delete, Check, Close } from "@material-ui/icons";
+import { Edit, Delete, ThumbUp, ThumbDown, Check } from "@material-ui/icons";
 import { withStyles } from "@material-ui/core/styles";
 import PropTypes from "prop-types";
 
@@ -9,16 +9,20 @@ function BookingActions({
 	onDeny,
 	onDelete,
 	onUpdate,
+	onFinalize,
 	isDisabled,
 	showApprove,
 	showDeny,
 	showDelete,
-	showUpdate
+	showUpdate,
+	showFinalize,
+	classes
 }) {
 	return (
 		<Fragment>
 			{showApprove && (
 				<IconButton
+					className={classes.actionButtonApprove}
 					disabled={isDisabled}
 					onClick={onApprove}
 					type="submit"
@@ -26,11 +30,12 @@ function BookingActions({
 					color="secondary"
 					size="small"
 				>
-					<Check />
+					<ThumbUp />
 				</IconButton>
 			)}
 			{showDeny && (
 				<IconButton
+					className={classes.actionButtonReject}
 					onClick={onDeny}
 					disabled={isDisabled}
 					type="submit"
@@ -38,7 +43,7 @@ function BookingActions({
 					color="primary"
 					size="small"
 				>
-					<Close />
+					<ThumbDown />
 				</IconButton>
 			)}
 			{showDelete && (
@@ -61,6 +66,17 @@ function BookingActions({
 					onClick={onUpdate}
 				>
 					<Edit />
+				</IconButton>
+			)}
+			{showFinalize && (
+				<IconButton
+					disabled={isDisabled}
+					type="submit"
+					variant="contained"
+					size="small"
+					onClick={onFinalize}
+				>
+					<Check />
 				</IconButton>
 			)}
 		</Fragment>
@@ -87,10 +103,10 @@ const styles = theme => ({
 	},
 	actionButtonApprove: {
 		marginBottom: theme.spacing.unit,
-		background: "#11cb5f"
+		color: "#49A5FF"
 	},
 	actionButtonReject: {
-		background: "#FE6B8B"
+		color: "#FF4B4B"
 	}
 });
 

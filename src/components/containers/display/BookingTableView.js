@@ -2,6 +2,7 @@ import React, { useEffect, useState, Fragment } from "react";
 import { connect } from "react-redux";
 import { compose } from "recompose";
 import moment from "moment";
+import { Dialog, DialogContent } from "@material-ui/core";
 import * as reduxActions from "../../../actions";
 import TableView from "../../presentational/forms/TableView";
 import BookingActions from "../../presentational/inputs/BookingActions";
@@ -10,6 +11,8 @@ import BookingFormUpdate from "../forms/bookings/BookingFormUpdate";
 import { toTitleWords, api, waitForAll } from "../../../utils";
 import { resources, actions, roles } from "../../../variables/enums";
 import { RBAC } from "../../../config/rbac";
+import ConfirmDialog from "../../presentational/forms/ConfirmDialog";
+import BookingFinalizeForm from "../forms/bookings/BookingFinalizeForm";
 
 function BookingTableView({
 	bookings,
@@ -22,8 +25,11 @@ function BookingTableView({
 	onSubmit
 }) {
 	const [open, setOpen] = useState(false);
+	const [finalizeDialogOpen, setFinalizeDialogOpen] = useState(false);
+	const [confirmDialogData, setConfirmDialogData] = useState({ open: false });
 	const [formData, setFormData] = useState({});
-	let [actionStatus, setActionStatus] = useState([]);
+	const [actionStatus, setActionStatus] = useState([]);
+	const [finalizeFormData, setFinalizeFormData] = useState({});
 
 	useEffect(() => {
 		const resetActionStatus = async () => {
@@ -41,10 +47,15 @@ function BookingTableView({
 							(await RBAC.can(userRole, actions.UPDATE, resources.BOOKINGS));
 						let showDelete = await RBAC.can(
 							userRole,
-							actions.UPDATE,
+							actions.DELETE,
 							resources.BOOKINGS
 						);
 						let showUpdate = await RBAC.can(
+							userRole,
+							actions.UPDATE,
+							resources.BOOKINGS
+						);
+						let showFinalize = await RBAC.can(
 							userRole,
 							actions.UPDATE,
 							resources.BOOKINGS
@@ -54,7 +65,8 @@ function BookingTableView({
 							showApprove,
 							showDeny,
 							showDelete,
-							showUpdate
+							showUpdate,
+							showFinalize
 						});
 					}
 					let actionsStatus = await waitForAll(actionStatus);
@@ -154,6 +166,9 @@ function BookingTableView({
 							showUpdate={
 								actionStatus[index] ? actionStatus[index].showUpdate : false
 							}
+							showFinalize={
+								actionStatus[index] ? actionStatus[index].showFinalize : false
+							}
 							onApprove={() => {
 								let status = actionStatus;
 								status[index].isDisabled = true;
@@ -208,6 +223,17 @@ function BookingTableView({
 									setActionStatus(status);
 								});
 							}}
+							onFinalize={() => {
+								let status = actionStatus;
+								status[index].isDisabled = true;
+								setActionStatus(status);
+								api.fetchBooking(booking.id).then(res => {
+									setFinalizeFormData({ ...res.data, amount: 0 });
+									setFinalizeDialogOpen(true);
+									status[index].isDisabled = false;
+									setActionStatus(status);
+								});
+							}}
 							isDisabled={
 								actionStatus[index] === undefined
 									? false
@@ -228,6 +254,29 @@ function BookingTableView({
 
 	return (
 		<Fragment>
+			<ConfirmDialog
+				title={confirmDialogData.title}
+				content={confirmDialogData.content}
+				open={confirmDialogData.open}
+				onClose={() => setConfirmDialogData(false)}
+				yes={() => {
+					setConfirmDialogData({ ...confirmDialogData, open: false });
+					setFinalizeDialogOpen(true);
+				}}
+				no={() => setConfirmDialogData({ ...confirmDialogData, open: false })}
+			/>
+			<Dialog
+				open={finalizeDialogOpen}
+				onClose={() => setFinalizeDialogOpen(false)}
+			>
+				<DialogContent>
+					<BookingFinalizeForm
+						values={finalizeFormData}
+						onChange={setFinalizeFormData}
+						onSubmit={() => {}}
+					/>
+				</DialogContent>
+			</Dialog>
 			<Can
 				action={actions.READ}
 				resource={resources.BOOKINGS}

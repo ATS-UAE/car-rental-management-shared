@@ -136,7 +136,7 @@ function LocationsView({ locations, fetchLocations, classes }) {
 							</Dialog>
 						)}
 					/>
-					<GMaps>
+					<GMaps mapContainerProps={{ className: classes.map }}>
 						{locations &&
 							locations.data &&
 							locations.data.map(({ id, lat, lng, name, address }) => (
@@ -170,6 +170,9 @@ const mapStateToProps = ({ locations }) => ({
 const styles = theme => ({
 	updateForm: {
 		padding: theme.spacing.unit * 3
+	},
+	map: {
+		flexGrow: 1
 	}
 });
 

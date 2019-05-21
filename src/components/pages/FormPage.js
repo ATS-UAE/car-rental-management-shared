@@ -5,35 +5,38 @@ import { Dialog } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import { compose } from "recompose";
 
-function FormUpdatePage({
+function FormPage({
 	render,
 	history,
 	dialogProps,
 	path,
 	exitPath,
 	onMount,
-	classes
+	classes,
+	check
 }) {
-	return (
-		<Route
-			path={path}
-			render={props => (
-				<DialogComponent
-					render={render}
-					history={history}
-					exitPath={exitPath}
-					childProps={props}
-					onMount={onMount}
-					dialogProps={{
-						PaperProps: {
-							className: classes.paper
-						},
-						...dialogProps
-					}}
-				/>
-			)}
-		/>
-	);
+	if (check({ path }) === true)
+		return (
+			<Route
+				path={path}
+				render={props => (
+					<DialogComponent
+						render={render}
+						history={history}
+						exitPath={exitPath}
+						childProps={props}
+						onMount={onMount}
+						dialogProps={{
+							PaperProps: {
+								className: classes.paper
+							},
+							...dialogProps
+						}}
+					/>
+				)}
+			/>
+		);
+	else return null;
 }
 
 function DialogComponent({
@@ -61,4 +64,4 @@ const styles = theme => ({
 export default compose(
 	withStyles(styles),
 	withRouter
-)(FormUpdatePage);
+)(FormPage);

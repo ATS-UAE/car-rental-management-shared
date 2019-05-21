@@ -1,22 +1,33 @@
 import React from "react";
 import { validators } from "../../../utils";
 import Form, { FIELDS } from "./Form";
-const { TEXT, SELECT } = FIELDS;
+const { TEXT, SELECT, IMAGE } = FIELDS;
 
 function VehicleForm({
-	values,
-	errorNotes,
-	onChange,
-	exclude,
 	title,
+	exclude,
+	errorNotes,
+	onChangeEvent,
+	values,
+	locationList,
 	footer,
-	locations,
-	errors,
 	onError,
-	hints,
-	readOnly
+	errors,
+	readOnly,
+	hints
 }) {
 	const fields = [
+		{
+			type: IMAGE,
+			name: "vehicleImageSrc",
+			id: "vehicle-image",
+			persistEvent: true,
+			validators: [validators.requiredField],
+			props: {
+				label: "Select profile picture",
+				required: true
+			}
+		},
 		{
 			type: TEXT,
 			id: "object-id",
@@ -82,7 +93,7 @@ function VehicleForm({
 			props: {
 				label: "Location",
 				fullWidth: true,
-				items: locations
+				items: locationList
 			}
 		}
 	];
@@ -93,7 +104,7 @@ function VehicleForm({
 			fields={fields}
 			exclude={exclude}
 			errorNotes={errorNotes}
-			onChange={onChange}
+			onChangeEvent={onChangeEvent}
 			values={values}
 			footer={footer}
 			errors={errors}

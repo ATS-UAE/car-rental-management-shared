@@ -7,7 +7,7 @@ import { connect } from "react-redux";
 import * as reduxActions from "../../../actions";
 import TableView from "../../presentational/forms/TableView";
 import UserFormUpdate from "../forms/users/UserFormUpdate";
-import FormUpdatePage from "../../pages/FormUpdatePage";
+import FormPage from "../../pages/FormPage";
 import { api, toTitleWords } from "../../../utils";
 import { actions, resources } from "../../../variables/enums";
 import Can from "../layout/Can";
@@ -86,8 +86,9 @@ function UserTable({ users, auth, fetchEnums, fetchUsers, history }) {
 		: [];
 	return (
 		<Fragment>
-			<FormUpdatePage
-				path="/users/:id"
+			<FormPage
+				check={({ path }) => path.slice(-5) === "edit"}
+				path="/users/:id/edit"
 				exitPath="/users"
 				onMount={({ location }) => setFormData(location.state.user)}
 				render={({ location }) => {
