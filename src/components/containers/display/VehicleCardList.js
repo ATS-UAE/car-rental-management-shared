@@ -19,8 +19,8 @@ function VehicleCardList({ vehicles, history }) {
 	return (
 		<Fragment>
 			<FormPage
-				check={({ path }) => path.slice(-4) === "edit"}
-				path="/vehicles/:id/edit"
+				check={({ location }) => /\/vehicles\/\d+/.test(location.pathname)}
+				path="/vehicles/:id"
 				exitPath="/vehicles"
 				onMount={({ location }) => setFormData(location.state.vehicle)}
 				render={({ location }) => {
@@ -97,7 +97,7 @@ function VehicleCardList({ vehicles, history }) {
 											<IconButton
 												onClick={() => {
 													api.fetchVehicle(vehicle.id).then(() =>
-														history.push(`/users/${vehicle.id}`, {
+														history.push(`/vehicles/${vehicle.id}`, {
 															vehicle,
 															readAccess
 														})
