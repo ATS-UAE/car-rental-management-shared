@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect } from "react";
+import React, { Fragment, useState } from "react";
 import { withRouter } from "react-router";
 import { compose } from "recompose";
 import { connect } from "react-redux";
@@ -19,9 +19,7 @@ function VehicleCardList({ vehicles, history }) {
 	return (
 		<Fragment>
 			<FormPage
-				check={({ path }) => {
-					return path.slice(-5) === "edit";
-				}}
+				check={({ path }) => path.slice(-4) === "edit"}
 				path="/vehicles/:id/edit"
 				exitPath="/vehicles"
 				onMount={({ location }) => setFormData(location.state.vehicle)}

@@ -87,7 +87,10 @@ function UserTable({ users, auth, fetchEnums, fetchUsers, history }) {
 	return (
 		<Fragment>
 			<FormPage
-				check={({ path }) => path.slice(-5) === "edit"}
+				check={({ path }) => {
+					console.log(path);
+					return path.slice(-4) === "edit";
+				}}
 				path="/users/:id/edit"
 				exitPath="/users"
 				onMount={({ location }) => setFormData(location.state.user)}

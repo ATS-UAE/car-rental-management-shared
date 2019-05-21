@@ -67,7 +67,7 @@ const styles = theme => ({
 		},
 		/* Track */
 		"::-webkit-scrollbar-track": {
-			background: "rgba(125, 125, 125, 0.1)",
+			background: "rgba(255, 255, 255, 0.1)",
 			borderRadius: "1000px"
 		},
 		/* Handle */
@@ -86,8 +86,8 @@ const styles = theme => ({
 		height: "100%"
 	},
 	body: {
-		padding: theme.spacing.unit * 2,
-		margin: theme.spacing.unit * 2,
+		padding: theme.spacing.unit,
+		margin: theme.spacing.unit,
 		height: "100%",
 		backgroundColor: "rgba(166, 166, 166, .2)",
 		overflowY: "auto"

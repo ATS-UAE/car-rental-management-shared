@@ -74,7 +74,13 @@ function BookingForm({
 			type: SELECT,
 			id: "vehicle-id",
 			name: "vehicleId",
-			validators: [validators.requiredField],
+			validators: [
+				validators.requiredField,
+				new Validator(
+					id => Boolean(vehicleList.find(v => v.value === id)),
+					"Vehicle is not available anymore."
+				)
+			],
 			props: {
 				label: "Vehicle",
 				items: vehicleList,

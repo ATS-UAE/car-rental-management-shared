@@ -17,6 +17,16 @@ function UserFormUpdate({
 }) {
 	let [errorNotes, setErrorNotes] = useState([]);
 	let [loading, setLoading] = useState(false);
+	let $exclude = [...exclude];
+
+	// Exclude profile picture if absent and read only.
+	if (
+		(readOnly === true ||
+			(readOnly instanceof Array && readOnly.includes("userImageSrc"))) &&
+		!values.userImageSrc
+	) {
+		$exclude.push("userImageSrc");
+	}
 	return (
 		<UserForm
 			title={title}
@@ -24,7 +34,7 @@ function UserFormUpdate({
 			values={values}
 			onChangeEvent={onChangeEvent}
 			errorNotes={errorNotes}
-			exclude={exclude}
+			exclude={$exclude}
 			readOnly={readOnly}
 			loading={loading}
 			showFooter={showFooter}
