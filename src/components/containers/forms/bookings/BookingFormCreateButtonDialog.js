@@ -1,25 +1,22 @@
-import React, { useState } from "react";
+import React, { Fragment } from "react";
+import { withRouter } from "react-router";
 import BookingFormCreate from "./BookingFormCreate";
-import DialogButton from "../../../presentational/forms/DialogButton";
+import { Button } from "@material-ui/core";
+import FormPage from "../../../pages/FormPage";
 import Can from "../../layout/Can";
 import { resources, actions } from "../../../../variables/enums";
 
-export default function BookingCreateButtonDialog() {
-	let [open, setOpen] = useState(false);
-
+function BookingCreateButtonDialog({ history }) {
 	return (
-		<Can
-			action={actions.CREATE}
-			resource={resources.BOOKINGS}
-			yes={access => (
-				<DialogButton
-					open={open}
-					onClick={() => setOpen(true)}
-					onClose={() => setOpen(false)}
-				>
+		<Fragment>
+			<FormPage
+				path="/bookings/new"
+				check={({ location }) => /\/bookings\/new/.test(location.pathname)}
+				exitPath="/bookings"
+				render={({ location }) => (
 					<BookingFormCreate
-						exclude={access.excludedFields}
-						onSubmit={() => setOpen(false)}
+						exclude={location.state.createAccess.excludedFields}
+						onSubmit={() => history.push()}
 						ticksMap={{
 							xs: 3,
 							sm: 4,
@@ -28,8 +25,20 @@ export default function BookingCreateButtonDialog() {
 							xl: 4
 						}}
 					/>
-				</DialogButton>
-			)}
-		/>
+				)}
+			/>
+			<Can
+				action={actions.CREATE}
+				resource={resources.BOOKINGS}
+				yes={createAccess => (
+					<Button
+						onClick={() => history.push("/bookings/new", { createAccess })}
+					>
+						New
+					</Button>
+				)}
+			/>
+		</Fragment>
 	);
 }
+export default withRouter(BookingCreateButtonDialog);

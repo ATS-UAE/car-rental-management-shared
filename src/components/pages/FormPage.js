@@ -9,13 +9,14 @@ function FormPage({
 	render,
 	history,
 	dialogProps,
+	location,
 	path,
 	exitPath,
 	onMount,
 	classes,
 	check
 }) {
-	if (check({ path }) === true)
+	if (check === undefined || check({ path, location }) === true)
 		return (
 			<Route
 				path={path}

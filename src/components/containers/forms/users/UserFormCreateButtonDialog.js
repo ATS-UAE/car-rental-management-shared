@@ -1,33 +1,31 @@
-import React, { useState } from "react";
-import { connect } from "react-redux";
+import React, { Fragment } from "react";
+import { withRouter } from "react-router";
+import { Button } from "@material-ui/core";
 import UserFormCreate from "./UserFormCreate";
-import DialogButton from "../../../presentational/forms/DialogButton";
-import { roles } from "../../../../variables/enums";
+import FormPage from "../../../pages/FormPage";
+import Can from "../../layout/Can";
+import { actions, resources } from "../../../../variables/enums";
 
-function UserFormCreateButtonDialog({ auth }) {
-	let [open, setOpen] = useState(false);
-	return auth && auth.data && auth.data.role.name === roles.ADMIN ? (
-		<DialogButton
-			open={open}
-			onClick={() => setOpen(true)}
-			onClose={() => setOpen(false)}
-		>
-			<UserFormCreate
-				onSubmit={() => setOpen(false)}
-				ticksMap={{
-					xs: 3,
-					sm: 4,
-					md: 4,
-					lg: 4,
-					xl: 4
-				}}
+function UserFormCreateButtonDialog({ history }) {
+	return (
+		<Fragment>
+			<FormPage
+				path="/users/new"
+				check={({ location }) => /\/users\/new/.test(location.pathname)}
+				exitPath="/users"
+				render={() => (
+					<UserFormCreate onSubmit={() => history.push("/users")} />
+				)}
 			/>
-		</DialogButton>
-	) : null;
+			<Can
+				action={actions.CREATE}
+				resource={resources.USERS}
+				yes={() => (
+					<Button onClick={() => history.push("/vehicles/new")}>New</Button>
+				)}
+			/>
+		</Fragment>
+	);
 }
 
-const mapStateToProps = ({ auth }) => ({
-	auth
-});
-
-export default connect(mapStateToProps)(UserFormCreateButtonDialog);
+export default withRouter(UserFormCreateButtonDialog);

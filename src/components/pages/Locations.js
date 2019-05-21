@@ -7,9 +7,7 @@ import LocationsView from "../containers/display/LocationsView";
 function Locations({ classes }) {
 	return (
 		<Paper className={classes.root}>
-			<div>
-				<NewLocationButtonDialog />
-			</div>
+			<NewLocationButtonDialog />
 			<LocationsView />
 		</Paper>
 	);

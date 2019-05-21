@@ -160,14 +160,18 @@ export function toTitleWords(word, delimiter = "_") {
 }
 
 export const api = {
+	// auth
 	authLogin: credentials =>
 		executeFromAPI("post", "/api/carbooking/auth/login", credentials),
 	authLogout: () => executeFromAPI("get", "/api/carbooking/auth/logout"),
 	fetchCurrentUserDetails: () =>
 		executeFromAPI("get", "/api/carbooking/auth/me"),
-
+	updateMe: data => executeFromAPI("patch", "/api/carbooking/auth/me", data),
+	
+	// enums
 	fetchEnums: () => executeFromAPI("get", "/api/carbooking/enums"),
 
+	// users
 	fetchUsers: () => executeFromAPI("get", "/api/carbooking/users"),
 	fetchUser: id => executeFromAPI("get", `/api/carbooking/users/${id}`),
 	createUser: user =>
@@ -177,9 +181,11 @@ export const api = {
 			formData: true
 		}),
 
+	// invites
 	inviteGuest: invite =>
 		executeFromAPI("post", "/api/carbooking/invites", invite),
 
+	// vehicles
 	createVehicle: vehicle =>
 		executeFromAPI("post", "/api/carbooking/vehicles", vehicle, {
 			formData: true
@@ -191,6 +197,7 @@ export const api = {
 			formData: true
 		}),
 
+	// bookings
 	createBooking: booking =>
 		executeFromAPI("post", "/api/carbooking/bookings/", booking),
 	fetchBookings: () => executeFromAPI("get", "/api/carbooking/bookings"),
@@ -200,6 +207,7 @@ export const api = {
 	deleteBooking: booking =>
 		executeFromAPI("delete", `/api/carbooking/bookings/${booking.id}`),
 
+	// locations
 	createLocation: location =>
 		executeFromAPI("post", "/api/carbooking/locations", location, {
 			formData: true
@@ -217,10 +225,23 @@ export const api = {
 	deleteLocation: location =>
 		executeFromAPI("delete", `/api/carbooking/locations/${location.id}`),
 
-	checkAccess: accessParams =>
-		executeFromAPI("post", "/api/carbooking/access", accessParams),
+	// Accidents
+	fetchAccident: id => executeFromAPI("get", `/api/carbooking/accidents/${id}`),
+	fetchAllAccidents: () => executeFromAPI("get", "/api/carbooking/accidents"),
+	createAccident: accident =>
+		executeFromAPI("post", "/api/carbooking/accidents", accident, {
+			formData: true
+		}),
+	updateAccident: accident =>
+		executeFromAPI("patch", "api/carbooking/accidents", accident, {
+			formData: true
+		}),
+	deleteAccident: id =>
+		executeFromAPI("delete", `/api/carbooking/accidents/${id}`),
 
-	updateMe: data => executeFromAPI("patch", "/api/carbooking/auth/me", data)
+	// access
+	checkAccess: accessParams =>
+		executeFromAPI("post", "/api/carbooking/access", accessParams)
 };
 
 export const rangeOverlap = (x1, x2, y1, y2) => {

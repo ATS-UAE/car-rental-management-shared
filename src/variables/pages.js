@@ -4,7 +4,8 @@ import {
 	Place,
 	ChromeReaderMode,
 	Settings,
-	Home
+	Home,
+	Warning
 } from "@material-ui/icons";
 
 import roles from "./enums/roles";
@@ -16,6 +17,7 @@ import SignUp from "../components/pages/SignUp";
 import Users from "../components/pages/Users";
 import Vehicles from "../components/pages/Vehicles";
 import SettingsPage from "../components/pages/Settings";
+import Accidents from "../components/pages/Accidents";
 import UnknownPage from "../components/pages/404";
 
 export default [
@@ -69,9 +71,30 @@ export default [
 		wrapPaper: true
 	},
 	{
+		id: "Accidents",
+		path: "/accidents",
+		component: Accidents,
+		requireLogin: true,
+		title: "Accidents",
+		access: [roles.KEY_MANAGER, roles.ADMIN],
+		sidebar: { icon: Warning, location: "top" },
+		wrapPaper: true
+	},
+	{
+		id: "Accidents",
+		path: "/accidents",
+		component: Accidents,
+		requireLogin: true,
+		title: "Report an Accident",
+		access: [roles.GUEST],
+		sidebar: { icon: Warning, location: "bottom" },
+		wrapPaper: true
+	},
+	{
 		id: "Settings",
 		path: "/settings",
 		component: SettingsPage,
+		requireLogin: true,
 		title: "Settings",
 		sidebar: { icon: Settings, location: "bottom" },
 		wrapPaper: true
