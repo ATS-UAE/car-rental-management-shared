@@ -65,7 +65,7 @@ router.get("/", requireLogin, disallowGuests, async ({ user }, res) => {
 
 router.post(
 	"/",
-	upload("carbooking/users/profile").single("userImageSrc"),
+	upload("carbooking/media/users").single("userImageSrc"),
 	parseBody,
 	async ({ user, body, file = {} }, res) => {
 		const { location: fileLocation = null, key: fileKey = null } = file;

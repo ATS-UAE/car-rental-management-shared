@@ -2,12 +2,16 @@ const express = require("express");
 const router = express.Router();
 
 const requireLogin = require("../middlewares/requireLogin");
+const deleteReplacedFiles = require("../middlewares/deleteReplacedFiles");
 const disallowGuests = require("../middlewares/disallowGuests");
+const parseBody = require("../middlewares/parseBody");
+const upload = require("../middlewares/multerUpload");
+const deleteFileOnError = require("../middlewares/deleteFileOnError");
 const { RBAC, OPERATIONS, resources } = require("../rbac/init");
 const { CREATE, READ, UPDATE, DELETE } = OPERATIONS;
 const db = require("../models");
 const { errorCodes } = require("../utils/variables");
-const { ResponseBuilder, pickFields } = require("../utils");
+const { ResponseBuilder } = require("../utils");
 
 router.use(requireLogin);
 
@@ -42,37 +46,50 @@ router.get("/", async ({ user }, res) => {
 	res.json(response);
 });
 
-router.post("/", disallowGuests, async ({ user, body }, res) => {
-	let response = new ResponseBuilder();
-	let accessible = await RBAC.can(user.role.name, CREATE, resources.vehicles);
-	if (accessible) {
-		try {
-			let createdVehicle = await db.Vehicle.create(body);
+router.post(
+	"/",
+	upload("carbooking/media/vehicles").single("vehicleImageSrc"),
+	parseBody,
+	disallowGuests,
+	async ({ user, body, file = {} }, res, next) => {
+		const { location: fileLocation = null } = file;
+		let response = new ResponseBuilder();
+		let accessible = await RBAC.can(user.role.name, CREATE, resources.vehicles);
+		if (accessible) {
+			try {
+				let createdVehicle = await db.Vehicle.create({
+					...body,
+					vehicleImageSrc: fileLocation
+				});
 
-			response.setData(createdVehicle);
-			response.setMessage("Vehicle has been created.");
-			response.setCode(200);
-			response.setSuccess(true);
-		} catch (e) {
-			response.setMessage(e.message);
-			response.setCode(422);
-			if (e.errors && e.errors.length > 0) {
-				e.errors.forEach(error => response.appendError(error.path));
+				response.setData(createdVehicle);
+				response.setMessage("Vehicle has been created.");
+				response.setCode(200);
+				response.setSuccess(true);
+				res.status(200);
+			} catch (e) {
+				response.setMessage(e.message);
+				response.setCode(422);
+				res.status(422);
+				if (e.errors && e.errors.length > 0) {
+					e.errors.forEach(error => response.appendError(error.path));
+				}
 			}
+		} else {
+			response.setMessage(errorCodes.UNAUTHORIZED.message);
+			response.setCode(errorCodes.UNAUTHORIZED.statusCode);
+			res.status(errorCodes.UNAUTHORIZED.statusCode);
 		}
-	} else {
-		response.setMessage(errorCodes.UNAUTHORIZED.message);
-		response.setCode(errorCodes.UNAUTHORIZED.statusCode);
-		res.status(errorCodes.UNAUTHORIZED.statusCode);
-	}
 
-	res.json(response);
-});
+		res.json(response);
+		next();
+	},
+	deleteFileOnError
+);
 
 router.get("/:id", async ({ user, params }, res) => {
 	let response = new ResponseBuilder();
 	let accessible = await RBAC.can(user.role.name, READ, resources.vehicles);
-	console.log("accessible: ", accessible);
 	if (accessible) {
 		try {
 			let foundVehicle = await db.Vehicle.findByPk(params.id);
@@ -99,39 +116,55 @@ router.get("/:id", async ({ user, params }, res) => {
 	res.json(response);
 });
 
-router.patch("/:id", disallowGuests, async ({ user, params, body }, res) => {
-	let response = new ResponseBuilder();
+router.patch(
+	"/:id",
+	upload("carbooking/media/vehicles").single("vehicleImageSrc"),
+	parseBody,
+	disallowGuests,
+	async ({ user, params, body, file = {} }, res, next) => {
+		const { location: fileLocation = null } = file;
 
-	let accessible = await RBAC.can(user.role.name, UPDATE, resources.vehicles);
-	if (accessible) {
-		let foundVehicle = await db.Vehicle.findByPk(params.id);
-		if (foundVehicle) {
-			try {
-				let updatedVehicle = await foundVehicle.update(body);
-				response.setData(updatedVehicle);
-				response.setCode(200);
-				response.setMessage(`Vehicle with ID ${params.id} updated.`);
-				response.setSuccess(true);
-			} catch (e) {
-				response.setMessage(e.message);
-				response.setCode(422);
-				if (e.errors && e.errors.length > 0) {
-					e.errors.forEach(error => response.appendError(error.path));
+		let response = new ResponseBuilder();
+
+		let accessible = await RBAC.can(user.role.name, UPDATE, resources.vehicles);
+		if (accessible) {
+			let foundVehicle = await db.Vehicle.findByPk(params.id, {
+				include: [{ all: true }]
+			});
+			if (foundVehicle) {
+				try {
+					let updatedVehicle = await foundVehicle.update({
+						...body,
+						vehicleImageSrc: fileLocation || foundVehicle.vehicleImageSrc
+					});
+					response.setData(updatedVehicle);
+					response.setCode(200);
+					response.setMessage(`Vehicle with ID ${params.id} updated.`);
+					response.setSuccess(true);
+				} catch (e) {
+					response.setMessage(e.message);
+					response.setCode(422);
+					if (e.errors && e.errors.length > 0) {
+						e.errors.forEach(error => response.appendError(error.path));
+					}
 				}
+			} else {
+				res.status(404);
+				response.setCode(404);
+				response.setMessage(`Vehicle with ID ${params.id} not found.`);
 			}
 		} else {
-			res.status(404);
-			response.setCode(404);
-			response.setMessage(`Vehicle with ID ${params.id} not found.`);
+			response.setMessage(errorCodes.UNAUTHORIZED.message);
+			response.setCode(errorCodes.UNAUTHORIZED.statusCode);
+			res.status(errorCodes.UNAUTHORIZED.statusCode);
 		}
-	} else {
-		response.setMessage(errorCodes.UNAUTHORIZED.message);
-		response.setCode(errorCodes.UNAUTHORIZED.statusCode);
-		res.status(errorCodes.UNAUTHORIZED.statusCode);
-	}
 
-	res.json(response);
-});
+		res.json(response);
+		next();
+	},
+	deleteFileOnError,
+	deleteReplacedFiles
+);
 
 router.delete("/:id", disallowGuests, async ({ user, params }, res) => {
 	let response = new ResponseBuilder();
