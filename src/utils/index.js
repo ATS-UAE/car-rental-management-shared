@@ -167,7 +167,7 @@ export const api = {
 	fetchCurrentUserDetails: () =>
 		executeFromAPI("get", "/api/carbooking/auth/me"),
 	updateMe: data => executeFromAPI("patch", "/api/carbooking/auth/me", data),
-	
+
 	// enums
 	fetchEnums: () => executeFromAPI("get", "/api/carbooking/enums"),
 
@@ -227,7 +227,7 @@ export const api = {
 
 	// Accidents
 	fetchAccident: id => executeFromAPI("get", `/api/carbooking/accidents/${id}`),
-	fetchAllAccidents: () => executeFromAPI("get", "/api/carbooking/accidents"),
+	fetchAccidents: () => executeFromAPI("get", "/api/carbooking/accidents"),
 	createAccident: accident =>
 		executeFromAPI("post", "/api/carbooking/accidents", accident, {
 			formData: true

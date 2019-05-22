@@ -6,6 +6,7 @@ import users from "./users";
 import vehicles from "./vehicles";
 import bookings from "./bookings";
 import locations from "./locations";
+import accidents from "./accidents";
 
 export default combineReducers({
 	auth,
@@ -13,5 +14,6 @@ export default combineReducers({
 	users,
 	vehicles,
 	bookings,
-	locations
+	locations,
+	accidents
 });
