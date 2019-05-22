@@ -26,15 +26,27 @@ module.exports = (sequelize, DataTypes) => {
 			foreignKey: {
 				name: "userId"
 			},
-			as: "user"
+			as: "user",
+			allowNull: false,
+			validate: {
+				notNull: { msg: "User is required." }
+			}
 		});
 		models.Accident.belongsTo(models.Vehicle, {
 			foreignKey: { name: "vehicleId" },
-			as: "vehicle"
+			as: "vehicle",
+			allowNull: false,
+			validate: {
+				notNull: { msg: "Vehicle is required." }
+			}
 		});
 		models.Accident.belongsTo(models.Booking, {
 			foreignKey: { name: "bookingId" },
-			as: "booking"
+			as: "booking",
+			allowNull: false,
+			validate: {
+				notNull: { msg: "Booking is required." }
+			}
 		});
 	};
 	return Accident;

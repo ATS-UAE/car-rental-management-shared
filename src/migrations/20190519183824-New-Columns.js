@@ -29,6 +29,10 @@ module.exports = {
 				lng: {
 					type: Sequelize.FLOAT
 				}
+			}),
+			queryInterface.addColumn("Accidents", "read", {
+				type: Sequelize.BOOLEAN,
+				defaultValue: false
 			})
 		]);
 	},
