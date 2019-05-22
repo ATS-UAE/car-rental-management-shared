@@ -3,7 +3,8 @@ import { connect } from "react-redux";
 
 import * as actions from "../../actions";
 import AccidentListView from "../containers/display/AccidentListView";
-function Accidents({ classes, theme, fetchAccidents }) {
+
+function Accidents({ fetchAccidents }) {
 	useEffect(() => {
 		fetchAccidents();
 	});

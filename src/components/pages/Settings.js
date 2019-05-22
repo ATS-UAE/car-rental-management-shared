@@ -15,7 +15,12 @@ function Settings({ classes }) {
 const styles = theme => ({
 	root: {
 		padding: theme.spacing.unit * 3,
-		margin: theme.spacing.unit * 3
+		margin: theme.spacing.unit * 3,
+		[theme.breakpoints.down("sm")]: {
+			padding: theme.spacing.unit
+		},
+		height: "100%",
+		overflow: "auto"
 	}
 });
 

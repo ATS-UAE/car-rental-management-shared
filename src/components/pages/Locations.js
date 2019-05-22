@@ -16,11 +16,15 @@ const styles = theme => ({
 	root: {
 		display: "flex",
 		flexDirection: "column",
-		height: "100%",
 		padding: theme.spacing.unit * 3,
 		"& > :not(:last-child)": {
 			marginBottom: theme.spacing.unit * 3
-		}
+		},
+		[theme.breakpoints.down("sm")]: {
+			padding: theme.spacing.unit
+		},
+		height: "100%",
+		overflow: "auto"
 	}
 });
 
