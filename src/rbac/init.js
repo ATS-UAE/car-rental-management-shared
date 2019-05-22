@@ -12,6 +12,7 @@ const locationsResource = new Resource(RESOURCES.LOCATIONS);
 const bookingsResource = new Resource(RESOURCES.BOOKINGS);
 const usersResource = new Resource(RESOURCES.USERS);
 const enumsResource = new Resource(RESOURCES.ENUMS);
+const accidentsResource = new Resource(RESOURCES.ACCIDENTS);
 
 /////////////////////////
 // GENERAL ROLE CONFIG //
@@ -43,6 +44,7 @@ generalRole.addPermission(
 	)
 );
 
+// Users permission.
 generalRole.addPermission(
 	new Action(
 		UPDATE,
@@ -51,7 +53,17 @@ generalRole.addPermission(
 	)
 );
 
+// Enums permission.
 generalRole.addPermission(new Action(READ, enumsResource));
+
+// Accidents permissions.
+generalRole.addPermission(
+	new Action(
+		READ,
+		accidentsResource,
+		({ accident, user }) => accident.userId === user.id
+	)
+);
 
 ////////////////////////
 // GUESTS ROLE CONFIG //
@@ -62,6 +74,9 @@ guestRole.extend(generalRole);
 guestRole.addPermission(
 	new Action(CREATE, bookingsResource, null, ["userId", "paid"])
 );
+
+// Accidents permissions.
+guestRole.addPermission(new Action(CREATE, accidentsResource, null));
 
 /////////////////////////////
 // KEY_MANAGER ROLE CONFIG //
@@ -85,6 +100,9 @@ keyManagerRole.addPermission(new Action(UPDATE, bookingsResource));
 keyManagerRole.addPermission(
 	new Action(READ, usersResource, null, ["password", "passwordConfirm"])
 );
+
+// Accidents permission
+keyManagerRole.addPermission(new Action(READ, accidentsResource));
 
 ///////////////////////
 // ADMIN ROLE CONFIG //
