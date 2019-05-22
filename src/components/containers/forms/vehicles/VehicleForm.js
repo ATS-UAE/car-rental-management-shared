@@ -2,10 +2,8 @@ import React, { useState, useEffect, Fragment } from "react";
 import { connect } from "react-redux";
 import { Grid, Button } from "@material-ui/core";
 import VehicleForm from "../../../presentational/forms/VehicleForm";
-import * as reduxActions from "../../../../actions";
 
 function VehicleFormContainer({
-	fetchEnums,
 	onSubmit,
 	values,
 	readOnly,
@@ -30,9 +28,6 @@ function VehicleFormContainer({
 		}
 		setDisabledButton(!validForm);
 	}, [errors, values]);
-	useEffect(() => {
-		fetchEnums();
-	}, []);
 
 	let locationList = [{ value: "", label: "Loading..." }];
 
@@ -85,7 +80,4 @@ const mapStateToProps = ({ vehicles, locations }) => ({
 	locations
 });
 
-export default connect(
-	mapStateToProps,
-	reduxActions
-)(VehicleFormContainer);
+export default connect(mapStateToProps)(VehicleFormContainer);
