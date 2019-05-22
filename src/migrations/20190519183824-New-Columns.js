@@ -11,6 +11,24 @@ module.exports = {
 			}),
 			queryInterface.addColumn("Locations", "locationImageSrc", {
 				type: Sequelize.STRING
+			}),
+			queryInterface.createTable("Accidents", {
+				message: {
+					type: Sequelize.STRING(500),
+					allowNull: false,
+					validate: {
+						notNull: { msg: "Message is required." }
+					}
+				},
+				accidentImageSrc: {
+					type: Sequelize.STRING
+				},
+				lat: {
+					type: Sequelize.FLOAT
+				},
+				lng: {
+					type: Sequelize.FLOAT
+				}
 			})
 		]);
 	},
