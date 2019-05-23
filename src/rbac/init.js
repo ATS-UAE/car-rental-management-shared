@@ -149,6 +149,7 @@ module.exports = {
 		vehicles: vehicleResource,
 		locations: locationsResource,
 		users: usersResource,
-		enums: enumsResource
+		enums: enumsResource,
+		accidents: accidentsResource
 	}
 };

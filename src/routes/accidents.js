@@ -42,21 +42,38 @@ router.get("/", async ({ user }, res) => {
 
 router.post(
 	"/",
-	upload("carbooking/media/accidents").single("accidentImageSrc"),
+	upload("carbooking/media/accidents").fields([
+		{ name: "accidentImageSrc" },
+		{ name: "accidentVideoSrc" }
+	]),
 	parseBody,
-	async ({ user, body, file = {} }, res, next) => {
-		const { location: fileLocation = null } = file;
+	async ({ user, body, files }, res, next) => {
+		const accidentImageSrc =
+			(files &&
+				files.accidentImageSrc &&
+				files.accidentImageSrc[0] &&
+				files.accidentImageSrc[0].location) ||
+			null;
+		const accidentVideoSrc =
+			(files &&
+				files.accidentVideoSrc &&
+				files.accidentVideoSrc[0] &&
+				files.accidentVideoSrc[0].location) ||
+			null;
+		console.log(accidentImageSrc, accidentVideoSrc);
 		let response = new ResponseBuilder();
 		let accessible = await RBAC.can(
 			user.role.name,
 			CREATE,
 			resources.accidents
 		);
+
 		if (accessible) {
 			try {
 				let createdAccident = await db.Accident.create({
 					...body,
-					accidentImageSrc: fileLocation
+					accidentImageSrc,
+					accidentVideoSrc
 				});
 
 				response.setData(createdAccident);
@@ -86,39 +103,47 @@ router.post(
 
 router.get("/:id", async ({ user, params }, res) => {
 	let response = new ResponseBuilder();
-	let accessible = await RBAC.can(user.role.name, READ, resources.accidents);
-	if (accessible) {
-		try {
-			let foundAccident = await db.Accident.findByPk(params.id);
-			if (foundAccident) {
-				response.setData(foundAccident);
-				response.setCode(200);
-				response.setMessage(`Accident with ID ${params.id} found.`);
-				response.setSuccess(true);
-			} else {
-				res.status(404);
-				response.setCode(404);
-				response.setMessage(`Accident with ID ${params.id} not found.`);
+	let foundAccident = await db.Accident.findByPk(params.id);
+	if (foundAccident) {
+		let accessible = await RBAC.can(user.role.name, READ, resources.accidents, {
+			user,
+			accident: foundAccident
+		});
+		if (accessible) {
+			try {
+				if (foundAccident) {
+					response.setData(foundAccident);
+					response.setCode(200);
+					response.setMessage(`Accident with ID ${params.id} found.`);
+					response.setSuccess(true);
+				} else {
+					res.status(404);
+					response.setCode(404);
+					response.setMessage(`Accident with ID ${params.id} not found.`);
+				}
+			} catch (e) {
+				res.status(errorCodes.UNAUTHORIZED.statusCode);
+				response.setCode(errorCodes.UNAUTHORIZED.statusCode);
+				response.setMessage(errorCodes.UNAUTHORIZED.message);
 			}
-		} catch (e) {
-			res.status(errorCodes.UNAUTHORIZED.statusCode);
-			response.setCode(errorCodes.UNAUTHORIZED.statusCode);
+		} else {
 			response.setMessage(errorCodes.UNAUTHORIZED.message);
+			response.setCode(errorCodes.UNAUTHORIZED.statusCode);
+			res.status(errorCodes.UNAUTHORIZED.statusCode);
 		}
-	} else {
-		response.setMessage(errorCodes.UNAUTHORIZED.message);
-		response.setCode(errorCodes.UNAUTHORIZED.statusCode);
-		res.status(errorCodes.UNAUTHORIZED.statusCode);
 	}
 	res.json(response);
 });
 
 router.patch(
 	"/:id",
-	upload("carbooking/media/accidents").single("accidentImageSrc"),
+	upload("carbooking/media/accidents").fields([
+		{ name: "accidentImageSrc" },
+		{ name: "accidentVideoSrc" }
+	]),
 	parseBody,
-	async ({ user, params, body, file = {} }, res, next) => {
-		const { location: fileLocation = null } = file;
+	async (req, res, next) => {
+		const { user, params, body, files } = req;
 
 		let response = new ResponseBuilder();
 		let foundAccident = await db.Accident.findByPk(params.id, {
@@ -132,10 +157,25 @@ router.patch(
 		);
 		if (accessible) {
 			if (foundAccident) {
+				const accidentImageSrc =
+					(files &&
+						files.accidentImageSrc &&
+						files.accidentImageSrc[0] &&
+						files.accidentImageSrc[0].location) ||
+					foundAccident.accidentImageSrc;
+				const accidentVideoSrc =
+					(files &&
+						files.accidentVideoSrc &&
+						files.accidentVideoSrc[0] &&
+						files.accidentVideoSrc[0].location) ||
+					foundAccident.accidentVideoSrc;
+
 				try {
+					req.beforeUpdate = foundAccident;
 					let updatedAccident = await foundAccident.update({
 						...body,
-						accidentImageSrc: fileLocation || foundAccident.accidentImageSrc
+						accidentImageSrc,
+						accidentVideoSrc
 					});
 					response.setData(updatedAccident);
 					response.setCode(200);

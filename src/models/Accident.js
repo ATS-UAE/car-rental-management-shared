@@ -14,6 +14,9 @@ module.exports = (sequelize, DataTypes) => {
 		accidentImageSrc: {
 			type: DataTypes.STRING
 		},
+		accidentVideoSrc: {
+			type: DataTypes.STRING
+		},
 		lat: {
 			type: DataTypes.FLOAT
 		},
