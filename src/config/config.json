@@ -1,10 +1,10 @@
 {
 	"development": {
 		"username": "root",
-		"password": "atsuae2014",
+		"password": "11223344",
 		"database": "CarBooking",
-		"dialect": "sqlite",
-		"storage": "../sqliteDB"
+		"host": "ats-dev.cjn2vnjfrmgj.ap-south-1.rds.amazonaws.com",
+		"dialect": "mysql"
 	},
 	"production": {
 		"username": "root",

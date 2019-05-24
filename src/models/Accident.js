@@ -48,8 +48,13 @@ module.exports = (sequelize, DataTypes) => {
 			}
 		});
 		models.Accident.belongsToMany(models.User, {
-			through: "AccidentUserStatus",
-			as: "accidentUserStatus",
+			through: "ReadAccidents",
+			as: "readAccidents",
+			foreignKey: "accidentId"
+		});
+		models.Accident.belongsToMany(models.User, {
+			through: "DeletedAccidents",
+			as: "deletedAccidents",
 			foreignKey: "accidentId"
 		});
 	};

@@ -216,6 +216,7 @@ router.delete("/:id", async ({ user, params }, res) => {
 
 	if (accessible) {
 		if (foundAccident) {
+			foundAccident.destroy();
 			response.setCode(200);
 			response.setSuccess(true);
 			response.setMessage(`Accident with ID ${params.id} has been deleted.`);
