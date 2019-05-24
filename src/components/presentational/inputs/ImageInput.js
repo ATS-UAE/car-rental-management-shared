@@ -64,7 +64,7 @@ const styles = theme => {
 			width: "48px",
 			justifyContent: "center",
 			alignItems: "center",
-			marginRight: theme.spacing.unit
+			marginRight: theme.spacing(1)
 		},
 		uploaded: {
 			clipPath: "circle(23px at center)",

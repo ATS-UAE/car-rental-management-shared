@@ -22,7 +22,7 @@ const styles = theme => ({
 	root: {
 		padding: theme.spacing(3),
 		[theme.breakpoints.down("sm")]: {
-			padding: theme.spacing.unit
+			padding: theme.spacing(1)
 		},
 		height: "100%",
 		overflow: "auto"

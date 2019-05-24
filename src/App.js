@@ -87,7 +87,7 @@ const styles = theme => ({
 	},
 	body: {
 		padding: theme.spacing(2),
-		margin: theme.spacing.unit,
+		margin: theme.spacing(1),
 		height: "100%",
 		backgroundColor: "rgba(166, 166, 166, .2)",
 		overflowY: "auto",

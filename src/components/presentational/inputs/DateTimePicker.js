@@ -72,7 +72,7 @@ DateTimePicker.propTypes = {
 
 const styles = theme => ({
 	slider: {
-		marginTop: theme.spacing.unit
+		marginTop: theme.spacing(1)
 	},
 	textField: {
 		marginLeft: theme.spacing(6),

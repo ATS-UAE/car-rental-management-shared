@@ -7,7 +7,7 @@ import classNames from "classnames";
 function generateSegment(width, key, isPrimary, label) {
 	const styles = theme => ({
 		baseSegment: {
-			height: theme.spacing.unit,
+			height: theme.spacing(1),
 			backfaceVisibility: "hidden"
 		},
 		fillerSegment: {

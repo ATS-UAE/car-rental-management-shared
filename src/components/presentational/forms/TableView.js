@@ -40,7 +40,7 @@ TableView.defaultProps = {
 
 const styles = theme => ({
 	paper: {
-		padding: theme.spacing.unit * 3
+		padding: theme.spacing(1) * 3
 	}
 });
 

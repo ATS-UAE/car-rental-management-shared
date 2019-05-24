@@ -28,11 +28,11 @@ const styles = theme => ({
 	},
 	profile: {
 		display: "flex",
-		margin: theme.spacing.unit * 2,
+		margin: theme.spacing(2),
 		alignItems: "center"
 	},
 	picture: {
-		marginRight: theme.spacing.unit
+		marginRight: theme.spacing(1)
 	}
 });
 

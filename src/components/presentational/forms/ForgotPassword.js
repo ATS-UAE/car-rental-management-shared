@@ -104,11 +104,11 @@ const styles = theme => ({
 	},
 	textFields: {
 		"&:not(:last-child)": {
-			marginBottom: theme.spacing.unit
+			marginBottom: theme.spacing(1)
 		}
 	},
 	buttonContainer: {
-		marginTop: theme.spacing.unit,
+		marginTop: theme.spacing(1),
 		display: "flex",
 		justifyContent: "space-between",
 		flexDirection: "row-reverse"

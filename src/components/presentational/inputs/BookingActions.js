@@ -99,12 +99,12 @@ BookingActions.propsTypes = {
 
 const styles = theme => ({
 	actionButton: {
-		padding: theme.spacing.unit,
+		padding: theme.spacing(1),
 		height: "auto",
 		color: "white"
 	},
 	actionButtonApprove: {
-		marginBottom: theme.spacing.unit,
+		marginBottom: theme.spacing(1),
 		color: "#49A5FF"
 	},
 	actionButtonReject: {
