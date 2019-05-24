@@ -1,5 +1,5 @@
 import React from "react";
-import { Grid, Paper } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 
 import Card from "./Card";
@@ -7,7 +7,7 @@ import Card from "./Card";
 function CardList({ cards, classes }) {
 	return (
 		<div>
-			<Grid container spacing={16}>
+			<Grid container spacing={2}>
 				{cards &&
 					cards.map(({ id, title, descriptions, controls, imgSrc }) => (
 						<Grid item xs={12} sm={12} md={6} lg={4} xl={3} key={id}>
