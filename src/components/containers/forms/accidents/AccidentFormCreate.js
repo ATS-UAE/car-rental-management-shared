@@ -10,7 +10,7 @@ function AccidentFormCreate({ fetchAccidents, exclude, onSubmit, auth }) {
 	const [values, setValues] = useState({});
 
 	useEffect(() => {
-		if (auth && auth.data && values.userId === undefined) {
+		if (auth && auth.data) {
 			setValues({ ...values, userId: auth.data.id });
 		}
 	}, [auth]);

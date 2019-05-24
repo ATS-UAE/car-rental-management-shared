@@ -8,14 +8,7 @@ import FormPage from "../../../pages/FormPage";
 import Can from "../../layout/Can";
 import { resources, actions } from "../../../../variables/enums";
 
-function AccidentFormCreateButtonDialog({
-	history,
-	vehicles,
-	auth,
-	bookings,
-	classes,
-	ButtonProps
-}) {
+function AccidentFormCreateButtonDialog({ history, classes }) {
 	return (
 		<Fragment>
 			<FormPage
@@ -34,6 +27,7 @@ function AccidentFormCreateButtonDialog({
 					return (
 						<AccidentFormCreate
 							exclude={exclude}
+							value
 							onSubmit={() => history.push("/accidents")}
 						/>
 					);

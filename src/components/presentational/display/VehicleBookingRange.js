@@ -29,7 +29,7 @@ function VehicleBookingRange({
 				<Typography
 					variant="h6"
 					gutterBottom
-					headlineMapping={{ h6: "h1" }}
+					component="h1"
 					className={classes.title}
 				>
 					{title}

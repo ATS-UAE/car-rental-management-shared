@@ -1,8 +1,7 @@
 import React from "react";
-import moment from "moment";
 
 import Form, { FIELDS } from "./Form";
-import { validators, Validator } from "../../../utils";
+import { validators } from "../../../utils";
 const { SELECT, DATE_TIME_PICKER, TEXT } = FIELDS;
 
 function BookingFinalizeForm({

@@ -177,7 +177,7 @@ function AccidentListView({
 							const { firstName, lastName } = user;
 
 							return (
-								<Grid container spacing={16}>
+								<Grid container spacing={2}>
 									{accidentImageSrc && (
 										<Grid item xs={12}>
 											<img
@@ -189,24 +189,44 @@ function AccidentListView({
 									)}
 									<Grid item xs={12}>
 										<Typography>
-											<Typography variant="h6" component="span" inline>
+											<Typography
+												variant="h6"
+												component="span"
+												display="inline"
+											>
 												From:
 											</Typography>
-											<Typography variant="subtitle1" component="span" inline>
+											<Typography
+												variant="subtitle1"
+												component="span"
+												display="inline"
+											>
 												{`${firstName} ${lastName}`}
 											</Typography>
 										</Typography>
 										<Typography>
-											<Typography variant="h6" component="span" inline>
+											<Typography
+												variant="h6"
+												component="span"
+												display="inline"
+											>
 												Date:
 											</Typography>
-											<Typography variant="subtitle1" component="span" inline>
+											<Typography
+												variant="subtitle1"
+												component="span"
+												display="inline"
+											>
 												{moment(createdAt, "X").format("LLL")}
 											</Typography>
 										</Typography>
 										{message && (
 											<Fragment>
-												<Typography variant="h6" component="span" inline>
+												<Typography
+													variant="h6"
+													component="span"
+													display="inline"
+												>
 													Message:
 												</Typography>
 												{message.split("\n").map((p, i) => (
