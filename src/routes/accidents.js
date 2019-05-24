@@ -143,7 +143,7 @@ router.patch(
 	parseBody,
 	async (req, res, next) => {
 		const { user, params, body, files } = req;
-
+		let response = new ResponseBuilder();
 		let foundAccident = await db.Accident.findByPk(params.id, {
 			include: [{ all: true }]
 		});
