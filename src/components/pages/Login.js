@@ -23,7 +23,7 @@ function Login({ classes, history, fetchEnums, fetchCurrentUserDetails }) {
 
 const styles = (theme) => ({
 	root: {
-		padding: theme.spacing.unit * 3,
+		padding: theme.spacing(3),
 		width: "80%",
 		maxWidth: "500px",
 		position: "absolute",

@@ -13,8 +13,14 @@ import { withStyles } from "@material-ui/core/styles";
 
 import TablePaginationActions from "./TablePaginationActions";
 
+function search(keyWord, word) {
+	let pass = keyWord.split(" ").every(key => new RegExp(key).test(word));
+
+	return Boolean(pass);
+}
+
 function renderRow(row, key, options = {}) {
-	let cells = row.values.map((cell, index) => {
+	let cells = row.values.reduce((acc, cell, index) => {
 		let value = "";
 		let colSpan = 1;
 		if (typeof cell === "object") {
@@ -23,12 +29,29 @@ function renderRow(row, key, options = {}) {
 		} else {
 			value = cell || "";
 		}
-		return (
-			<TableCell colSpan={colSpan} key={index}>
-				{value}
-			</TableCell>
-		);
-	});
+		let passFilter = true;
+		if (options.filter) {
+			let { filter } = options;
+			if (filter instanceof Array) {
+				passFilter = filter.every(word => search(word, value));
+			} else if (filter instanceof String) {
+				passFilter = search(filter, value);
+			} else if (filter.global || filter.index) {
+				passFilter =
+					search(filter.global, value) ||
+					filter.index.every(word => search(word, value));
+			}
+		}
+
+		if (options.exclude && !options.exclude.includes(index) && passFilter) {
+			acc.push(
+				<TableCell colSpan={colSpan} key={index}>
+					{value}
+				</TableCell>
+			);
+		}
+		return acc;
+	}, []);
 	let className = "";
 	if (options.classes && options.classes.rows && row.onClick) {
 		className = options.classes.rows;
@@ -44,11 +67,11 @@ function renderRow(row, key, options = {}) {
 	);
 }
 
-function renderHeader(rows) {
+function renderHeader(rows, options) {
 	return (
 		<TableHead>
 			{rows.map((header, index) => {
-				return renderRow(header, index);
+				return renderRow(header, index, options);
 			})}
 		</TableHead>
 	);
@@ -99,7 +122,14 @@ function renderFooter(options = {}) {
 	);
 }
 
-function TableWithPagination({ data, pagination, classes, filter, sortIndex }) {
+function TableWithPagination({
+	data,
+	pagination,
+	classes,
+	filter,
+	sort,
+	exclude
+}) {
 	const count = data.body.length;
 	const { rowsPerPageOptions, colSpan, SelectProps } = pagination;
 	const [currentPage, setCurrentPage] = useState(0);
@@ -114,10 +144,13 @@ function TableWithPagination({ data, pagination, classes, filter, sortIndex }) {
 
 	return (
 		<div className={classes.root}>
-			<Table className="table">
-				{renderHeader(data.headers)}
+			<Table className="table" size="small">
+				{renderHeader(data.headers, { sort, exclude })}
 				{renderBody(data.body, currentPage, rowsPerPage, {
-					classes
+					classes,
+					filter,
+					sort,
+					exclude
 				})}
 				{renderFooter({
 					rowsPerPageOptions,
@@ -144,6 +177,7 @@ TableWithPagination.propTypes = {
 						colSpan: PropTypes.number
 					}).isRequired
 				),
+				showFilter: PropTypes.bool,
 				metadata: PropTypes.any,
 				onClick: PropTypes.func
 			})
@@ -161,6 +195,16 @@ TableWithPagination.propTypes = {
 			})
 		)
 	}),
+	showFilter: PropTypes.bool,
+	exclude: PropTypes.array,
+	filter: PropTypes.oneOfType([
+		PropTypes.shape({
+			global: PropTypes.string,
+			index: PropTypes.arrayOf(PropTypes.string)
+		}),
+		PropTypes.arrayOf(PropTypes.string),
+		PropTypes.string
+	]),
 	pagination: PropTypes.shape({
 		rowsPerPageOptions: PropTypes.arrayOf(PropTypes.number),
 		colSpan: PropTypes.number,
@@ -172,7 +216,9 @@ TableWithPagination.defaultProps = {
 	pagination: {
 		rowsPerPageOptions: [5, 10, 20, 50, 100]
 	},
-	data: { headers: [], body: [] }
+	exclude: [],
+	data: { headers: [], body: [] },
+	showFilter: false
 };
 
 const styles = {

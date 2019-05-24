@@ -169,7 +169,7 @@ const mapStateToProps = ({ locations }) => ({
 
 const styles = theme => ({
 	updateForm: {
-		padding: theme.spacing.unit * 3
+		padding: theme.spacing(3)
 	},
 	map: {
 		flexGrow: 1

@@ -233,9 +233,14 @@ export const api = {
 			formData: true
 		}),
 	updateAccident: accident =>
-		executeFromAPI("patch", "api/carbooking/accidents", accident, {
-			formData: true
-		}),
+		executeFromAPI(
+			"patch",
+			`/api/carbooking/accidents/${accident.id}`,
+			accident,
+			{
+				formData: true
+			}
+		),
 	deleteAccident: id =>
 		executeFromAPI("delete", `/api/carbooking/accidents/${id}`),
 

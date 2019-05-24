@@ -16,9 +16,9 @@ const styles = theme => ({
 	root: {
 		display: "flex",
 		flexDirection: "column",
-		padding: theme.spacing.unit * 3,
+		padding: theme.spacing(3),
 		"& > :not(:last-child)": {
-			marginBottom: theme.spacing.unit * 3
+			marginBottom: theme.spacing(3)
 		},
 		[theme.breakpoints.down("sm")]: {
 			padding: theme.spacing.unit

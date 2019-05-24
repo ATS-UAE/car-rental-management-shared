@@ -20,16 +20,12 @@ function BookingFinalizeForm({
 	onChange,
 	readOnly
 }) {
-	const notBefore = new Validator(
-		() => values.from > moment().unix(),
-		"Value should not be before current date."
-	);
 	const fields = [
 		{
 			type: DATE_TIME_PICKER,
 			id: "from",
 			name: "from",
-			validators: [validators.requiredField, notBefore],
+			validators: [validators.requiredField],
 			props: {
 				label: "Book Start"
 			}

@@ -2,7 +2,13 @@ import React, { useEffect, useState, Fragment } from "react";
 import { connect } from "react-redux";
 import { compose } from "recompose";
 import moment from "moment";
-import { Dialog, DialogContent } from "@material-ui/core";
+import {
+	Dialog,
+	DialogContent,
+	TextField,
+	InputAdornment
+} from "@material-ui/core";
+import { FilterList } from "@material-ui/icons";
 import * as reduxActions from "../../../actions";
 import TableView from "../../presentational/forms/TableView";
 import BookingActions from "../../presentational/inputs/BookingActions";
@@ -30,7 +36,6 @@ function BookingTableView({
 	const [formData, setFormData] = useState({});
 	const [actionStatus, setActionStatus] = useState([]);
 	const [finalizeFormData, setFinalizeFormData] = useState({});
-
 	useEffect(() => {
 		const resetActionStatus = async () => {
 			if (auth && auth.data && bookings && bookings.data) {
@@ -86,6 +91,106 @@ function BookingTableView({
 	let tableHeaders = [
 		{
 			values: [
+				{
+					value: (
+						<TextField
+							id="filled-adornment-amount"
+							variant="filled"
+							label="Amount"
+							InputProps={{
+								startAdornment: (
+									<InputAdornment position="start">
+										<FilterList />
+									</InputAdornment>
+								)
+							}}
+						/>
+					)
+				},
+				{
+					value: (
+						<TextField
+							id="filled-adornment-amount"
+							variant="filled"
+							label="Amount"
+							InputProps={{
+								startAdornment: (
+									<InputAdornment position="start">
+										<FilterList />
+									</InputAdornment>
+								)
+							}}
+						/>
+					)
+				},
+				{
+					value: (
+						<TextField
+							id="filled-adornment-amount"
+							variant="filled"
+							label="Amount"
+							InputProps={{
+								startAdornment: (
+									<InputAdornment position="start">
+										<FilterList />
+									</InputAdornment>
+								)
+							}}
+						/>
+					)
+				},
+				{
+					value: (
+						<TextField
+							id="filled-adornment-amount"
+							variant="filled"
+							label="Amount"
+							InputProps={{
+								startAdornment: (
+									<InputAdornment position="start">
+										<FilterList />
+									</InputAdornment>
+								)
+							}}
+						/>
+					)
+				},
+				{
+					value: (
+						<TextField
+							id="filled-adornment-amount"
+							variant="filled"
+							label="Amount"
+							InputProps={{
+								startAdornment: (
+									<InputAdornment position="start">
+										<FilterList />
+									</InputAdornment>
+								)
+							}}
+						/>
+					)
+				},
+				{
+					value: (
+						<TextField
+							id="filled-adornment-amount"
+							variant="filled"
+							label="Amount"
+							InputProps={{
+								startAdornment: (
+									<InputAdornment position="start">
+										<FilterList />
+									</InputAdornment>
+								)
+							}}
+						/>
+					)
+				}
+			]
+		},
+		{
+			values: [
 				{ value: "User" },
 				{ value: "Booking Type" },
 				{ value: "Vehicle" },
@@ -112,18 +217,15 @@ function BookingTableView({
 			);
 			let bookingStatus = "";
 			let currentTime = moment();
+			let hasPassedFrom = moment(booking.from, "X").isSameOrBefore(currentTime);
+			let hasPassedTo = moment(booking.to, "X").isSameOrBefore(currentTime);
 			if (booking.approved) {
-				let hasPassedFrom = moment(booking.from, "X").isSameOrBefore(
-					currentTime
-				);
-				let hasPassedTo = moment(booking.to, "X").isAfter(currentTime);
 				if (hasPassedFrom && !hasPassedTo) bookingStatus = "Ongoing";
 				else if (hasPassedTo) bookingStatus = "Finished";
 				else bookingStatus = "Approved";
 			} else {
 				if (booking.approved === null) {
-					if (moment(booking.from, "X").isSameOrBefore(currentTime))
-						bookingStatus = "Expired";
+					if (hasPassedFrom) bookingStatus = "Expired";
 					else bookingStatus = "Pending";
 				} else if (booking.approved === false) bookingStatus = "Denied";
 			}
@@ -150,7 +252,7 @@ function BookingTableView({
 					}
 				]
 			};
-			if (showBookingActions && booking.approved === null) {
+			if (showBookingActions) {
 				row.values.push({
 					value: (
 						<BookingActions
@@ -249,7 +351,7 @@ function BookingTableView({
 		});
 	}
 	if (showBookingActions) {
-		tableHeaders[0].values.push({ value: "Actions" });
+		tableHeaders[1].values.push({ value: "Actions" });
 	}
 
 	return (
@@ -283,6 +385,7 @@ function BookingTableView({
 				params={{ booking: { userId: 1 }, user: { id: 1 } }}
 				yes={access => (
 					<TableView
+						exclude={access.role === roles.GUEST ? [0] : []}
 						open={open}
 						onClose={() => setOpen(false)}
 						editable={true}
@@ -300,6 +403,7 @@ function BookingTableView({
 										values={formData}
 										onChange={setFormData}
 										exclude={access.excludedFields}
+										allowBefore={true}
 										onSubmit={() => {
 											setOpen(false);
 											onSubmit && onSubmit();

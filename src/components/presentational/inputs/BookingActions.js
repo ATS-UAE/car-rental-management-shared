@@ -18,6 +18,7 @@ function BookingActions({
 	showFinalize,
 	classes
 }) {
+	console.log(showFinalize);
 	return (
 		<Fragment>
 			{showApprove && (
@@ -92,7 +93,8 @@ BookingActions.propsTypes = {
 	showApprove: PropTypes.bool,
 	showDeny: PropTypes.bool,
 	showDestroy: PropTypes.bool,
-	showUpdate: PropTypes.bool
+	showUpdate: PropTypes.bool,
+	showFinalize: PropTypes.bool
 };
 
 const styles = theme => ({

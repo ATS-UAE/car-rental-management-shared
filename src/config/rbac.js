@@ -21,6 +21,16 @@ const accidentsResource = new Resource(resourceEnums.ACCIDENTS);
 // GENERAL ROLE CONFIG //
 /////////////////////////
 // All roles will extend this role.
+// Users permission.
+generalRole.addPermission(
+	new Action(
+		READ,
+		usersResource,
+		({ targetUser, user }) => targetUser.id === user.id,
+		["password", "passwordConfirm"]
+	)
+);
+
 // Vehicle permissions.
 generalRole.addPermission(
 	new Action(READ, vehicleResource, null, ["objectId"])
@@ -52,7 +62,7 @@ generalRole.addPermission(
 	new Action(
 		UPDATE,
 		usersResource,
-		({ updateUser, currentUser }) => updateUser.id === currentUser.id
+		({ user, targetUser }) => user.id === targetUser.id
 	)
 );
 
@@ -67,6 +77,9 @@ generalRole.addPermission(
 		({ accident, user }) => accident.userId === user.id
 	)
 );
+generalRole.addPermission(
+	new Action(UPDATE, accidentsResource, ({ accident, user, body }) => true)
+);
 
 ////////////////////////
 // GUESTS ROLE CONFIG //
@@ -79,9 +92,7 @@ guestRole.addPermission(
 );
 
 // Accidents permissions.
-guestRole.addPermission(
-	new Action(CREATE, accidentsResource, null, ["userId", "bookingId"])
-);
+guestRole.addPermission(new Action(CREATE, accidentsResource, null));
 
 /////////////////////////////
 // KEY_MANAGER ROLE CONFIG //
@@ -136,6 +147,9 @@ adminRole.addPermission(
 		["password", "passwordConfirm"]
 	)
 );
+
+// Accidents Permissions
+adminRole.addPermission(new Action(DELETE, accidentsResource));
 
 accessControl.addRole(adminRole);
 accessControl.addRole(keyManagerRole);

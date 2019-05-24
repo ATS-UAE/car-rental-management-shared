@@ -22,7 +22,7 @@ function UnknownPage({ classes }) {
 const styles = theme => ({
 	paper: {
 		textAlign: "center",
-		padding: theme.spacing.unit * 3,
+		padding: theme.spacing(3),
 		margin: "auto",
 		display: "inline-block"
 	},

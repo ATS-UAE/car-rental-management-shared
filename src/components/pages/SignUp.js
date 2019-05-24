@@ -15,9 +15,9 @@ function SignUp({ classes, history }) {
 
 const styles = theme => ({
 	root: {
-		padding: theme.spacing.unit * 3,
+		padding: theme.spacing(3),
 		[theme.breakpoints.down("sm")]: {
-			padding: theme.spacing.unit * 2
+			padding: theme.spacing(2)
 		},
 		height: "100%",
 		overflow: "auto"

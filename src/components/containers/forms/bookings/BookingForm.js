@@ -22,7 +22,9 @@ function BookingFormContainer({
 	onChange,
 	loading,
 	readOnly,
-	ticksMap
+	ticksMap,
+	allowBefore,
+	users
 }) {
 	let [errors, setErrors] = useState({});
 	let [disableButton, setDisabledButton] = useState(false);
@@ -45,6 +47,7 @@ function BookingFormContainer({
 	let vehicleList = values.locationId
 		? [{ value: "", label: "No vehicles available." }]
 		: [{ value: "", label: "Please select a location." }];
+	let userList = [{ value: "", label: "Loading..." }];
 
 	if (enums && enums.data) {
 		let $bookingTypeList = enums.data.bookingTypes.map(item => ({
@@ -53,6 +56,19 @@ function BookingFormContainer({
 		}));
 		if ($bookingTypeList.length) {
 			bookingTypeList = $bookingTypeList;
+		}
+	}
+	if (users && users.data) {
+		let $userList = vehicles.data.map(
+			user => ({
+				value: user.id,
+				label: `${user.firstName} ${user.lastName} - ${user.username}`
+			}),
+
+			[]
+		);
+		if ($userList.length) {
+			userList = $userList;
 		}
 	}
 	if (vehicles && vehicles.data) {
@@ -114,11 +130,13 @@ function BookingFormContainer({
 	);
 	return (
 		<BookingForm
+			userList={userList}
 			values={values}
 			exclude={exclude}
 			bookingTypeList={bookingTypeList}
 			vehicleList={vehicleList}
 			readOnly={readOnly}
+			allowBefore={allowBefore}
 			onChange={values => {
 				let from = values.from;
 				let to = values.to;

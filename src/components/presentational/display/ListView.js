@@ -68,10 +68,10 @@ const styles = theme => ({
 		width: drawerWidth
 	},
 	toggleButton: {
-		marginRight: theme.spacing.unit * 3
+		marginRight: theme.spacing(3)
 	},
 	body: {
-		padding: theme.spacing.unit * 3,
+		padding: theme.spacing(3),
 		overflowY: "auto"
 	},
 	content: {

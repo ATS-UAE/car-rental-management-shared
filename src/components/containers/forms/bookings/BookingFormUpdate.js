@@ -10,7 +10,8 @@ function BookingFormUpdate({
 	onSubmit,
 	values,
 	onChange,
-	readOnly
+	readOnly,
+	allowBefore
 }) {
 	let [errorNotes, setErrorNotes] = useState([]);
 	let [loading, setLoading] = useState(false);
@@ -38,6 +39,7 @@ function BookingFormUpdate({
 						setLoading(false);
 					});
 			}}
+			allowBefore={allowBefore}
 			ticksMap={{
 				xs: 3,
 				sm: 4,

@@ -71,8 +71,8 @@ const styles = theme => {
 			height: "48px"
 		},
 		button: {
-			padding: theme.spacing.unit * 3,
-			margin: theme.spacing.unit * 3
+			padding: theme.spacing(3),
+			margin: theme.spacing(3)
 		}
 	};
 };

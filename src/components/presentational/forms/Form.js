@@ -8,6 +8,7 @@ import ErrorChip from "../display/ErrorChip";
 import Slider from "../inputs/Slider";
 import DateTimePicker from "../inputs/DateTimePicker";
 import { Validator } from "../../../utils";
+import { elementTypePropTypeChecker } from "../../../utils/propTypes";
 import ImageInput from "../inputs/ImageInput";
 
 export const FIELDS = {
@@ -65,13 +66,13 @@ function Form({
 					<Typography
 						variant="h6"
 						gutterBottom
-						headlineMapping={{ h6: "h1" }}
+						component="h1"
 						className={classes.title}
 					>
 						{title}
 					</Typography>
 				)}
-				<Grid container spacing={24}>
+				<Grid container spacing={3}>
 					{formFields.map(field => {
 						const Component = field.type;
 						const { props = {}, name, id, GridProps, persistEvent } = field;
@@ -124,7 +125,7 @@ function Form({
 Form.propTypes = {
 	fields: PropTypes.arrayOf(
 		PropTypes.shape({
-			type: PropTypes.func.isRequired,
+			type: elementTypePropTypeChecker.isRequired,
 			props: PropTypes.object,
 			name: PropTypes.string.isRequired,
 			id: PropTypes.string.isRequired
@@ -159,13 +160,13 @@ Form.defaultProps = {
 
 const style = theme => ({
 	paper: {
-		padding: theme.spacing.unit * 3
+		padding: theme.spacing(3)
 	},
 	hints: {
 		float: "right"
 	},
 	title: {
-		marginBottom: theme.spacing.unit * 3
+		marginBottom: theme.spacing(3)
 	}
 });
 

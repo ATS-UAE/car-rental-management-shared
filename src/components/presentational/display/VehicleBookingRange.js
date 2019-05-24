@@ -122,7 +122,7 @@ VehicleBookingRange.defaultProps = {
 
 const styles = theme => ({
 	root: {
-		padding: theme.spacing.unit * 3
+		padding: theme.spacing(3)
 	},
 	graph: {
 		display: "inline-block",
@@ -130,11 +130,11 @@ const styles = theme => ({
 	},
 	graphContainer: {
 		overflowX: "auto",
-		paddingLeft: theme.spacing.unit * 6,
-		paddingRight: theme.spacing.unit * 6
+		paddingLeft: theme.spacing(6),
+		paddingRight: theme.spacing(6)
 	},
 	title: {
-		marginBottom: theme.spacing.unit * 3
+		marginBottom: theme.spacing(3)
 	}
 });
 

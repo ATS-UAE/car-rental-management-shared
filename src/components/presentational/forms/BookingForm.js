@@ -22,7 +22,8 @@ function BookingForm({
 	onChange,
 	locations,
 	readOnly,
-	onLocationClick
+	onLocationClick,
+	allowBefore
 }) {
 	const notBefore = new Validator(
 		() => values.from > moment().unix(),
@@ -33,7 +34,7 @@ function BookingForm({
 			type: DATE_TIME_PICKER,
 			id: "from",
 			name: "from",
-			validators: [validators.requiredField, notBefore],
+			validators: [validators.requiredField],
 			props: {
 				label: "Book Start"
 			}
@@ -89,6 +90,8 @@ function BookingForm({
 			}
 		}
 	];
+	if (!allowBefore) fields[0].validators.push(notBefore);
+
 	return (
 		<Form
 			title={title}

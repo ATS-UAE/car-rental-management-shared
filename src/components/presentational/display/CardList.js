@@ -27,7 +27,7 @@ function CardList({ cards, classes }) {
 
 const styles = theme => ({
 	paper: {
-		padding: theme.spacing.unit * 2
+		padding: theme.spacing(2)
 	}
 });
 

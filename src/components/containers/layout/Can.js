@@ -34,7 +34,7 @@ function Can({
 					params,
 					resource,
 					action,
-					role,
+					role: $role,
 					auth
 				})
 			);

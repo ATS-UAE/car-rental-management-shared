@@ -59,7 +59,7 @@ const styles = theme => ({
 	container: {
 		display: "flex",
 		justifyContent: "space-between",
-		marginBottom: theme.spacing.unit * 7
+		marginBottom: theme.spacing(7)
 	}
 });
 

@@ -60,7 +60,7 @@ UserUpdateTable.propTypes = {
 
 const style = theme => ({
 	paper: {
-		padding: theme.spacing.unit * 3
+		padding: theme.spacing(3)
 	}
 });
 

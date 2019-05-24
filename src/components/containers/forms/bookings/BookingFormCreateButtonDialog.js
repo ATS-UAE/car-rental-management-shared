@@ -15,7 +15,12 @@ function BookingCreateButtonDialog({ history }) {
 				exitPath="/bookings"
 				render={({ location }) => (
 					<BookingFormCreate
-						exclude={location.state.createAccess.excludedFields}
+						exclude={
+							location &&
+							location.state &&
+							location.state.createAccess &&
+							location.state.createAccess.excludedFields
+						}
 						onSubmit={() => history.push()}
 						ticksMap={{
 							xs: 3,

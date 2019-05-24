@@ -3,10 +3,20 @@ import PropTypes from "prop-types";
 import { Dialog, Paper } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import Table from "../display/TableWithPagination";
-function TableView({ tableData, open, onClose, children, editable, classes }) {
+function TableView({
+	tableData,
+	open,
+	onClose,
+	children,
+	editable,
+	classes,
+	filter,
+	sort,
+	exclude
+}) {
 	return (
 		<Fragment>
-			<Table data={tableData} />
+			<Table data={tableData} filter={filter} sort={sort} exclude={exclude} />
 			{editable && (
 				<Dialog open={open} onClose={onClose}>
 					<Paper className={classes.paper}>{children}</Paper>

@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import PropTypes from "prop-types";
 import { Route } from "react-router-dom";
 import { withRouter } from "react-router";
 import { Dialog } from "@material-ui/core";
@@ -14,7 +15,9 @@ function FormPage({
 	exitPath,
 	onMount,
 	classes,
-	check
+	check,
+	popUp,
+	onChange
 }) {
 	if (check === undefined || check({ path, location }) === true)
 		return (
@@ -33,6 +36,8 @@ function FormPage({
 							},
 							...dialogProps
 						}}
+						popUp={popUp}
+						onChange={onChange}
 					/>
 				)}
 			/>
@@ -46,19 +51,36 @@ function DialogComponent({
 	exitPath,
 	dialogProps,
 	history,
-	onMount
+	onMount,
+	popUp,
+	onChange
 }) {
-	useEffect(() => onMount && onMount(childProps), []);
-	return (
-		<Dialog open={true} onClose={() => history.push(exitPath)} {...dialogProps}>
+	useEffect(() => {
+		onMount && onMount(childProps);
+	}, []);
+	useEffect(() => {
+		onChange && onChange(childProps);
+	}, [history.location.pathname]);
+	return popUp ? (
+		<Dialog
+			open={true}
+			onClose={() => exitPath && history.push(exitPath)}
+			{...dialogProps}
+		>
 			{render ? render(childProps) : null}
 		</Dialog>
-	);
+	) : render ? (
+		render(childProps)
+	) : null;
 }
+
+FormPage.defaultProps = {
+	popUp: true
+};
 
 const styles = theme => ({
 	paper: {
-		padding: theme.spacing.unit * 3
+		padding: theme.spacing(3)
 	}
 });
 
