@@ -18,7 +18,6 @@ function BookingActions({
 	showFinalize,
 	classes
 }) {
-	console.log(showFinalize);
 	return (
 		<Fragment>
 			{showApprove && (

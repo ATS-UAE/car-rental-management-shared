@@ -6,7 +6,7 @@ import {
 	Dialog,
 	DialogContent,
 	TextField,
-	InputAdornment
+	Typography
 } from "@material-ui/core";
 import { FilterList } from "@material-ui/icons";
 import * as reduxActions from "../../../actions";
@@ -36,6 +36,10 @@ function BookingTableView({
 	const [formData, setFormData] = useState({});
 	const [actionStatus, setActionStatus] = useState([]);
 	const [finalizeFormData, setFinalizeFormData] = useState({});
+	const [filters, setFilters] = useState({
+		global: "",
+		index: ["", "", "", "", "", ""]
+	});
 	useEffect(() => {
 		const resetActionStatus = async () => {
 			if (auth && auth.data && bookings && bookings.data) {
@@ -88,102 +92,72 @@ function BookingTableView({
 		fetchCurrentUserDetails();
 	}, []);
 
+	const handleFilter = index => e => {
+		let newIndexFilters = filters.index;
+		newIndexFilters[index] = e.target.value;
+		setFilters({ global: filters.global, index: newIndexFilters });
+	};
+
 	let tableHeaders = [
 		{
 			values: [
 				{
 					value: (
 						<TextField
+							onChange={handleFilter(0)}
+							value={filters.index[0]}
 							id="filled-adornment-amount"
-							variant="filled"
-							label="Amount"
-							InputProps={{
-								startAdornment: (
-									<InputAdornment position="start">
-										<FilterList />
-									</InputAdornment>
-								)
-							}}
+							label="Filter"
 						/>
 					)
 				},
 				{
 					value: (
 						<TextField
+							onChange={handleFilter(1)}
+							value={filters.index[1]}
 							id="filled-adornment-amount"
-							variant="filled"
-							label="Amount"
-							InputProps={{
-								startAdornment: (
-									<InputAdornment position="start">
-										<FilterList />
-									</InputAdornment>
-								)
-							}}
+							label="Filter"
 						/>
 					)
 				},
 				{
 					value: (
 						<TextField
+							onChange={handleFilter(2)}
+							value={filters.index[2]}
 							id="filled-adornment-amount"
-							variant="filled"
-							label="Amount"
-							InputProps={{
-								startAdornment: (
-									<InputAdornment position="start">
-										<FilterList />
-									</InputAdornment>
-								)
-							}}
+							label="Filter"
 						/>
 					)
 				},
 				{
 					value: (
 						<TextField
+							onChange={handleFilter(3)}
+							value={filters.index[3]}
 							id="filled-adornment-amount"
-							variant="filled"
-							label="Amount"
-							InputProps={{
-								startAdornment: (
-									<InputAdornment position="start">
-										<FilterList />
-									</InputAdornment>
-								)
-							}}
+							label="Filter"
 						/>
 					)
 				},
 				{
 					value: (
 						<TextField
+							onChange={handleFilter(4)}
+							value={filters.index[4]}
 							id="filled-adornment-amount"
-							variant="filled"
-							label="Amount"
-							InputProps={{
-								startAdornment: (
-									<InputAdornment position="start">
-										<FilterList />
-									</InputAdornment>
-								)
-							}}
+							label="Filter"
 						/>
 					)
 				},
 				{
 					value: (
 						<TextField
+							onChange={handleFilter(5)}
+							value={filters.index[5]}
 							id="filled-adornment-amount"
-							variant="filled"
-							label="Amount"
-							InputProps={{
-								startAdornment: (
-									<InputAdornment position="start">
-										<FilterList />
-									</InputAdornment>
-								)
-							}}
+							label="Filter"
 						/>
 					)
 				}
@@ -385,6 +359,7 @@ function BookingTableView({
 				params={{ booking: { userId: 1 }, user: { id: 1 } }}
 				yes={access => (
 					<TableView
+						filter={filters}
 						exclude={access.role === roles.GUEST ? [0] : []}
 						open={open}
 						onClose={() => setOpen(false)}

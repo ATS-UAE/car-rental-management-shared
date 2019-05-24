@@ -14,9 +14,15 @@ import { withStyles } from "@material-ui/core/styles";
 import TablePaginationActions from "./TablePaginationActions";
 
 function search(keyWord, word) {
-	let pass = keyWord.split(" ").every(key => new RegExp(key).test(word));
-
-	return Boolean(pass);
+	let pass = true;
+	if (keyWord && word) {
+		console.log("keyWord: ", keyWord);
+		console.log("word: ", word);
+		pass = Boolean(
+			keyWord.split(" ").every(key => new RegExp(key, "i").test(word))
+		);
+	}
+	return pass;
 }
 
 function renderRow(row, key, options = {}) {
@@ -29,21 +35,8 @@ function renderRow(row, key, options = {}) {
 		} else {
 			value = cell || "";
 		}
-		let passFilter = true;
-		if (options.filter) {
-			let { filter } = options;
-			if (filter instanceof Array) {
-				passFilter = filter.every(word => search(word, value));
-			} else if (filter instanceof String) {
-				passFilter = search(filter, value);
-			} else if (filter.global || filter.index) {
-				passFilter =
-					search(filter.global, value) ||
-					filter.index.every(word => search(word, value));
-			}
-		}
 
-		if (options.exclude && !options.exclude.includes(index) && passFilter) {
+		if (options.exclude && !options.exclude.includes(index)) {
 			acc.push(
 				<TableCell colSpan={colSpan} key={index}>
 					{value}
@@ -81,13 +74,39 @@ function renderBody(rows, currentPage, rowsPerPage, options) {
 	return (
 		<TableBody className="table-body">
 			{rows
+				.reduce((acc, row) => {
+					let passFilter = row.values.every((cell, index) => {
+						let included = true;
+						let value = cell.value ? cell.value : cell;
+						if (typeof value === "string") {
+							if (options.filter) {
+								let { filter } = options;
+								if (filter instanceof String) {
+									included = search(filter, value);
+								} else if (filter.global || filter.index) {
+									if (filter.global) {
+										included = search(filter.global, value);
+									}
+									if (filter.index) {
+										included = search(filter.index[index], value);
+									}
+								}
+							}
+						}
+						return included;
+					});
+
+					if (passFilter) {
+						acc.push(row);
+					}
+
+					return acc;
+				}, [])
 				.slice(
 					currentPage * rowsPerPage,
 					currentPage * rowsPerPage + rowsPerPage
 				)
-				.map((row, index) => {
-					return renderRow(row, index, options);
-				})}
+				.map((row, index) => renderRow(row, index, options))}
 		</TableBody>
 	);
 }
@@ -177,7 +196,7 @@ TableWithPagination.propTypes = {
 						colSpan: PropTypes.number
 					}).isRequired
 				),
-				showFilter: PropTypes.bool,
+
 				metadata: PropTypes.any,
 				onClick: PropTypes.func
 			})
@@ -195,14 +214,13 @@ TableWithPagination.propTypes = {
 			})
 		)
 	}),
-	showFilter: PropTypes.bool,
+
 	exclude: PropTypes.array,
 	filter: PropTypes.oneOfType([
 		PropTypes.shape({
 			global: PropTypes.string,
 			index: PropTypes.arrayOf(PropTypes.string)
 		}),
-		PropTypes.arrayOf(PropTypes.string),
 		PropTypes.string
 	]),
 	pagination: PropTypes.shape({
@@ -217,8 +235,7 @@ TableWithPagination.defaultProps = {
 		rowsPerPageOptions: [5, 10, 20, 50, 100]
 	},
 	exclude: [],
-	data: { headers: [], body: [] },
-	showFilter: false
+	data: { headers: [], body: [] }
 };
 
 const styles = {
