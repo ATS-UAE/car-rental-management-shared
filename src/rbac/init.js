@@ -23,7 +23,7 @@ generalRole.addPermission(
 	new Action(
 		READ,
 		usersResource,
-		({ currentUser, readUser }) => currentUser.id === readUser.id,
+		({ targetUser, user }) => targetUser.id === user.id,
 		["password", "passwordConfirm"]
 	)
 );
@@ -59,7 +59,7 @@ generalRole.addPermission(
 	new Action(
 		UPDATE,
 		usersResource,
-		({ updateUser, currentUser }) => updateUser.id === currentUser.id
+		({ user, targetUser }) => user.id === targetUser.id
 	)
 );
 

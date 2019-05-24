@@ -14,7 +14,7 @@ const createStore = () => {
 		config.database.username,
 		config.database.password,
 		{
-			logging: false,
+			logging: process.env.NODE_ENV === "development" ? console.log : false,
 			host: config.database.host,
 			port: config.database.port,
 			hooks: {
