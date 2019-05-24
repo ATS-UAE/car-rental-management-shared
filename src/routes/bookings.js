@@ -59,6 +59,7 @@ router.post("/", async ({ user, body }, res) => {
 		} catch (e) {
 			response.setMessage(e.message);
 			response.setCode(422);
+			res.status(422);
 			if (e.errors && e.errors.length > 0) {
 				e.errors.forEach(error => response.appendError(error.path));
 			}

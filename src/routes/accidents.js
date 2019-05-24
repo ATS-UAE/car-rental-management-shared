@@ -60,7 +60,7 @@ router.post(
 				files.accidentVideoSrc[0] &&
 				files.accidentVideoSrc[0].location) ||
 			null;
-		console.log(accidentImageSrc, accidentVideoSrc);
+
 		let response = new ResponseBuilder();
 		let accessible = await RBAC.can(
 			user.role.name,
@@ -75,7 +75,6 @@ router.post(
 					accidentImageSrc,
 					accidentVideoSrc
 				});
-
 				response.setData(createdAccident);
 				response.setMessage("Accident has been created.");
 				response.setCode(200);
@@ -145,7 +144,6 @@ router.patch(
 	async (req, res, next) => {
 		const { user, params, body, files } = req;
 
-		let response = new ResponseBuilder();
 		let foundAccident = await db.Accident.findByPk(params.id, {
 			include: [{ all: true }]
 		});
@@ -153,7 +151,7 @@ router.patch(
 			user.role.name,
 			UPDATE,
 			resources.accidents,
-			{ accident: foundAccident, user }
+			{ accident: foundAccident, user, body }
 		);
 		if (accessible) {
 			if (foundAccident) {
@@ -218,7 +216,6 @@ router.delete("/:id", async ({ user, params }, res) => {
 
 	if (accessible) {
 		if (foundAccident) {
-			await foundAccident.destroy();
 			response.setCode(200);
 			response.setSuccess(true);
 			response.setMessage(`Accident with ID ${params.id} has been deleted.`);

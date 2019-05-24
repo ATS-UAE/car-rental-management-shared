@@ -55,16 +55,14 @@ const createStore = () => {
 	});
 	db.sequelize = sequelize;
 	db.Sequelize = Sequelize;
-	init(db, { sync: { options: {} } }).then(() => {
-		sequelize
-			.authenticate()
-			.then(() => {
-				console.log("Connection has been established successfully.");
-			})
-			.catch(() => {
-				console.error("Unable to connect to the database\n", err);
-			});
-	});
+
+	sequelize
+		.authenticate()
+		.then(() => init(db, { sync: { options: {} } }))
+		.then(() => console.log("Connection has been established successfully."))
+		.catch(err => {
+			console.error("Unable to connect to the database\n", err);
+		});
 
 	return db;
 };

@@ -47,7 +47,7 @@ module.exports = (sequelize, DataTypes) => {
 				name: "vehicleId",
 				allowNull: false,
 				validate: {
-					notNull: { msg: "Booking type is required." }
+					notNull: { msg: "Vehicle is required." }
 				}
 			},
 			as: "vehicle"

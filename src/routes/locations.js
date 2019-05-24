@@ -3,11 +3,15 @@ const router = express.Router();
 
 const requireLogin = require("../middlewares/requireLogin");
 const disallowGuests = require("../middlewares/disallowGuests");
+const parseBody = require("../middlewares/parseBody");
+const deleteFileOnError = require("../middlewares/deleteFileOnError");
+const upload = require("../middlewares/multerUpload");
+
 const { RBAC, OPERATIONS, resources } = require("../rbac/init");
 const { CREATE, READ, UPDATE, DELETE } = OPERATIONS;
 const db = require("../models");
 const { errorCodes } = require("../utils/variables");
-const { ResponseBuilder, pickFields } = require("../utils");
+const { ResponseBuilder } = require("../utils");
 
 router.use(requireLogin);
 
@@ -31,31 +35,44 @@ router.get("/", async ({ user }, res) => {
 	res.json(response);
 });
 
-router.post("/", disallowGuests, async ({ user, body }, res) => {
-	let response = new ResponseBuilder();
-	let accessible = await RBAC.can(user.role.name, CREATE, resources.locations);
-	if (accessible) {
-		try {
-			let createdLocation = await db.Location.create(body);
-			response.setData(createdLocation);
-			response.setMessage("Location has been created.");
-			response.setCode(200);
-			response.setSuccess(true);
-		} catch (e) {
-			response.setMessage(e.message);
-			response.setCode(422);
-			if (e.errors && e.errors.length > 0) {
-				e.errors.forEach(error => response.appendError(error.path));
+router.post(
+	"/",
+	upload("carbooking/media/locations").single("locationImageSrc"),
+	parseBody,
+	disallowGuests,
+	async ({ user, body }, res) => {
+		let response = new ResponseBuilder();
+		let accessible = await RBAC.can(
+			user.role.name,
+			CREATE,
+			resources.locations
+		);
+		console.log(body);
+		if (accessible) {
+			try {
+				let createdLocation = await db.Location.create(body);
+				response.setData(createdLocation);
+				response.setMessage("Location has been created.");
+				response.setCode(200);
+				response.setSuccess(true);
+			} catch (e) {
+				response.setMessage(e.message);
+				response.setCode(422);
+				res.status(422);
+				if (e.errors && e.errors.length > 0) {
+					e.errors.forEach(error => response.appendError(error.path));
+				}
 			}
+		} else {
+			response.setMessage(errorCodes.UNAUTHORIZED.message);
+			response.setCode(errorCodes.UNAUTHORIZED.statusCode);
+			res.status(errorCodes.UNAUTHORIZED.statusCode);
 		}
-	} else {
-		response.setMessage(errorCodes.UNAUTHORIZED.message);
-		response.setCode(errorCodes.UNAUTHORIZED.statusCode);
-		res.status(errorCodes.UNAUTHORIZED.statusCode);
-	}
 
-	res.json(response);
-});
+		res.json(response);
+	},
+	deleteFileOnError
+);
 
 router.get("/:id", async ({ user }, res) => {
 	let response = new ResponseBuilder();
@@ -102,6 +119,7 @@ router.patch("/:id", disallowGuests, async ({ user, params, body }, res) => {
 			} catch (e) {
 				response.setMessage(e.message);
 				response.setCode(422);
+				res.status(422);
 				if (e.errors && e.errors.length > 0) {
 					e.errors.forEach(error => response.appendError(error.path));
 				}

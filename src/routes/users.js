@@ -179,55 +179,52 @@ router.post(
 	}
 );
 
-router.get(
-	"/:id",
-	requireLogin,
-	disallowGuests,
-	async ({ user, params }, res) => {
-		let response = new ResponseBuilder();
-		let accessible = await RBAC.can(user.role.name, READ, resources.users);
+router.get("/:id", requireLogin, async ({ user, params }, res) => {
+	let response = new ResponseBuilder();
+	let foundUser = await db.User.findByPk(params.id, {
+		include: [{ all: true }]
+	});
+	if (foundUser) {
+		let accessible = await RBAC.can(user.role.name, READ, resources.users, {
+			currentUser: user,
+			readUser: foundUser
+		});
 		if (accessible) {
 			try {
 				let foundUser = await db.User.findByPk(params.id, {
 					include: [{ all: true }]
 				});
-				if (foundUser) {
-					let { role } = foundUser;
-					response.setData({
-						...pickFields(
-							[
-								"id",
-								"username",
-								"firstName",
-								"lastName",
-								"gender",
-								"email",
-								"mobileNumber",
-								"lastLogin",
-								"userImageSrc",
-								"licenseImageSrc",
-								"approved",
-								"blocked",
-								"createdAt",
-								"updatedAt",
-								"userCreatorId",
-								"roleId"
-							],
-							foundUser.get({ plain: true })
-						),
-						role: {
-							id: role.id,
-							name: role.name
-						}
-					});
-					response.setCode(200);
-					response.setMessage(`User with ID ${params.id} found.`);
-					response.setSuccess(true);
-				} else {
-					res.status(404);
-					response.setCode(404);
-					response.setMessage(`User with ID ${params.id} not found.`);
-				}
+				let { role } = foundUser;
+				response.setData({
+					...pickFields(
+						[
+							"id",
+							"username",
+							"firstName",
+							"lastName",
+							"gender",
+							"email",
+							"mobileNumber",
+							"lastLogin",
+							"userImageSrc",
+							"licenseImageSrc",
+							"approved",
+							"blocked",
+							"createdAt",
+							"updatedAt",
+							"userCreatorId",
+							"roleId"
+						],
+						foundUser.get({ plain: true })
+					),
+					role: {
+						id: role.id,
+						name: role.name
+					}
+				});
+				response.setCode(200);
+				response.setMessage(`User with ID ${params.id} found.`);
+				response.setSuccess(true);
 			} catch (e) {
 				res.status(errorCodes.UNAUTHORIZED.statusCode);
 				response.setCode(errorCodes.UNAUTHORIZED.statusCode);
@@ -238,10 +235,13 @@ router.get(
 			response.setCode(errorCodes.UNAUTHORIZED.statusCode);
 			res.status(errorCodes.UNAUTHORIZED.statusCode);
 		}
-
-		res.json(response);
+	} else {
+		res.status(404);
+		response.setCode(404);
+		response.setMessage(`User with ID ${params.id} not found.`);
 	}
-);
+	res.json(response);
+});
 
 router.patch(
 	"/:id",

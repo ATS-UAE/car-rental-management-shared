@@ -7,10 +7,6 @@ module.exports = (sequelize, DataTypes) => {
 				notNull: { msg: "Message is required." }
 			}
 		},
-		read: {
-			type: DataTypes.BOOLEAN,
-			defaultValue: false
-		},
 		accidentImageSrc: {
 			type: DataTypes.STRING
 		},
@@ -50,6 +46,11 @@ module.exports = (sequelize, DataTypes) => {
 			validate: {
 				notNull: { msg: "Booking is required." }
 			}
+		});
+		models.Accident.belongsToMany(models.User, {
+			through: "AccidentUserStatus",
+			as: "accidentUserStatus",
+			foreignKey: "accidentId"
 		});
 	};
 	return Accident;

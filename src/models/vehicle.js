@@ -33,14 +33,12 @@ module.exports = (sequelize, DataTypes) => {
 	});
 	Vehicle.associate = models => {
 		models.Vehicle.belongsTo(models.Location, {
-			foreignKey: {
-				name: "locationId"
-			},
-			as: "location"
+			as: "location",
+			foreignKey: "locationId"
 		});
 		models.Vehicle.hasMany(models.Booking, {
-			foreignKey: { name: "vehicleId" },
-			as: "bookings"
+			as: "bookings",
+			foreignKey: "bookingId"
 		});
 	};
 	return Vehicle;
