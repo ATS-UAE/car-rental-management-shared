@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import {
 	Table,
@@ -16,8 +16,6 @@ import TablePaginationActions from "./TablePaginationActions";
 function search(keyWord, word) {
 	let pass = true;
 	if (keyWord && word) {
-		console.log("keyWord: ", keyWord);
-		console.log("word: ", word);
 		pass = Boolean(
 			keyWord.split(" ").every(key => new RegExp(key, "i").test(word))
 		);
@@ -71,44 +69,10 @@ function renderHeader(rows, options) {
 }
 
 function renderBody(rows, currentPage, rowsPerPage, options) {
-	return (
-		<TableBody className="table-body">
-			{rows
-				.reduce((acc, row) => {
-					let passFilter = row.values.every((cell, index) => {
-						let included = true;
-						let value = cell.value ? cell.value : cell;
-						if (typeof value === "string") {
-							if (options.filter) {
-								let { filter } = options;
-								if (filter instanceof String) {
-									included = search(filter, value);
-								} else if (filter.global || filter.index) {
-									if (filter.global) {
-										included = search(filter.global, value);
-									}
-									if (filter.index) {
-										included = search(filter.index[index], value);
-									}
-								}
-							}
-						}
-						return included;
-					});
-
-					if (passFilter) {
-						acc.push(row);
-					}
-
-					return acc;
-				}, [])
-				.slice(
-					currentPage * rowsPerPage,
-					currentPage * rowsPerPage + rowsPerPage
-				)
-				.map((row, index) => renderRow(row, index, options))}
-		</TableBody>
-	);
+	const body = rows
+		.slice(currentPage * rowsPerPage, currentPage * rowsPerPage + rowsPerPage)
+		.map((row, index) => renderRow(row, index, options));
+	return <TableBody className="table-body">{body}</TableBody>;
 }
 
 function renderFooter(options = {}) {
@@ -149,7 +113,6 @@ function TableWithPagination({
 	sort,
 	exclude
 }) {
-	const count = data.body.length;
 	const { rowsPerPageOptions, colSpan, SelectProps } = pagination;
 	const [currentPage, setCurrentPage] = useState(0);
 	const [rowsPerPage, setRowsPerPage] = useState(rowsPerPageOptions[0]);
@@ -161,11 +124,39 @@ function TableWithPagination({
 		setRowsPerPage(event.target.value);
 	}
 
+	let rows = data.body.reduce((acc, row) => {
+		let passFilter = row.values.every((cell, index) => {
+			let included = true;
+			let value = cell.value ? cell.value : cell;
+			if (typeof value === "string") {
+				if (filter) {
+					if (filter instanceof String) {
+						included = search(filter, value);
+					} else if (filter.global || filter.index) {
+						if (filter.global) {
+							included = search(filter.global, value);
+						}
+						if (filter.index) {
+							included = search(filter.index[index], value);
+						}
+					}
+				}
+			}
+			return included;
+		});
+
+		if (passFilter) {
+			acc.push(row);
+		}
+
+		return acc;
+	}, []);
+
 	return (
 		<div className={classes.root}>
 			<Table className="table" size="small">
 				{renderHeader(data.headers, { sort, exclude })}
-				{renderBody(data.body, currentPage, rowsPerPage, {
+				{renderBody(rows, currentPage, rowsPerPage, {
 					classes,
 					filter,
 					sort,
@@ -174,7 +165,7 @@ function TableWithPagination({
 				{renderFooter({
 					rowsPerPageOptions,
 					colSpan,
-					count,
+					count: rows.length,
 					rowsPerPage,
 					currentPage,
 					SelectProps,

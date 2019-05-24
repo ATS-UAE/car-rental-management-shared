@@ -6,9 +6,7 @@ import {
 	Dialog,
 	DialogContent,
 	TextField,
-	Typography
 } from "@material-ui/core";
-import { FilterList } from "@material-ui/icons";
 import * as reduxActions from "../../../actions";
 import TableView from "../../presentational/forms/TableView";
 import BookingActions from "../../presentational/inputs/BookingActions";
