@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { Button } from "@material-ui/core";
 import * as reduxActions from "../../../../actions";
 import BookingFinalizeForm from "../../../presentational/forms/BookingFinalizeForm";
-import { toTitleWords } from "../../../../utils";
+import { toTitleWords, api } from "../../../../utils";
 
 function BookingFinalizeFormContainer({
 	fetchUsers,
@@ -41,8 +41,9 @@ function BookingFinalizeFormContainer({
 			type="submit"
 			variant="contained"
 			color="primary"
-			onClick={e => {
+			onClick={async e => {
 				e.preventDefault();
+				await api.updateBooking(values);
 				onSubmit();
 			}}
 		>
@@ -85,6 +86,7 @@ function BookingFinalizeFormContainer({
 	}
 	return (
 		<BookingFinalizeForm
+			title={"Finalize Booking"}
 			values={values}
 			footer={footer}
 			onChange={onChange}

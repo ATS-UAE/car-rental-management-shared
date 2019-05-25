@@ -1,5 +1,6 @@
 import axios from "axios";
-
+import moment from "moment";
+import { bookingStatus } from "../variables/enums";
 export function runIfExistFunction(func, parent, args) {
 	return function() {
 		if (typeof func === "function") {
@@ -27,6 +28,24 @@ Validator.runThroughValidators = function runThroughValidators(
 		if (!validator(validatee)) errors.push(validators[i]);
 	}
 	return errors;
+};
+
+export const getBookingStatus = booking => {
+	let status = bookingStatus.UNKNOWN;
+	let currentTime = moment();
+	let hasPassedFrom = moment(booking.from, "X").isSameOrBefore(currentTime);
+	let hasPassedTo = moment(booking.to, "X").isSameOrBefore(currentTime);
+	if (booking.approved) {
+		if (hasPassedFrom && !hasPassedTo) status = bookingStatus.ONGOING;
+		else if (hasPassedTo) status = bookingStatus.FINISHED;
+		else status = bookingStatus.APPROVED;
+	} else {
+		if (booking.approved === null) {
+			if (hasPassedFrom) status = bookingStatus.EXPIRED;
+			else status = bookingStatus.PENDING;
+		} else if (booking.approved === false) status = bookingStatus.DENIED;
+	}
+	return status;
 };
 
 export const validators = {

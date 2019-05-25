@@ -58,7 +58,7 @@ function Form({
 	}, [values]);
 	return (
 		<Fragment>
-			<form>
+			<form className={classes.root}>
 				{errorNotes.map((e, i) => (
 					<ErrorChip key={i} label={e} />
 				))}
@@ -159,8 +159,8 @@ Form.defaultProps = {
 };
 
 const style = theme => ({
-	paper: {
-		padding: theme.spacing(3)
+	root: {
+		padding: theme.spacing(1)
 	},
 	hints: {
 		float: "right"

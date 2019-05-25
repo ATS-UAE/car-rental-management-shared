@@ -2,17 +2,18 @@ import React, { useEffect, useState, Fragment } from "react";
 import { connect } from "react-redux";
 import { compose } from "recompose";
 import moment from "moment";
-import {
-	Dialog,
-	DialogContent,
-	TextField,
-} from "@material-ui/core";
+import { Dialog, DialogContent, TextField } from "@material-ui/core";
 import * as reduxActions from "../../../actions";
 import TableView from "../../presentational/forms/TableView";
 import BookingActions from "../../presentational/inputs/BookingActions";
 import Can from "../layout/Can";
 import BookingFormUpdate from "../forms/bookings/BookingFormUpdate";
-import { toTitleWords, api, waitForAll } from "../../../utils";
+import {
+	toTitleWords,
+	api,
+	waitForAll,
+	getBookingStatus
+} from "../../../utils";
 import { resources, actions, roles } from "../../../variables/enums";
 import { RBAC } from "../../../config/rbac";
 import ConfirmDialog from "../../presentational/forms/ConfirmDialog";
@@ -187,20 +188,8 @@ function BookingTableView({
 			let bookingVehicle = vehicles.data.find(
 				vehicle => vehicle.id === booking.vehicleId
 			);
-			let bookingStatus = "";
-			let currentTime = moment();
-			let hasPassedFrom = moment(booking.from, "X").isSameOrBefore(currentTime);
-			let hasPassedTo = moment(booking.to, "X").isSameOrBefore(currentTime);
-			if (booking.approved) {
-				if (hasPassedFrom && !hasPassedTo) bookingStatus = "Ongoing";
-				else if (hasPassedTo) bookingStatus = "Finished";
-				else bookingStatus = "Approved";
-			} else {
-				if (booking.approved === null) {
-					if (hasPassedFrom) bookingStatus = "Expired";
-					else bookingStatus = "Pending";
-				} else if (booking.approved === false) bookingStatus = "Denied";
-			}
+			let bookingStatus = toTitleWords(getBookingStatus(booking));
+
 			let row = {
 				metadata: booking,
 				values: [
