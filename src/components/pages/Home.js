@@ -75,9 +75,9 @@ function Home({
 				return acc;
 			}, []);
 
-			let legendColors = tinygradient(gradients.slice(0, statuses.length)).rgb(
-				statuses.length
-			);
+			let legendColors = tinygradient(
+				gradients.slice(0, Math.max(2, statuses.length))
+			).rgb(Math.max(2, statuses.length));
 			children.push(
 				<Fragment>
 					<Typography align="center" variant="h6" component="h1">
