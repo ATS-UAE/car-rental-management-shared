@@ -42,8 +42,8 @@ function Home({
 
 	const children = [];
 	let currentTime = moment();
-	let monthEnd = currentTime.endOf("month");
-	let monthStart = currentTime.startOf("month");
+	let monthEnd = moment().endOf("month");
+	let monthStart = moment().startOf("month");
 
 	if (auth && auth.data) {
 		if (bookings && bookings.data) {
@@ -55,16 +55,15 @@ function Home({
 					let day = `${bookingStart.format("D")}`;
 					let bookingStatus = toTitleWords(getBookingStatus(booking));
 					let existingDay = acc.find(data => data.name === day);
+					statuses.indexOf(bookingStatus) < 0 && statuses.push(bookingStatus);
 					if (existingDay) {
 						existingDay["Total"]++;
 						if (existingDay[bookingStatus] !== undefined) {
 							existingDay[bookingStatus]++;
 						} else {
-							statuses.push(bookingStatus);
 							existingDay[bookingStatus] = 1;
 						}
 					} else {
-						statuses.push(bookingStatus);
 						acc.push({
 							name: day,
 							Total: 1,
