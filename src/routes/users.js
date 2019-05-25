@@ -260,7 +260,7 @@ router.patch(
 		let accessible = false;
 		if (foundUser) {
 			accessible = await RBAC.can(user.role.name, UPDATE, resources.users, {
-				targetUser,
+				targetUser: foundUser,
 				user,
 				role: foundUser.role
 			});
