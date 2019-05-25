@@ -40,7 +40,7 @@ function ImageInput({
 					)}
 				</Paper>
 				{!disabled && (
-					<Typography variant="caption" color={error ? "error" : "default"}>
+					<Typography variant="caption" color={error ? "error" : "primary"}>
 						{`${label}${required ? "*" : ""}`}
 					</Typography>
 				)}

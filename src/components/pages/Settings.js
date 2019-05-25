@@ -15,7 +15,6 @@ function Settings({ classes }) {
 const styles = theme => ({
 	root: {
 		padding: theme.spacing(3),
-		margin: theme.spacing(3),
 		[theme.breakpoints.down("sm")]: {
 			padding: theme.spacing(1)
 		},
