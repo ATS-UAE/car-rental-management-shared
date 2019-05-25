@@ -175,6 +175,13 @@ router.patch(
 						accidentImageSrc,
 						accidentVideoSrc
 					});
+					if (body.read) {
+						console.log(body);
+						let foundUser = await db.User.findByPk(user.id);
+						updatedAccident.setUserStatus(foundUser, {
+							through: { read: true }
+						});
+					}
 					response.setData(updatedAccident);
 					response.setCode(200);
 					response.setMessage(`Accident with ID ${params.id} updated.`);

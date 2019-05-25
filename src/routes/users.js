@@ -18,47 +18,50 @@ const { s3, s3GetKeyFromLocation } = require("../utils/aws");
 const { aws } = config;
 const { bucket } = aws.s3;
 
-router.get("/", requireLogin, disallowGuests, async ({ user }, res) => {
+router.get("/", requireLogin, async ({ user }, res) => {
 	let response = new ResponseBuilder();
-	let accessible = await RBAC.can(user.role.name, READ, resources.users);
-	if (accessible) {
-		let users = await db.User.findAll({
-			include: [{ model: db.Role, as: "role" }]
+	let users = await db.User.findAll({
+		include: [{ model: db.Role, as: "role" }]
+	});
+	let $userList = [];
+	for (let targetUser of users) {
+		let accessible = await RBAC.can(user.role.name, READ, resources.users, {
+			targetUser: targetUser,
+			user
 		});
-		let result = users.map(user => ({
-			...pickFields(
-				[
-					"id",
-					"username",
-					"firstName",
-					"lastName",
-					"gender",
-					"email",
-					"mobileNumber",
-					"lastLogin",
-					"userImageSrc",
-					"licenseImageSrc",
-					"approved",
-					"blocked",
-					"createdAt",
-					"updatedAt",
-					"userCreatorId",
-					"roleId"
-				],
-				user.get({ plain: true })
-			),
-			role: pickFields(["id", "name"], user.get({ plain: true }).role)
-		}));
-		response.setSuccess(true);
-		response.setCode(200);
-		response.setMessage(`Found ${users.length} users.`);
-		response.setData(result);
-	} else {
-		response.setCode(errorCodes.UNAUTHORIZED.statusCode);
-		response.setMessage(errorCodes.UNAUTHORIZED.message);
-		response.setSuccess(false);
-		res.status(errorCodes.UNAUTHORIZED.statusCode);
+		if (accessible) {
+			$userList.push(targetUser);
+		}
 	}
+
+	let result = $userList.map(user => ({
+		...pickFields(
+			[
+				"id",
+				"username",
+				"firstName",
+				"lastName",
+				"gender",
+				"email",
+				"mobileNumber",
+				"lastLogin",
+				"userImageSrc",
+				"licenseImageSrc",
+				"approved",
+				"blocked",
+				"createdAt",
+				"updatedAt",
+				"userCreatorId",
+				"roleId"
+			],
+			user.get({ plain: true })
+		),
+		role: pickFields(["id", "name"], user.get({ plain: true }).role)
+	}));
+	response.setSuccess(true);
+	response.setCode(200);
+	response.setMessage(`Found ${$userList.length} users.`);
+	response.setData(result);
 
 	res.json(response);
 });
@@ -186,8 +189,8 @@ router.get("/:id", requireLogin, async ({ user, params }, res) => {
 	});
 	if (foundUser) {
 		let accessible = await RBAC.can(user.role.name, READ, resources.users, {
-			currentUser: user,
-			readUser: foundUser
+			user,
+			targetUser: foundUser
 		});
 		if (accessible) {
 			try {
@@ -257,12 +260,8 @@ router.patch(
 		let accessible = false;
 		if (foundUser) {
 			accessible = await RBAC.can(user.role.name, UPDATE, resources.users, {
-				updateUser: {
-					id: foundUser.id
-				},
-				currentUser: {
-					id: user.id
-				},
+				targetUser,
+				user,
 				role: foundUser.role
 			});
 		}

@@ -130,13 +130,8 @@ module.exports = (sequelize, { STRING, DATE, BOOLEAN }) => {
 			as: "userCreator"
 		});
 		models.User.belongsToMany(models.Accident, {
-			through: "ReadAccidents",
-			as: "readAccidents",
-			foreignKey: "userId"
-		});
-		models.User.belongsToMany(models.Accident, {
-			through: "DeletedAccidents",
-			as: "deletedAccidents",
+			through: models.AccidentUserStatus,
+			as: "accidentStatus",
 			foreignKey: "userId"
 		});
 	};
