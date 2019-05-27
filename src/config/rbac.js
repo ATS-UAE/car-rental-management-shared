@@ -110,7 +110,9 @@ keyManagerRole.addPermission(new Action(DELETE, locationsResource));
 
 // Booking permissions. Extended from guest.
 keyManagerRole.addPermission(new Action(READ, bookingsResource));
-keyManagerRole.addPermission(new Action(UPDATE, bookingsResource));
+keyManagerRole.addPermission(
+	new Action(UPDATE, bookingsResource, null, ["userId"])
+);
 
 // Users permission
 keyManagerRole.addPermission(
