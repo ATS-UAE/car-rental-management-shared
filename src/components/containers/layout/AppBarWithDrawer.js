@@ -43,6 +43,7 @@ function AppBarWithDrawerContainer({
 				) {
 					if (page.sidebar.location === "bottom") {
 						optionsList.push({
+							path: page.path,
 							icon: <page.sidebar.icon />,
 							text: <Typography>{page.title}</Typography>,
 							onClick: () => history.push(page.path)

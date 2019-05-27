@@ -125,7 +125,8 @@ Slider.defaultProps = {
 const style = theme => ({
 	root: {
 		display: "flex",
-		overflowX: "hidden"
+		overflowX: "hidden",
+		minHeight: "60px"
 	},
 	slider: {
 		flexGrow: 1

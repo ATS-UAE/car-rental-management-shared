@@ -6,11 +6,17 @@ import { TextField } from "@material-ui/core";
 import Slider from "./Slider";
 
 function DateTimePicker({ value, id, onChange, classes, label, error }) {
-	let DateTime = moment(value, "X");
+	let dateTime;
 
-	let date = DateTime.format("YYYY-MM-DD"); // Parse date for input.
-	let sliderLabel = DateTime.format("LT"); // Local time
-	let timeUnix = DateTime.format("X") - DateTime.startOf("day").format("X"); // Time elapsed for the day.
+	try {
+		dateTime = moment(value, "X");
+	} catch (e) {
+		dateTime = moment();
+	}
+
+	let date = dateTime.format("YYYY-MM-DD"); // Parse date for input.
+	let sliderLabel = dateTime.format("LT"); // Local time
+	let timeUnix = dateTime.format("X") - dateTime.startOf("day").format("X"); // Time elapsed for the day.
 	const handleDateChange = e => {
 		let date;
 		if (e.target.value) {
@@ -18,7 +24,7 @@ function DateTimePicker({ value, id, onChange, classes, label, error }) {
 				.add(timeUnix, "seconds")
 				.unix();
 		} else {
-			date = DateTime.unix();
+			date = dateTime.unix();
 		}
 
 		onChange({ target: { value: date } });
@@ -31,7 +37,8 @@ function DateTimePicker({ value, id, onChange, classes, label, error }) {
 		if (e.target.value < 0) {
 			addSeconds = 1;
 		}
-		let date = DateTime.startOf("day")
+		let date = dateTime
+			.startOf("day")
 			.add(addSeconds, "seconds")
 			.unix();
 
@@ -67,7 +74,7 @@ function DateTimePicker({ value, id, onChange, classes, label, error }) {
 	);
 }
 DateTimePicker.propTypes = {
-	value: PropTypes.number
+	value: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
 };
 
 const styles = theme => ({

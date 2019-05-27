@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { Grid, Button } from "@material-ui/core";
 import BookingForm from "../../../presentational/forms/BookingForm";
 import * as reduxActions from "../../../../actions";
-import { toTitleWords, rangeOverlap } from "../../../../utils";
+import { toTitleWords, isVehicleAvailableForBooking } from "../../../../utils";
 
 import VehicleBookingRange from "../../../presentational/display/VehicleBookingRange";
 
@@ -11,9 +11,6 @@ function BookingFormContainer({
 	enums,
 	locations,
 	vehicles,
-	fetchEnums,
-	fetchVehicles,
-	fetchLocations,
 	onSubmit,
 	errorNotes,
 	exclude,
@@ -37,11 +34,6 @@ function BookingFormContainer({
 		}
 		setDisabledButton(!validForm);
 	}, [errors, values]);
-	useEffect(() => {
-		fetchEnums();
-		fetchVehicles();
-		fetchLocations();
-	}, []);
 
 	let bookingTypeList = [{ value: "", label: "Loading..." }];
 	let vehicleList = values.locationId
@@ -80,15 +72,7 @@ function BookingFormContainer({
 				inLocation = vehicle.locationId === values.locationId;
 			}
 			if (inLocation) {
-				available = vehicle.bookings.every(booking => {
-					if (
-						rangeOverlap(from, to, booking.from, booking.to) &&
-						values.id !== booking.id
-					) {
-						return false;
-					}
-					return true;
-				});
+				available = isVehicleAvailableForBooking(from, to, vehicle, values.id);
 			}
 			if (available && inLocation) {
 				acc.push({

@@ -6,19 +6,21 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 
-function ConfirmDialog({ open, onClose, yes, no, title, content }) {
+function ConfirmDialog({ open, onClose, yes, no, title, content, disabled }) {
 	return (
 		<div>
 			<Dialog open={open} onClose={onClose}>
-				<DialogTitle>{title}</DialogTitle>
-				<DialogContent>
-					<DialogContentText>{content}</DialogContentText>
-				</DialogContent>
+				{title && <DialogTitle>{title}</DialogTitle>}
+				{content && (
+					<DialogContent>
+						<DialogContentText>{content}</DialogContentText>
+					</DialogContent>
+				)}
 				<DialogActions>
-					<Button onClick={yes} color="primary">
+					<Button onClick={yes} disabled={disabled} color="primary">
 						Yes
 					</Button>
-					<Button onClick={no} color="primary" autoFocus>
+					<Button onClick={no} disabled={disabled} color="primary" autoFocus>
 						Cancel
 					</Button>
 				</DialogActions>

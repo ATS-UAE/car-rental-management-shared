@@ -23,15 +23,19 @@ function BookingTableView({
 	bookings,
 	vehicles,
 	auth,
-	fetchEnums,
+	users,
 	fetchBookings,
-	fetchVehicles,
-	fetchCurrentUserDetails,
 	onSubmit
 }) {
 	const [open, setOpen] = useState(false);
 	const [finalizeDialogOpen, setFinalizeDialogOpen] = useState(false);
-	const [confirmDialogData, setConfirmDialogData] = useState({ open: false });
+	const [confirmPaymentData, setConfirmPaymentData] = useState({
+		disabled: false,
+		open: false,
+		title: "Confirm that booking is paid?",
+		bookingId: null
+	});
+	const [tableBody, setTableBody] = useState([]);
 	const [formData, setFormData] = useState({});
 	const [actionStatus, setActionStatus] = useState([]);
 	const [finalizeFormData, setFinalizeFormData] = useState({});
@@ -53,28 +57,28 @@ function BookingTableView({
 						let showDeny =
 							!expiredBooking &&
 							(await RBAC.can(userRole, actions.UPDATE, resources.BOOKINGS));
-						let showDelete = await RBAC.can(
-							userRole,
-							actions.DELETE,
-							resources.BOOKINGS
-						);
-						let showUpdate = await RBAC.can(
-							userRole,
-							actions.UPDATE,
-							resources.BOOKINGS
-						);
-						let showFinalize = await RBAC.can(
-							userRole,
-							actions.UPDATE,
-							resources.BOOKINGS
-						);
+
+						// Delete only non approved booking
+						let showDelete = !booking.approved;
+
+						// Update only non approved
+						let showUpdate = !booking.approved;
+
+						// Finalize only approved && no payment amount given
+						let showFinalize = booking.approved && booking.amount === null;
+
+						// Show only finalized
+						let showPay =
+							booking.approved && booking.amount !== null && !booking.paid;
+
 						actionStatus.push({
 							isDisabled: false,
 							showApprove,
 							showDeny,
 							showDelete,
 							showUpdate,
-							showFinalize
+							showFinalize,
+							showPay
 						});
 					}
 					let actionsStatus = await waitForAll(actionStatus);
@@ -82,14 +86,200 @@ function BookingTableView({
 				}
 			}
 		};
+		const updateTableBody = async () => {
+			if (
+				bookings &&
+				bookings.data &&
+				vehicles &&
+				vehicles.data &&
+				users &&
+				users.data &&
+				auth &&
+				auth.data
+			) {
+				let tableBody = bookings.data.reduce(async (acc, booking, index) => {
+					let accessible = await RBAC.can(
+						auth.data.role.name,
+						actions.READ,
+						resources.BOOKINGS,
+						{ booking, user: auth.data }
+					);
+					if (accessible) {
+						let bookingVehicle = vehicles.data.find(
+							vehicle => vehicle.id === booking.vehicleId
+						);
+						let bookingStatus = toTitleWords(getBookingStatus(booking));
+
+						let row = {
+							metadata: booking,
+							values: [
+								{
+									value: `${booking.user.firstName} ${booking.user.lastName}`
+								},
+								{
+									value: toTitleWords(booking.bookingType.name)
+								},
+								{
+									value: `${bookingVehicle.brand} ${bookingVehicle.model}`
+								},
+								{
+									value: moment(booking.from, "X").calendar()
+								},
+								{
+									value: moment(booking.to, "X").calendar()
+								},
+								{
+									value: bookingStatus
+								}
+							]
+						};
+						if (showBookingActions) {
+							row.values.push({
+								value: (
+									<BookingActions
+										showApprove={
+											actionStatus[index]
+												? actionStatus[index].showApprove
+												: false
+										}
+										showDeny={
+											actionStatus[index] ? actionStatus[index].showDeny : false
+										}
+										showDelete={
+											actionStatus[index]
+												? actionStatus[index].showDelete
+												: false
+										}
+										showUpdate={
+											actionStatus[index]
+												? actionStatus[index].showUpdate
+												: false
+										}
+										showFinalize={
+											actionStatus[index]
+												? actionStatus[index].showFinalize
+												: false
+										}
+										showPay={
+											actionStatus[index] ? actionStatus[index].showPay : false
+										}
+										onApprove={() => {
+											let status = actionStatus;
+											status[index].isDisabled = true;
+											setActionStatus(status);
+											api
+												.updateBooking({ id: booking.id, approved: true })
+												.then(() => {
+													let status = actionStatus;
+													fetchBookings();
+													status[index].isDisabled = false;
+													setActionStatus(status);
+													fetchBookings();
+												});
+										}}
+										onDeny={() => {
+											let status = actionStatus;
+											status[index].isDisabled = true;
+											setActionStatus(status);
+											api
+												.updateBooking({ id: booking.id, approved: false })
+												.then(() => {
+													let status = actionStatus;
+													fetchBookings();
+													status[index].isDisabled = false;
+													setActionStatus(status);
+													fetchBookings();
+												});
+										}}
+										onUpdate={() => {
+											let status = actionStatus;
+											status[index].isDisabled = true;
+											setActionStatus(status);
+											api.fetchBooking(booking.id).then(res => {
+												setFormData({
+													...res.data,
+													userId: res.data.user.id,
+													bookingTypeId: res.data.bookingType.id,
+													vehicleId: res.data.vehicle.id,
+													locationId: res.data.vehicle.locationId
+												});
+												setOpen(true);
+												status[index].isDisabled = false;
+												setActionStatus(status);
+												fetchBookings();
+											});
+										}}
+										onDelete={() => {
+											let status = actionStatus;
+											status[index].isDisabled = true;
+											setActionStatus(status);
+											api.deleteBooking({ id: booking.id }).then(() => {
+												let status = actionStatus;
+												fetchBookings();
+												status[index].isDisabled = false;
+												setActionStatus(status);
+											});
+										}}
+										onFinalize={() => {
+											let status = actionStatus;
+											status[index].isDisabled = true;
+											setActionStatus(status);
+											api.fetchBooking(booking.id).then(res => {
+												setFinalizeFormData({ ...res.data, amount: 0 });
+												setFinalizeDialogOpen(true);
+												status[index].isDisabled = false;
+												setActionStatus(status);
+												fetchBookings();
+											});
+										}}
+										onPay={() => {
+											let status = actionStatus;
+											status[index].isDisabled = true;
+											setActionStatus(status);
+											api.fetchBooking(booking.id).then(res => {
+												let vehicle = vehicles.data.find(
+													vehicle => vehicle.id === booking.vehicleId
+												);
+												let user = users.data.find(
+													user => booking.userId === user.id
+												);
+												setConfirmPaymentData({
+													...confirmPaymentData,
+													bookingId: booking.id,
+													open: true,
+													content: `Booking for user ${user.firstName} ${
+														user.lastName
+													} on vehicle ${vehicle.brand} ${vehicle.model} - ${
+														vehicle.plateNumber
+													} will be marked as paid.`
+												});
+												status[index].isDisabled = false;
+												setActionStatus(status);
+												fetchBookings();
+											});
+										}}
+										isDisabled={
+											actionStatus[index] === undefined
+												? false
+												: actionStatus[index].isDisabled
+										}
+									/>
+								)
+							});
+						} else if (showBookingActions) {
+							row.values.push({ value: "" });
+						}
+						acc.push(row);
+					}
+					return acc;
+				}, []);
+				tableBody = await tableBody;
+				setTableBody(tableBody);
+			}
+		};
+		updateTableBody();
 		resetActionStatus();
-	}, [bookings, auth]);
-	useEffect(() => {
-		fetchBookings();
-		fetchEnums();
-		fetchVehicles();
-		fetchCurrentUserDetails();
-	}, []);
+	}, [users, bookings, vehicles, auth]);
 
 	const handleFilter = index => e => {
 		let newIndexFilters = filters.index;
@@ -182,135 +372,6 @@ function BookingTableView({
 		}
 	}
 
-	let tableBody = [];
-	if (bookings && bookings.data && vehicles && vehicles.data) {
-		tableBody = bookings.data.map((booking, index) => {
-			let bookingVehicle = vehicles.data.find(
-				vehicle => vehicle.id === booking.vehicleId
-			);
-			let bookingStatus = toTitleWords(getBookingStatus(booking));
-
-			let row = {
-				metadata: booking,
-				values: [
-					{
-						value: `${booking.user.firstName} ${booking.user.lastName}`
-					},
-					{
-						value: toTitleWords(booking.bookingType.name)
-					},
-					{
-						value: `${bookingVehicle.brand} ${bookingVehicle.model}`
-					},
-					{
-						value: moment(booking.from, "X").calendar()
-					},
-					{
-						value: moment(booking.to, "X").calendar()
-					},
-					{
-						value: bookingStatus
-					}
-				]
-			};
-			if (showBookingActions) {
-				row.values.push({
-					value: (
-						<BookingActions
-							showApprove={
-								actionStatus[index] ? actionStatus[index].showApprove : false
-							}
-							showDeny={
-								actionStatus[index] ? actionStatus[index].showDeny : false
-							}
-							showDelete={
-								actionStatus[index] ? actionStatus[index].showDelete : false
-							}
-							showUpdate={
-								actionStatus[index] ? actionStatus[index].showUpdate : false
-							}
-							showFinalize={
-								actionStatus[index] ? actionStatus[index].showFinalize : false
-							}
-							onApprove={() => {
-								let status = actionStatus;
-								status[index].isDisabled = true;
-								setActionStatus(status);
-								api
-									.updateBooking({ id: booking.id, approved: true })
-									.then(() => {
-										let status = actionStatus;
-										fetchBookings();
-										status[index].isDisabled = false;
-										setActionStatus(status);
-									});
-							}}
-							onDeny={() => {
-								let status = actionStatus;
-								status[index].isDisabled = true;
-								setActionStatus(status);
-								api
-									.updateBooking({ id: booking.id, approved: false })
-									.then(() => {
-										let status = actionStatus;
-										fetchBookings();
-										status[index].isDisabled = false;
-										setActionStatus(status);
-									});
-							}}
-							onUpdate={() => {
-								let status = actionStatus;
-								status[index].isDisabled = true;
-								setActionStatus(status);
-								api.fetchBooking(booking.id).then(res => {
-									setFormData({
-										...res.data,
-										userId: res.data.user.id,
-										bookingTypeId: res.data.bookingType.id,
-										vehicleId: res.data.vehicle.id,
-										locationId: res.data.vehicle.locationId
-									});
-									setOpen(true);
-									status[index].isDisabled = false;
-									setActionStatus(status);
-								});
-							}}
-							onDelete={() => {
-								let status = actionStatus;
-								status[index].isDisabled = true;
-								setActionStatus(status);
-								api.deleteBooking({ id: booking.id }).then(() => {
-									let status = actionStatus;
-									fetchBookings();
-									status[index].isDisabled = false;
-									setActionStatus(status);
-								});
-							}}
-							onFinalize={() => {
-								let status = actionStatus;
-								status[index].isDisabled = true;
-								setActionStatus(status);
-								api.fetchBooking(booking.id).then(res => {
-									setFinalizeFormData({ ...res.data, amount: 0 });
-									setFinalizeDialogOpen(true);
-									status[index].isDisabled = false;
-									setActionStatus(status);
-								});
-							}}
-							isDisabled={
-								actionStatus[index] === undefined
-									? false
-									: actionStatus[index].isDisabled
-							}
-						/>
-					)
-				});
-			} else if (showBookingActions) {
-				row.values.push({ value: "" });
-			}
-			return row;
-		});
-	}
 	if (showBookingActions) {
 		tableHeaders[1].values.push({ value: "Actions" });
 	}
@@ -318,15 +379,21 @@ function BookingTableView({
 	return (
 		<Fragment>
 			<ConfirmDialog
-				title={confirmDialogData.title}
-				content={confirmDialogData.content}
-				open={confirmDialogData.open}
-				onClose={() => setConfirmDialogData(false)}
+				title={confirmPaymentData.title}
+				content={confirmPaymentData.content}
+				open={confirmPaymentData.open}
+				disabled={confirmPaymentData.disabled}
+				onClose={() => setConfirmPaymentData(false)}
 				yes={() => {
-					setConfirmDialogData({ ...confirmDialogData, open: false });
-					setFinalizeDialogOpen(true);
+					setConfirmPaymentData({ ...confirmPaymentData, disabled: true });
+					api.updateBooking({ id: confirmPaymentData.bookingId, paid: true });
+					setConfirmPaymentData({
+						...confirmPaymentData,
+						open: false,
+						disabled: false
+					});
 				}}
-				no={() => setConfirmDialogData({ ...confirmDialogData, open: false })}
+				no={() => setConfirmPaymentData({ ...confirmPaymentData, open: false })}
 			/>
 			<Dialog
 				open={finalizeDialogOpen}
@@ -336,61 +403,70 @@ function BookingTableView({
 					<BookingFinalizeForm
 						values={finalizeFormData}
 						onChange={setFinalizeFormData}
-						onSubmit={() => {}}
+						onSubmit={() => {
+							setFinalizeFormData({});
+							setFinalizeDialogOpen(false);
+							fetchBookings();
+						}}
 					/>
 				</DialogContent>
 			</Dialog>
-			<Can
-				action={actions.READ}
-				resource={resources.BOOKINGS}
-				params={{ booking: { userId: 1 }, user: { id: 1 } }}
-				yes={access => (
-					<TableView
-						filter={filters}
-						exclude={access.role === roles.GUEST ? [0] : []}
-						open={open}
-						onClose={() => setOpen(false)}
-						editable={true}
-						tableData={{
-							headers: tableHeaders,
-							body: tableBody
-						}}
-					>
-						<Can
-							action={actions.UPDATE}
-							resource={resources.BOOKINGS}
-							yes={access => {
-								return (
+			<TableView
+				filter={filters}
+				exclude={
+					auth && auth.data && auth.data.role.name === roles.GUEST ? [0] : []
+				}
+				open={open}
+				onClose={() => setOpen(false)}
+				editable={true}
+				tableData={{
+					headers: tableHeaders,
+					body: tableBody
+				}}
+			>
+				{auth && auth.data && formData.id && (
+					<Can
+						action={actions.READ}
+						resource={resources.BOOKINGS}
+						params={{ user: auth.data.role.name, booking: formData }}
+						yes={readAccess => (
+							<Can
+								action={actions.UPDATE}
+								resource={resources.BOOKINGS}
+								yes={access => {
+									return (
+										<BookingFormUpdate
+											values={formData}
+											onChange={setFormData}
+											exclude={access.excludedFields}
+											allowBefore={true}
+											onSubmit={() => {
+												setOpen(false);
+												onSubmit && onSubmit();
+											}}
+										/>
+									);
+								}}
+								no={() => (
 									<BookingFormUpdate
 										values={formData}
 										onChange={setFormData}
-										exclude={access.excludedFields}
-										allowBefore={true}
-										onSubmit={() => {
-											setOpen(false);
-											onSubmit && onSubmit();
-										}}
+										readOnly={true}
+										exclude={readAccess.excludedFields}
+										hints=""
 									/>
-								);
-							}}
-							no={() => (
-								<BookingFormUpdate
-									values={formData}
-									onChange={setFormData}
-									readOnly={true}
-									exclude={access.excludedFields}
-									hints=""
-								/>
-							)}
-						/>
-					</TableView>
+								)}
+							/>
+						)}
+					/>
 				)}
-			/>
+			</TableView>
 		</Fragment>
 	);
 }
 
-const mapStateToProps = ({ bookings, vehicles, enums, auth }) => ({
+const mapStateToProps = ({ bookings, vehicles, enums, auth, users }) => ({
+	users,
 	bookings,
 	vehicles,
 	enums,

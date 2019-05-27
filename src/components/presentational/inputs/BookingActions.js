@@ -1,6 +1,13 @@
 import React, { Fragment } from "react";
 import { IconButton } from "@material-ui/core";
-import { Edit, Delete, ThumbUp, ThumbDown, Check } from "@material-ui/icons";
+import {
+	Edit,
+	Delete,
+	ThumbUp,
+	ThumbDown,
+	Check,
+	Payment
+} from "@material-ui/icons";
 import { withStyles } from "@material-ui/core/styles";
 import PropTypes from "prop-types";
 
@@ -10,12 +17,14 @@ function BookingActions({
 	onDelete,
 	onUpdate,
 	onFinalize,
+	onPay,
 	isDisabled,
 	showApprove,
 	showDeny,
 	showDelete,
 	showUpdate,
 	showFinalize,
+	showPay,
 	classes
 }) {
 	return (
@@ -77,6 +86,17 @@ function BookingActions({
 					onClick={onFinalize}
 				>
 					<Check />
+				</IconButton>
+			)}
+			{showPay && (
+				<IconButton
+					disabled={isDisabled}
+					type="submit"
+					variant="contained"
+					size="small"
+					onClick={onPay}
+				>
+					<Payment />
 				</IconButton>
 			)}
 		</Fragment>

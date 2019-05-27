@@ -30,6 +30,27 @@ Validator.runThroughValidators = function runThroughValidators(
 	return errors;
 };
 
+export const isVehicleAvailableForBooking = (
+	bookingFrom,
+	bookingTo,
+	vehicle,
+	bookingId
+) => {
+	let available = false;
+	if (vehicle && vehicle.bookings) {
+		available = vehicle.bookings.every(booking => {
+			if (rangeOverlap(bookingFrom, bookingTo, booking.from, booking.to)) {
+				if (bookingId) {
+					return bookingId !== booking.id;
+				}
+				return false;
+			}
+			return true;
+		});
+	}
+	return available;
+};
+
 export const getBookingStatus = booking => {
 	let status = bookingStatus.UNKNOWN;
 	let currentTime = moment();
@@ -46,6 +67,16 @@ export const getBookingStatus = booking => {
 		} else if (booking.approved === false) status = bookingStatus.DENIED;
 	}
 	return status;
+};
+
+export const getRelatedData = (id, list, key) => {
+	let data = [];
+	for (let item of list) {
+		if (item[key] === id) {
+			data.push(item[key]);
+		}
+	}
+	return data;
 };
 
 export const validators = {
