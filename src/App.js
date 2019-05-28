@@ -19,7 +19,7 @@ function App({ classes }) {
 						{pages.map(
 							({ requireLogin, wrapPaper, id, path, exact, component }) => {
 								const renderWrappedComponent = props => {
-									let proppedComponent = React.createElement(component, props);
+									let proppedComponent = component(props);
 									let wrapped = wrapPaper ? (
 										<Paper className={classes.body}>{proppedComponent}</Paper>
 									) : (
