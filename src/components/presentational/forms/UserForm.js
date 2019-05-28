@@ -28,10 +28,8 @@ function UserForm({
 			name: "userImageSrc",
 			id: "profile-picture",
 			persistEvent: true,
-			validators: [validators.requiredField],
 			props: {
-				label: "Select profile picture",
-				required: true
+				label: "Select profile picture"
 			}
 		},
 		{
