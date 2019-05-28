@@ -27,7 +27,9 @@ function renderRow(row, key, options = {}) {
 	let cells = row.values.reduce((acc, cell, index) => {
 		let value = "";
 		let colSpan = 1;
-		if (typeof cell === "object") {
+		if (typeof cell.map === "function") {
+			value = cell.map(cell.value);
+		} else if (typeof cell === "object") {
 			value = cell.value || "";
 			colSpan = cell.colSpan || colSpan;
 		} else {
@@ -123,25 +125,35 @@ function TableWithPagination({
 	function onChangeRowsPerPage(event) {
 		setRowsPerPage(event.target.value);
 	}
-
 	let rows = data.body.reduce((acc, row) => {
 		let passFilter = row.values.every((cell, index) => {
 			let included = true;
 			let value = cell.value ? cell.value : cell;
-			if (typeof value === "string") {
-				if (filter) {
-					if (filter instanceof String) {
-						included = search(filter, value);
-					} else if (filter.global || filter.index) {
-						if (filter.global) {
+
+			if (filter) {
+				if (filter instanceof String && typeof value === "string") {
+					included = search(filter, value);
+				} else if (typeof filter === "function") {
+					included = filter(value);
+				} else if (filter.global || filter.index) {
+					if (filter.global) {
+						if (typeof filter.global === "function") {
+							included = filter.global(value);
+						} else if (typeof value === "string") {
 							included = search(filter.global, value);
 						}
-						if (filter.index) {
+					}
+
+					if (filter.index[index]) {
+						if (typeof filter.index[index] === "function") {
+							included = filter.index[index](value);
+						} else if (typeof value === "string") {
 							included = search(filter.index[index], value);
 						}
 					}
 				}
 			}
+
 			return included;
 		});
 
@@ -196,7 +208,7 @@ TableWithPagination.propTypes = {
 			PropTypes.shape({
 				values: PropTypes.arrayOf(
 					PropTypes.shape({
-						value: PropTypes.node,
+						value: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
 						colSpan: PropTypes.number
 					}).isRequired
 				),
@@ -209,10 +221,14 @@ TableWithPagination.propTypes = {
 	exclude: PropTypes.array,
 	filter: PropTypes.oneOfType([
 		PropTypes.shape({
-			global: PropTypes.string,
-			index: PropTypes.arrayOf(PropTypes.string)
+			global: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
+			index: PropTypes.arrayOf(
+				PropTypes.oneOfType([PropTypes.string, PropTypes.func])
+			)
 		}),
-		PropTypes.string
+		PropTypes.string,
+
+		PropTypes.func
 	]),
 	pagination: PropTypes.shape({
 		rowsPerPageOptions: PropTypes.arrayOf(PropTypes.number),

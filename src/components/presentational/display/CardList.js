@@ -9,14 +9,15 @@ function CardList({ cards, classes }) {
 		<div>
 			<Grid container spacing={2}>
 				{cards &&
-					cards.map(({ id, title, descriptions, controls, imgSrc }) => (
-						<Grid item xs={12} sm={12} md={6} lg={4} xl={3} key={id}>
+					cards.map(({ id, title, descriptions, controls, imgSrc, props }) => (
+						<Grid item xs={12} sm={12} md={6} key={id}>
 							<Card
 								id={id}
 								title={title}
 								descriptions={descriptions}
 								controls={controls}
 								imgSrc={imgSrc}
+								{...props}
 							/>
 						</Grid>
 					))}

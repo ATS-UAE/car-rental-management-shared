@@ -3,9 +3,10 @@ import { connect } from "react-redux";
 import { compose } from "recompose";
 import { Switch, Route } from "react-router";
 import { withStyles, Button, Paper } from "@material-ui/core";
-import * as actions from "../../actions";
+import * as reduxActions from "../../actions";
+import { resources, actions } from "../../variables/enums";
+import Can from "../containers/layout/Can";
 import BookingFormCreateStepper from "../containers/forms/bookings/BookingFormCreateStepper";
-import BookingFormCreateButtonDialog from "../containers/forms/bookings/BookingFormCreateButtonDialog";
 import BookingTableView from "../containers/display/BookingTableView";
 
 function Bookings({
@@ -38,14 +39,19 @@ function Bookings({
 					render={() => {
 						return (
 							<Fragment>
-								<Button
-									variant="contained"
-									color="primary"
-									onClick={() => history.push("/bookings/new")}
-								>
-									Book a vehicle
-								</Button>
-								<BookingFormCreateButtonDialog />
+								<Can
+									action={actions.CREATE}
+									resource={resources.BOOKINGS}
+									yes={createAccess => (
+										<Button
+											variant="contained"
+											color="primary"
+											onClick={() => history.push("/bookings/new")}
+										>
+											Book a vehicle
+										</Button>
+									)}
+								/>
 								<BookingTableView />
 							</Fragment>
 						);
@@ -70,6 +76,6 @@ export default compose(
 	withStyles(styles),
 	connect(
 		null,
-		actions
+		reduxActions
 	)
 )(Bookings);

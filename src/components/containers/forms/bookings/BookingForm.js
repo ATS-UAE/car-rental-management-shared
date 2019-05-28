@@ -51,14 +51,10 @@ function BookingFormContainer({
 		}
 	}
 	if (users && users.data) {
-		let $userList = vehicles.data.map(
-			user => ({
-				value: user.id,
-				label: `${user.firstName} ${user.lastName} - ${user.username}`
-			}),
-
-			[]
-		);
+		let $userList = users.data.map(user => ({
+			value: user.id,
+			label: `${user.firstName} ${user.lastName} - ${user.username}`
+		}));
 		if ($userList.length) {
 			userList = $userList;
 		}
@@ -86,7 +82,7 @@ function BookingFormContainer({
 			vehicleList = $vehicleList;
 		}
 	}
-	let footer = !readOnly && (
+	let footer = readOnly !== false && (
 		<Fragment>
 			<Grid item>
 				<VehicleBookingRange
@@ -114,6 +110,7 @@ function BookingFormContainer({
 	);
 	return (
 		<BookingForm
+			showMap={true}
 			userList={userList}
 			values={values}
 			exclude={exclude}

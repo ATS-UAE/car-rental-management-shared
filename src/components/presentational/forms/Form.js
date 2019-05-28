@@ -34,13 +34,18 @@ function Form({
 	errors,
 	readOnly,
 	hints,
-	onChangeEvent
+	onChangeEvent,
+	gridContainerProps
 }) {
-	const handleChange = (name, persistEvent) => e => {
+	const handleChange = (name, { persistEvent, passEvent }) => e => {
 		persistEvent && e.persist();
-		onChange && onChange({ ...values, [name]: e.target.value });
+		onChange && onChange({ ...values, [name]: passEvent ? e : e.target.value });
 		onChangeEvent &&
-			onChangeEvent({ ...values, [name]: e.target.value }, name, e);
+			onChangeEvent(
+				{ ...values, [name]: passEvent ? e : e.target.value },
+				name,
+				e
+			);
 	};
 	const formFields = fields.filter(field => !exclude.includes(field.name));
 	useEffect(() => {
@@ -60,7 +65,7 @@ function Form({
 		<Fragment>
 			<form className={classes.root}>
 				{errorNotes.map((e, i) => (
-					<ErrorChip key={i} label={e} />
+					<ErrorChip key={i} label={e} className={classes.errorChip} />
 				))}
 				{title && (
 					<Typography
@@ -72,7 +77,12 @@ function Form({
 						{title}
 					</Typography>
 				)}
-				<Grid container spacing={3}>
+				<Grid
+					container
+					spacing={3}
+					className={classes.gridContainer}
+					{...gridContainerProps}
+				>
 					{formFields.map(field => {
 						const Component = field.type;
 						const { props = {}, name, id, GridProps, persistEvent } = field;
@@ -87,7 +97,7 @@ function Form({
 								<Component
 									id={id}
 									value={values[name] === undefined ? "" : values[name]}
-									onChange={handleChange(name, persistEvent)}
+									onChange={handleChange(name, { persistEvent })}
 									disabled={disabled}
 									{...props}
 									label={
@@ -108,14 +118,16 @@ function Form({
 						);
 					})}
 					{children}
-					<Grid item xs={12}>
-						{hints && (
-							<Grid item className={classes.hints}>
-								<Typography>{hints}</Typography>
-							</Grid>
-						)}
-						{footer}
-					</Grid>
+					{(hints || footer) && (
+						<Grid item xs={12}>
+							{hints && (
+								<Grid item className={classes.hints}>
+									<Typography>{hints}</Typography>
+								</Grid>
+							)}
+							{footer}
+						</Grid>
+					)}
 				</Grid>
 			</form>
 		</Fragment>
@@ -167,6 +179,10 @@ const style = theme => ({
 	},
 	title: {
 		marginBottom: theme.spacing(3)
+	},
+	gridContainer: {},
+	errorChip: {
+		margin: `${theme.spacing(1)}px 0 ${theme.spacing(1)}px 0`
 	}
 });
 

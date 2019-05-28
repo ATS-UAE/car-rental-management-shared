@@ -17,10 +17,21 @@ function ConfirmDialog({ open, onClose, yes, no, title, content, disabled }) {
 					</DialogContent>
 				)}
 				<DialogActions>
-					<Button onClick={yes} disabled={disabled} color="primary">
+					<Button
+						onClick={yes}
+						disabled={disabled}
+						color="primary"
+						variant="contained"
+					>
 						Yes
 					</Button>
-					<Button onClick={no} disabled={disabled} color="primary" autoFocus>
+					<Button
+						onClick={no}
+						disabled={disabled}
+						color="primary"
+						variant="contained"
+						autoFocus
+					>
 						Cancel
 					</Button>
 				</DialogActions>

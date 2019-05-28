@@ -37,7 +37,8 @@ function BookingCreateButtonDialog({ history }) {
 				resource={resources.BOOKINGS}
 				yes={createAccess => (
 					<Button
-						variant="primary"
+						variant="contained"
+						color="primary"
 						onClick={() => history.push("/bookings/new", { createAccess })}
 					>
 						New

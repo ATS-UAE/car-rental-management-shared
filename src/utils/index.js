@@ -39,9 +39,12 @@ export const isVehicleAvailableForBooking = (
 	let available = false;
 	if (vehicle && vehicle.bookings) {
 		available = vehicle.bookings.every(booking => {
-			if (rangeOverlap(bookingFrom, bookingTo, booking.from, booking.to)) {
+			if (
+				booking.approved !== false &&
+				rangeOverlap(bookingFrom, bookingTo, booking.from, booking.to)
+			) {
 				if (bookingId) {
-					return bookingId !== booking.id;
+					return bookingId === booking.id;
 				}
 				return false;
 			}

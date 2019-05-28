@@ -23,7 +23,9 @@ function BookingForm({
 	locations,
 	readOnly,
 	onLocationClick,
-	allowBefore
+	allowBefore,
+	showMap,
+	fieldProps
 }) {
 	const notBefore = new Validator(
 		() => values.from > moment().unix(),
@@ -49,7 +51,7 @@ function BookingForm({
 			}
 		},
 		{
-			type: TEXT,
+			type: SELECT,
 			id: "user-id",
 			name: "userId",
 			validators: [validators.requiredField],
@@ -91,11 +93,14 @@ function BookingForm({
 		}
 	];
 	if (!allowBefore) fields[0].validators.push(notBefore);
-
+	let $fields = fields.map(field => ({
+		...field,
+		...(fieldProps && fieldProps[field.name])
+	}));
 	return (
 		<Form
 			title={title}
-			fields={fields}
+			fields={$fields}
 			exclude={exclude}
 			errorNotes={errorNotes}
 			errors={errors}
@@ -106,22 +111,24 @@ function BookingForm({
 			onChange={onChange}
 			readOnly={readOnly}
 		>
-			<Grid item xs={12}>
-				<GMaps>
-					{locations &&
-						locations.map(location => {
-							const { lat, lng, name } = location;
-							return (
-								<Marker
-									position={{ lat: lat, lng: lng }}
-									label={name}
-									key={lat + lng + name}
-									onClick={() => onLocationClick && onLocationClick(location)}
-								/>
-							);
-						})}
-				</GMaps>
-			</Grid>
+			{showMap && (
+				<Grid item xs={12}>
+					<GMaps>
+						{locations &&
+							locations.map(location => {
+								const { lat, lng, name } = location;
+								return (
+									<Marker
+										position={{ lat: lat, lng: lng }}
+										label={name}
+										key={lat + lng + name}
+										onClick={() => onLocationClick && onLocationClick(location)}
+									/>
+								);
+							})}
+					</GMaps>
+				</Grid>
+			)}
 		</Form>
 	);
 }

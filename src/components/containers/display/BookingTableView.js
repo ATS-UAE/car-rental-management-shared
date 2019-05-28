@@ -8,12 +8,7 @@ import TableView from "../../presentational/forms/TableView";
 import BookingActions from "../../presentational/inputs/BookingActions";
 import Can from "../layout/Can";
 import BookingFormUpdate from "../forms/bookings/BookingFormUpdate";
-import {
-	toTitleWords,
-	api,
-	waitForAll,
-	getBookingStatus
-} from "../../../utils";
+import { toTitleWords, api, getBookingStatus } from "../../../utils";
 import { resources, actions, roles } from "../../../variables/enums";
 import { RBAC } from "../../../config/rbac";
 import ConfirmDialog from "../../presentational/forms/ConfirmDialog";
@@ -39,6 +34,7 @@ function BookingTableView({
 	const [formData, setFormData] = useState({});
 	const [actionStatus, setActionStatus] = useState([]);
 	const [finalizeFormData, setFinalizeFormData] = useState({});
+
 	const [filters, setFilters] = useState({
 		global: "",
 		index: ["", "", "", "", "", ""]
@@ -52,17 +48,21 @@ function BookingTableView({
 					for (let booking of bookings.data) {
 						let expiredBooking = booking.from < moment().unix();
 						let showApprove =
+							booking.approved === null &&
 							!expiredBooking &&
 							(await RBAC.can(userRole, actions.UPDATE, resources.BOOKINGS));
 						let showDeny =
+							booking.approved === null &&
 							!expiredBooking &&
 							(await RBAC.can(userRole, actions.UPDATE, resources.BOOKINGS));
 
 						// Delete only non approved booking
 						let showDelete = !booking.approved;
 
-						// Update only non approved
-						let showUpdate = !booking.approved;
+						// Update only non approved and pending and not yet finalized
+						let showUpdate =
+							booking.approved === null ||
+							(booking.approved === true && booking.amount === null);
 
 						// Finalize only approved && no payment amount given
 						let showFinalize = booking.approved && booking.amount === null;
@@ -81,23 +81,27 @@ function BookingTableView({
 							showPay
 						});
 					}
-					let actionsStatus = await waitForAll(actionStatus);
-					setActionStatus(actionsStatus);
 				}
+				setActionStatus(actionStatus);
 			}
 		};
-		const updateTableBody = async () => {
-			if (
-				bookings &&
-				bookings.data &&
-				vehicles &&
-				vehicles.data &&
-				users &&
-				users.data &&
-				auth &&
-				auth.data
-			) {
-				let tableBody = bookings.data.reduce(async (acc, booking, index) => {
+		resetActionStatus();
+	}, [auth, bookings]);
+
+	useEffect(() => {
+		if (
+			bookings &&
+			bookings.data &&
+			vehicles &&
+			vehicles.data &&
+			users &&
+			users.data &&
+			auth &&
+			auth.data
+		) {
+			const updateTableBody = async () => {
+				let tableBody = [];
+				for (const [index, booking] of bookings.data.entries()) {
 					let accessible = await RBAC.can(
 						auth.data.role.name,
 						actions.READ,
@@ -120,13 +124,17 @@ function BookingTableView({
 									value: toTitleWords(booking.bookingType.name)
 								},
 								{
-									value: `${bookingVehicle.brand} ${bookingVehicle.model}`
+									value: `${bookingVehicle.brand} ${bookingVehicle.model} - ${
+										bookingVehicle.plateNumber
+									}`
 								},
 								{
-									value: moment(booking.from, "X").calendar()
+									value: moment(booking.from, "X"),
+									map: date => date.format("YYYY/MM/DD HH:mm:ss")
 								},
 								{
-									value: moment(booking.to, "X").calendar()
+									value: moment(booking.to, "X"),
+									map: date => date.format("YYYY/MM/DD HH:mm:ss")
 								},
 								{
 									value: bookingStatus
@@ -269,21 +277,18 @@ function BookingTableView({
 						} else if (showBookingActions) {
 							row.values.push({ value: "" });
 						}
-						acc.push(row);
+						tableBody.push(row);
 					}
-					return acc;
-				}, []);
-				tableBody = await tableBody;
+				}
 				setTableBody(tableBody);
-			}
-		};
-		updateTableBody();
-		resetActionStatus();
-	}, [users, bookings, vehicles, auth]);
+			};
+			updateTableBody();
+		}
+	}, [actionStatus, bookings, vehicles, users, auth]);
 
-	const handleFilter = index => e => {
+	const handleFilter = (index, value) => e => {
 		let newIndexFilters = filters.index;
-		newIndexFilters[index] = e.target.value;
+		newIndexFilters[index] = value !== undefined ? value : e.target.value;
 		setFilters({ global: filters.global, index: newIndexFilters });
 	};
 
@@ -295,7 +300,6 @@ function BookingTableView({
 						<TextField
 							onChange={handleFilter(0)}
 							value={filters.index[0]}
-							id="filled-adornment-amount"
 							label="Filter"
 						/>
 					)
@@ -305,7 +309,6 @@ function BookingTableView({
 						<TextField
 							onChange={handleFilter(1)}
 							value={filters.index[1]}
-							id="filled-adornment-amount"
 							label="Filter"
 						/>
 					)
@@ -315,7 +318,6 @@ function BookingTableView({
 						<TextField
 							onChange={handleFilter(2)}
 							value={filters.index[2]}
-							id="filled-adornment-amount"
 							label="Filter"
 						/>
 					)
@@ -325,7 +327,6 @@ function BookingTableView({
 						<TextField
 							onChange={handleFilter(3)}
 							value={filters.index[3]}
-							id="filled-adornment-amount"
 							label="Filter"
 						/>
 					)
@@ -335,7 +336,6 @@ function BookingTableView({
 						<TextField
 							onChange={handleFilter(4)}
 							value={filters.index[4]}
-							id="filled-adornment-amount"
 							label="Filter"
 						/>
 					)
@@ -345,7 +345,6 @@ function BookingTableView({
 						<TextField
 							onChange={handleFilter(5)}
 							value={filters.index[5]}
-							id="filled-adornment-amount"
 							label="Filter"
 						/>
 					)
@@ -386,12 +385,16 @@ function BookingTableView({
 				onClose={() => setConfirmPaymentData(false)}
 				yes={() => {
 					setConfirmPaymentData({ ...confirmPaymentData, disabled: true });
-					api.updateBooking({ id: confirmPaymentData.bookingId, paid: true });
-					setConfirmPaymentData({
-						...confirmPaymentData,
-						open: false,
-						disabled: false
-					});
+					api
+						.updateBooking({ id: confirmPaymentData.bookingId, paid: true })
+						.then(() => {
+							setConfirmPaymentData({
+								...confirmPaymentData,
+								open: false,
+								disabled: false
+							});
+							fetchBookings();
+						});
 				}}
 				no={() => setConfirmPaymentData({ ...confirmPaymentData, open: false })}
 			/>
@@ -438,7 +441,8 @@ function BookingTableView({
 										<BookingFormUpdate
 											values={formData}
 											onChange={setFormData}
-											exclude={access.excludedFields}
+											exclude={readAccess.excludedFields}
+											readOnly={access.excludedFields}
 											allowBefore={true}
 											onSubmit={() => {
 												setOpen(false);
