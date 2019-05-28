@@ -1,8 +1,8 @@
 import React from "react";
 import { Grid } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
-import { Marker } from "react-google-maps";
-import GMaps from "../display/GMaps";
+import { Marker } from "react-leaflet";
+import WorldMap from "../display/WorldMap";
 import Form, { FIELDS } from "./Form";
 import { validators } from "../../../utils";
 
@@ -56,10 +56,9 @@ function LocationForm({
 			onError={onError}
 		>
 			<Grid item xs={12}>
-				<GMaps
-					onClick={e =>
-						onMapClick &&
-						onMapClick({ lat: e.latLng.lat(), lng: e.latLng.lng() })
+				<WorldMap
+					onClick={({ latlng }) =>
+						onMapClick && onMapClick({ lat: latlng.lat, lng: latlng.lng })
 					}
 					defaultCenter={locationValue}
 				>
@@ -72,7 +71,7 @@ function LocationForm({
 								key={lat + lng + label}
 							/>
 						))}
-				</GMaps>
+				</WorldMap>
 			</Grid>
 		</Form>
 	);

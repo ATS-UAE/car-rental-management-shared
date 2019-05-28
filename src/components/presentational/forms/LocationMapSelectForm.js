@@ -1,8 +1,8 @@
 import React from "react";
 import { withStyles } from "@material-ui/core";
 import Form from "./Form";
-import GMaps from "../display/GMaps";
-import { Marker } from "react-google-maps";
+import WorldMap from "../display/WorldMap";
+import { Marker } from "react-leaflet";
 import { validators } from "../../../utils";
 
 function GuestSignUp({
@@ -23,7 +23,7 @@ function GuestSignUp({
 }) {
 	const fields = [
 		{
-			type: GMaps,
+			type: WorldMap,
 			name: "locationId",
 			id: "location-id",
 			validators: [validators.requiredField],

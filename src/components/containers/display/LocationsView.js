@@ -1,11 +1,11 @@
 import React, { useEffect, useState, Fragment } from "react";
 import { connect } from "react-redux";
-import { Marker } from "react-google-maps";
+import { Marker } from "react-leaflet";
 import { Dialog, Grid, Button } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import { compose } from "recompose";
 import * as reduxActions from "../../../actions";
-import GMaps from "../../presentational/display/GMaps";
+import WorldMap from "../../presentational/display/WorldMap";
 import LocationForm from "../../presentational/forms/LocationForm";
 import { resources, actions } from "../../../variables/enums";
 import { api } from "../../../utils";
@@ -136,7 +136,7 @@ function LocationsView({ locations, fetchLocations, classes }) {
 							</Dialog>
 						)}
 					/>
-					<GMaps mapContainerProps={{ className: classes.map }}>
+					<WorldMap mapContainerProps={{ className: classes.map }}>
 						{locations &&
 							locations.data &&
 							locations.data.map(({ id, lat, lng, name, address }) => (
@@ -156,7 +156,7 @@ function LocationsView({ locations, fetchLocations, classes }) {
 									}}
 								/>
 							))}
-					</GMaps>
+					</WorldMap>
 				</Fragment>
 			)}
 		/>

@@ -1,11 +1,11 @@
 import React from "react";
 import moment from "moment";
 import { Grid } from "@material-ui/core";
-import { Marker } from "react-google-maps";
-import GMaps from "../display/GMaps";
+import { Marker } from "react-leaflet";
+import WorldMap from "../display/WorldMap";
 import Form, { FIELDS } from "./Form";
 import { validators, Validator } from "../../../utils";
-const { SELECT, DATE_TIME_PICKER, TEXT } = FIELDS;
+const { SELECT, DATE_TIME_PICKER } = FIELDS;
 
 function BookingForm({
 	title,
@@ -113,7 +113,7 @@ function BookingForm({
 		>
 			{showMap && (
 				<Grid item xs={12}>
-					<GMaps>
+					<WorldMap>
 						{locations &&
 							locations.map(location => {
 								const { lat, lng, name } = location;
@@ -126,7 +126,7 @@ function BookingForm({
 									/>
 								);
 							})}
-					</GMaps>
+					</WorldMap>
 				</Grid>
 			)}
 		</Form>
