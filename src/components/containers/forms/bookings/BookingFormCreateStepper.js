@@ -19,7 +19,6 @@ import {
 	isVehicleAvailableForBooking,
 	toTitleWords
 } from "../../../../utils";
-import { bookingTypes } from "../../../../variables";
 
 import LocationMapSelectForm from "../../../presentational/forms/LocationMapSelectForm";
 import BookingForm from "../../../presentational/forms/BookingForm";

@@ -6,7 +6,7 @@ import {
 	CardContent,
 	CardMedia,
 	Typography,
-	ButtonBase
+	CardActionArea
 } from "@material-ui/core";
 import * as icons from "@material-ui/icons";
 
@@ -49,9 +49,12 @@ function Card({
 		</MuiCard>
 	);
 	return onClick ? (
-		<ButtonBase className={classes.root} onClick={e => onClick && onClick(e)}>
+		<CardActionArea
+			className={classes.root}
+			onClick={e => onClick && onClick(e)}
+		>
 			{component}
-		</ButtonBase>
+		</CardActionArea>
 	) : (
 		<div className={classes.root}>{component}</div>
 	);
@@ -80,7 +83,6 @@ const style = theme => ({
 	},
 	card: {
 		width: "100%",
-		padding: theme.spacing(),
 		display: "flex"
 	},
 	details: {
