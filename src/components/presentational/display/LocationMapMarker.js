@@ -3,11 +3,11 @@ import { renderToString } from "react-dom/server";
 import { Marker, withLeaflet } from "react-leaflet";
 import L from "leaflet";
 
-import { withStyles } from "@material-ui/core";
+import { withStyles, ButtonBase } from "@material-ui/core";
 import { LocationCity } from "@material-ui/icons";
 import classNames from "classnames";
 
-function LocationMapMarkerSVG({ classes, src }) {
+function LocationMapMarkerSVG({ classes, src, active }) {
 	return (
 		<div className={classes.root}>
 			<svg
@@ -15,7 +15,7 @@ function LocationMapMarkerSVG({ classes, src }) {
 				data-name="Layer 1"
 				xmlns="http://www.w3.org/2000/svg"
 				viewBox="0 0 782.2 926.42"
-				className={classes.svg}
+				className={classNames({ [classes.active]: true }, classes.svg)}
 			>
 				<path
 					d="M391,0C148.68,0,6.76,225.34,0,391c-.51,12.58-2.36,76.58,30.13,150.78,29.55,67.48,81.65,129.77,147.94,174l.14.1c159.85,122.3,178.33,144.28,200.48,202a13.36,13.36,0,0,0,24.89.13c22.78-57.62,42.12-79.47,203.32-200.93L607,717c105.46-70,175-189.88,175-326C782,175.06,606.94,0,391,0ZM379,727.79C202.42,721.62,60.38,579.58,54.21,403,47.4,208.17,208.17,47.4,403,54.21,579.58,60.38,721.62,202.42,727.79,379,734.6,573.83,573.83,734.6,379,727.79Z"
@@ -23,7 +23,11 @@ function LocationMapMarkerSVG({ classes, src }) {
 				/>
 			</svg>
 			{src ? (
-				<img src={src} className={classes.image} alt="Garage location" />
+				<img
+					src={src}
+					className={classNames(classes.image)}
+					alt="Garage location"
+				/>
 			) : (
 				<LocationCity className={classNames(classes.image, classes.noImage)} />
 			)}
@@ -34,6 +38,9 @@ function LocationMapMarkerSVG({ classes, src }) {
 const iconStyles = theme => ({
 	root: {
 		position: "relative"
+	},
+	active: {
+		opacity: 0.6
 	},
 	svg: {
 		fill: "#FF875D"
