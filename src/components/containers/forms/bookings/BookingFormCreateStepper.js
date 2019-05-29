@@ -259,7 +259,9 @@ const styles = theme => ({
 		height: "100%"
 	},
 	form: {
-		flexGrow: 1
+		flexGrow: 1,
+		overflowY: "auto",
+		overflowX: "hidden"
 	},
 	actions: {
 		"& > *": {

@@ -8,7 +8,7 @@ import {
 	Typography,
 	ButtonBase
 } from "@material-ui/core";
-import { Done } from "@material-ui/icons";
+import * as icons from "@material-ui/icons";
 
 function Card({
 	classes,
@@ -17,8 +17,9 @@ function Card({
 	controls,
 	imgSrc,
 	onClick,
-	selected
+	iconName
 }) {
+	const Icon = icons[iconName];
 	let component = (
 		<MuiCard className={classes.card}>
 			<div className={classes.details}>
@@ -43,7 +44,7 @@ function Card({
 				image={imgSrc || "/static/images/no-image-available.png"}
 				title={title}
 			>
-				{selected && <Done className={classes.icons} />}
+				{iconName && <Icon className={classes.icon} />}
 			</CardMedia>
 		</MuiCard>
 	);
@@ -62,16 +63,19 @@ Card.propTypes = {
 	controls: PropTypes.node,
 	imgSrc: PropTypes.string,
 	onClick: PropTypes.func,
-	selected: PropTypes.bool
+	iconName: PropTypes.string
 };
 
 const style = theme => ({
 	root: {
 		width: "100%"
 	},
-	icons: {
-		float: "right",
-		margin: "8px",
+	icon: {
+		filter: "drop-shadow(5px 3px 2px rgba(0,0,0,0.3))",
+		position: "absolute",
+		left: 0,
+		height: "100%",
+		width: "100%",
 		color: theme.palette.primary.main
 	},
 	card: {
@@ -80,7 +84,6 @@ const style = theme => ({
 		display: "flex"
 	},
 	details: {
-		position: "relative",
 		display: "flex",
 		flexBasis: "20%",
 		flexDirection: "column"
@@ -92,6 +95,7 @@ const style = theme => ({
 		paddingBottom: theme.spacing(1)
 	},
 	media: {
+		position: "relative",
 		flexGrow: 1
 	}
 });

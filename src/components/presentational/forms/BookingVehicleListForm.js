@@ -16,7 +16,8 @@ function BookingVehicleListForm({
 	readOnly,
 	vehicles,
 	onClick,
-	classes
+	classes,
+	formProps
 }) {
 	const fields = [
 		{
@@ -50,7 +51,7 @@ function BookingVehicleListForm({
 								card: classes.card
 							},
 							onClick: () => onClick({ vehicleId: id }),
-							selected: values.vehicleId === id
+							iconName: values.vehicleId === id ? "Done" : ""
 						}
 					}))
 			}
@@ -69,6 +70,7 @@ function BookingVehicleListForm({
 			footer={footer}
 			hints={hints}
 			readOnly={readOnly}
+			{...formProps}
 		/>
 	);
 }
