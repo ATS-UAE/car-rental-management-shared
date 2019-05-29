@@ -19,6 +19,7 @@ import {
 	isVehicleAvailableForBooking,
 	toTitleWords
 } from "../../../../utils";
+import { bookingTypes } from "../../../../variables";
 
 import LocationMapSelectForm from "../../../presentational/forms/LocationMapSelectForm";
 import BookingForm from "../../../presentational/forms/BookingForm";
@@ -40,7 +41,6 @@ function BookingFromCreate({
 }) {
 	const [errorNotes, setErrorNotes] = useState([]);
 	const [activeStep, setActiveStep] = useState(0);
-	const [errors, setErrors] = useState(steps.map(() => ({})));
 	const [step, setStep] = useState(
 		steps.map(label => ({ completed: false, error: false }))
 	);
@@ -87,29 +87,26 @@ function BookingFromCreate({
 		}
 	}, [enums]);
 
-	const handleError = index => e => {
-		let newErrors = [...errors];
-		newErrors[index] = { ...newErrors[index], ...e };
-		setErrors(newErrors);
-	};
-
-	const checkCompletionAndResetNextSteps = currentPage => {
+	const checkCompletionAndResetNextSteps = (currentPage, errors) => {
 		let newStep = [...step];
 		for (let startPage = currentPage + 1; startPage < steps.length; startPage++)
 			newStep[startPage].completed = false;
-		if (!errors[currentPage].length) {
+		if (errors) {
+			let errored = false;
+			for (let key in errors) if (errors[key].length) errored = true;
+
 			newStep[currentPage].completed = true;
-			newStep[currentPage].error = false;
+			newStep[currentPage].error = errored;
 		}
 		setStep(newStep);
 	};
-
 	function getStepContent(step) {
 		switch (step) {
 			case 0:
 				return (
 					<Fragment>
 						<BookingForm
+							allowBefore={false}
 							exclude={["userId", "vehicleId"]}
 							fieldProps={{
 								from: {
@@ -139,7 +136,7 @@ function BookingFromCreate({
 								setValues({ ...values, ...dates, locationId: undefined });
 								checkCompletionAndResetNextSteps(step);
 							}}
-							onError={handleError(step)}
+							onError={e => checkCompletionAndResetNextSteps(step, e)}
 							hints=""
 						/>
 					</Fragment>
@@ -154,7 +151,7 @@ function BookingFromCreate({
 							setValues({ ...values, locationId, vehicleId: undefined });
 							checkCompletionAndResetNextSteps(step);
 						}}
-						onError={handleError(step)}
+						onError={e => checkCompletionAndResetNextSteps(step, e)}
 					/>
 				);
 			case 2:
@@ -163,7 +160,7 @@ function BookingFromCreate({
 						errorNotes={errorNotes}
 						values={values}
 						vehicles={availableVehicles}
-						onError={handleError(step)}
+						onError={e => checkCompletionAndResetNextSteps(step, e)}
 						hints=""
 						onClick={vehicle => {
 							setValues({ ...values, ...vehicle });

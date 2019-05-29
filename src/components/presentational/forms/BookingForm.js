@@ -31,12 +31,23 @@ function BookingForm({
 		() => values.from > moment().unix(),
 		"Value should not be before current date."
 	);
+
+	const startLessEnd = new Validator(
+		() => values.from < values.to,
+		"Start date should not be greater than end date"
+	);
+
+	const endGreaterStart = new Validator(
+		() => values.to > values.from,
+		"End date should not be greater than end date"
+	);
+
 	const fields = [
 		{
 			type: DATE_TIME_PICKER,
 			id: "from",
 			name: "from",
-			validators: [validators.requiredField],
+			validators: [validators.requiredField, startLessEnd],
 			props: {
 				label: "Book Start"
 			}
@@ -45,7 +56,7 @@ function BookingForm({
 			type: DATE_TIME_PICKER,
 			id: "to",
 			name: "to",
-			validators: [validators.requiredField],
+			validators: [validators.requiredField, endGreaterStart],
 			props: {
 				label: "Book End"
 			}
