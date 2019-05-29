@@ -41,7 +41,9 @@ function BookingFromCreate({
 	const [errorNotes, setErrorNotes] = useState([]);
 	const [activeStep, setActiveStep] = useState(0);
 	const [errors, setErrors] = useState(steps.map(() => ({})));
-	const [step, setStep] = useState(steps.map(label => ({ completed: false })));
+	const [step, setStep] = useState(
+		steps.map(label => ({ completed: false, error: false }))
+	);
 	const [availableVehicles, setAvailableVehicles] = useState([]);
 	const [values, setValues] = useState({
 		from: moment()
@@ -55,20 +57,6 @@ function BookingFromCreate({
 	let [bookingTypeList, setBookingTypeList] = useState([
 		{ value: "", label: "Loading..." }
 	]);
-
-	useEffect(() => {
-		let checkSteps = step;
-		for (const [i, page] of errors.entries()) {
-			for (let key in page) {
-				if (page[key].length) {
-					checkSteps[i].completed = false;
-				} else {
-					checkSteps[i].completed = true;
-				}
-			}
-		}
-		setStep(checkSteps);
-	}, [errors, values]);
 
 	useEffect(() => {
 		let availableVehicles =
@@ -100,10 +88,22 @@ function BookingFromCreate({
 	}, [enums]);
 
 	const handleError = index => e => {
-		let newErrors = errors;
+		let newErrors = [...errors];
 		newErrors[index] = { ...newErrors[index], ...e };
 		setErrors(newErrors);
 	};
+
+	const checkCompletionAndResetNextSteps = currentPage => {
+		let newStep = [...step];
+		for (let startPage = currentPage + 1; startPage < steps.length; startPage++)
+			newStep[startPage].completed = false;
+		if (!errors[currentPage].length) {
+			newStep[currentPage].completed = true;
+			newStep[currentPage].error = false;
+		}
+		setStep(newStep);
+	};
+
 	function getStepContent(step) {
 		switch (step) {
 			case 0:
@@ -135,7 +135,10 @@ function BookingFromCreate({
 							errorNotes={errorNotes}
 							values={values}
 							vehicles={vehicles && vehicles.data ? vehicles.data : []}
-							onChange={dates => setValues({ ...values, ...dates })}
+							onChange={dates => {
+								setValues({ ...values, ...dates, locationId: undefined });
+								checkCompletionAndResetNextSteps(step);
+							}}
 							onError={handleError(step)}
 							hints=""
 						/>
@@ -147,7 +150,10 @@ function BookingFromCreate({
 						errorNotes={errorNotes}
 						values={values}
 						locations={locations && locations.data}
-						onMarkerClick={locationId => setValues({ ...values, locationId })}
+						onMarkerClick={locationId => {
+							setValues({ ...values, locationId, vehicleId: undefined });
+							checkCompletionAndResetNextSteps(step);
+						}}
 						onError={handleError(step)}
 					/>
 				);
@@ -159,7 +165,10 @@ function BookingFromCreate({
 						vehicles={availableVehicles}
 						onError={handleError(step)}
 						hints=""
-						onClick={dates => setValues({ ...values, ...dates })}
+						onClick={vehicle => {
+							setValues({ ...values, ...vehicle });
+							checkCompletionAndResetNextSteps(step);
+						}}
 					/>
 				) : (
 					<div className={classes.noVehicles}>
@@ -208,7 +217,9 @@ function BookingFromCreate({
 				<Button
 					variant="contained"
 					color="primary"
-					disabled={!step[activeStep].completed || loading}
+					disabled={
+						!step[activeStep].completed || step[activeStep].error || loading
+					}
 					onClick={() => {
 						let last = activeStep < step.length - 1;
 						if (last) {
