@@ -5,7 +5,7 @@ import WorldMap from "../display/WorldMap";
 import LocationMapMarker from "../display/LocationMapMarker";
 import { validators } from "../../../utils";
 
-function GuestSignUp({
+function LocationMapSelectForm({
 	classes,
 	gMapsProps,
 	title,
@@ -16,7 +16,7 @@ function GuestSignUp({
 	onValid,
 	onMarkerClick,
 	onError,
-	vehicles,
+	locations,
 	values,
 	buttonLabel,
 	footer
@@ -37,11 +37,12 @@ function GuestSignUp({
 				classes: {
 					root: classes.fullHeight
 				},
-				children: vehicles
-					? vehicles.map(location => {
-							const { lat, lng, name, locationImageSrc } = location;
+				children: locations
+					? locations.map(location => {
+							const { id, lat, lng, name, locationImageSrc } = location;
 							return (
 								<LocationMapMarker
+									active={values.locationId === id}
 									locationImageSrc={locationImageSrc}
 									position={{ lat: lat, lng: lng }}
 									label={name}
@@ -81,4 +82,4 @@ const styles = {
 	}
 };
 
-export default withStyles(styles)(GuestSignUp);
+export default withStyles(styles)(LocationMapSelectForm);

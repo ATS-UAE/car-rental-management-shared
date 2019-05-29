@@ -146,7 +146,7 @@ function BookingFromCreate({
 					<LocationMapSelectForm
 						errorNotes={errorNotes}
 						values={values}
-						vehicles={locations && locations.data}
+						locations={locations && locations.data}
 						onMarkerClick={locationId => setValues({ ...values, locationId })}
 						onError={handleError(step)}
 					/>
