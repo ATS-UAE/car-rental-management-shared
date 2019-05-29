@@ -6,6 +6,7 @@ import { withStyles } from "@material-ui/core/styles";
 import { compose } from "recompose";
 import * as reduxActions from "../../../actions";
 import WorldMap from "../../presentational/display/WorldMap";
+import LocationMapMarker from "../../presentational/display/LocationMapMarker";
 import LocationForm from "../../presentational/forms/LocationForm";
 import { resources, actions } from "../../../variables/enums";
 import { api } from "../../../utils";
@@ -139,23 +140,26 @@ function LocationsView({ locations, fetchLocations, classes }) {
 					<WorldMap mapContainerProps={{ className: classes.map }}>
 						{locations &&
 							locations.data &&
-							locations.data.map(({ id, lat, lng, name, address }) => (
-								<Marker
-									position={{ lat: lat, lng: lng }}
-									label={name}
-									key={lat + lng + name}
-									onClick={() => {
-										setOpen(true);
-										setFormData({
-											id,
-											name,
-											address,
-											lat,
-											lng
-										});
-									}}
-								/>
-							))}
+							locations.data.map(
+								({ id, lat, lng, name, address, locationImageSrc }) => (
+									<LocationMapMarker
+										position={{ lat: lat, lng: lng }}
+										label={name}
+										src={locationImageSrc}
+										key={lat + lng + name}
+										onClick={() => {
+											setOpen(true);
+											setFormData({
+												id,
+												name,
+												address,
+												lat,
+												lng
+											});
+										}}
+									/>
+								)
+							)}
 					</WorldMap>
 				</Fragment>
 			)}

@@ -19,7 +19,8 @@ const theme = createMuiTheme({
 	overrides: {
 		MuiAppBar: {
 			root: {
-				background: "linear-gradient(45deg, #FF8E53 30%, #FE6B8B 90%)"
+				background: "linear-gradient(45deg, #FF8E53 30%, #FE6B8B 90%)",
+				color: "black"
 			}
 		},
 		MuiButton: {

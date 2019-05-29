@@ -1,8 +1,8 @@
 import React from "react";
 import { Grid } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
-import { Marker } from "react-leaflet";
 import WorldMap from "../display/WorldMap";
+import LocationMapMarker from "../display/LocationMapMarker";
 import Form, { FIELDS } from "./Form";
 import { validators } from "../../../utils";
 
@@ -62,10 +62,16 @@ function LocationForm({
 					}
 					defaultCenter={locationValue}
 				>
-					{locationValue && <Marker position={locationValue} />}
+					{locationValue && (
+						<LocationMapMarker
+							locationImageSrc={values.locationImageSrc}
+							position={locationValue}
+						/>
+					)}
 					{existingLocations &&
-						existingLocations.map(({ lat, lng, label }) => (
-							<Marker
+						existingLocations.map(({ lat, lng, label, locationImageSrc }) => (
+							<LocationMapMarker
+								src={locationImageSrc}
 								position={{ lat, lng }}
 								label={label}
 								key={lat + lng + label}

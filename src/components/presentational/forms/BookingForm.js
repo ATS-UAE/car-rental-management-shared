@@ -1,7 +1,7 @@
 import React from "react";
 import moment from "moment";
 import { Grid } from "@material-ui/core";
-import { Marker } from "react-leaflet";
+import LocationMapMarker from "../display/LocationMapMarker";
 import WorldMap from "../display/WorldMap";
 import Form, { FIELDS } from "./Form";
 import { validators, Validator } from "../../../utils";
@@ -116,9 +116,10 @@ function BookingForm({
 					<WorldMap>
 						{locations &&
 							locations.map(location => {
-								const { lat, lng, name } = location;
+								const { lat, lng, name, locationImageSrc } = location;
 								return (
-									<Marker
+									<LocationMapMarker
+										src={locationImageSrc}
 										position={{ lat: lat, lng: lng }}
 										label={name}
 										key={lat + lng + name}

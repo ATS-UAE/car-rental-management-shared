@@ -1,7 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { withStyles } from "@material-ui/core";
 import PropTypes from "prop-types";
-import { Map, TileLayer } from "react-leaflet";
+import { Map, TileLayer, withLeaflet } from "react-leaflet";
+import { compose } from "recompose";
 
 function WorldMap({
 	defaultCenter,
@@ -13,6 +14,7 @@ function WorldMap({
 	onClick,
 	defaultZoom
 }) {
+	const [viewport, setViewport] = useState({});
 	useEffect(() => {
 		askForLocation &&
 			window.navigator.geolocation &&
@@ -24,13 +26,15 @@ function WorldMap({
 					onLocationAsk && onLocationAsk(null, error);
 				}
 			);
+		setViewport({ center: defaultCenter, zoom: defaultZoom });
 	}, []);
+
 	return (
 		<Map
 			onClick={onClick}
 			className={classes.root}
-			center={defaultCenter}
-			zoom={defaultZoom}
+			onViewportChange={setViewport}
+			viewport={viewport}
 			{...mapProps}
 		>
 			<TileLayer
@@ -62,7 +66,10 @@ WorldMap.defaultProps = {
 
 const styles = { root: { height: "100%", width: "100%", minHeight: "200px" } };
 
-export default withStyles(styles)(WorldMap);
+export default compose(
+	withStyles(styles),
+	withLeaflet
+)(WorldMap);
 
 // import React, { useEffect } from "react";
 // import PropTypes from "prop-types";
