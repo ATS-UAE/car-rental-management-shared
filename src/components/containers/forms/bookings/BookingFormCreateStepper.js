@@ -94,8 +94,7 @@ function BookingFromCreate({
 		if (errors) {
 			let errored = false;
 			for (let key in errors) if (errors[key].length) errored = true;
-
-			newStep[currentPage].completed = true;
+			newStep[currentPage].completed = !errored;
 			newStep[currentPage].error = errored;
 		}
 		setStep(newStep);
