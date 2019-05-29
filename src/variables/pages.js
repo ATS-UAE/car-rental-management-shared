@@ -54,6 +54,7 @@ export default [
 	{
 		id: "Locations",
 		path: "/locations",
+		access: [roles.KEY_MANAGER, roles.ADMIN],
 		component: props => (
 			<DynamicImport load={() => import("../components/pages/Locations")}>
 				{Component => (Component ? <Component {...props} /> : null)}
