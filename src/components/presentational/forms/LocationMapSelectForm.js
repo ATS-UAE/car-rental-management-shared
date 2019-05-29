@@ -2,7 +2,7 @@ import React from "react";
 import { withStyles } from "@material-ui/core";
 import Form from "./Form";
 import WorldMap from "../display/WorldMap";
-import { Marker } from "react-leaflet";
+import LocationMapMarker from "../display/LocationMapMarker";
 import { validators } from "../../../utils";
 
 function GuestSignUp({
@@ -39,9 +39,10 @@ function GuestSignUp({
 				},
 				children: vehicles
 					? vehicles.map(location => {
-							const { lat, lng, name } = location;
+							const { lat, lng, name, locationImageSrc } = location;
 							return (
-								<Marker
+								<LocationMapMarker
+									locationImageSrc={locationImageSrc}
 									position={{ lat: lat, lng: lng }}
 									label={name}
 									key={lat + lng + name}
