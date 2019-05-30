@@ -172,7 +172,8 @@ Form.defaultProps = {
 
 const style = theme => ({
 	root: {
-		padding: theme.spacing(1)
+		padding: theme.spacing(1),
+		overflow: "visible"
 	},
 	hints: {
 		float: "right"
@@ -180,7 +181,9 @@ const style = theme => ({
 	title: {
 		marginBottom: theme.spacing(3)
 	},
-	gridContainer: {},
+	gridContainer: {
+		overflow: "visible"
+	},
 	errorChip: {
 		margin: `${theme.spacing(1)}px 0 ${theme.spacing(1)}px 0`
 	}

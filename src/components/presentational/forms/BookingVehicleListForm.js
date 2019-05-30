@@ -50,6 +50,7 @@ function BookingVehicleListForm({
 							classes: {
 								card: classes.card
 							},
+							selected: id === values.vehicleId,
 							onClick: () => onClick({ vehicleId: id }),
 							iconName: values.vehicleId === id ? "Done" : ""
 						}

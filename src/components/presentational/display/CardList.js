@@ -1,16 +1,28 @@
 import React from "react";
-import { Grid } from "@material-ui/core";
-import { withStyles } from "@material-ui/core/styles";
+import { Grid, withStyles } from "@material-ui/core";
 
 import Card from "./Card";
 
-function CardList({ cards, classes }) {
+function CardList({ cards, gridProps, classes, theme }) {
 	return (
-		<div>
-			<Grid container spacing={2}>
-				{cards &&
-					cards.map(({ id, title, descriptions, controls, imgSrc, props }) => (
-						<Grid item xs={12} sm={12} md={6} key={id}>
+		<Grid
+			container
+			spacing={theme.breakpoints.down("sm") ? 1 : 3}
+			className={classes.root}
+			{...gridProps}
+		>
+			{cards &&
+				cards.map(
+					({
+						id,
+						title,
+						descriptions,
+						controls,
+						imgSrc,
+						props,
+						gridItemProps
+					}) => (
+						<Grid item xs={12} sm={12} md={6} key={id} {...gridItemProps}>
 							<Card
 								id={id}
 								title={title}
@@ -20,16 +32,19 @@ function CardList({ cards, classes }) {
 								{...props}
 							/>
 						</Grid>
-					))}
-			</Grid>
-		</div>
+					)
+				)}
+		</Grid>
 	);
 }
 
 const styles = theme => ({
-	paper: {
-		padding: theme.spacing(2)
+	root: {
+		padding: theme.spacing(4),
+		[theme.breakpoints.down("sm")]: {
+			padding: theme.spacing(1)
+		}
 	}
 });
 
-export default withStyles(styles)(CardList);
+export default withStyles(styles, { withTheme: true })(CardList);

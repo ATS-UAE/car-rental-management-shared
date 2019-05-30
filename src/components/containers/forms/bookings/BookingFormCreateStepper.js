@@ -19,7 +19,8 @@ import {
 	isVehicleAvailableForBooking,
 	toTitleWords
 } from "../../../../utils";
-
+import { bookingTypes } from "../../../../variables/enums";
+import CardList from "../../../presentational/display/CardList";
 import LocationMapSelectForm from "../../../presentational/forms/LocationMapSelectForm";
 import BookingForm from "../../../presentational/forms/BookingForm";
 import BookingVehicleListForm from "../../../presentational/forms/BookingVehicleListForm";
@@ -43,6 +44,7 @@ function BookingFromCreate({
 	const [step, setStep] = useState(
 		steps.map(label => ({ completed: false, error: false }))
 	);
+	const [errors, setErrors] = useState({});
 	const [availableVehicles, setAvailableVehicles] = useState([]);
 	const [values, setValues] = useState({
 		from: moment()
@@ -53,9 +55,7 @@ function BookingFromCreate({
 			.unix()
 	});
 	let [loading, setLoading] = useState(false);
-	let [bookingTypeList, setBookingTypeList] = useState([
-		{ value: "", label: "Loading..." }
-	]);
+	let [bookingTypeList, setBookingTypeList] = useState([]);
 
 	useEffect(() => {
 		let availableVehicles =
@@ -76,18 +76,13 @@ function BookingFromCreate({
 
 	useEffect(() => {
 		if (enums && enums.data) {
-			let bookingTypeList = enums.data.bookingTypes.map(item => ({
-				value: item.id,
-				label: toTitleWords(item.name)
-			}));
-			if (bookingTypeList.length) {
-				setBookingTypeList(bookingTypeList);
-			}
+			setBookingTypeList(enums.data.bookingTypes);
 		}
 	}, [enums]);
 
 	const checkCompletionAndResetNextSteps = (currentPage, errors) => {
 		let newStep = [...step];
+
 		for (let startPage = currentPage + 1; startPage < steps.length; startPage++)
 			newStep[startPage].completed = false;
 		if (errors) {
@@ -95,6 +90,10 @@ function BookingFromCreate({
 			for (let key in errors) if (errors[key].length) errored = true;
 			newStep[currentPage].completed = !errored;
 			newStep[currentPage].error = errored;
+		}
+		// TODO: move validations to a form.
+		if (!values.bookingTypeId) {
+			newStep[0].error = true;
 		}
 		setStep(newStep);
 	};
@@ -104,8 +103,9 @@ function BookingFromCreate({
 				return (
 					<Fragment>
 						<BookingForm
+							errors={errors}
 							allowBefore={false}
-							exclude={["userId", "vehicleId"]}
+							exclude={["userId", "vehicleId", "bookingTypeId"]}
 							fieldProps={{
 								from: {
 									GridProps: {
@@ -126,7 +126,6 @@ function BookingFromCreate({
 									}
 								}
 							}}
-							bookingTypeList={bookingTypeList}
 							errorNotes={errorNotes}
 							values={values}
 							vehicles={vehicles && vehicles.data ? vehicles.data : []}
@@ -134,14 +133,65 @@ function BookingFromCreate({
 								setValues({ ...values, ...dates, locationId: undefined });
 								checkCompletionAndResetNextSteps(step);
 							}}
-							onError={e => checkCompletionAndResetNextSteps(step, e)}
+							onError={e => {
+								setErrors({ ...errors, ...e });
+								checkCompletionAndResetNextSteps(step, e);
+							}}
 							hints=""
+						/>
+						<CardList
+							classes={{ root: classes.bookingListGridContainer }}
+							cards={bookingTypeList.map(type => {
+								let iconName;
+								switch (type.name) {
+									case bookingTypes.PRIVATE:
+										iconName = "Map";
+										break;
+									case bookingTypes.BUSINESS:
+										iconName = "Work";
+										break;
+									case bookingTypes.SERVICE:
+										iconName = "Build";
+										break;
+									default:
+										iconName = null;
+								}
+								return {
+									gridItemProps: {
+										xs: 4,
+										sm: 4,
+										md: 4,
+										lg: 4
+									},
+									title: toTitleWords(type.name),
+									onClick: () => setValues({ ...values, locationId: type.id }),
+									id: type.id,
+									props: {
+										iconName,
+										selected: values.bookingTypeId === type.id,
+										onClick: () =>
+											setValues({ ...values, bookingTypeId: type.id }),
+										classes: {
+											card: classes.bookingListCard
+										},
+										cardContentProps: {
+											classes: { root: classes.bookingListCardContent }
+										},
+										titleProps: {
+											classes: {
+												root: classes.bookingListCardTitle
+											}
+										}
+									}
+								};
+							})}
 						/>
 					</Fragment>
 				);
 			case 1:
 				return (
 					<LocationMapSelectForm
+						errors={errors}
 						errorNotes={errorNotes}
 						values={values}
 						locations={locations && locations.data}
@@ -149,16 +199,23 @@ function BookingFromCreate({
 							setValues({ ...values, locationId, vehicleId: undefined });
 							checkCompletionAndResetNextSteps(step);
 						}}
-						onError={e => checkCompletionAndResetNextSteps(step, e)}
+						onError={e => {
+							setErrors({ ...errors, ...e });
+							checkCompletionAndResetNextSteps(step, e);
+						}}
 					/>
 				);
 			case 2:
 				return availableVehicles.length > 0 ? (
 					<BookingVehicleListForm
+						errors={errors}
 						errorNotes={errorNotes}
 						values={values}
 						vehicles={availableVehicles}
-						onError={e => checkCompletionAndResetNextSteps(step, e)}
+						onError={e => {
+							setErrors({ ...errors, ...e });
+							checkCompletionAndResetNextSteps(step, e);
+						}}
 						hints=""
 						onClick={vehicle => {
 							setValues({ ...values, ...vehicle });
@@ -272,6 +329,24 @@ const styles = theme => ({
 	},
 	noVehicles: {
 		margin: theme.spacing(3)
+	},
+	bookingListCard: {
+		flexDirection: "column",
+		height: "120px"
+	},
+	bookingListGridContainer: {
+		width: "100%",
+		maxWidth: "450px",
+		margin: "auto"
+	},
+	bookingListCardContent: {
+		padding: theme.spacing(1),
+		"&:last-child": {
+			paddingBottom: theme.spacing(1)
+		}
+	},
+	bookingListCardTitle: {
+		fontSize: "1rem"
 	},
 	card: {
 		minHeight: "200px"

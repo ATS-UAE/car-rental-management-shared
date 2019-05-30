@@ -9,6 +9,7 @@ import {
 	CardActionArea
 } from "@material-ui/core";
 import * as icons from "@material-ui/icons";
+import classNames from "classnames";
 
 function Card({
 	classes,
@@ -17,15 +18,19 @@ function Card({
 	controls,
 	imgSrc,
 	onClick,
-	iconName
+	iconName,
+	cardContentProps,
+	titleProps,
+	selected
 }) {
 	const Icon = icons[iconName];
+	const Media = imgSrc ? CardMedia : "div";
 	let component = (
 		<MuiCard className={classes.card}>
 			<div className={classes.details}>
-				<CardContent className={classes.content}>
+				<CardContent className={classes.content} {...cardContentProps}>
 					{title && (
-						<Typography component="h5" variant="h5">
+						<Typography component="h1" variant="h6" {...titleProps}>
 							{title}
 						</Typography>
 					)}
@@ -38,25 +43,22 @@ function Card({
 				</CardContent>
 				{controls && <div className={classes.controls}>{controls}</div>}
 			</div>
-
-			<CardMedia
-				className={classes.media}
-				image={imgSrc || "/static/images/no-image-available.png"}
-				title={title}
-			>
+			<Media className={classes.media} image={imgSrc || null} title={title}>
 				{iconName && <Icon className={classes.icon} />}
-			</CardMedia>
+			</Media>
 		</MuiCard>
 	);
 	return onClick ? (
 		<CardActionArea
-			className={classes.root}
+			className={classNames(classes.root, { [classes.selected]: selected })}
 			onClick={e => onClick && onClick(e)}
 		>
 			{component}
 		</CardActionArea>
 	) : (
-		<div className={classes.root}>{component}</div>
+		<div className={classNames(classes.root, { [classes.selected]: selected })}>
+			{component}
+		</div>
 	);
 }
 
@@ -71,7 +73,11 @@ Card.propTypes = {
 
 const style = theme => ({
 	root: {
-		width: "100%"
+		width: "100%",
+		transition: theme.transitions.create(["transform", "box-shadow"], {
+			easing: theme.transitions.easing.easeOut,
+			duration: theme.transitions.duration.enteringScreen
+		})
 	},
 	icon: {
 		filter: "drop-shadow(5px 3px 2px rgba(0,0,0,0.3))",
@@ -80,6 +86,11 @@ const style = theme => ({
 		height: "100%",
 		width: "100%",
 		color: theme.palette.primary.main
+	},
+	selected: {
+		boxShadow: theme.shadows[5],
+		transform: "scale(1.05) translateY(-3px)",
+		zIndex: 1
 	},
 	card: {
 		width: "100%",
