@@ -68,7 +68,7 @@ export default [
 		id: "SignUp",
 		path: "/signup",
 		component: props => (
-			<DynamicImport load={() => import("../components/pages/Login")}>
+			<DynamicImport load={() => import("../components/pages/SignUp")}>
 				{Component => (Component ? <Component {...props} /> : null)}
 			</DynamicImport>
 		),
@@ -143,10 +143,10 @@ export default [
 		wrapPaper: true
 	},
 	{
-		id: "All",
+		id: "404",
 		path: "/",
 		component: props => (
-			<DynamicImport load={() => import("../components/pages/All")}>
+			<DynamicImport load={() => import("../components/pages/404")}>
 				{Component => (Component ? <Component {...props} /> : null)}
 			</DynamicImport>
 		),
