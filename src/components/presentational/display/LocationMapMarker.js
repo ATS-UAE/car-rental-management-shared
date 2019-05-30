@@ -3,7 +3,7 @@ import { renderToString } from "react-dom/server";
 import { Marker, withLeaflet } from "react-leaflet";
 import L from "leaflet";
 
-import { withStyles, ButtonBase } from "@material-ui/core";
+import { withStyles } from "@material-ui/core";
 import { LocationCity } from "@material-ui/icons";
 import classNames from "classnames";
 

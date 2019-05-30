@@ -1,6 +1,5 @@
 import React, { useEffect, useState, Fragment } from "react";
 import { connect } from "react-redux";
-import { Marker } from "react-leaflet";
 import { Dialog, Grid, Button } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import { compose } from "recompose";
