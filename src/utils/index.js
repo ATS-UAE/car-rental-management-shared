@@ -85,8 +85,12 @@ export const getRelatedDataById = (findId, list, many = false) => {
 
 export const validators = {
 	username: new Validator(
-		v => /.{4,}/.test(v),
-		"Username should be greater than 3 characters."
+		v => /^.{4,16}$/.test(v),
+		"Min 4 characters, max 16 characters."
+	),
+	usernameCharacters: new Validator(
+		v => /^[a-z0-9_-]+$/.test(v),
+		"No special characters."
 	),
 	password: new Validator(
 		v => /.{8,}/.test(v),

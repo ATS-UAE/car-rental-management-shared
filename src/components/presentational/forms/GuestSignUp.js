@@ -25,7 +25,7 @@ function GuestSignUp({
 			type: TEXT,
 			name: "username",
 			id: "username",
-			validators: [validators.username],
+			validators: [validators.username, validators.usernameCharacters],
 			props: {
 				label: "Username",
 				required: true
@@ -89,7 +89,10 @@ function GuestSignUp({
 			props: {
 				label: "Gender",
 				fullWidth: true,
-				items: [{ value: "m", label: "Male" }, { value: "f", label: "Female" }],
+				items: [
+					{ value: "m", label: "Male" },
+					{ value: "f", label: "Female" }
+				],
 				required: true
 			}
 		}
