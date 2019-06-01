@@ -72,11 +72,12 @@ export const getBookingStatus = booking => {
 	return status;
 };
 
-export const getRelatedData = (id, list, key) => {
+export const getRelatedDataById = (findId, list, many = false) => {
 	let data = [];
 	for (let item of list) {
-		if (item[key] === id) {
-			data.push(item[key]);
+		if (item.id === findId) {
+			if (!many) return item;
+			else data.push(item);
 		}
 	}
 	return data;
