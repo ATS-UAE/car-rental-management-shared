@@ -60,10 +60,11 @@ const styles = theme => ({
 			height: "100%"
 		},
 		"#root": { height: "100%" },
+
 		/* width */
 		"::-webkit-scrollbar": {
-			width: "10px",
-			height: "10px"
+			width: "5px",
+			height: "5px"
 		},
 		/* Track */
 		"::-webkit-scrollbar-track": {

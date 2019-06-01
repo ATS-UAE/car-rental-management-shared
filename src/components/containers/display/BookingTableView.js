@@ -2,7 +2,7 @@ import React, { Component, Fragment, useEffect } from "react";
 import { connect } from "react-redux";
 import { compose } from "recompose";
 import moment from "moment";
-import { DialogContent, TextField } from "@material-ui/core";
+import { DialogContent, useTheme } from "@material-ui/core";
 import MaterialTable from "material-table";
 import { Route, withRouter } from "react-router-dom";
 import * as reduxActions from "../../../actions";

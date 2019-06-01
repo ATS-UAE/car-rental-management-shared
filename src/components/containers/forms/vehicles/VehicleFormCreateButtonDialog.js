@@ -21,7 +21,12 @@ function VehicleFormCreateButtonDialog({ history }) {
 				action={actions.CREATE}
 				resource={resources.VEHICLES}
 				yes={() => (
-					<Button onClick={() => history.push("/vehicles/new")}>New</Button>
+					<Button
+						variant="contained"
+						onClick={() => history.push("/vehicles/new")}
+					>
+						New
+					</Button>
 				)}
 			/>
 		</Fragment>
