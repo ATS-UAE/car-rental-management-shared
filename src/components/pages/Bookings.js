@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { compose } from "recompose";
 import { Switch, Route } from "react-router";
 import { withStyles, Button, Paper } from "@material-ui/core";
+import classNames from "classnames";
 import * as reduxActions from "../../actions";
 import { resources, actions } from "../../variables/enums";
 import Can from "../containers/layout/Can";
@@ -28,7 +29,7 @@ function Bookings({
 		fetchCurrentUserDetails();
 	}, []);
 	return (
-		<Paper className={classes.root}>
+		<Paper className={classNames(classes.root, classes.items)}>
 			<Switch>
 				<Route
 					path="/bookings/new"
@@ -43,16 +44,20 @@ function Bookings({
 									action={actions.CREATE}
 									resource={resources.BOOKINGS}
 									yes={createAccess => (
-										<Button
-											variant="contained"
-											color="primary"
-											onClick={() => history.push("/bookings/new")}
-										>
-											Book a vehicle
-										</Button>
+										<div className={classes.items}>
+											<Button
+												variant="contained"
+												color="primary"
+												onClick={() => history.push("/bookings/new")}
+											>
+												Book a vehicle
+											</Button>
+										</div>
 									)}
 								/>
-								<BookingTableView />
+								<div>
+									<BookingTableView />
+								</div>
 							</Fragment>
 						);
 					}}
@@ -69,6 +74,14 @@ const styles = theme => ({
 		},
 		height: "100%",
 		overflow: "auto"
+	},
+	items: {
+		"&:not(:last-child)": {
+			marginBottom: theme.spacing(2),
+			[theme.breakpoints.down("sm")]: {
+				marginBottom: theme.spacing(1)
+			}
+		}
 	}
 });
 
