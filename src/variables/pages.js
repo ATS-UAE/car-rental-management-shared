@@ -12,6 +12,7 @@ import {
 import roles from "./enums/roles";
 
 import DynamicImport from "../components/containers/layout/DynamicImport";
+import Loading from "../components/presentational/layout/Loading";
 
 export default [
 	{
@@ -19,7 +20,7 @@ export default [
 		path: "/",
 		component: props => (
 			<DynamicImport load={() => import("../components/pages/Home")}>
-				{Component => (Component ? <Component {...props} /> : null)}
+				{Component => (Component ? <Component {...props} /> : <Loading />)}
 			</DynamicImport>
 		),
 		exact: true,
@@ -33,7 +34,7 @@ export default [
 		path: "/bookings",
 		component: props => (
 			<DynamicImport load={() => import("../components/pages/Bookings")}>
-				{Component => (Component ? <Component {...props} /> : null)}
+				{Component => (Component ? <Component {...props} /> : <Loading />)}
 			</DynamicImport>
 		),
 		requireLogin: true,
@@ -47,7 +48,7 @@ export default [
 		access: [roles.KEY_MANAGER, roles.ADMIN],
 		component: props => (
 			<DynamicImport load={() => import("../components/pages/Locations")}>
-				{Component => (Component ? <Component {...props} /> : null)}
+				{Component => (Component ? <Component {...props} /> : <Loading />)}
 			</DynamicImport>
 		),
 		requireLogin: true,
@@ -60,7 +61,7 @@ export default [
 		path: "/login",
 		component: props => (
 			<DynamicImport load={() => import("../components/pages/Login")}>
-				{Component => (Component ? <Component {...props} /> : null)}
+				{Component => (Component ? <Component {...props} /> : <Loading />)}
 			</DynamicImport>
 		)
 	},
@@ -69,7 +70,7 @@ export default [
 		path: "/signup",
 		component: props => (
 			<DynamicImport load={() => import("../components/pages/SignUp")}>
-				{Component => (Component ? <Component {...props} /> : null)}
+				{Component => (Component ? <Component {...props} /> : <Loading />)}
 			</DynamicImport>
 		),
 		wrapPaper: true
@@ -79,7 +80,7 @@ export default [
 		path: "/users",
 		component: props => (
 			<DynamicImport load={() => import("../components/pages/Users")}>
-				{Component => (Component ? <Component {...props} /> : null)}
+				{Component => (Component ? <Component {...props} /> : <Loading />)}
 			</DynamicImport>
 		),
 		requireLogin: true,
@@ -93,7 +94,7 @@ export default [
 		path: "/vehicles",
 		component: props => (
 			<DynamicImport load={() => import("../components/pages/Vehicles")}>
-				{Component => (Component ? <Component {...props} /> : null)}
+				{Component => (Component ? <Component {...props} /> : <Loading />)}
 			</DynamicImport>
 		),
 		requireLogin: true,
@@ -106,7 +107,7 @@ export default [
 		path: "/accidents",
 		component: props => (
 			<DynamicImport load={() => import("../components/pages/Accidents")}>
-				{Component => (Component ? <Component {...props} /> : null)}
+				{Component => (Component ? <Component {...props} /> : <Loading />)}
 			</DynamicImport>
 		),
 		requireLogin: true,
@@ -120,7 +121,7 @@ export default [
 		path: "/accidents",
 		component: props => (
 			<DynamicImport load={() => import("../components/pages/Accidents")}>
-				{Component => (Component ? <Component {...props} /> : null)}
+				{Component => (Component ? <Component {...props} /> : <Loading />)}
 			</DynamicImport>
 		),
 		requireLogin: true,
@@ -134,7 +135,7 @@ export default [
 		path: "/settings",
 		component: props => (
 			<DynamicImport load={() => import("../components/pages/Settings")}>
-				{Component => (Component ? <Component {...props} /> : null)}
+				{Component => (Component ? <Component {...props} /> : <Loading />)}
 			</DynamicImport>
 		),
 		requireLogin: true,
@@ -147,7 +148,7 @@ export default [
 		path: "/",
 		component: props => (
 			<DynamicImport load={() => import("../components/pages/404")}>
-				{Component => (Component ? <Component {...props} /> : null)}
+				{Component => (Component ? <Component {...props} /> : <Loading />)}
 			</DynamicImport>
 		),
 		exact: false
