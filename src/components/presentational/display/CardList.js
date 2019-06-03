@@ -28,55 +28,57 @@ class CardList extends Component {
 	filterChangeHandler = debounce(e => this.setState({ filter: e }), 200);
 
 	render() {
-		const { cards, gridProps, classes } = this.props;
+		const { cards, gridProps, classes, showAll } = this.props;
 
-		const filteredData = filterData(cards, this.state.filter);
+		let cardList = [...cards];
 
-		const reducedData = reduceData(
-			filteredData,
-			this.state.page,
-			this.state.rowsPerPage
-		);
+		if (!showAll) {
+			cardList = filterData(cardList, this.state.filter);
 
-		const hasSelectedItem = reducedData.some(card =>
+			cardList = paginateData(cardList, this.state.page, this.state.rowsPerPage);
+		}
+
+		const hasSelectedItem = cardList.some(card =>
 			card.props && card.props.selected ? true : false
 		);
 		return (
 			<div className={classes.root}>
-				<Grid container justify="space-between" className={classes.options}>
-					<Grid item xs={12} md={6}>
-						<TextField
-							className={classes.textField}
-							onChange={e => this.filterChangeHandler(e.target.value)}
-							label="Search"
-							InputProps={{
-								startAdornment: (
-									<InputAdornment position="start">
-										<Search />
-									</InputAdornment>
-								)
-							}}
-						/>
+				{!showAll && (
+					<Grid container justify="space-between" className={classes.options}>
+						<Grid item xs={12} md={6}>
+							<TextField
+								className={classes.textField}
+								onChange={e => this.filterChangeHandler(e.target.value)}
+								label="Search"
+								InputProps={{
+									startAdornment: (
+										<InputAdornment position="start">
+											<Search />
+										</InputAdornment>
+									)
+								}}
+							/>
+						</Grid>
+						<Grid item xs={12} md={6}>
+							<TablePagination
+								classes={{
+									selectRoot: classes.selectRoot,
+									actions: classes.actions
+								}}
+								labelRowsPerPage={"Cards per page:"}
+								rowsPerPage={this.state.rowsPerPage}
+								rowsPerPageOptions={this.state.rowsPerPageOptions}
+								count={cardList.length}
+								page={this.state.page}
+								onChangeRowsPerPage={e =>
+									this.setState({ rowsPerPage: e.target.value })
+								}
+								onChangePage={(e, page) => this.setState({ page })}
+								component="div"
+							/>
+						</Grid>
 					</Grid>
-					<Grid item xs={12} md={6}>
-						<TablePagination
-							classes={{
-								selectRoot: classes.selectRoot,
-								actions: classes.actions
-							}}
-							labelRowsPerPage={"Cards per page:"}
-							rowsPerPage={this.state.rowsPerPage}
-							rowsPerPageOptions={this.state.rowsPerPageOptions}
-							count={filteredData.length}
-							page={this.state.page}
-							onChangeRowsPerPage={e =>
-								this.setState({ rowsPerPage: e.target.value })
-							}
-							onChangePage={(e, page) => this.setState({ page })}
-							component="div"
-						/>
-					</Grid>
-				</Grid>
+				)}
 				<Grid
 					container
 					spacing={1}
@@ -85,7 +87,7 @@ class CardList extends Component {
 						[classes.selected]: hasSelectedItem
 					})}
 				>
-					{reducedData.map(
+					{cardList.map(
 						({
 							id,
 							title,
@@ -142,7 +144,7 @@ const filterData = (cards, keyword) => {
 	});
 };
 
-const reduceData = (cards, start, limit) => cards.slice(start, start + limit);
+const paginateData = (cards, start, limit) => cards.slice(start, start + limit);
 
 const styles = theme => ({
 	root: {

@@ -141,6 +141,7 @@ function BookingFromCreate({
 						/>
 						<CardList
 							classes={{ root: classes.bookingListGridContainer }}
+							showAll
 							cards={bookingTypeList.map(type => {
 								let iconName;
 								switch (type.name) {
