@@ -93,6 +93,23 @@ export const search = (keyWord, word) => {
 	return pass;
 };
 
+export const cancelablePromise = promise => {
+	let hasCanceled = false;
+
+	const wrappedPromise = new Promise((resolve, reject) => {
+		promise.then(
+			value =>
+				hasCanceled ? reject({ isCanceled: true, value }) : resolve(value),
+			error => reject({ isCanceled: hasCanceled, error })
+		);
+	});
+
+	return {
+		promise: wrappedPromise,
+		cancel: () => (hasCanceled = true)
+	};
+};
+
 export const validators = {
 	username: new Validator(
 		v => /^.{4,16}$/.test(v),

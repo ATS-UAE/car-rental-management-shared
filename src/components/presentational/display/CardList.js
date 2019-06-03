@@ -4,7 +4,8 @@ import {
 	withStyles,
 	TextField,
 	InputAdornment,
-	TablePagination
+	TablePagination,
+	withWidth
 } from "@material-ui/core";
 import { Search } from "@material-ui/icons";
 import { debounce } from "debounce";
@@ -27,7 +28,7 @@ class CardList extends Component {
 	filterChangeHandler = debounce(e => this.setState({ filter: e }), 200);
 
 	render() {
-		const { cards, gridProps, classes, theme } = this.props;
+		const { cards, gridProps, classes, theme, width } = this.props;
 
 		const filteredData = filterData(cards, this.state.filter);
 
@@ -36,12 +37,12 @@ class CardList extends Component {
 			this.state.page,
 			this.state.rowsPerPage
 		);
-
 		return (
 			<div className={classes.root}>
 				<Grid container justify="space-between" className={classes.options}>
-					<Grid item xs={12} sm={6}>
+					<Grid item xs={12} md={6}>
 						<TextField
+							className={classes.textField}
 							onChange={e => this.filterChangeHandler(e.target.value)}
 							label="Search"
 							InputProps={{
@@ -53,9 +54,13 @@ class CardList extends Component {
 							}}
 						/>
 					</Grid>
-					<Grid item xs={12} sm={6}>
+					<Grid item xs={12} md={6}>
 						<TablePagination
-							classes={classes.pagination}
+							classes={{
+								selectRoot: classes.selectRoot,
+								actions: classes.actions
+							}}
+							labelRowsPerPage={"Cards per page:"}
 							rowsPerPage={this.state.rowsPerPage}
 							rowsPerPageOptions={this.state.rowsPerPageOptions}
 							count={filteredData.length}
@@ -68,11 +73,7 @@ class CardList extends Component {
 						/>
 					</Grid>
 				</Grid>
-				<Grid
-					container
-					spacing={theme.breakpoints.down("sm") ? 1 : 3}
-					{...gridProps}
-				>
+				<Grid container spacing={1} {...gridProps}>
 					{reducedData.map(
 						({
 							id,
@@ -83,7 +84,15 @@ class CardList extends Component {
 							props,
 							gridItemProps
 						}) => (
-							<Grid item xs={12} sm={12} md={6} key={id} {...gridItemProps}>
+							<Grid
+								item
+								xs={12}
+								sm={12}
+								md={6}
+								key={id}
+								{...gridItemProps}
+								classes={{ item: classes.gridItem }}
+							>
 								<Card
 									id={id}
 									title={title}
@@ -126,16 +135,19 @@ const reduceData = (cards, start, limit) => cards.slice(start, start + limit);
 
 const styles = theme => ({
 	root: {
-		padding: theme.spacing(4),
-		[theme.breakpoints.down("sm")]: {
-			padding: theme.spacing(1)
-		}
+		padding: theme.spacing(1)
 	},
 	options: {
 		marginBottom: theme.spacing(1)
 	},
-	pagination: {
-		...theme.mixins.toolbar
+	textField: {
+		[theme.breakpoints.down("md")]: { width: "100%" }
+	},
+	selectRoot: {
+		[theme.breakpoints.down("xs")]: { margin: 0 }
+	},
+	actions: {
+		[theme.breakpoints.down("xs")]: { margin: 0 }
 	}
 });
 
