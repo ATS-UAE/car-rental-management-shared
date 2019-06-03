@@ -89,7 +89,7 @@ const style = theme => ({
 	},
 	selected: {
 		boxShadow: theme.shadows[5],
-		transform: "scale(1.05) translateY(-3px)",
+		transform: "scale(1.11) translateY(-3px)",
 		zIndex: 1
 	},
 	card: {

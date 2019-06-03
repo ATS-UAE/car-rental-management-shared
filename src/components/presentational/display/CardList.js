@@ -1,11 +1,11 @@
-import React, { useState, Component } from "react";
+import React, { Component } from "react";
+import classNames from "classnames";
 import {
 	Grid,
 	withStyles,
 	TextField,
 	InputAdornment,
-	TablePagination,
-	withWidth
+	TablePagination
 } from "@material-ui/core";
 import { Search } from "@material-ui/icons";
 import { debounce } from "debounce";
@@ -28,7 +28,7 @@ class CardList extends Component {
 	filterChangeHandler = debounce(e => this.setState({ filter: e }), 200);
 
 	render() {
-		const { cards, gridProps, classes, theme, width } = this.props;
+		const { cards, gridProps, classes } = this.props;
 
 		const filteredData = filterData(cards, this.state.filter);
 
@@ -36,6 +36,10 @@ class CardList extends Component {
 			filteredData,
 			this.state.page,
 			this.state.rowsPerPage
+		);
+
+		const hasSelectedItem = reducedData.some(card =>
+			card.props && card.props.selected ? true : false
 		);
 		return (
 			<div className={classes.root}>
@@ -73,7 +77,14 @@ class CardList extends Component {
 						/>
 					</Grid>
 				</Grid>
-				<Grid container spacing={1} {...gridProps}>
+				<Grid
+					container
+					spacing={1}
+					{...gridProps}
+					className={classNames(classes.cardContainer, {
+						[classes.selected]: hasSelectedItem
+					})}
+				>
 					{reducedData.map(
 						({
 							id,
@@ -137,6 +148,15 @@ const styles = theme => ({
 	root: {
 		padding: theme.spacing(1)
 	},
+	cardContainer: {
+		transition: theme.transitions.create(["transform"], {
+			easing: theme.transitions.easing.easeOut,
+			duration: theme.transitions.duration.enteringScreen
+		})
+	},
+	selected: {
+		transform: "scale(0.9)"
+	},
 	options: {
 		marginBottom: theme.spacing(1)
 	},
@@ -151,4 +171,4 @@ const styles = theme => ({
 	}
 });
 
-export default withStyles(styles, { withTheme: true })(CardList);
+export default withStyles(styles)(CardList);
