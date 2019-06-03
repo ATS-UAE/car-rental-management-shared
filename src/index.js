@@ -3,11 +3,7 @@ import ReactDOM from "react-dom";
 import reduxThunk from "redux-thunk";
 import { composeWithDevTools } from "redux-devtools-extension";
 import { createStore, applyMiddleware } from "redux";
-import {
-	MuiThemeProvider,
-	createMuiTheme,
-	get
-} from "@material-ui/core/styles";
+import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import { Provider } from "react-redux";
 import "typeface-roboto";
 
