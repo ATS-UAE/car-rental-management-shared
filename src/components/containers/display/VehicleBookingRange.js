@@ -1,14 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { connect } from "react-redux";
 import moment from "moment";
-import * as actions from "../../../actions";
 import VehicleBookingRange from "../../presentational/display/VehicleBookingRange";
 
-function VehicleBookingRangeContainer({ fetchVehicles, vehicles }) {
-	useEffect(() => {
-		fetchVehicles();
-	}, []);
-
+function VehicleBookingRangeContainer({ vehicles, vehicleList }) {
 	let [dateRange, setDateRange] = useState({
 		from: moment()
 			.subtract(2, "days")
@@ -16,14 +11,14 @@ function VehicleBookingRangeContainer({ fetchVehicles, vehicles }) {
 		to: moment().unix() - 1
 	});
 
-	let vehicleList = [];
+	let $vehicleList = [];
 	if (vehicles && vehicles.data) {
-		vehicleList = vehicles.data;
+		$vehicleList = vehicleList === undefined ? vehicles.data : vehicleList;
 	}
 
 	return (
 		<VehicleBookingRange
-			vehicles={vehicleList}
+			vehicles={$vehicleList}
 			dateRange={dateRange}
 			onDateChange={date => {
 				if (date.from > date.to) {
@@ -39,7 +34,4 @@ function VehicleBookingRangeContainer({ fetchVehicles, vehicles }) {
 
 const mapStateToProps = ({ vehicles }) => ({ vehicles });
 
-export default connect(
-	mapStateToProps,
-	actions
-)(VehicleBookingRangeContainer);
+export default connect(mapStateToProps)(VehicleBookingRangeContainer);

@@ -28,14 +28,19 @@ class CardList extends Component {
 	filterChangeHandler = debounce(e => this.setState({ filter: e }), 200);
 
 	render() {
-		const { cards, gridProps, classes, showAll } = this.props;
+		const { cards, gridProps, classes, showAll, details } = this.props;
 
 		let cardList = [...cards];
-
+		let filteredCardList;
+		let paginatedCardList;
 		if (!showAll) {
-			cardList = filterData(cardList, this.state.filter);
+			filteredCardList = filterData(cardList, this.state.filter);
 
-			cardList = paginateData(cardList, this.state.page, this.state.rowsPerPage);
+			paginatedCardList = paginateData(
+				filteredCardList,
+				this.state.page,
+				this.state.rowsPerPage
+			);
 		}
 
 		const hasSelectedItem = cardList.some(card =>
@@ -44,7 +49,11 @@ class CardList extends Component {
 		return (
 			<div className={classes.root}>
 				{!showAll && (
-					<Grid container justify="space-between" className={classes.options}>
+					<Grid
+						container
+						justify="space-between"
+						className={classes.options}
+					>
 						<Grid item xs={12} md={6}>
 							<TextField
 								className={classes.textField}
@@ -59,6 +68,11 @@ class CardList extends Component {
 								}}
 							/>
 						</Grid>
+						{details && (
+							<Grid item xs={12}>
+								{details(paginatedCardList)}
+							</Grid>
+						)}
 						<Grid item xs={12} md={6}>
 							<TablePagination
 								classes={{
@@ -68,7 +82,7 @@ class CardList extends Component {
 								labelRowsPerPage={"Cards per page:"}
 								rowsPerPage={this.state.rowsPerPage}
 								rowsPerPageOptions={this.state.rowsPerPageOptions}
-								count={cardList.length}
+								count={filteredCardList.length}
 								page={this.state.page}
 								onChangeRowsPerPage={e =>
 									this.setState({ rowsPerPage: e.target.value })
@@ -87,7 +101,7 @@ class CardList extends Component {
 						[classes.selected]: hasSelectedItem
 					})}
 				>
-					{cardList.map(
+					{paginatedCardList.map(
 						({
 							id,
 							title,

@@ -12,6 +12,7 @@ import { actions, resources } from "../../../variables/enums";
 import { api } from "../../../utils";
 import CardList from "../../presentational/display/CardList";
 import Can from "../layout/Can";
+import VehicleBookingRange from "./VehicleBookingRange";
 
 function VehicleCardList({ vehicles, history }) {
 	const [formData, setFormData] = useState({});
@@ -55,6 +56,9 @@ function VehicleCardList({ vehicles, history }) {
 			/>
 
 			<CardList
+				details={cards => (
+					<VehicleBookingRange vehicleList={cards.map(card => card.vehicle)} />
+				)}
 				cards={vehicles.map(vehicle => {
 					const {
 						id,
@@ -67,6 +71,7 @@ function VehicleCardList({ vehicles, history }) {
 
 					return {
 						id,
+						vehicle,
 						title: `${brand} ${model}`,
 						descriptions: [plateNumber, vin],
 						imgSrc: vehicleImageSrc || "/static/images/car-no-image-avl.jpg",

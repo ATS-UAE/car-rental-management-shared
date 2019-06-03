@@ -1,13 +1,11 @@
-import React, { Component, Fragment, useEffect } from "react";
+import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 import { compose } from "recompose";
 import moment from "moment";
-import { DialogContent, useTheme } from "@material-ui/core";
+import { DialogContent } from "@material-ui/core";
 import MaterialTable from "material-table";
 import { Route, withRouter } from "react-router-dom";
 import * as reduxActions from "../../../actions";
-import TableView from "../../presentational/forms/TableView";
-import BookingActions from "../../presentational/inputs/BookingActions";
 import Dialog from "../../presentational/display/Dialog";
 import Can from "../layout/Can";
 import BookingFormUpdate from "../forms/bookings/BookingFormUpdate";
