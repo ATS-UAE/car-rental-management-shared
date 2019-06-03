@@ -29,10 +29,7 @@ const styles = theme => ({
 			padding: theme.spacing(1)
 		},
 		height: "100%",
-		overflow: "auto",
-		"& > *": {
-			margin: theme.spacing(1)
-		}
+		overflow: "auto"
 	}
 });
 

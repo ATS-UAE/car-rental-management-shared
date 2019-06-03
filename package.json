@@ -8,6 +8,7 @@
     "@material-ui/lab": "^4.0.0-alpha.13",
     "axios": "^0.18.0",
     "classnames": "^2.2.6",
+    "debounce": "^1.2.0",
     "leaflet": "^1.5.1",
     "material-table": "^1.39.0",
     "moment": "^2.24.0",

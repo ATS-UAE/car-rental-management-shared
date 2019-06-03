@@ -83,11 +83,31 @@ export const getRelatedDataById = (findId, list, many = false) => {
 	return data;
 };
 
+export const search = (keyWord, word) => {
+	let pass = true;
+	if (keyWord && word) {
+		pass = Boolean(
+			keyWord.split(" ").every(key => new RegExp(key, "i").test(word))
+		);
+	}
+	return pass;
+};
+
 export const validators = {
 	username: new Validator(
 		v => /^.{4,16}$/.test(v),
 		"Min 4 characters, max 16 characters."
 	),
+	minLength: length =>
+		new Validator(
+			v => v => new RegExp(`^.{${length},}$`).test(v),
+			`Minimum ${length} characters.`
+		),
+	maxLength: length =>
+		new Validator(
+			v => v => new RegExp(`^.{0,${length}}$`).test(v),
+			`Maximum ${length} characters.`
+		),
 	usernameCharacters: new Validator(
 		v => /^[a-z0-9_-]+$/.test(v),
 		"No special characters."
