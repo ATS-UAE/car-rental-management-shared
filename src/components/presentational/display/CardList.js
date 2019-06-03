@@ -48,12 +48,13 @@ class CardList extends Component {
 		);
 		return (
 			<div className={classes.root}>
+				{details && (
+					<Grid item xs={12}>
+						{details(paginatedCardList)}
+					</Grid>
+				)}
 				{!showAll && (
-					<Grid
-						container
-						justify="space-between"
-						className={classes.options}
-					>
+					<Grid container justify="space-between" className={classes.options}>
 						<Grid item xs={12} md={6}>
 							<TextField
 								className={classes.textField}
@@ -68,11 +69,7 @@ class CardList extends Component {
 								}}
 							/>
 						</Grid>
-						{details && (
-							<Grid item xs={12}>
-								{details(paginatedCardList)}
-							</Grid>
-						)}
+
 						<Grid item xs={12} md={6}>
 							<TablePagination
 								classes={{
@@ -93,6 +90,7 @@ class CardList extends Component {
 						</Grid>
 					</Grid>
 				)}
+
 				<Grid
 					container
 					spacing={1}
