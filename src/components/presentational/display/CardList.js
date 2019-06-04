@@ -31,8 +31,8 @@ class CardList extends Component {
 		const { cards, gridProps, classes, showAll, details } = this.props;
 
 		let cardList = [...cards];
-		let filteredCardList;
-		let paginatedCardList;
+		let filteredCardList = cardList;
+		let paginatedCardList = filteredCardList;
 		if (!showAll) {
 			filteredCardList = filterData(cardList, this.state.filter);
 

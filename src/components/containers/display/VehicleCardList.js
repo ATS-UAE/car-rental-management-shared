@@ -36,8 +36,10 @@ function VehicleCardList({ vehicles, history }) {
 						exclude = location.state.readAccess.excludedFields;
 						readOnly = true;
 					}
+					let hints = readOnly === true ? "" : undefined;
 					return (
 						<VehicleFormUpdate
+							hints={hints}
 							values={formData}
 							onChangeEvent={(data, name, event) =>
 								event.target.files
