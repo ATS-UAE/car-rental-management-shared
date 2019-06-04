@@ -11,7 +11,10 @@ const upload = path =>
 			acl: "public-read",
 			key: function(req, file, cb) {
 				console.log(file);
-				cb(null, `${path}/${Date.now()}-${file.originalname}`); //use Date.now() for unique file keys
+				cb(
+					null,
+					`${process.env.NODE_ENV}/${path}/${Date.now()}-${file.originalname}`
+				); //use Date.now() for unique file keys
 			}
 		})
 	});
