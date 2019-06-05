@@ -3,7 +3,7 @@ import Form, { FIELDS } from "./Form";
 import { Validator, validators } from "../../../utils";
 const { PASSWORD } = FIELDS;
 
-function GuestSignUp({
+function PasswordChange({
 	title,
 	exclude,
 	errorNotes,
@@ -77,4 +77,4 @@ function GuestSignUp({
 	);
 }
 
-export default GuestSignUp;
+export default PasswordChange;

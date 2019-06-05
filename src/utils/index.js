@@ -259,6 +259,8 @@ export const api = {
 	authLogin: credentials =>
 		executeFromAPI("post", "/api/carbooking/auth/login", credentials),
 	authLogout: () => executeFromAPI("get", "/api/carbooking/auth/logout"),
+	resetPassword: data =>
+		executeFromAPI("post", "/api/carbooking/auth/forgot", data),
 	fetchCurrentUserDetails: () =>
 		executeFromAPI("get", "/api/carbooking/auth/me"),
 	updateMe: data => executeFromAPI("patch", "/api/carbooking/auth/me", data),
