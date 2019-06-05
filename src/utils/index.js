@@ -1,4 +1,5 @@
 const moment = require("moment");
+const jwt = require("jsonwebtoken");
 const config = require("../config");
 const { getTransport } = require("../mail/utils");
 
@@ -89,13 +90,13 @@ const toMySQLDate = unixS => {
 function sendPasswordResetToken({ email, url }) {
 	// Send email invite
 	let token = jwt.sign({ email, passwordReset: true }, config.secretKey, {
-		expiresIn: "7d"
+		expiresIn: "1h"
 	});
 	return getTransport().sendMail({
 		from: "no-reply@atsuae.net",
 		to: email,
 		subject: "Password Reset",
-		html: `<h1>Welcome</h1><a href="${url}?token=${token}">Click here to sign up!</a>`
+		html: `<h1>Hello</h1><a href="${url}?token=${token}">Click here to reset password!</a>`
 	});
 }
 
