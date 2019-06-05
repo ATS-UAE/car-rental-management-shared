@@ -56,7 +56,6 @@ export default function PasswordChangeButtonDialog() {
 		>
 			<PasswordChange
 				title="Change your password."
-				onSubmit={() => {}}
 				footer={footer}
 				values={values}
 				onChange={setValues}
