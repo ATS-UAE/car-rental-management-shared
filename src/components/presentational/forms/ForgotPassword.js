@@ -1,129 +1,47 @@
 import React from "react";
-import PropTypes from "prop-types";
-import { Paper, Button, Chip, withStyles, Typography } from "@material-ui/core";
-import { Done } from "@material-ui/icons";
-import { Link } from "react-router-dom";
-import TextFieldValidation from "./TextFieldValidation";
+import Form, { FIELDS } from "./Form";
 import { validators } from "../../../utils";
+const { TEXT } = FIELDS;
 
-function LoginForm(props) {
-	const {
-		classes,
-		value,
-		onChange,
-		onSubmit,
-		errors,
-		onError,
-		showErrors,
-		emailSent,
-		loginPath
-	} = props;
-	const handleSubmit = event => {
-		event.preventDefault();
-		onSubmit && onSubmit();
-	};
+function ForgotPassword({
+	title,
+	exclude,
+	errorNotes,
+	onChange,
+	values,
+	footer,
+	onError,
+	errors
+}) {
+	const fields = [
+		{
+			type: TEXT,
+			name: "email",
+			id: "email",
+			validators: [validators.email],
+			props: {
+				label: "Email Address",
+				required: true
+			},
+			GridProps: {
+				xs: 12,
+				md: 12
+			}
+		}
+	];
 	return (
-		<Paper className={classes.paper}>
-			<form className={classes.form}>
-				<Typography variant="h6" gutterBottom headlineMapping={{ h6: "h1" }}>
-					Recover password
-				</Typography>
-				{emailSent && (
-					<Chip
-						icon={<Done />}
-						label="Please check your email for further instructions."
-						className={classes.chip}
-						color="primary"
-					/>
-				)}
-				<TextFieldValidation
-					TextFieldProps={{
-						className: classes.textFields,
-						autoFocus: true,
-						autoComplete: "email",
-						fullWidth: true
-					}}
-					id="email"
-					label="Email"
-					errors={errors}
-					showErrors={showErrors}
-					validators={validators.email}
-					value={value}
-					onChange={onChange}
-					onError={onError}
-				/>
-				<div className={classes.buttonContainer}>
-					{emailSent ? (
-						<Button
-							type="submit"
-							variant="contained"
-							color="primary"
-							onClick={e => e.preventDefault()}
-						>
-							<Link className={classes.link} to={loginPath}>
-								Login
-							</Link>
-						</Button>
-					) : (
-						<Button
-							type="submit"
-							variant="contained"
-							color="primary"
-							onClick={handleSubmit}
-						>
-							Confirm
-						</Button>
-					)}
-				</div>
-			</form>
-		</Paper>
+		<Form
+			title={title}
+			fields={fields}
+			exclude={exclude}
+			errorNotes={errorNotes}
+			onChange={onChange}
+			values={values}
+			footer={footer}
+			onError={onError}
+			errors={errors}
+		/>
 	);
 }
 
-LoginForm.propTypes = {
-	value: PropTypes.string.isRequired,
-	onChange: PropTypes.func,
-	onSubmit: PropTypes.func,
-	errors: PropTypes.arrayOf(PropTypes.string),
-	onError: PropTypes.func,
-	showErrors: PropTypes.func,
-	emailSent: PropTypes.bool,
-	loginPath: PropTypes.string
-};
-
-LoginForm.defaultProps = {
-	showErrors: true,
-	errors: [],
-	emailSent: false,
-	loginPath: "/login"
-};
-
-const styles = theme => ({
-	paper: {
-		padding: theme.spacing(3)
-	},
-	textFields: {
-		"&:not(:last-child)": {
-			marginBottom: theme.spacing(1)
-		}
-	},
-	buttonContainer: {
-		marginTop: theme.spacing(1),
-		display: "flex",
-		justifyContent: "space-between",
-		flexDirection: "row-reverse"
-	},
-	form: {
-		display: "flex",
-		flexDirection: "column"
-	},
-	link: {
-		color: theme.palette.primary.contrastText,
-		textDecoration: "none"
-	},
-	chip: {
-		alignSelf: "center"
-	}
-});
-
-export default withStyles(styles)(LoginForm);
+export default ForgotPassword;
