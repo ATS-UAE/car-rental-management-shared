@@ -23,8 +23,7 @@ function VehicleForm({
 			id: "vehicle-image",
 			persistEvent: true,
 			props: {
-				label: "Select profile picture",
-				required: true
+				label: "Select profile picture"
 			}
 		},
 		{
