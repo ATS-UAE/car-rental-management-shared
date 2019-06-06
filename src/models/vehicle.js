@@ -3,7 +3,7 @@ module.exports = (sequelize, DataTypes) => {
 		objectId: {
 			type: DataTypes.STRING,
 			allowNull: false,
-			unique: { args: true, msg: "VIN already in use!" }
+			unique: { args: true, msg: "Object ID already in use!" }
 		},
 		brand: {
 			type: DataTypes.STRING,
