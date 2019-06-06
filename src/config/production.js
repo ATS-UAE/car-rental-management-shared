@@ -42,13 +42,6 @@ module.exports = {
 		secure: true,
 		host: MAIL_HOST
 	},
-	aws: {
-		accessKeyId: AWS_ACCESS_KEY_ID,
-		secretAccessKey: AWS_SECRET_ACCESS_KEY,
-		s3: {
-			bucket: AWS_S3_BUCKET
-		}
-	},
 	serverPort: SERVER_PORT,
 	serverUrl: SERVER_URL,
 	secretKey: SECRET_KEY
