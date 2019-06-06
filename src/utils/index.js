@@ -1,3 +1,5 @@
+const path = require("path");
+const fs = require("fs");
 const moment = require("moment");
 const jwt = require("jsonwebtoken");
 const config = require("../config");
@@ -100,7 +102,26 @@ function sendPasswordResetToken({ email, url }) {
 	});
 }
 
+const getStaticFilesPath = () =>
+	path.join(__dirname, "/../../../static", process.env.NODE_ENV);
+
+const getFileURL = (filePath, fileName) =>
+	new URL(`${process.env.SERVER_URL}/static/${filePath}/${fileName}`).href;
+
+const getPathFromURL = fileURL =>
+	path.join(
+		getStaticFilesPath(),
+		fileURL.replace(new RegExp(`^${process.env.SERVER_URL}/static`), "")
+	);
+
+const deleteFileFromUrl = fileUrl =>
+	fs.promises.unlink(getPathFromURL(fileUrl));
+
 module.exports = {
+	deleteFileFromUrl,
+	getPathFromURL,
+	getFileURL,
+	getStaticFilesPath,
 	asyncForEach,
 	ResponseBuilder,
 	sendInviteToken,

@@ -1,35 +1,18 @@
-const config = require("../config");
-const { s3 } = require("../utils/aws");
+const fs = require("fs");
+const { deleteFileFromUrl } = require("../utils");
 
 module.exports = async ({ file, files }, res, next) => {
-	let keys = [];
 	if (res.statusCode >= 400) {
 		if (file) {
-			if (file.key) {
-				keys.push(s3GetKeyFromLocation(beforeUpdate[file.fieldname]));
-			}
+			if (file.url) deleteFileFromUrl(file.url);
+			else if (file.path) fs.promises.unlink(file.path);
 		}
 		if (files) {
-			for (let key in files) {
-				for (let file of files[key]) {
-					if (file.key) {
-						keys.push(s3GetKeyFromLocation(beforeUpdate[file.fieldname]));
-					}
-				}
+			for (let file in Object.values(files)) {
+				if (file.url) deleteFileFromUrl(file.url);
+				else if (file.path) fs.promises.unlink(file.path);
 			}
 		}
-	}
-	for (let key of keys) {
-		await s3.deleteObject(
-			{
-				Bucket: config.aws.s3.bucket,
-				Key: key
-			},
-			function(err, data) {
-				if (err) console.log("Error cancelling upload:", err);
-				else console.log("Deleted file because error.", data);
-			}
-		);
 	}
 	next();
 };

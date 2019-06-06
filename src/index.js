@@ -6,6 +6,7 @@ const bcrypt = require("bcryptjs");
 const cors = require("cors");
 const path = require("path");
 
+const { getStaticFilesPath } = require("./utils");
 const config = require("./config");
 const db = require("./models");
 const authRoutes = require("./routes/auth");
@@ -89,6 +90,7 @@ app.use("/api/carbooking/locations", locationRoutes);
 app.use("/api/carbooking/access", accessRoutes);
 app.use("/api/carbooking/accidents", accidentRoutes);
 
+app.use("/static", express.static(getStaticFilesPath()));
 app.use("/static", express.static(path.join(__dirname, "public")));
 
 app.listen(config.serverPort, () => {

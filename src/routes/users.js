@@ -19,9 +19,6 @@ const { errorCodes } = require("../utils/variables");
 const { ResponseBuilder, pickFields } = require("../utils");
 const { ROLES } = require("../utils/variables");
 const config = require("../config");
-const { s3, s3GetKeyFromLocation } = require("../utils/aws");
-const { aws } = config;
-const { bucket } = aws.s3;
 
 router.get("/", requireLogin, async ({ user }, res) => {
 	let response = new ResponseBuilder();

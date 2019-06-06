@@ -5,7 +5,7 @@ const requireLogin = require("../middlewares/requireLogin");
 const disallowGuests = require("../middlewares/disallowGuests");
 const parseBody = require("../middlewares/parseBody");
 const deleteFileOnError = require("../middlewares/deleteFileOnError");
-const deleteReplacedFiles = require("../middlewares/deleteReplacedFiles");
+const { deleteReplacedFiles } = require("../middlewares/deleteReplacedFiles");
 const upload = require("../middlewares/multerUpload");
 
 const { RBAC, OPERATIONS, resources } = require("../rbac/init");

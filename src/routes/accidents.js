@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const requireLogin = require("../middlewares/requireLogin");
-const deleteReplacedFiles = require("../middlewares/deleteReplacedFiles");
+const { deleteReplacedFiles } = require("../middlewares/deleteReplacedFiles");
 const parseBody = require("../middlewares/parseBody");
 const upload = require("../middlewares/multerUpload");
 const deleteFileOnError = require("../middlewares/deleteFileOnError");

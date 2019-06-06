@@ -2,7 +2,10 @@ const express = require("express");
 const router = express.Router();
 
 const requireLogin = require("../middlewares/requireLogin");
-const deleteReplacedFiles = require("../middlewares/deleteReplacedFiles");
+const {
+	deleteReplacedFiles,
+	addReplacedFiles
+} = require("../middlewares/deleteReplacedFiles");
 const disallowGuests = require("../middlewares/disallowGuests");
 const parseBody = require("../middlewares/parseBody");
 const upload = require("../middlewares/multerUpload");
@@ -11,7 +14,7 @@ const { RBAC, OPERATIONS, resources } = require("../rbac/init");
 const { CREATE, READ, UPDATE, DELETE } = OPERATIONS;
 const db = require("../models");
 const { errorCodes } = require("../utils/variables");
-const { ResponseBuilder } = require("../utils");
+const { ResponseBuilder, getFileURL } = require("../utils");
 
 router.use(requireLogin);
 
@@ -121,9 +124,12 @@ router.patch(
 	upload("carbooking/media/vehicles").single("vehicleImageSrc"),
 	parseBody,
 	disallowGuests,
-	async ({ user, params, body, file = {} }, res, next) => {
-		const { location: fileLocation = null } = file;
-
+	async (req, res, next) => {
+		const { user, params, body, file } = req;
+		const fileLocation =
+			file &&
+			file.filename &&
+			getFileURL("carbooking/media/vehicles", file.filename);
 		let response = new ResponseBuilder();
 
 		let accessible = await RBAC.can(user.role.name, UPDATE, resources.vehicles);
@@ -133,6 +139,12 @@ router.patch(
 			});
 			if (foundVehicle) {
 				try {
+					fileLocation &&
+						addReplacedFiles(res, {
+							url: foundVehicle.vehicleImageSrc,
+							model: db.Vehicle,
+							field: "vehicleImageSrc"
+						});
 					let updatedVehicle = await foundVehicle.update({
 						...body,
 						vehicleImageSrc: fileLocation || foundVehicle.vehicleImageSrc
