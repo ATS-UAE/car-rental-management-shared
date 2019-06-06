@@ -22,7 +22,6 @@ function VehicleForm({
 			name: "vehicleImageSrc",
 			id: "vehicle-image",
 			persistEvent: true,
-			validators: [validators.requiredField],
 			props: {
 				label: "Select profile picture",
 				required: true
