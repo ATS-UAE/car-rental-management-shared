@@ -8,6 +8,7 @@ const addReplacedFiles = (res, { url, model, field }) => {
 
 const deleteReplacedFiles = async (req, { locals }, next) => {
 	if (locals.replacedFiles) {
+		console.log(locals.replacedFiles);
 		for (let file of locals.replacedFiles) {
 			if (file.url && file.model && file.field) {
 				file.model

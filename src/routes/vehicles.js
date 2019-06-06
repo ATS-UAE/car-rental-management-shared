@@ -54,8 +54,11 @@ router.post(
 	upload("carbooking/media/vehicles").single("vehicleImageSrc"),
 	parseBody,
 	disallowGuests,
-	async ({ user, body, file = {} }, res, next) => {
-		const { location: fileLocation = null } = file;
+	async ({ user, body, file }, res, next) => {
+		const fileLocation =
+			file &&
+			file.filename &&
+			getFileURL("carbooking/media/vehicles", file.filename);
 		let response = new ResponseBuilder();
 		let accessible = await RBAC.can(user.role.name, CREATE, resources.vehicles);
 		if (accessible) {
@@ -126,6 +129,7 @@ router.patch(
 	disallowGuests,
 	async (req, res, next) => {
 		const { user, params, body, file } = req;
+		console.log(file);
 		const fileLocation =
 			file &&
 			file.filename &&
@@ -178,33 +182,39 @@ router.patch(
 	deleteReplacedFiles
 );
 
-router.delete("/:id", disallowGuests, async ({ user, params }, res) => {
-	let response = new ResponseBuilder();
+router.delete(
+	"/:id",
+	disallowGuests,
+	async ({ user, params }, res) => {
+		let response = new ResponseBuilder();
 
-	let accessible = await RBAC.can(user.role.name, DELETE, resources.vehicles);
+		let accessible = await RBAC.can(user.role.name, DELETE, resources.vehicles);
 
-	if (accessible) {
-		let foundVehicle = await db.Vehicle.findByPk(params.id);
-		if (foundVehicle) {
-			addReplacedFiles(res, {
-				url: foundVehicle.vehicleImageSrc,
-				model: db.Vehicle,
-				field: "vehicleImageSrc"
-			});
-			await foundVehicle.destroy();
-			response.setCode(200);
-			response.setSuccess(true);
-			response.setMessage(`Vehicle with ID ${params.id} has been deleted.`);
+		if (accessible) {
+			let foundVehicle = await db.Vehicle.findByPk(params.id);
+			if (foundVehicle) {
+				addReplacedFiles(res, {
+					url: foundVehicle.vehicleImageSrc,
+					model: db.Vehicle,
+					field: "vehicleImageSrc"
+				});
+				await foundVehicle.destroy();
+				response.setCode(200);
+				response.setSuccess(true);
+				response.setMessage(`Vehicle with ID ${params.id} has been deleted.`);
+			} else {
+				response.setCode(404);
+				response.setMessage(`Vehicle with ID ${params.id} is not found.`);
+			}
 		} else {
-			response.setCode(404);
-			response.setMessage(`Vehicle with ID ${params.id} is not found.`);
+			response.setMessage(errorCodes.UNAUTHORIZED.message);
+			response.setCode(errorCodes.UNAUTHORIZED.statusCode);
+			res.status(errorCodes.UNAUTHORIZED.statusCode);
 		}
-	} else {
-		response.setMessage(errorCodes.UNAUTHORIZED.message);
-		response.setCode(errorCodes.UNAUTHORIZED.statusCode);
-		res.status(errorCodes.UNAUTHORIZED.statusCode);
-	}
-	res.json(response);
-});
+		res.json(response);
+		next();
+	},
+	deleteReplacedFiles
+);
 
 module.exports = router;

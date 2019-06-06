@@ -2,7 +2,10 @@ const express = require("express");
 const router = express.Router();
 
 const requireLogin = require("../middlewares/requireLogin");
-const { deleteReplacedFiles } = require("../middlewares/deleteReplacedFiles");
+const {
+	deleteReplacedFiles,
+	addReplacedFiles
+} = require("../middlewares/deleteReplacedFiles");
 const parseBody = require("../middlewares/parseBody");
 const upload = require("../middlewares/multerUpload");
 const deleteFileOnError = require("../middlewares/deleteFileOnError");
@@ -10,7 +13,7 @@ const { RBAC, OPERATIONS, resources } = require("../rbac/init");
 const { CREATE, READ, UPDATE, DELETE } = OPERATIONS;
 const db = require("../models");
 const { errorCodes } = require("../utils/variables");
-const { ResponseBuilder } = require("../utils");
+const { ResponseBuilder, getFileURL } = require("../utils");
 
 router.use(requireLogin);
 
@@ -156,27 +159,38 @@ router.patch(
 		if (accessible) {
 			if (foundAccident) {
 				const accidentImageSrc =
-					(files &&
-						files.accidentImageSrc &&
-						files.accidentImageSrc[0] &&
-						files.accidentImageSrc[0].location) ||
-					foundAccident.accidentImageSrc;
+					files &&
+					files.accidentImageSrc &&
+					files.accidentImageSrc[0] &&
+					files.accidentImageSrc[0].filename &&
+					getFileURL("carbooking/media/accidents", file.filename);
 				const accidentVideoSrc =
-					(files &&
-						files.accidentVideoSrc &&
-						files.accidentVideoSrc[0] &&
-						files.accidentVideoSrc[0].location) ||
-					foundAccident.accidentVideoSrc;
+					files &&
+					files.accidentVideoSrc &&
+					files.accidentVideoSrc[0] &&
+					files.accidentVideoSrc[0].filename &&
+					getFileURL("carbooking/media/accidents", file.filename);
 
 				try {
-					req.beforeUpdate = foundAccident;
+					accidentImageSrc &&
+						addReplacedFiles(res, {
+							url: foundAccident.accidentImageSrc,
+							model: db.Accident,
+							field: "accidentImageSrc"
+						});
+					accidentVideoSrc &&
+						addReplacedFiles(res, {
+							url: foundAccident.accidentVideoSrc,
+							model: db.Accident,
+							field: "accidentVideoSrc"
+						});
 					let updatedAccident = await foundAccident.update({
 						...body,
-						accidentImageSrc,
-						accidentVideoSrc
+						accidentImageSrc:
+							accidentImageSrc || foundAccident.accidentImageSrc,
+						accidentVideoSrc: accidentVideoSrc || foundAccident.accidentVideoSrc
 					});
 					if (body.read) {
-						console.log(body);
 						let foundUser = await db.User.findByPk(user.id);
 						updatedAccident.setUserStatus(foundUser, {
 							through: { read: true }
@@ -211,7 +225,7 @@ router.patch(
 	deleteReplacedFiles
 );
 
-router.delete("/:id", async ({ user, params }, res) => {
+router.delete("/:id", async ({ user, params }, res, next) => {
 	let response = new ResponseBuilder();
 
 	let foundAccident = await db.Accident.findByPk(params.id);
@@ -223,6 +237,16 @@ router.delete("/:id", async ({ user, params }, res) => {
 
 	if (accessible) {
 		if (foundAccident) {
+			addReplacedFiles(res, {
+				url: foundAccident.accidentImageSrc,
+				model: db.Accident,
+				field: "accidentImageSrc"
+			});
+			addReplacedFiles(res, {
+				url: foundAccident.accidentVideoSrc,
+				model: db.Accident,
+				field: "accidentVideoSrc"
+			});
 			foundAccident.destroy();
 			response.setCode(200);
 			response.setSuccess(true);
@@ -237,6 +261,7 @@ router.delete("/:id", async ({ user, params }, res) => {
 		res.status(errorCodes.UNAUTHORIZED.statusCode);
 	}
 	res.json(response);
+	next();
 });
 
 module.exports = router;
