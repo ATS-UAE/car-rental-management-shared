@@ -186,6 +186,11 @@ router.delete("/:id", disallowGuests, async ({ user, params }, res) => {
 	if (accessible) {
 		let foundVehicle = await db.Vehicle.findByPk(params.id);
 		if (foundVehicle) {
+			addReplacedFiles(res, {
+				url: foundVehicle.vehicleImageSrc,
+				model: db.Vehicle,
+				field: "vehicleImageSrc"
+			});
 			await foundVehicle.destroy();
 			response.setCode(200);
 			response.setSuccess(true);
