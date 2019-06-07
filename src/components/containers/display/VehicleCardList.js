@@ -51,6 +51,7 @@ function VehicleCardList({ vehicles, history }) {
 							}
 							readOnly={readOnly}
 							exclude={exclude}
+							onSubmit={() => history.push("/vehicles")}
 							showFooter={showFooter}
 						/>
 					);
