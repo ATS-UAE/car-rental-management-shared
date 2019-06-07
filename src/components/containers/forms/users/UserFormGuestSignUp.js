@@ -23,7 +23,7 @@ function UserFormGuestSignUp({ onSubmit, history }) {
 			}
 			onError={setErrors}
 			errors={errors}
-			exclude={["roleId"]}
+			exclude={["roleId", "email"]}
 			showFooter={true}
 			onSubmit={() => {
 				setLoading(true);
