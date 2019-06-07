@@ -51,18 +51,25 @@ router.post(
 	]),
 	parseBody,
 	async ({ user, body, files }, res, next) => {
+		console.log(files);
 		const accidentImageSrc =
-			(files &&
-				files.accidentImageSrc &&
-				files.accidentImageSrc[0] &&
-				files.accidentImageSrc[0].location) ||
-			null;
+			files &&
+			files.accidentImageSrc &&
+			files.accidentImageSrc[0] &&
+			files.accidentImageSrc[0].filename &&
+			getFileURL(
+				"carbooking/media/accidents",
+				files.accidentImageSrc[0].filename
+			);
 		const accidentVideoSrc =
-			(files &&
-				files.accidentVideoSrc &&
-				files.accidentVideoSrc[0] &&
-				files.accidentVideoSrc[0].location) ||
-			null;
+			files &&
+			files.accidentVideoSrc &&
+			files.accidentVideoSrc[0] &&
+			files.accidentImageSrc[0].filename &&
+			getFileURL(
+				"carbooking/media/accidents",
+				files.accidentImageSrc[0].filename
+			);
 
 		let response = new ResponseBuilder();
 		let accessible = await RBAC.can(
@@ -156,6 +163,7 @@ router.patch(
 			resources.accidents,
 			{ accident: foundAccident, user, body }
 		);
+		console.log(files);
 		if (accessible) {
 			if (foundAccident) {
 				const accidentImageSrc =
