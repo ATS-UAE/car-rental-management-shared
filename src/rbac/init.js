@@ -113,7 +113,6 @@ keyManagerRole.addPermission(
 	new Action(UPDATE, bookingsResource, null, ["userId"])
 );
 
-
 // Users permission
 keyManagerRole.addPermission(
 	new Action(READ, usersResource, null, ["password", "passwordConfirm"])
@@ -132,8 +131,10 @@ adminRole.addPermission(new Action(READ, vehicleResource));
 adminRole.addPermission(new Action(UPDATE, vehicleResource));
 adminRole.addPermission(new Action(DELETE, vehicleResource));
 
+// Booking permissions.
 adminRole.addPermission(new Action(DELETE, bookingsResource));
 
+// User permissions.
 adminRole.addPermission(
 	new Action(
 		CREATE,
@@ -145,10 +146,11 @@ adminRole.addPermission(
 	new Action(
 		UPDATE,
 		usersResource,
-		({ role }) => role && role.name !== roleEnums.GUEST,
+		({ targetUser }) => targetUser && targetUser.role.name !== roleEnums.GUEST,
 		["password", "passwordConfirm"]
 	)
 );
+adminRole.addPermission(new Action(DELETE, usersResource));
 
 // Accidents Permissions
 adminRole.addPermission(new Action(DELETE, accidentsResource));
