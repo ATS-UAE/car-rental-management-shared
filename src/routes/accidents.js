@@ -51,7 +51,6 @@ router.post(
 	]),
 	parseBody,
 	async ({ user, body, files }, res, next) => {
-		console.log(files);
 		const accidentImageSrc =
 			files &&
 			files.accidentImageSrc &&
