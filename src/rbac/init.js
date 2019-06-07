@@ -89,7 +89,9 @@ guestRole.addPermission(
 );
 
 // Accidents permissions.
-guestRole.addPermission(new Action(CREATE, accidentsResource, null));
+guestRole.addPermission(
+	new Action(CREATE, accidentsResource, null, ["userId", "bookingId"])
+);
 
 /////////////////////////////
 // KEY_MANAGER ROLE CONFIG //
