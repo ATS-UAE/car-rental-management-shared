@@ -27,7 +27,6 @@ function AccidentFormCreateButtonDialog({ history, classes }) {
 					return (
 						<AccidentFormCreate
 							exclude={exclude}
-							value
 							onSubmit={() => history.push("/accidents")}
 						/>
 					);

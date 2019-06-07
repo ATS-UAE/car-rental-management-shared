@@ -26,9 +26,6 @@ function AccidentForm({
 			persistEvent: true,
 			validators: [validators.requiredField],
 			props: {
-				InputProps: {
-					capture: "camera"
-				},
 				label: "Select picture",
 				required: true
 			}
@@ -47,6 +44,7 @@ function AccidentForm({
 			type: SELECT,
 			id: "vehicle-id",
 			name: "vehicleId",
+			validators: [validators.requiredField],
 			props: {
 				label: "Vehicle",
 				fullWidth: true,
