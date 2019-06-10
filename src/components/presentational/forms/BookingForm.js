@@ -124,7 +124,18 @@ function BookingForm({
 		>
 			{showMap && (
 				<Grid item xs={12}>
-					<WorldMap>
+					<WorldMap
+						defaultCenter={
+							values &&
+							values.locationId &&
+							locations &&
+							locations.reduce((acc, location) => {
+								if (values.locationId === location.id)
+									acc = { lat: location.lat, lng: location.lng };
+								return acc;
+							})
+						}
+					>
 						{locations &&
 							locations.map(location => {
 								const { lat, lng, name, locationImageSrc } = location;
