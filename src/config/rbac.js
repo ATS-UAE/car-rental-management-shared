@@ -37,17 +37,17 @@ generalRole.addPermission(
 );
 generalRole.addPermission(new Action(READ, locationsResource));
 // Booking permissions.
-generalRole.addPermission(
-	new Action(UPDATE, bookingsResource, () => {
-		// Bookings that are not yet finalized / ongoing / approved.
-	})
-);
+// generalRole.addPermission(
+// 	new Action(UPDATE, bookingsResource, () => {
+// 		// Bookings that are not yet finalized / ongoing / approved.
+// 	})
+// );
 
-generalRole.addPermission(
-	new Action(DELETE, bookingsResource, () => {
-		// Bookings that are not yet finalized / paid / ongoing / approved.
-	})
-);
+// generalRole.addPermission(
+// 	new Action(DELETE, bookingsResource, () => {
+// 		// Bookings that are not yet finalized / paid / ongoing / approved.
+// 	})
+// );
 generalRole.addPermission(
 	new Action(
 		READ,
