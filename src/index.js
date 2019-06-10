@@ -5,11 +5,17 @@ import { composeWithDevTools } from "redux-devtools-extension";
 import { createStore, applyMiddleware } from "redux";
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import { Provider } from "react-redux";
+import { StylesProvider, jssPreset } from "@material-ui/styles";
+import { create } from "jss";
 import "typeface-roboto";
 
 import reducers from "./reducers";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
+
+const jss = create({
+	plugins: [...jssPreset().plugins]
+});
 
 const theme = createMuiTheme({
 	palette: {
@@ -58,9 +64,11 @@ let store = createStore(
 
 ReactDOM.render(
 	<Provider store={store}>
-		<MuiThemeProvider theme={theme}>
-			<App />
-		</MuiThemeProvider>
+		<StylesProvider jss={jss}>
+			<MuiThemeProvider theme={theme}>
+				<App />
+			</MuiThemeProvider>
+		</StylesProvider>
 	</Provider>,
 	document.getElementById("root")
 );
