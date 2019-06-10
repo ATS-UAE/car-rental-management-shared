@@ -9,6 +9,7 @@ import * as reduxActions from "../../../actions";
 import Dialog from "../../presentational/display/Dialog";
 import Can from "../layout/Can";
 import BookingFormUpdate from "../forms/bookings/BookingFormUpdate";
+import BookingForm from "../forms/bookings/BookingForm";
 import {
 	toTitleWords,
 	api,
@@ -529,7 +530,6 @@ class BookingTableView extends Component {
 										});
 
 									if (auth && formData && read && update) {
-										console.log(formData);
 										return (
 											<BookingFormUpdate
 												values={formData}
@@ -543,10 +543,10 @@ class BookingTableView extends Component {
 												allowBefore={true}
 												onSubmit={() => {
 													this.setState({
-														formData: {}
+														formData: null
 													});
-													this.props.history.push("/bookings");
 													api.fetchBookings();
+													this.props.history.push("/bookings");
 												}}
 											/>
 										);
@@ -574,7 +574,34 @@ class BookingTableView extends Component {
 					/>
 					<Route
 						path="/bookings/:id"
-						render={({ match }) => renderDialog({ match })}
+						render={({ match }) =>
+							renderDialog({
+								match,
+								children: async ({ booking, read, location, vehicle }) => {
+									if (formData === null && booking)
+										this.setState({
+											formData: {
+												...booking.data,
+												locationId: location.data.id
+											}
+										});
+
+									if (auth && formData && read) {
+										return (
+											<BookingForm
+												values={formData}
+												readOnly={true}
+												allowBefore={true}
+												exclude={read.exclude}
+												hints=""
+												title={`Booking #${formData.id}`}
+											/>
+										);
+									}
+									return null;
+								}
+							})
+						}
 					/>
 				</Switch>
 				{

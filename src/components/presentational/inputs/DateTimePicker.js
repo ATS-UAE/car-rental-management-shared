@@ -5,7 +5,15 @@ import { withStyles } from "@material-ui/core/styles";
 import { TextField } from "@material-ui/core";
 import Slider from "./Slider";
 
-function DateTimePicker({ value, id, onChange, classes, label, error }) {
+function DateTimePicker({
+	value,
+	id,
+	onChange,
+	classes,
+	label,
+	error,
+	disabled
+}) {
 	let dateTime;
 
 	try {
@@ -44,11 +52,12 @@ function DateTimePicker({ value, id, onChange, classes, label, error }) {
 
 		onChange({ target: { value: date } });
 	};
-
+	console.log(disabled);
 	return (
 		<div>
 			<div className={classes.textField}>
 				<TextField
+					disabled={disabled}
 					id={id + "-picker"}
 					value={date}
 					label={label}
@@ -60,6 +69,7 @@ function DateTimePicker({ value, id, onChange, classes, label, error }) {
 			</div>
 			<div className={classes.slider}>
 				<Slider
+					disabled={disabled}
 					min={0}
 					max={86400}
 					step={60}

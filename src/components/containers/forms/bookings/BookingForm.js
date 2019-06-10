@@ -21,7 +21,8 @@ function BookingFormContainer({
 	readOnly,
 	ticksMap,
 	allowBefore,
-	users
+	users,
+	hints
 }) {
 	let [errors, setErrors] = useState({});
 	let [disableButton, setDisabledButton] = useState(false);
@@ -82,7 +83,7 @@ function BookingFormContainer({
 			vehicleList = $vehicleList;
 		}
 	}
-	let footer = readOnly !== false && (
+	let footer = readOnly !== true && (
 		<Fragment>
 			<Grid item>
 				<VehicleBookingRange
@@ -126,7 +127,7 @@ function BookingFormContainer({
 					to = from;
 					from = temp;
 				}
-				onChange({ ...values, from, to });
+				onChange && onChange({ ...values, from, to });
 			}}
 			errorNotes={errorNotes}
 			errors={errors}
@@ -135,8 +136,9 @@ function BookingFormContainer({
 			footer={footer}
 			locations={locations && locations.data ? locations.data : []}
 			onLocationClick={({ id: locationId }) =>
-				onChange({ ...values, locationId })
+				onChange && onChange({ ...values, locationId })
 			}
+			hints={hints}
 		/>
 	);
 }

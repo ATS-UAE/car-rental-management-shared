@@ -17,7 +17,8 @@ function Slider({
 	label,
 	classes,
 	showTooltip,
-	showButtons
+	showButtons,
+	disabled
 }) {
 	const [mouseDownId, setMouseDownId] = useState([]);
 	const handleHold = addMinus => () => {
@@ -49,6 +50,7 @@ function Slider({
 			onMouseDown={handleHold()}
 			onTouchEnd={removeHold}
 			onMouseUp={removeHold}
+			disabled={disabled}
 		>
 			<KeyboardArrowLeft />
 		</IconButton>
@@ -63,6 +65,7 @@ function Slider({
 			onTouchStart={handleHold("add")}
 			onTouchEnd={removeHold}
 			onMouseUp={removeHold}
+			disabled={disabled}
 		>
 			<KeyboardArrowRight />
 		</IconButton>
@@ -92,6 +95,7 @@ function Slider({
 						onChange({ target: { value: v } });
 					}}
 					{...others}
+					disabled={disabled}
 				/>
 			</div>
 			{showTooltip && showButtons ? (
