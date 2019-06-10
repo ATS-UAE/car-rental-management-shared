@@ -52,7 +52,6 @@ function DateTimePicker({
 
 		onChange({ target: { value: date } });
 	};
-	console.log(disabled);
 	return (
 		<div>
 			<div className={classes.textField}>
