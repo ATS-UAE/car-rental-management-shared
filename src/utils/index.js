@@ -310,6 +310,8 @@ export const api = {
 			formData: true
 		}),
 	fetchLocations: () => executeFromAPI("get", "/api/carbooking/locations"),
+	fetchLocation: id => executeFromAPI("get", `/api/carbooking/locations/${id}`),
+
 	updateLocation: location =>
 		executeFromAPI(
 			"patch",
