@@ -1,11 +1,11 @@
 import React from "react";
 import withStyles from "@material-ui/core/styles/withStyles";
-import RiseLoader from "react-spinners/RiseLoader";
+import CircleLoader from "react-spinners/CircleLoader";
 function Loading({ classes }) {
 	return (
 		<div className={classes.root}>
 			<div className={classes.spinner}>
-				<RiseLoader color="#FE6B8B" />
+				<CircleLoader color="#FE6B8B" />
 			</div>
 		</div>
 	);

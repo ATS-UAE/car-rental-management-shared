@@ -4,7 +4,7 @@ import { compose } from "recompose";
 import moment from "moment";
 import { DialogContent } from "@material-ui/core";
 import MaterialTable from "material-table";
-import { Route, withRouter } from "react-router-dom";
+import { Route, withRouter, Switch } from "react-router-dom";
 import * as reduxActions from "../../../actions";
 import Dialog from "../../presentational/display/Dialog";
 import Can from "../layout/Can";
@@ -17,7 +17,6 @@ import {
 } from "../../../utils";
 import { resources, actions, roles } from "../../../variables/enums";
 import { RBAC } from "../../../config/rbac";
-import ConfirmDialog from "../../presentational/forms/ConfirmDialog";
 import BookingFinalizeForm from "../forms/bookings/BookingFinalizeForm";
 import AddBox from "@material-ui/icons/AddBox";
 import ArrowUpward from "@material-ui/icons/ArrowUpward";
@@ -66,14 +65,9 @@ class BookingTableView extends Component {
 		loadingRows: [],
 		finalizeFormData: {},
 		open: false,
-		updateFormData: {},
+		formData: null,
 		finalizeDialogOpen: false,
-		confirmPaymentData: {
-			disabled: false,
-			open: false,
-			title: "Confirm that booking is paid?",
-			bookingId: null
-		},
+		isLoading: false,
 		bookingColumns: [
 			{
 				title: "ID",
@@ -190,6 +184,7 @@ class BookingTableView extends Component {
 	}
 
 	resetActions = async () => {
+		const { history } = this.props;
 		let userRole = this.props.auth.data.role.name;
 		let canUpdate = await RBAC.can(
 			userRole,
@@ -265,20 +260,21 @@ class BookingTableView extends Component {
 					hidden: !visible,
 					disabled: rowStatus >= 0,
 					onClick: (event, { booking }) => {
-						this.setState({
-							loadingRows: [...this.state.loadingRows, booking.id]
-						});
-						api.deleteBooking({ id: booking.id }).then(() => {
-							const rowStatusIndex = this.state.loadingRows.indexOf(booking.id);
-							if (rowStatusIndex >= 0) {
-								const newStatus = [...this.state.loadingRows];
-								newStatus.splice(rowStatusIndex, 1);
-								this.setState({
-									loadingRows: newStatus
-								});
-							}
-							this.props.fetchBookings();
-						});
+						history.push(`/bookings/${booking.id}/delete`);
+						// this.setState({
+						// 	loadingRows: [...this.state.loadingRows, booking.id]
+						// });
+						// api.deleteBooking({ id: booking.id }).then(() => {
+						// 	const rowStatusIndex = this.state.loadingRows.indexOf(booking.id);
+						// 	if (rowStatusIndex >= 0) {
+						// 		const newStatus = [...this.state.loadingRows];
+						// 		newStatus.splice(rowStatusIndex, 1);
+						// 		this.setState({
+						// 			loadingRows: newStatus
+						// 		});
+						// 	}
+						// 	this.props.fetchBookings();
+						// });
 					}
 				};
 			},
@@ -294,10 +290,11 @@ class BookingTableView extends Component {
 					disabled: rowStatus >= 0,
 
 					onClick: (event, { booking }) => {
-						this.setState({
-							loadingRows: [...this.state.loadingRows, booking.id]
-						});
-						this.props.history.push(`/bookings/${booking.id}`);
+						history.push(`/bookings/${booking.id}/edit`);
+						// this.setState({
+						// 	loadingRows: [...this.state.loadingRows, booking.id]
+						// });
+						// this.props.history.push(`/bookings/${booking.id}`);
 					}
 				};
 			},
@@ -311,24 +308,25 @@ class BookingTableView extends Component {
 					disabled: rowStatus >= 0,
 
 					onClick: (event, { booking }) => {
-						this.setState({
-							loadingRows: [...this.state.loadingRows, booking.id]
-						});
-						api.fetchBooking(booking.id).then(res => {
-							this.setState({
-								finalizeFormData: { ...res.data, amount: 0 }
-							});
-							this.setState({ finalizeDialogOpen: true });
-							const rowStatusIndex = this.state.loadingRows.indexOf(booking.id);
-							if (rowStatusIndex >= 0) {
-								const newStatus = [...this.state.loadingRows];
-								newStatus.splice(rowStatusIndex, 1);
-								this.setState({
-									loadingRows: newStatus
-								});
-							}
-							this.props.fetchBookings();
-						});
+						history.push(`/bookings/${booking.id}/finalize`);
+						// this.setState({
+						// 	loadingRows: [...this.state.loadingRows, booking.id]
+						// });
+						// api.fetchBooking(booking.id).then(res => {
+						// 	this.setState({
+						// 		finalizeFormData: { ...res.data, amount: 0 }
+						// 	});
+						// 	this.setState({ finalizeDialogOpen: true });
+						// 	const rowStatusIndex = this.state.loadingRows.indexOf(booking.id);
+						// 	if (rowStatusIndex >= 0) {
+						// 		const newStatus = [...this.state.loadingRows];
+						// 		newStatus.splice(rowStatusIndex, 1);
+						// 		this.setState({
+						// 			loadingRows: newStatus
+						// 		});
+						// 	}
+						// 	this.props.fetchBookings();
+						// });
 					}
 				};
 			},
@@ -343,38 +341,39 @@ class BookingTableView extends Component {
 					disabled: rowStatus >= 0,
 
 					onClick: (event, { booking }) => {
-						this.setState({
-							loadingRows: [...this.state.loadingRows, booking.id]
-						});
-						api.fetchBooking(booking.id).then(res => {
-							let vehicle = this.props.vehicles.data.find(
-								vehicle => vehicle.id === booking.vehicleId
-							);
-							let user = this.props.users.data.find(
-								user => booking.userId === user.id
-							);
-							this.setState({
-								confirmPaymentData: {
-									...this.state.confirmPaymentData,
-									bookingId: booking.id,
-									open: true,
-									content: `Booking for user ${user.firstName} ${
-										user.lastName
-									} on vehicle ${vehicle.brand} ${vehicle.model} - ${
-										vehicle.plateNumber
-									} will be marked as paid.`
-								}
-							});
-							const rowStatusIndex = this.state.loadingRows.indexOf(booking.id);
-							if (rowStatusIndex >= 0) {
-								const newStatus = [...this.state.loadingRows];
-								newStatus.splice(rowStatusIndex, 1);
-								this.setState({
-									loadingRows: newStatus
-								});
-							}
-							this.props.fetchBookings();
-						});
+						history.push(`/bookings/${booking.id}/pay`);
+						// this.setState({
+						// 	loadingRows: [...this.state.loadingRows, booking.id]
+						// });
+						// api.fetchBooking(booking.id).then(res => {
+						// 	let vehicle = this.props.vehicles.data.find(
+						// 		vehicle => vehicle.id === booking.vehicleId
+						// 	);
+						// 	let user = this.props.users.data.find(
+						// 		user => booking.userId === user.id
+						// 	);
+						// 	this.setState({
+						// 		confirmPaymentData: {
+						// 			...this.state.confirmPaymentData,
+						// 			bookingId: booking.id,
+						// 			open: true,
+						// 			content: `Booking for user ${user.firstName} ${
+						// 				user.lastName
+						// 			} on vehicle ${vehicle.brand} ${vehicle.model} - ${
+						// 				vehicle.plateNumber
+						// 			} will be marked as paid.`
+						// 		}
+						// 	});
+						// 	const rowStatusIndex = this.state.loadingRows.indexOf(booking.id);
+						// 	if (rowStatusIndex >= 0) {
+						// 		const newStatus = [...this.state.loadingRows];
+						// 		newStatus.splice(rowStatusIndex, 1);
+						// 		this.setState({
+						// 			loadingRows: newStatus
+						// 		});
+						// 	}
+						// 	this.props.fetchBookings();
+						// });
 					}
 				};
 			}
@@ -438,115 +437,248 @@ class BookingTableView extends Component {
 		}
 	};
 	render() {
+		const { history, auth } = this.props;
+		const { formData } = this.state;
+
+		const renderDialog = ({ match, children }) => (
+			<Dialog
+				onMount={async () => {
+					const booking = await api
+						.fetchBooking(match.params.id)
+						.catch(() => history.push("/bookings"));
+					const vehicle = await api
+						.fetchVehicle(booking.data.vehicleId)
+						.catch(() => history.push("/bookings"));
+					const location = await api
+						.fetchLocation(vehicle.data.locationId)
+						.catch(() => history.push("/bookings"));
+
+					const read = {
+						access: await RBAC.can(
+							auth.data.role.name,
+							actions.READ,
+							resources.BOOKINGS
+						),
+						excluded: RBAC.getExcludedFields(
+							auth.data.role.name,
+							actions.UPDATE,
+							resources.BOOKINGS
+						)
+					};
+
+					const update = {
+						access: await RBAC.can(
+							auth.data.role.name,
+							actions.UPDATE,
+							resources.BOOKINGS
+						),
+						exclude: RBAC.getExcludedFields(
+							auth.data.role.name,
+							actions.UPDATE,
+							resources.BOOKINGS
+						)
+					};
+
+					const destroy = {
+						access: await RBAC.can(
+							auth.data.role.name,
+							actions.DELETE,
+							resources.BOOKINGS
+						)
+					};
+
+					const create = {
+						access: await RBAC.can(
+							auth.data.role.name,
+							actions.READ,
+							resources.BOOKINGS
+						),
+						exclude: RBAC.getExcludedFields(
+							auth.data.role.name,
+							actions.READ,
+							resources.BOOKINGS
+						)
+					};
+
+					return { booking, vehicle, location, create, read, update, destroy };
+				}}
+				onClose={() => {
+					history.push("/bookings");
+					this.setState({ formData: null });
+				}}
+				open={true}
+				children={children}
+			/>
+		);
+
 		return (
 			<Fragment>
-				<Route
-					path="/bookings/:id"
-					render={props => {
-						return (
-							<Dialog
-								onMount={() =>
-									api
-										.fetchBooking(props.match.params.id)
-										.then(res => {
-											this.setState({
-												updateFormData: {
-													...res.data,
-													userId: res.data.user.id,
-													bookingTypeId: res.data.bookingType.id,
-													vehicleId: res.data.vehicle.id,
-													locationId: res.data.vehicle.locationId
-												}
-											});
-										})
-										.catch(() => {
-											this.props.history.push("/bookings");
-										})
-								}
-								onClose={() => {
-									const rowStatusIndex = this.state.loadingRows.findIndex(
-										id => props.match.params.id == id
-									);
-									if (rowStatusIndex >= 0) {
-										const newStatus = [...this.state.loadingRows];
-										newStatus.splice(rowStatusIndex, 1);
+				<Switch>
+					<Route
+						path="/bookings/:id/edit"
+						render={({ match }) =>
+							renderDialog({
+								match,
+								children: async ({ booking, read, update, location }) => {
+									if (formData === null && booking)
 										this.setState({
-											loadingRows: newStatus
+											formData: {
+												...booking.data,
+												locationId: location.data.id
+											}
 										});
-									}
-									this.props.history.push("/bookings");
-								}}
-								open={true}
-							>
-								{this.props.auth &&
-								this.props.auth.data &&
-								this.state.updateFormData.id ? (
-									<Can
-										action={actions.READ}
-										resource={resources.BOOKINGS}
-										params={{
-											user: this.props.auth.data.role.name,
-											booking: this.state.updateFormData
-										}}
-										yes={readAccess => (
-											<Can
-												action={actions.UPDATE}
-												resource={resources.BOOKINGS}
-												yes={access => {
-													return (
-														<BookingFormUpdate
-															values={this.state.updateFormData}
-															onChange={data =>
-																this.setState({
-																	updateFormData: data
-																})
-															}
-															exclude={readAccess.excludedFields}
-															readOnly={access.excludedFields}
-															allowBefore={true}
-															onSubmit={() => {
-																this.setState({
-																	updateFormData: {}
-																});
-																const rowStatusIndex = this.state.loadingRows.findIndex(
-																	id => props.match.params.id == id
-																);
-																if (rowStatusIndex >= 0) {
-																	const newStatus = [...this.state.loadingRows];
-																	newStatus.splice(rowStatusIndex, 1);
-																	this.setState({
-																		loadingRows: newStatus
-																	});
-																}
-																this.props.history.push("/bookings");
-																this.props.onSubmit && this.props.onSubmit();
-															}}
-														/>
-													);
+
+									if (auth && formData && read && update) {
+										console.log(formData);
+										return (
+											<BookingFormUpdate
+												values={formData}
+												onChange={formData =>
+													this.setState({
+														formData
+													})
+												}
+												exclude={read.access.exclude}
+												readOnly={update.access.exclude}
+												allowBefore={true}
+												onSubmit={() => {
+													this.setState({
+														formData: {}
+													});
+													this.props.history.push("/bookings");
+													api.fetchBookings();
 												}}
-												no={() => (
-													<BookingFormUpdate
-														values={this.state.updateFormData}
-														onChange={data =>
-															this.setState({
-																updateFormData: data
-															})
-														}
-														readOnly={true}
-														exclude={readAccess.excludedFields}
-														hints=""
-													/>
-												)}
 											/>
-										)}
-									/>
-								) : (
-									"Loading..."
-								)}
-							</Dialog>
-						);
-					}}
-				/>
+										);
+									}
+									return null;
+								}
+							})
+						}
+					/>
+					<Route
+						path="/bookings/:id/new"
+						render={({ match }) => renderDialog({ match })}
+					/>
+					<Route
+						path="/bookings/:id/delete"
+						render={({ match }) => renderDialog({ match })}
+					/>
+					<Route
+						path="/bookings/:id/finalize"
+						render={({ match }) => renderDialog({ match })}
+					/>
+					<Route
+						path="/bookings/:id/pay"
+						render={({ match }) => renderDialog({ match })}
+					/>
+					<Route
+						path="/bookings/:id"
+						render={({ match }) => renderDialog({ match })}
+					/>
+				</Switch>
+				{
+					// <Route
+					// 	path="/bookings/:id"
+					// 	render={props => {
+					// 		return (
+					// 			<Dialog
+					// 				onMount={() =>
+					// 					api
+					// 						.fetchBooking(props.match.params.id)
+					// 						.then(res => {
+					// 							this.setState({
+					// 								updateFormData: {
+					// 									...res.data,
+					// 									userId: res.data.user.id,
+					// 									bookingTypeId: res.data.bookingType.id,
+					// 									vehicleId: res.data.vehicle.id,
+					// 									locationId: res.data.vehicle.locationId
+					// 								}
+					// 							});
+					// 						})
+					// 						.catch(() => {
+					// 							this.props.history.push("/bookings");
+					// 						})
+					// 				}
+					// 				onClose={() => {
+					// 					this.props.history.push("/bookings");
+					// 				}}
+					// 				open={true}
+					// 			>
+					// 				{this.props.auth &&
+					// 				this.props.auth.data &&
+					// 				this.state.updateFormData.id ? (
+					// 					<Can
+					// 						action={actions.READ}
+					// 						resource={resources.BOOKINGS}
+					// 						params={{
+					// 							user: this.props.auth.data.role.name,
+					// 							booking: this.state.updateFormData
+					// 						}}
+					// 						yes={readAccess => (
+					// 							<Can
+					// 								action={actions.UPDATE}
+					// 								resource={resources.BOOKINGS}
+					// 								yes={access => {
+					// 									return (
+					// 										<BookingFormUpdate
+					// 											values={this.state.updateFormData}
+					// 											onChange={data =>
+					// 												this.setState({
+					// 													updateFormData: data
+					// 												})
+					// 											}
+					// 											exclude={readAccess.excludedFields}
+					// 											readOnly={access.excludedFields}
+					// 											allowBefore={true}
+					// 											onSubmit={() => {
+					// 												this.setState({
+					// 													updateFormData: {}
+					// 												});
+					// 												const rowStatusIndex = this.state.loadingRows.findIndex(
+					// 													id => props.match.params.id == id
+					// 												);
+					// 												if (rowStatusIndex >= 0) {
+					// 													const newStatus = [
+					// 														...this.state.loadingRows
+					// 													];
+					// 													newStatus.splice(rowStatusIndex, 1);
+					// 													this.setState({
+					// 														loadingRows: newStatus
+					// 													});
+					// 												}
+					// 												this.props.history.push("/bookings");
+					// 												this.props.onSubmit &&
+					// 													this.props.onSubmit();
+					// 											}}
+					// 										/>
+					// 									);
+					// 								}}
+					// 								no={() => (
+					// 									<BookingFormUpdate
+					// 										values={this.state.updateFormData}
+					// 										onChange={data =>
+					// 											this.setState({
+					// 												updateFormData: data
+					// 											})
+					// 										}
+					// 										readOnly={true}
+					// 										exclude={readAccess.excludedFields}
+					// 										hints=""
+					// 									/>
+					// 								)}
+					// 							/>
+					// 						)}
+					// 					/>
+					// 				) : (
+					// 					"Loading..."
+					// 				)}
+					// 			</Dialog>
+					// 		);
+					// 	}}
+					// />
+				}
 				<MaterialTable
 					icons={tableIcons}
 					columns={this.state.bookingColumns}
@@ -559,67 +691,25 @@ class BookingTableView extends Component {
 					}}
 					actions={this.state.bookingActions}
 				/>
-				<ConfirmDialog
-					title={this.state.confirmPaymentData.title}
-					content={this.state.confirmPaymentData.content}
-					open={this.state.confirmPaymentData.open}
-					disabled={this.state.confirmPaymentData.disabled}
-					onClose={() =>
-						this.setState({
-							confirmPaymentData: {
-								...this.state.confirmPaymentData,
-								open: false
-							}
-						})
-					}
-					yes={() => {
-						this.setState({
-							confirmPaymentData: {
-								...this.state.confirmPaymentData,
-								disabled: true
-							}
-						});
-						api
-							.updateBooking({
-								id: this.state.confirmPaymentData.bookingId,
-								paid: true
-							})
-							.then(() => {
-								this.setState({
-									confirmPaymentData: {
-										...this.state.confirmPaymentData,
-										open: false,
-										disabled: false
-									}
-								});
-								this.props.fetchBookings();
-							});
-					}}
-					no={() =>
-						this.setState({
-							confirmPaymentData: {
-								...this.state.confirmPaymentData,
-								open: false
-							}
-						})
-					}
-				/>
-				<Dialog
-					open={this.state.finalizeDialogOpen}
-					onClose={() => this.setState({ finalizeDialogOpen: false })}
-				>
-					<DialogContent>
-						<BookingFinalizeForm
-							values={this.state.finalizeFormData}
-							onChange={data => this.setState({ finalizeFormData: data })}
-							onSubmit={() => {
-								this.setState({ finalizeFormData: {} });
-								this.setState({ finalizeDialogOpen: false });
-								this.props.fetchBookings();
-							}}
-						/>
-					</DialogContent>
-				</Dialog>
+
+				{
+					// <Dialog
+					// 	open={this.state.finalizeDialogOpen}
+					// 	onClose={() => this.setState({ finalizeDialogOpen: false })}
+					// >
+					// 	<DialogContent>
+					// 		<BookingFinalizeForm
+					// 			values={this.state.finalizeFormData}
+					// 			onChange={data => this.setState({ finalizeFormData: data })}
+					// 			onSubmit={() => {
+					// 				this.setState({ finalizeFormData: {} });
+					// 				this.setState({ finalizeDialogOpen: false });
+					// 				this.props.fetchBookings();
+					// 			}}
+					// 		/>
+					// 	</DialogContent>
+					// </Dialog>
+				}
 			</Fragment>
 		);
 	}

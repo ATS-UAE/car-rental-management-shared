@@ -4,7 +4,7 @@ import { Button } from "@material-ui/core";
 import UserFormCreate from "./UserFormCreate";
 import FormPage from "../../../pages/FormPage";
 import Can from "../../layout/Can";
-import { actions, resources } from "../../../../variables/enums";
+import { actions, resources, roles } from "../../../../variables/enums";
 
 function UserFormCreateButtonDialog({ history }) {
 	return (
@@ -20,8 +20,9 @@ function UserFormCreateButtonDialog({ history }) {
 			<Can
 				action={actions.CREATE}
 				resource={resources.USERS}
+				params={{ role: roles.KEY_MANAGER }}
 				yes={() => (
-					<Button onClick={() => history.push("/vehicles/new")}>New</Button>
+					<Button onClick={() => history.push("/users/new")}>New</Button>
 				)}
 			/>
 		</Fragment>

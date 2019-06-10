@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from "react";
+import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import { Grid, Typography, TextField } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
@@ -62,75 +62,73 @@ function Form({
 		onError && onError(fieldErrors);
 	}, [values]);
 	return (
-		<Fragment>
-			<form className={classes.root}>
-				{errorNotes.map((e, i) => (
-					<ErrorChip key={i} label={e} className={classes.errorChip} />
-				))}
-				{title && (
-					<Typography
-						variant="h6"
-						gutterBottom
-						component="h1"
-						className={classes.title}
-					>
-						{title}
-					</Typography>
-				)}
-				<Grid
-					container
-					spacing={3}
-					className={classes.gridContainer}
-					{...gridContainerProps}
+		<form className={classes.root}>
+			{errorNotes.map((e, i) => (
+				<ErrorChip key={i} label={e} className={classes.errorChip} />
+			))}
+			{title && (
+				<Typography
+					variant="h6"
+					gutterBottom
+					component="h1"
+					className={classes.title}
 				>
-					{formFields.map(field => {
-						const Component = field.type;
-						const { props = {}, name, id, GridProps, persistEvent } = field;
-						let disabled;
-						if (readOnly.length)
-							disabled = readOnly.find(field => field === name || field === id)
-								? true
-								: false;
-						else if (typeof readOnly === "boolean") disabled = readOnly;
-						return (
-							<Grid item xs={12} sm={6} key={name} {...GridProps}>
-								<Component
-									id={id}
-									value={values[name] === undefined ? "" : values[name]}
-									onChange={handleChange(name, { persistEvent })}
-									disabled={disabled}
-									{...props}
-									label={
-										errors[name] && errors[name][0] && values[name]
-											? errors[name][0]
-											: props.label
-									}
-									error={
-										errors[name] &&
-										errors[name].length &&
-										values[name] !== undefined
-											? true
-											: false
-									}
-									fullWidth
-								/>
-							</Grid>
-						);
-					})}
-					{children}
-					{(hints || footer) && (
-						<Grid item xs={12}>
-							{hints && (
-								<Grid item className={classes.hints}>
-									<Typography>{hints}</Typography>
-								</Grid>
-							)}
-							{footer}
+					{title}
+				</Typography>
+			)}
+			<Grid
+				container
+				spacing={3}
+				className={classes.gridContainer}
+				{...gridContainerProps}
+			>
+				{formFields.map(field => {
+					const Component = field.type;
+					const { props = {}, name, id, GridProps, persistEvent } = field;
+					let disabled;
+					if (readOnly.length)
+						disabled = readOnly.find(field => field === name || field === id)
+							? true
+							: false;
+					else if (typeof readOnly === "boolean") disabled = readOnly;
+					return (
+						<Grid item xs={12} sm={6} key={name} {...GridProps}>
+							<Component
+								id={id}
+								value={values[name] === undefined ? "" : values[name]}
+								onChange={handleChange(name, { persistEvent })}
+								disabled={disabled}
+								{...props}
+								label={
+									errors[name] && errors[name][0] && values[name]
+										? errors[name][0]
+										: props.label
+								}
+								error={
+									errors[name] &&
+									errors[name].length &&
+									values[name] !== undefined
+										? true
+										: false
+								}
+								fullWidth
+							/>
 						</Grid>
-					)}
-				</Grid>
-			</form>
-		</Fragment>
+					);
+				})}
+				{children}
+				{(hints || footer) && (
+					<Grid item xs={12}>
+						{hints && (
+							<Grid item className={classes.hints}>
+								<Typography>{hints}</Typography>
+							</Grid>
+						)}
+						{footer}
+					</Grid>
+				)}
+			</Grid>
+		</form>
 	);
 }
 
