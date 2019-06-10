@@ -55,10 +55,8 @@ function BookingFinalizeForm({
 			name: "amount",
 			validators: [validators.requiredField],
 			props: {
-				label: "Payment Amount	",
-				items: userList,
-				required: true,
-				type: "number"
+				label: "Payment Amount",
+				required: true
 			}
 		},
 		{
