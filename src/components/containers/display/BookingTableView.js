@@ -458,7 +458,8 @@ class BookingTableView extends Component {
 						access: await RBAC.can(
 							auth.data.role.name,
 							actions.READ,
-							resources.BOOKINGS
+							resources.BOOKINGS,
+							{ booking, user: auth.data }
 						),
 						excluded: RBAC.getExcludedFields(
 							auth.data.role.name,
@@ -529,7 +530,7 @@ class BookingTableView extends Component {
 											}
 										});
 
-									if (auth && formData && read && update) {
+									if (auth && formData && read && update && update.access) {
 										return (
 											<BookingFormUpdate
 												values={formData}
@@ -546,11 +547,12 @@ class BookingTableView extends Component {
 														formData: null
 													});
 													api.fetchBookings();
-													this.props.history.push("/bookings");
+													history.push("/bookings");
 												}}
 											/>
 										);
-									}
+									} else if (update && !update.access)
+										history.push("/bookings");
 									return null;
 								}
 							})
@@ -578,6 +580,7 @@ class BookingTableView extends Component {
 							renderDialog({
 								match,
 								children: async ({ booking, read, location, vehicle }) => {
+									console.log(read);
 									if (formData === null && booking)
 										this.setState({
 											formData: {
@@ -597,7 +600,7 @@ class BookingTableView extends Component {
 												title={`Booking #${formData.id}`}
 											/>
 										);
-									}
+									} else if (read && !read.access) history.push("/bookings");
 									return null;
 								}
 							})
