@@ -27,7 +27,6 @@ function Dialog({ onMount, children, onClose, open, classes }) {
 					const newChildren = await children(onMountData);
 					setRenderedChildren(newChildren);
 				} else if (!onMount) {
-					console.log(onMount, onMountData);
 					const newChildren = await children();
 					setRenderedChildren(newChildren);
 				}
