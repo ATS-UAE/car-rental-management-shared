@@ -25,7 +25,7 @@ function VehicleFormCreateButtonDialog({ history }) {
 						variant="contained"
 						onClick={() => history.push("/vehicles/new")}
 					>
-						New
+						New Vehicle
 					</Button>
 				)}
 			/>
