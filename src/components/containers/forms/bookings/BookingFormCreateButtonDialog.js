@@ -41,7 +41,7 @@ function BookingCreateButtonDialog({ history }) {
 						color="primary"
 						onClick={() => history.push("/bookings/new", { createAccess })}
 					>
-						New
+						New Booking
 					</Button>
 				)}
 			/>
