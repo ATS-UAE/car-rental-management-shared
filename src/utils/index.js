@@ -96,12 +96,16 @@ export const search = (keyWord, word) => {
 export const cancelablePromise = promise => {
 	let hasCanceled = false;
 
-	const wrappedPromise = new Promise((resolve, reject) => {
-		promise.then(
-			value =>
-				hasCanceled ? reject({ isCanceled: true, value }) : resolve(value),
-			error => reject({ isCanceled: hasCanceled, error })
-		);
+	const wrappedPromise = new Promise(async (resolve, reject) => {
+		if (promise instanceof Promise) {
+			promise.then(
+				value =>
+					hasCanceled ? reject({ isCanceled: true, value }) : resolve(value),
+				error => reject({ isCanceled: hasCanceled, error })
+			);
+		} else {
+			resolve(promise);
+		}
 	});
 
 	return {
