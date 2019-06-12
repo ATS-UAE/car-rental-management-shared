@@ -74,26 +74,27 @@ router.post(
 	deleteFileOnError
 );
 
-router.get("/:id", async ({ user }, res) => {
+router.get("/:id", async ({ user, params }, res) => {
 	let response = new ResponseBuilder();
 	let accessible = await RBAC.can(user.role.name, READ, resources.locations);
 	if (accessible) {
 		try {
-			let foundLocation = await db.Location.findByPk(req.params.id);
+			let foundLocation = await db.Location.findByPk(params.id);
 			if (foundLocation) {
 				response.setData(foundLocation);
 				response.setCode(200);
-				response.setMessage(`Location with ID ${req.params.id} found.`);
+				response.setMessage(`Location with ID ${params.id} found.`);
 				response.setSuccess(true);
 			} else {
 				res.status(404);
 				response.setCode(404);
-				response.setMessage(`Location with ID ${req.params.id} not found.`);
+				response.setMessage(`Location with ID ${params.id} not found.`);
 			}
 		} catch (e) {
-			res.status(errorCodes.UNAUTHORIZED.statusCode);
-			response.setCode(errorCodes.UNAUTHORIZED.statusCode);
-			response.setMessage(errorCodes.UNAUTHORIZED.message);
+			console.error(e);
+			res.status(500);
+			response.setCode(500);
+			response.setMessage("Unknown error.");
 		}
 	} else {
 		response.setMessage(errorCodes.UNAUTHORIZED.message);
