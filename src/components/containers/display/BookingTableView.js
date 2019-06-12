@@ -385,65 +385,77 @@ class BookingTableView extends Component {
 		const renderDialog = ({ match, children }) => (
 			<Dialog
 				onMount={async () => {
-					const booking = await api
-						.fetchBooking(match.params.id)
-						.catch(() => history.push("/bookings"));
-					const vehicle = await api
-						.fetchVehicle(booking.data.vehicleId)
-						.catch(() => history.push("/bookings"));
-					const location = await api
-						.fetchLocation(vehicle.data.locationId)
-						.catch(() => history.push("/bookings"));
+					try {
+						const booking = await api
+							.fetchBooking(match.params.id)
+							.catch(() => history.replace("/bookings"));
+						const vehicle = await api
+							.fetchVehicle(booking.data.vehicleId)
+							.catch(() => history.replace("/bookings"));
+						const location = await api
+							.fetchLocation(vehicle.data.locationId)
+							.catch(() => history.replace("/bookings"));
 
-					const read = {
-						access: await RBAC.can(
-							auth.data.role.name,
-							actions.READ,
-							resources.BOOKINGS,
-							{ booking, user: auth.data }
-						),
-						excluded: RBAC.getExcludedFields(
-							auth.data.role.name,
-							actions.UPDATE,
-							resources.BOOKINGS
-						)
-					};
+						const read = {
+							access: await RBAC.can(
+								auth.data.role.name,
+								actions.READ,
+								resources.BOOKINGS,
+								{ booking, user: auth.data }
+							),
+							excluded: RBAC.getExcludedFields(
+								auth.data.role.name,
+								actions.UPDATE,
+								resources.BOOKINGS
+							)
+						};
 
-					const update = {
-						access: await RBAC.can(
-							auth.data.role.name,
-							actions.UPDATE,
-							resources.BOOKINGS
-						),
-						exclude: RBAC.getExcludedFields(
-							auth.data.role.name,
-							actions.UPDATE,
-							resources.BOOKINGS
-						)
-					};
+						const update = {
+							access: await RBAC.can(
+								auth.data.role.name,
+								actions.UPDATE,
+								resources.BOOKINGS
+							),
+							exclude: RBAC.getExcludedFields(
+								auth.data.role.name,
+								actions.UPDATE,
+								resources.BOOKINGS
+							)
+						};
 
-					const destroy = {
-						access: await RBAC.can(
-							auth.data.role.name,
-							actions.DELETE,
-							resources.BOOKINGS
-						)
-					};
+						const destroy = {
+							access: await RBAC.can(
+								auth.data.role.name,
+								actions.DELETE,
+								resources.BOOKINGS
+							)
+						};
 
-					const create = {
-						access: await RBAC.can(
-							auth.data.role.name,
-							actions.READ,
-							resources.BOOKINGS
-						),
-						exclude: RBAC.getExcludedFields(
-							auth.data.role.name,
-							actions.READ,
-							resources.BOOKINGS
-						)
-					};
+						const create = {
+							access: await RBAC.can(
+								auth.data.role.name,
+								actions.READ,
+								resources.BOOKINGS
+							),
+							exclude: RBAC.getExcludedFields(
+								auth.data.role.name,
+								actions.READ,
+								resources.BOOKINGS
+							)
+						};
 
-					return { booking, vehicle, location, create, read, update, destroy };
+						return {
+							booking,
+							vehicle,
+							location,
+							create,
+							read,
+							update,
+							destroy
+						};
+					} catch (e) {
+						history.replace("/bookings");
+					}
 				}}
 				onClose={() => {
 					history.push("/bookings");
