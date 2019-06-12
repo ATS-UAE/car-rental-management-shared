@@ -186,6 +186,7 @@ class BookingTableView extends Component {
 
 	resetActions = async () => {
 		const { history } = this.props;
+		const { loadingRows } = this.state;
 		let userRole = this.props.auth.data.role.name;
 		let canUpdate = await RBAC.can(
 			userRole,
@@ -197,7 +198,7 @@ class BookingTableView extends Component {
 				let expiredBooking = booking.from < moment().unix();
 				const visible =
 					booking.approved === null && !expiredBooking && canUpdate;
-				const rowStatus = this.state.loadingRows.indexOf(booking.id);
+				const rowStatus = loadingRows.indexOf(booking.id);
 				return {
 					icon: ThumbUp,
 					tooltip: "Approve",
@@ -206,15 +207,13 @@ class BookingTableView extends Component {
 
 					onClick: (event, { booking }) => {
 						this.setState({
-							loadingRows: [...this.state.loadingRows, booking.id]
+							loadingRows: [...loadingRows, booking.id]
 						});
 						api.updateBooking({ id: booking.id, approved: true }).then(() => {
 							this.props.fetchBookings().then(() => {
-								const rowStatusIndex = this.state.loadingRows.indexOf(
-									booking.id
-								);
+								const rowStatusIndex = loadingRows.indexOf(booking.id);
 								if (rowStatusIndex >= 0) {
-									const newStatus = [...this.state.loadingRows];
+									const newStatus = [...loadingRows];
 									newStatus.splice(rowStatusIndex, 1);
 									this.setState({
 										loadingRows: newStatus
@@ -230,7 +229,7 @@ class BookingTableView extends Component {
 				const visible =
 					booking.approved === null && !expiredBooking && canUpdate;
 
-				const rowStatus = this.state.loadingRows.indexOf(booking.id);
+				const rowStatus = loadingRows.indexOf(booking.id);
 				return {
 					icon: ThumbDown,
 					tooltip: "Deny",
@@ -239,15 +238,13 @@ class BookingTableView extends Component {
 
 					onClick: (event, { booking }) => {
 						this.setState({
-							loadingRows: [...this.state.loadingRows, booking.id]
+							loadingRows: [...loadingRows, booking.id]
 						});
 						api.updateBooking({ id: booking.id, approved: false }).then(() => {
 							this.props.fetchBookings().then(() => {
-								const rowStatusIndex = this.state.loadingRows.indexOf(
-									booking.id
-								);
+								const rowStatusIndex = loadingRows.indexOf(booking.id);
 								if (rowStatusIndex >= 0) {
-									const newStatus = [...this.state.loadingRows];
+									const newStatus = [...loadingRows];
 									newStatus.splice(rowStatusIndex, 1);
 									this.setState({
 										loadingRows: newStatus
@@ -260,7 +257,7 @@ class BookingTableView extends Component {
 			},
 			({ booking }) => {
 				const visible = !booking.approved;
-				const rowStatus = this.state.loadingRows.indexOf(booking.id);
+				const rowStatus = loadingRows.indexOf(booking.id);
 				return {
 					icon: Delete,
 					tooltip: "Delete",
@@ -275,7 +272,7 @@ class BookingTableView extends Component {
 				const visible =
 					booking.approved === null ||
 					(booking.approved === true && booking.amount === null);
-				const rowStatus = this.state.loadingRows.indexOf(booking.id);
+				const rowStatus = loadingRows.indexOf(booking.id);
 				return {
 					icon: Edit,
 					tooltip: "Update",
@@ -289,7 +286,7 @@ class BookingTableView extends Component {
 			},
 			({ booking }) => {
 				const visible = booking.approved && booking.amount === null;
-				const rowStatus = this.state.loadingRows.indexOf(booking.id);
+				const rowStatus = loadingRows.indexOf(booking.id);
 				return {
 					icon: Check,
 					tooltip: "Finalize",
@@ -304,7 +301,7 @@ class BookingTableView extends Component {
 			({ booking }) => {
 				const visible =
 					booking.approved && booking.amount !== null && !booking.paid;
-				const rowStatus = this.state.loadingRows.indexOf(booking.id);
+				const rowStatus = loadingRows.indexOf(booking.id);
 				return {
 					icon: Payment,
 					tooltip: "Mark as paid",
@@ -377,7 +374,13 @@ class BookingTableView extends Component {
 	};
 	render() {
 		const { history, auth, fetchBookings } = this.props;
-		const { formData, isLoading } = this.state;
+		const {
+			formData,
+			isLoading,
+			bookingData,
+			bookingColumns,
+			bookingActions
+		} = this.state;
 
 		const renderDialog = ({ match, children }) => (
 			<Dialog
@@ -511,7 +514,7 @@ class BookingTableView extends Component {
 														isLoading: false
 													});
 												}}
-												title={`Delete booking #${booking.data.id}`}
+												title={`Delete booking #${booking.data.id}?`}
 												content={"This action cannot be reversed."}
 												disabled={isLoading}
 												yes={() => {
@@ -656,15 +659,15 @@ class BookingTableView extends Component {
 				</Switch>
 				<MaterialTable
 					icons={tableIcons}
-					columns={this.state.bookingColumns}
-					data={this.state.bookingData}
+					columns={bookingColumns}
+					data={bookingData}
 					title="Bookings"
 					options={{
 						filtering: true,
 						grouping: true,
 						columnsButton: true
 					}}
-					actions={this.state.bookingActions}
+					actions={bookingActions}
 				/>
 			</Fragment>
 		);
