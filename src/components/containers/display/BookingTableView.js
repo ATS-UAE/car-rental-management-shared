@@ -61,7 +61,7 @@ const tableIcons = {
 
 class BookingTableView extends Component {
 	state = {
-		bookingData: [],
+		bookingData: null,
 		bookingActions: [],
 		loadingRows: [],
 		finalizeFormData: {},
@@ -641,7 +641,10 @@ class BookingTableView extends Component {
 														isLoading: true
 													});
 													api
-														.updateBooking({ id: booking.data.id, paid: true })
+														.updateBooking({
+															id: booking.data.id,
+															paid: true
+														})
 														.then(() => {
 															fetchBookings().then(() => {
 																this.setState({
@@ -695,14 +698,17 @@ class BookingTableView extends Component {
 					/>
 				</Switch>
 				<MaterialTable
+					isLoading={bookingData === null}
 					icons={tableIcons}
 					columns={bookingColumns}
-					data={bookingData}
+					data={bookingData || []}
 					title="Bookings"
 					options={{
 						filtering: true,
 						grouping: true,
-						columnsButton: true
+						columnsButton: true,
+						pageSizeOptions: [1, 5, 10, 20, 50, 100, 200, 500, 1000],
+						exportButton: true
 					}}
 					actions={bookingActions}
 				/>

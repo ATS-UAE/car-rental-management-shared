@@ -38,7 +38,6 @@ function Dialog({ onMount, children, onClose, open, classes }) {
 			});
 		}
 		if (promises.mountData && !promises.mountData.set) {
-			console.log("Once only!");
 			promises.mountData.promise
 				.then(res => {
 					setLoading(false);
