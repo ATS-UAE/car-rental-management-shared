@@ -463,38 +463,46 @@ class BookingTableView extends Component {
 							renderDialog({
 								match,
 								children: async ({ booking, read, update, location }) => {
-									if (formData === null && booking)
-										this.setState({
-											formData: {
-												...booking.data,
-												locationId: location.data.id
-											}
-										});
-
-									if (auth && formData && read && update && update.access) {
-										return (
-											<BookingFormUpdate
-												values={formData}
-												onChange={formData =>
-													this.setState({
-														formData
-													})
+									if (
+										booking &&
+										(booking.data.amount !== null || booking.data.paid)
+									) {
+										history.replace("/bookings");
+									} else {
+										if (formData === null && booking)
+											this.setState({
+												formData: {
+													...booking.data,
+													locationId: location.data.id
 												}
-												exclude={read.access.exclude}
-												readOnly={update.access.exclude}
-												allowBefore={true}
-												onSubmit={() => {
-													this.setState({
-														formData: null
-													});
-													fetchBookings().then(() => {
-														history.push("/bookings");
-													});
-												}}
-											/>
-										);
-									} else if (update && !update.access)
-										history.push("/bookings");
+											});
+
+										if (auth && formData && read && update && update.access) {
+											return (
+												<BookingFormUpdate
+													values={formData}
+													onChange={formData =>
+														this.setState({
+															formData
+														})
+													}
+													exclude={read.access.exclude}
+													readOnly={update.access.exclude}
+													allowBefore={true}
+													onSubmit={() => {
+														this.setState({
+															formData: null
+														});
+														fetchBookings().then(() => {
+															history.replace("/bookings");
+														});
+													}}
+												/>
+											);
+										} else if (update && !update.access)
+											history.replace("/bookings");
+									}
+
 									return null;
 								}
 							})
@@ -506,38 +514,48 @@ class BookingTableView extends Component {
 							renderDialog({
 								match,
 								children: ({ booking, destroy }) => {
-									if (booking && destroy && destroy.access) {
-										return (
-											<DialogChildren
-												onUnmount={() => {
-													this.setState({
-														isLoading: false
-													});
-												}}
-												title={`Delete booking #${booking.data.id}?`}
-												content={"This action cannot be reversed."}
-												disabled={isLoading}
-												yes={() => {
-													this.setState({
-														isLoading: true
-													});
-													api
-														.deleteBooking({
-															id: booking.data.id
-														})
-														.then(() => {
-															fetchBookings().then(() => {
-																this.setState({
-																	isLoading: false
-																});
-																history.push("/bookings");
-															});
+									if (
+										booking &&
+										(booking.data.amount !== null || booking.data.paid)
+									) {
+										history.replace("/bookings");
+									} else {
+										if (booking && destroy && destroy.access) {
+											return (
+												<DialogChildren
+													onUnmount={() => {
+														this.setState({
+															isLoading: false
 														});
-												}}
-												no={() => history.push("/bookings")}
-											/>
-										);
+													}}
+													title={`Delete booking #${booking.data.id}?`}
+													content={"This action cannot be reversed."}
+													disabled={isLoading}
+													yes={() => {
+														this.setState({
+															isLoading: true
+														});
+														api
+															.deleteBooking({
+																id: booking.data.id
+															})
+															.then(() => {
+																fetchBookings().then(() => {
+																	this.setState({
+																		isLoading: false
+																	});
+																	history.push("/bookings");
+																});
+															});
+													}}
+													no={() => history.push("/bookings")}
+												/>
+											);
+										} else if (destroy && !destroy.access) {
+											history.replace("/bookings");
+										}
 									}
+
 									return null;
 								}
 							})
@@ -549,7 +567,10 @@ class BookingTableView extends Component {
 							renderDialog({
 								match,
 								children: async ({ booking, read, location }) => {
-									if (formData === null && booking)
+									// Check if booking is already finalized.
+									if (booking.data.amount !== null) {
+										history.replace("/bookings");
+									} else if (formData === null && booking) {
 										this.setState({
 											formData: {
 												...booking.data,
@@ -561,22 +582,24 @@ class BookingTableView extends Component {
 											}
 										});
 
-									if (auth && formData && read) {
-										return (
-											<BookingFinalizeForm
-												values={formData}
-												onChange={formData => this.setState({ formData })}
-												onSubmit={() => {
-													this.setState({
-														formData: null
-													});
-													fetchBookings().then(() => {
-														history.push("/bookings");
-													});
-												}}
-											/>
-										);
-									} else if (read && !read.access) history.push("/bookings");
+										if (auth && formData && read && read.access) {
+											return (
+												<BookingFinalizeForm
+													values={formData}
+													onChange={formData => this.setState({ formData })}
+													onSubmit={() => {
+														this.setState({
+															formData: null
+														});
+														fetchBookings().then(() => {
+															history.replace("/bookings");
+														});
+													}}
+												/>
+											);
+										} else if (read && !read.access)
+											history.replace("/bookings");
+									}
 									return null;
 								}
 							})
@@ -587,10 +610,10 @@ class BookingTableView extends Component {
 						render={({ match }) =>
 							renderDialog({
 								match,
-								children: ({ booking }) => {
+								children: ({ booking, update }) => {
 									if (booking && booking.data.paid) {
-										history.push("/bookings");
-									} else if (booking) {
+										history.replace("/bookings");
+									} else if (booking && update && update.access) {
 										return (
 											<DialogChildren
 												onUnmount={() => {
@@ -612,13 +635,15 @@ class BookingTableView extends Component {
 																this.setState({
 																	isLoading: false
 																});
-																history.push("/bookings");
+																history.replace("/bookings");
 															});
 														});
 												}}
-												no={() => history.push("/bookings")}
+												no={() => history.replace("/bookings")}
 											/>
 										);
+									} else if (update && !update.access) {
+										history.replace("/bookings");
 									}
 									return null;
 								}
@@ -650,7 +675,7 @@ class BookingTableView extends Component {
 												title={`Booking #${formData.id}`}
 											/>
 										);
-									} else if (read && !read.access) history.push("/bookings");
+									} else if (read && !read.access) history.replace("/bookings");
 									return null;
 								}
 							})
