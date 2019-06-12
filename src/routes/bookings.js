@@ -118,7 +118,11 @@ router.patch("/:id", async ({ user, params, body }, res) => {
 			from: toMySQLDate(body.from)
 		});
 
-		if (body.amount !== null && previousValue.amount === null) {
+		if (
+			body.amount !== undefined &&
+			body.amount !== null &&
+			previousValue.amount === null
+		) {
 			sendInvoice({
 				email: booking.user.email,
 				amount: body.amount,
