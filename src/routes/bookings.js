@@ -183,10 +183,10 @@ router.delete("/:id", async ({ user, params }, res) => {
 			await foundBooking.destroy();
 			response.setCode(200);
 			response.setSuccess(true);
-			response.setMessage(`User with ID ${params.id} has been deleted.`);
+			response.setMessage(`Booking with ID ${params.id} has been deleted.`);
 		} else {
 			response.setCode(404);
-			response.setMessage(`User with ID ${params.id} is not found.`);
+			response.setMessage(`Booking with ID ${params.id} is not found.`);
 		}
 	} else {
 		response.setMessage(errorCodes.UNAUTHORIZED.message);
