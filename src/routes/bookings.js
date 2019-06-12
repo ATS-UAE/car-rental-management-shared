@@ -79,21 +79,26 @@ router.get("/:id", async ({ user, params }, res) => {
 	let booking = await db.Booking.findByPk(params.id, {
 		include: [{ all: true }]
 	});
-	// Allow only on own bookings.
-	let accessible = await RBAC.can(user.role.name, READ, resources.bookings, {
-		booking,
-		user
-	});
-
-	if (accessible) {
-		response.setSuccess(true);
-		response.setCode(200);
-		response.setMessage(`Found booking with ID of ${booking.id}.`);
-		response.setData(booking.get({ plain: true }));
+	if (!booking) {
+		response.setMessage(`Booking with ID of ${params.id} not found.`);
+		response.setCode(404);
+		response.setSuccess(false);
+		res.status(404).json(response);
 	} else {
-		response.setMessage(errorCodes.UNAUTHORIZED.message);
-		response.setCode(errorCodes.UNAUTHORIZED.statusCode);
-		res.status(errorCodes.UNAUTHORIZED.statusCode);
+		let accessible = await RBAC.can(user.role.name, READ, resources.bookings, {
+			booking,
+			user
+		});
+		if (accessible) {
+			response.setSuccess(true);
+			response.setCode(200);
+			response.setMessage(`Found booking with ID of ${booking.id}.`);
+			response.setData(booking.get({ plain: true }));
+		} else {
+			response.setMessage(errorCodes.UNAUTHORIZED.message);
+			response.setCode(errorCodes.UNAUTHORIZED.statusCode);
+			res.status(errorCodes.UNAUTHORIZED.statusCode);
+		}
 	}
 	res.json(response);
 });
