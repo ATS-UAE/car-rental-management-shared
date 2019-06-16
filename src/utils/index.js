@@ -281,6 +281,8 @@ export const api = {
 		executeFromAPI("patch", `/api/carbooking/users/${user.id}`, user, {
 			formData: true
 		}),
+	deleteUser: user =>
+		executeFromAPI("delete", `/api/carbooking/users/${user.id}`),
 
 	// invites
 	inviteGuest: invite =>
