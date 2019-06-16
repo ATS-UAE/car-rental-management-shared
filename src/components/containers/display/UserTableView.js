@@ -3,8 +3,10 @@ import { Route, withRouter, Switch } from "react-router-dom";
 import { connect } from "react-redux";
 import moment from "moment";
 import { compose } from "recompose";
-import { Dialog } from "@material-ui/core";
-
+import Dialog from "../../presentational/display/Dialog";
+import { DialogChildren } from "../../presentational/forms/ConfirmDialog";
+import UserForm from "../forms/users/UserForm";
+import UserFormUpdate from "../forms/users/UserFormUpdate";
 import * as reduxActions from "../../../actions";
 import { resources, actions, roles } from "../../../variables/enums";
 import { RBAC } from "../../../config/rbac";
@@ -33,6 +35,8 @@ import Search from "@material-ui/icons/Search";
 import ViewColumn from "@material-ui/icons/ViewColumn";
 import Delete from "@material-ui/icons/Delete";
 import Visibility from "@material-ui/icons/Visibility";
+import Block from "@material-ui/icons/Block";
+import CheckCircle from "@material-ui/icons/CheckCircle";
 
 const tableIcons = {
 	Add: AddBox,
@@ -58,6 +62,8 @@ class UserTableView extends Component {
 		userData: [],
 		userActions: [],
 		loadingRows: [],
+		isLoading: false,
+		formData: null,
 		userColumns: [
 			{
 				title: "ID",
@@ -119,14 +125,15 @@ class UserTableView extends Component {
 
 	resetActions = async () => {
 		const { auth, history } = this.props;
+		const { loadingRows } = this.state;
 		if (auth && auth.data) {
 			const newActions = [
 				({ user, canDelete }) => {
 					const visible = canDelete;
-					const rowStatus = this.state.loadingRows.indexOf(user.id);
+					const rowStatus = loadingRows.indexOf(user.id);
 					return {
-						icon: Delete,
-						tooltip: "Delete",
+						icon: user.blocked ? CheckCircle : Block,
+						tooltip: user.blocked ? "Block" : "Unblock",
 						hidden: !visible,
 						disabled: rowStatus >= 0,
 
@@ -137,7 +144,7 @@ class UserTableView extends Component {
 				},
 				({ user, canUpdate }) => {
 					const visible = canUpdate;
-					const rowStatus = this.state.loadingRows.indexOf(user.id);
+					const rowStatus = loadingRows.indexOf(user.id);
 					return {
 						icon: Edit,
 						tooltip: "Edit",
@@ -151,7 +158,7 @@ class UserTableView extends Component {
 				},
 				({ user, canUpdate }) => {
 					const visible = !canUpdate;
-					const rowStatus = this.state.loadingRows.indexOf(user.id);
+					const rowStatus = loadingRows.indexOf(user.id);
 					return {
 						icon: Visibility,
 						tooltip: "View",
@@ -214,52 +221,247 @@ class UserTableView extends Component {
 	};
 
 	render() {
-		const { history } = this.props;
+		const { history, auth, fetchUsers } = this.props;
+		const {
+			formData,
+			isLoading,
+			userColumns,
+			userData,
+			userActions
+		} = this.state;
+
+		const renderDialog = ({ match, children }) => (
+			<Dialog
+				onMount={async () => {
+					try {
+						const user = await api
+							.fetchUser(match.params.id)
+							.catch(() => history.replace("/users"));
+
+						const read = {
+							access: await RBAC.can(
+								auth.data.role.name,
+								actions.READ,
+								resources.USERS,
+								{
+									user: auth.data,
+									targetUser: user,
+									role: auth.data.role
+								}
+							),
+							exclude: RBAC.getExcludedFields(
+								auth.data.role.name,
+								actions.UPDATE,
+								resources.USERS,
+								{
+									user: auth.data,
+									targetUser: user,
+									role: auth.data.role
+								}
+							)
+						};
+
+						const update = {
+							access: await RBAC.can(
+								auth.data.role.name,
+								actions.UPDATE,
+								resources.USERS,
+								{
+									user: auth.data,
+									targetUser: user,
+									role: auth.data.role
+								}
+							),
+							exclude: RBAC.getExcludedFields(
+								auth.data.role.name,
+								actions.UPDATE,
+								resources.USERS,
+								{
+									user: auth.data,
+									targetUser: user,
+									role: auth.data.role
+								}
+							)
+						};
+
+						const destroy = {
+							access: await RBAC.can(
+								auth.data.role.name,
+								actions.DELETE,
+								resources.USERS,
+								{
+									user: auth.data,
+									targetUser: user,
+									role: auth.data.role
+								}
+							)
+						};
+
+						return {
+							user,
+							read,
+							update,
+							destroy
+						};
+					} catch (e) {
+						history.replace("/users");
+					}
+				}}
+				onClose={() => {
+					history.push("/users");
+					this.setState({ formData: null });
+				}}
+				open={true}
+				children={children}
+			/>
+		);
+
 		return (
 			<Fragment>
 				<Switch>
 					<Route
-						path="/users/:id"
-						render={() => {
-							return (
-								<Dialog open={true} onClose={() => history.push("/users")}>
-									Loading
-								</Dialog>
-							);
-						}}
-					/>
-					<Route
 						path="/users/:id/edit"
-						render={() => {
-							return (
-								<Dialog open={true} onClose={() => history.push("/users")}>
-									Loading
-								</Dialog>
-							);
-						}}
+						render={({ match }) =>
+							renderDialog({
+								match,
+								children: async ({ user, update, read }) => {
+									if (formData === null && user) {
+										this.setState({
+											formData: user.data
+										});
+									}
+									if (formData && update && update.access) {
+										return (
+											<UserFormUpdate
+												values={formData}
+												exclude={read.exclude}
+												readOnly={update.exclude}
+												showFooter={true}
+												onChangeEvent={(data, name, event) =>
+													event.target.files
+														? this.setState({
+																formData: {
+																	...data,
+																	[name]: event.target.files[0] || ""
+																}
+														  })
+														: this.setState({
+																formData: data
+														  })
+												}
+												title={"Update User"}
+											/>
+										);
+									} else if (update && !update.access) {
+										history.replace("/users");
+									}
+									return null;
+								}
+							})
+						}
 					/>
 					<Route
 						path="/users/:id/delete"
-						render={() => {
-							return (
-								<Dialog open={true} onClose={() => history.push("/users")}>
-									Loading
-								</Dialog>
-							);
-						}}
+						render={({ match }) =>
+							renderDialog({
+								match,
+								children: async ({ user, destroy }) => {
+									if (user && destroy && destroy.access) {
+										return (
+											<DialogChildren
+												onUnmount={() => {
+													this.setState({
+														isLoading: false
+													});
+												}}
+												title={`${user.data.blocked ? "Unblock" : "Block"} ${
+													user.data.username
+												}?`}
+												content={"This user will not be able to login."}
+												disabled={isLoading}
+												yes={() => {
+													this.setState({
+														isLoading: true
+													});
+													api
+														.updateUser({
+															blocked: true
+														})
+														.then(() => {
+															fetchUsers().then(() => {
+																this.setState({
+																	isLoading: false
+																});
+																history.replace("/users");
+															});
+														});
+												}}
+												no={() => history.replace("/users")}
+											/>
+										);
+									} else if (destroy && !destroy.access) {
+										history.replace("/users");
+									}
+									return null;
+								}
+							})
+						}
+					/>
+					<Route
+						path="/users/:id"
+						render={({ match }) =>
+							renderDialog({
+								match,
+								children: async ({ user, read }) => {
+									if (formData === null && user) {
+										this.setState({
+											formData: user.data
+										});
+									}
+									if (formData && read && read.access) {
+										return (
+											<UserForm
+												values={formData}
+												exclude={read.exclude}
+												readOnly={true}
+												showFooter={false}
+												onChangeEvent={(data, name, event) =>
+													event.target.files
+														? this.setState({
+																formData: {
+																	...data,
+																	[name]: event.target.files[0] || ""
+																}
+														  })
+														: this.setState({
+																formData: data
+														  })
+												}
+												title={"User Details"}
+												hints={""}
+												onSubmit={() => history.push("/users")}
+											/>
+										);
+									} else if (read && !read.access) {
+										history.replace("/users");
+									}
+									return null;
+								}
+							})
+						}
 					/>
 				</Switch>
 				<MaterialTable
 					icons={tableIcons}
-					columns={this.state.userColumns}
-					data={this.state.userData}
+					columns={userColumns}
+					data={userData}
 					title="Users"
 					options={{
 						filtering: true,
 						grouping: true,
 						columnsButton: true
 					}}
-					actions={this.state.userActions}
+					actions={userActions}
 				/>
 			</Fragment>
 		);
@@ -273,7 +475,10 @@ const mapStateToProps = ({ enums, auth, users }) => ({
 });
 
 export default compose(
-	connect(mapStateToProps),
+	connect(
+		mapStateToProps,
+		reduxActions
+	),
 	withRouter
 )(UserTableView);
 
