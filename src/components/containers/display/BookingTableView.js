@@ -7,7 +7,6 @@ import { Route, withRouter, Switch } from "react-router-dom";
 import * as reduxActions from "../../../actions";
 import Dialog from "../../presentational/display/Dialog";
 import { DialogChildren } from "../../presentational/forms/ConfirmDialog";
-import Can from "../layout/Can";
 import BookingFormUpdate from "../forms/bookings/BookingFormUpdate";
 import BookingForm from "../forms/bookings/BookingForm";
 import {
@@ -403,7 +402,7 @@ class BookingTableView extends Component {
 								resources.BOOKINGS,
 								{ booking, user: auth.data }
 							),
-							excluded: RBAC.getExcludedFields(
+							exclude: RBAC.getExcludedFields(
 								auth.data.role.name,
 								actions.UPDATE,
 								resources.BOOKINGS
@@ -498,8 +497,8 @@ class BookingTableView extends Component {
 															formData
 														})
 													}
-													exclude={read.access.exclude}
-													readOnly={update.access.exclude}
+													exclude={read.exclude}
+													readOnly={update.exclude}
 													allowBefore={true}
 													onSubmit={() => {
 														this.setState({
