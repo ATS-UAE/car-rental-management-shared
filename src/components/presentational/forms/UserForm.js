@@ -69,7 +69,7 @@ function UserForm({
 			id: "password-confirm",
 			validators: [samePassword],
 			props: {
-				label: "Password",
+				label: "Confirm Password",
 				required: true
 			}
 		},
@@ -124,10 +124,7 @@ function UserForm({
 			props: {
 				label: "Gender",
 				fullWidth: true,
-				items: [
-					{ value: "m", label: "Male" },
-					{ value: "f", label: "Female" }
-				],
+				items: [{ value: "m", label: "Male" }, { value: "f", label: "Female" }],
 				required: true
 			}
 		}
