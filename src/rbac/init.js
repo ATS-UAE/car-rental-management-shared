@@ -135,13 +135,7 @@ adminRole.addPermission(new Action(DELETE, vehicleResource));
 adminRole.addPermission(new Action(DELETE, bookingsResource));
 
 // User permissions.
-adminRole.addPermission(
-	new Action(
-		CREATE,
-		usersResource,
-		({ role }) => role && role.name !== roleEnums.GUEST
-	)
-);
+adminRole.addPermission(new Action(CREATE, usersResource));
 adminRole.addPermission(
 	new Action(
 		UPDATE,
