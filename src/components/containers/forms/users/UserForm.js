@@ -20,7 +20,9 @@ function UserFormContainer({
 	onChangeEvent,
 	errorNotes,
 	ticksMap,
-	showFooter
+	showFooter,
+	fetchCurrentUserDetails,
+	auth
 }) {
 	let [errors, setErrors] = useState({});
 	let [disableButton, setDisabledButton] = useState(false);
@@ -35,6 +37,7 @@ function UserFormContainer({
 	}, [errors, values]);
 	useEffect(() => {
 		fetchEnums();
+		fetchCurrentUserDetails();
 	}, []);
 	let roleList = [
 		{
@@ -42,12 +45,19 @@ function UserFormContainer({
 			label: "Loading"
 		}
 	];
-	if (enums && enums.data) {
+	if (enums && enums.data && auth && auth.data) {
 		roleList = enums.data.roles.reduce((acc, role) => {
-			if (role.name !== roles.GUEST || readOnly === true) {
+			if (auth.data.role.name === roles.ADMIN || readOnly === true) {
 				acc.push({ value: role.id, label: toTitleWords(role.name) });
+				return acc;
 			}
-			return acc;
+			if (role.name !== roles.GUEST) {
+				acc.push({
+					value: role.id,
+					label: toTitleWords(role.name)
+				});
+				return acc;
+			}
 		}, []);
 	}
 	let footer = showFooter && (
@@ -85,11 +95,12 @@ function UserFormContainer({
 		/>
 	);
 }
-const mapStateToProps = ({ users, enums, vehicles, locations }) => ({
+const mapStateToProps = ({ users, enums, vehicles, locations, auth }) => ({
 	users,
 	enums,
 	vehicles,
-	locations
+	locations,
+	auth
 });
 
 export default connect(
