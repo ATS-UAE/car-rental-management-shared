@@ -469,7 +469,7 @@ class BookingTableView extends Component {
 			<Fragment>
 				<Switch>
 					<Route
-						path="/bookings/:id/edit"
+						path="/bookings/:id(\d+)/edit"
 						render={({ match }) =>
 							renderDialog({
 								match,
@@ -520,7 +520,7 @@ class BookingTableView extends Component {
 						}
 					/>
 					<Route
-						path="/bookings/:id/delete"
+						path="/bookings/:id(\d+)/delete"
 						render={({ match }) =>
 							renderDialog({
 								match,
@@ -573,7 +573,7 @@ class BookingTableView extends Component {
 						}
 					/>
 					<Route
-						path="/bookings/:id/finalize"
+						path="/bookings/:id(\d+)/finalize"
 						render={({ match }) =>
 							renderDialog({
 								match,
@@ -617,7 +617,7 @@ class BookingTableView extends Component {
 						}
 					/>
 					<Route
-						path="/bookings/:id/pay"
+						path="/bookings/:id(\d+)/pay"
 						render={({ match }) =>
 							renderDialog({
 								match,
@@ -665,7 +665,7 @@ class BookingTableView extends Component {
 						}
 					/>
 					<Route
-						path="/bookings/:id"
+						path="/bookings/:id(\d+)"
 						render={({ match }) =>
 							renderDialog({
 								match,
