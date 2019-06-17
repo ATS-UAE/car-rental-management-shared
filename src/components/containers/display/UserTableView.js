@@ -314,7 +314,7 @@ class UserTableView extends Component {
 			<Fragment>
 				<Switch>
 					<Route
-						path="/users/:id/edit"
+						path="/users/:id(\d+)/edit"
 						render={({ match }) =>
 							renderDialog({
 								match,
@@ -355,7 +355,7 @@ class UserTableView extends Component {
 						}
 					/>
 					<Route
-						path="/users/:id/delete"
+						path="/users/:id(\d+)/delete"
 						render={({ match }) =>
 							renderDialog({
 								match,
@@ -402,7 +402,7 @@ class UserTableView extends Component {
 						}
 					/>
 					<Route
-						path="/users/:id"
+						path="/users/:id(\d+)(\d+)"
 						render={({ match }) =>
 							renderDialog({
 								match,
