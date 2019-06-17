@@ -70,7 +70,10 @@ const styles = theme => ({
 	root: {
 		padding: theme.spacing(3),
 		[theme.breakpoints.down("sm")]: {
-			padding: theme.spacing(1)
+			padding: theme.spacing(1),
+			"& > :not(:last-child)": {
+				marginBottom: theme.spacing(1)
+			}
 		},
 		height: "100%",
 		overflow: "auto"
@@ -79,7 +82,10 @@ const styles = theme => ({
 		"&:not(:last-child)": {
 			marginBottom: theme.spacing(2),
 			[theme.breakpoints.down("sm")]: {
-				marginBottom: theme.spacing(1)
+				marginBottom: theme.spacing(1),
+				"& > :not(:last-child)": {
+					marginBottom: theme.spacing(1)
+				}
 			}
 		}
 	}
