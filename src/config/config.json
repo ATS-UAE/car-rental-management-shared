@@ -1,16 +1,16 @@
 {
 	"development": {
 		"username": "root",
-		"password": "11223344",
-		"database": "CarBooking",
-		"host": "ats-dev.cjn2vnjfrmgj.ap-south-1.rds.amazonaws.com",
+		"password": "atsuae2014",
+		"database": "CarBookingDev",
+		"host": "40.82.37.230",
 		"dialect": "mysql"
 	},
 	"production": {
 		"username": "root",
 		"password": "atsuae2014",
-		"database": "CarBooking",
-		"host": "127.0.0.1",
+		"database": "CarBookingProd",
+		"host": "40.82.37.230",
 		"dialect": "mysql"
 	}
 }
