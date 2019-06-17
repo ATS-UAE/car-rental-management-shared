@@ -43,7 +43,7 @@ function Bookings({
 								<Can
 									action={actions.CREATE}
 									resource={resources.BOOKINGS}
-									yes={createAccess => (
+									yes={() => (
 										<div className={classes.items}>
 											<Button
 												variant="contained"
