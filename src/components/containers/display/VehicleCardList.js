@@ -2,7 +2,7 @@ import React, { Fragment, useState } from "react";
 import { withRouter } from "react-router";
 import { compose } from "recompose";
 import { connect } from "react-redux";
-import { IconButton } from "@material-ui/core";
+import { IconButton, withStyles } from "@material-ui/core";
 import { Edit, Visibility } from "@material-ui/icons";
 
 import FormPage from "../../pages/FormPage";
@@ -14,7 +14,7 @@ import CardList from "../../presentational/display/CardList";
 import Can from "../layout/Can";
 import VehicleBookingRange from "./VehicleBookingRange";
 
-function VehicleCardList({ vehicles, history }) {
+function VehicleCardList({ vehicles, history, classes }) {
 	const [formData, setFormData] = useState({});
 
 	return (
@@ -78,6 +78,11 @@ function VehicleCardList({ vehicles, history }) {
 						title: `${brand} ${model}`,
 						descriptions: [plateNumber, vin],
 						imgSrc: vehicleImageSrc || "/static/images/car-no-image-avl.jpg",
+						props: {
+							classes: {
+								card: classes.card
+							}
+						},
 						controls: (
 							<Can
 								action={actions.READ}
@@ -134,7 +139,14 @@ const mapStateToProps = ({ vehicles }) => {
 	return { vehicles: vehicleData };
 };
 
+const styles = {
+	card: {
+		height: "200px"
+	}
+};
+
 export default compose(
+	withStyles(styles),
 	withRouter,
 	connect(
 		mapStateToProps,
