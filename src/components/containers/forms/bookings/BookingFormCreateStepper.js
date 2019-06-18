@@ -142,7 +142,7 @@ function BookingFromCreate({
 						<CardList
 							classes={{ root: classes.bookingListGridContainer }}
 							showAll
-							cards={bookingTypeList.map(type => {
+							cards={bookingTypeList.reduce((acc, type) => {
 								let iconName;
 								switch (type.name) {
 									case bookingTypes.PRIVATE:
@@ -151,13 +151,13 @@ function BookingFromCreate({
 									case bookingTypes.BUSINESS:
 										iconName = "Work";
 										break;
-									case bookingTypes.SERVICE:
-										iconName = "Build";
+									case bookingTypes.REPLACEMENT:
+										iconName = "Repeat";
 										break;
 									default:
-										iconName = null;
+										return acc;
 								}
-								return {
+								acc.push({
 									gridItemProps: {
 										xs: 4,
 										sm: 4,
@@ -184,8 +184,9 @@ function BookingFromCreate({
 											}
 										}
 									}
-								};
-							})}
+								});
+								return acc;
+							}, [])}
 						/>
 					</Fragment>
 				);
