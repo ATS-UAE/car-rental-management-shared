@@ -592,25 +592,22 @@ class BookingTableView extends Component {
 														: booking.amount
 											}
 										});
-
-										if (auth && formData && read && read.access) {
-											return (
-												<BookingFinalizeForm
-													values={formData}
-													onChange={formData => this.setState({ formData })}
-													onSubmit={() => {
-														this.setState({
-															formData: null
-														});
-														fetchBookings().then(() => {
-															history.replace("/bookings");
-														});
-													}}
-												/>
-											);
-										} else if (read && !read.access)
-											history.replace("/bookings");
-									}
+									} else if (auth && formData && read && read.access) {
+										return (
+											<BookingFinalizeForm
+												values={formData}
+												onChange={formData => this.setState({ formData })}
+												onSubmit={() => {
+													this.setState({
+														formData: null
+													});
+													fetchBookings().then(() => {
+														history.replace("/bookings");
+													});
+												}}
+											/>
+										);
+									} else if (read && !read.access) history.replace("/bookings");
 									return null;
 								}
 							})
