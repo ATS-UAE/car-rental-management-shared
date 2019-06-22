@@ -99,7 +99,8 @@ const style = theme => ({
 	details: {
 		display: "flex",
 		flexBasis: "20%",
-		flexDirection: "column"
+		flexDirection: "column",
+		justifyContent: "space-between"
 	},
 	controls: {
 		display: "flex",
