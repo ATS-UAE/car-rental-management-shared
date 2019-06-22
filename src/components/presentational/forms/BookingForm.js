@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import moment from "moment";
 import { Grid } from "@material-ui/core";
 import LocationMapMarker from "../display/LocationMapMarker";
@@ -25,7 +26,8 @@ function BookingForm({
 	onLocationClick,
 	allowBefore,
 	showMap,
-	fieldProps
+	fieldProps,
+	unavailableVehicleErrorText
 }) {
 	const notBefore = new Validator(
 		() => values.from > moment().unix(),
@@ -92,7 +94,7 @@ function BookingForm({
 				validators.requiredField,
 				new Validator(
 					id => Boolean(vehicleList.find(v => v.value === id)),
-					"Vehicle is not available anymore."
+					unavailableVehicleErrorText
 				)
 			],
 			props: {
@@ -155,5 +157,13 @@ function BookingForm({
 		</Form>
 	);
 }
+
+BookingForm.propTypes = {
+	unavailableVehicleErrorText: PropTypes.string
+};
+
+BookingForm.defaultProps = {
+	unavailableVehicleErrorText: "Vehicle is not available anymore."
+};
 
 export default BookingForm;

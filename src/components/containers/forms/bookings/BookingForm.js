@@ -1,4 +1,5 @@
 import React, { useState, useEffect, Fragment } from "react";
+import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { Grid, Button } from "@material-ui/core";
 import BookingForm from "../../../presentational/forms/BookingForm";
@@ -22,7 +23,11 @@ function BookingFormContainer({
 	ticksMap,
 	allowBefore,
 	users,
-	hints
+	inLocation: inLocationProp,
+	available: availableProp,
+	hints,
+	showMap,
+	unavailableVehicleErrorText
 }) {
 	let [errors, setErrors] = useState({});
 	let [disableButton, setDisabledButton] = useState(false);
@@ -71,6 +76,11 @@ function BookingFormContainer({
 			if (inLocation) {
 				available = isVehicleAvailableForBooking(from, to, vehicle, values.id);
 			}
+
+			if (!inLocationProp) inLocation = true;
+			if (!availableProp) available = true;
+			else if (availableProp && !inLocationProp)
+				available = isVehicleAvailableForBooking(from, to, vehicle, values.id);
 			if (available && inLocation) {
 				acc.push({
 					value: vehicle.id,
@@ -79,6 +89,7 @@ function BookingFormContainer({
 			}
 			return acc;
 		}, []);
+
 		if ($vehicleList.length) {
 			vehicleList = $vehicleList;
 		}
@@ -111,7 +122,8 @@ function BookingFormContainer({
 	);
 	return (
 		<BookingForm
-			showMap={true}
+			unavailableVehicleErrorText={unavailableVehicleErrorText}
+			showMap={showMap}
 			userList={userList}
 			values={values}
 			exclude={exclude}
@@ -142,6 +154,18 @@ function BookingFormContainer({
 		/>
 	);
 }
+
+BookingFormContainer.propTypes = {
+	inLocation: PropTypes.bool,
+	available: PropTypes.bool,
+	showMap: PropTypes.bool
+};
+
+BookingFormContainer.defaultProps = {
+	inLocation: true,
+	available: true,
+	showMap: true
+};
 
 const mapStateToProps = ({ users, enums, vehicles, locations }) => ({
 	users,
