@@ -8,10 +8,11 @@ import * as actions from "../../actions";
 import VehicleFormCreateButtonDialog from "../containers/forms/vehicles/VehicleFormCreateButtonDialog";
 import VehicleCardList from "../containers/display/VehicleCardList";
 
-function Vehicles({ classes, fetchVehicles, fetchLocations }) {
+function Vehicles({ classes, fetchVehicles, fetchLocations, fetchUsers }) {
 	useEffect(() => {
 		fetchVehicles();
 		fetchLocations();
+		fetchUsers();
 	}, []);
 	return (
 		<Paper className={classes.root}>
