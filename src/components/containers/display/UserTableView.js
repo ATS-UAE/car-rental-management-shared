@@ -239,7 +239,7 @@ class UserTableView extends Component {
 								resources.USERS,
 								{
 									user: auth.data,
-									targetUser: user,
+									targetUser: user.data,
 									role: auth.data.role
 								}
 							),
@@ -249,7 +249,7 @@ class UserTableView extends Component {
 								resources.USERS,
 								{
 									user: auth.data,
-									targetUser: user,
+									targetUser: user.data,
 									role: auth.data.role
 								}
 							)
@@ -262,7 +262,7 @@ class UserTableView extends Component {
 								resources.USERS,
 								{
 									user: auth.data,
-									targetUser: user,
+									targetUser: user.data,
 									role: auth.data.role
 								}
 							),
@@ -272,7 +272,7 @@ class UserTableView extends Component {
 								resources.USERS,
 								{
 									user: auth.data,
-									targetUser: user,
+									targetUser: user.data,
 									role: auth.data.role
 								}
 							)
@@ -285,7 +285,7 @@ class UserTableView extends Component {
 								resources.USERS,
 								{
 									user: auth.data,
-									targetUser: user,
+									targetUser: user.data,
 									role: auth.data.role
 								}
 							)
@@ -402,7 +402,7 @@ class UserTableView extends Component {
 						}
 					/>
 					<Route
-						path="/users/:id(\d+)(\d+)"
+						path="/users/:id(\d+)"
 						render={({ match }) =>
 							renderDialog({
 								match,
