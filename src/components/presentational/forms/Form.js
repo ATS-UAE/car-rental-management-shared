@@ -10,6 +10,7 @@ import DateTimePicker from "../inputs/DateTimePicker";
 import { Validator } from "../../../utils";
 import { elementTypePropTypeChecker } from "../../../utils/propTypes";
 import ImageInput from "../inputs/ImageInput";
+import MultiSelect from "../inputs/MultiSelect";
 
 export const FIELDS = {
 	PASSWORD: PasswordField,
@@ -17,7 +18,8 @@ export const FIELDS = {
 	SELECT: Select,
 	SLIDER: Slider,
 	DATE_TIME_PICKER: DateTimePicker,
-	IMAGE: ImageInput
+	IMAGE: ImageInput,
+	MULTI: MultiSelect
 };
 
 function Form({
@@ -39,13 +41,18 @@ function Form({
 }) {
 	const handleChange = (name, { persistEvent, passEvent }) => e => {
 		persistEvent && e.persist();
-		onChange && onChange({ ...values, [name]: passEvent ? e : e.target.value });
-		onChangeEvent &&
-			onChangeEvent(
-				{ ...values, [name]: passEvent ? e : e.target.value },
-				name,
-				e
-			);
+		if (e && e.target && e.target.value) {
+			onChange &&
+				onChange({ ...values, [name]: passEvent ? e : e.target.value });
+			onChangeEvent &&
+				onChangeEvent(
+					{ ...values, [name]: passEvent ? e : e.target.value },
+					name,
+					e
+				);
+		} else {
+			onChange && onChange({ ...values, [name]: e });
+		}
 	};
 	const formFields = fields.filter(field => !exclude.includes(field.name));
 	useEffect(() => {
