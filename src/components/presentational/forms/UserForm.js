@@ -1,7 +1,7 @@
 import React from "react";
 import Form, { FIELDS } from "./Form";
 import { validators, Validator } from "../../../utils";
-const { SELECT, PASSWORD, TEXT, IMAGE } = FIELDS;
+const { SELECT, PASSWORD, TEXT, IMAGE, MULTI } = FIELDS;
 
 function UserForm({
 	title,
@@ -113,18 +113,6 @@ function UserForm({
 				label: "Role",
 				fullWidth: true,
 				items: roleList,
-				required: true
-			}
-		},
-		{
-			type: SELECT,
-			id: "gender",
-			name: "gender",
-			validators: [validators.requiredField],
-			props: {
-				label: "Gender",
-				fullWidth: true,
-				items: [{ value: "m", label: "Male" }, { value: "f", label: "Female" }],
 				required: true
 			}
 		}
