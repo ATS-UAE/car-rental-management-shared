@@ -5,13 +5,13 @@ import { Switch, Route } from "react-router";
 import { withStyles, Button, Paper } from "@material-ui/core";
 import classNames from "classnames";
 import * as reduxActions from "../../actions";
-import { resources, actions } from "../../variables/enums";
-import Can from "../containers/layout/Can";
+import { roles } from "../../variables/enums";
 import BookingFormCreateStepper from "../containers/forms/bookings/BookingFormCreateStepper";
 import BookingTableView from "../containers/display/BookingTableView";
 
 function Bookings({
 	classes,
+	auth,
 	fetchUsers,
 	fetchEnums,
 	fetchVehicles,
@@ -40,22 +40,17 @@ function Bookings({
 					render={() => {
 						return (
 							<Fragment>
-								<Can
-									action={actions.CREATE}
-									resource={resources.BOOKINGS}
-									yes={() => (
-										<div className={classes.items}>
-											<Button
-												variant="contained"
-												color="primary"
-												onClick={() => history.push("/bookings/new")}
-											>
-												Book a vehicle
-											</Button>
-										</div>
+								<div className={classes.items}>
+									{auth && auth.data && auth.data.role.name === roles.GUEST && (
+										<Button
+											variant="contained"
+											color="primary"
+											onClick={() => history.push("/bookings/new")}
+										>
+											Book a vehicle
+										</Button>
 									)}
-								/>
-								<div>
+
 									<BookingTableView />
 								</div>
 							</Fragment>
@@ -91,10 +86,12 @@ const styles = theme => ({
 	}
 });
 
+const mapStateToProps = ({ auth }) => ({ auth });
+
 export default compose(
 	withStyles(styles),
 	connect(
-		null,
+		mapStateToProps,
 		reduxActions
 	)
 )(Bookings);
