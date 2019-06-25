@@ -41,7 +41,7 @@ function Form({
 }) {
 	const handleChange = (name, { persistEvent, passEvent }) => e => {
 		persistEvent && e.persist();
-		if (e && e.target && e.target.value) {
+		if (e && e.target && e.target.value !== undefined) {
 			onChange &&
 				onChange({ ...values, [name]: passEvent ? e : e.target.value });
 			onChangeEvent &&

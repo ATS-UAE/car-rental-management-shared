@@ -103,7 +103,6 @@ function UserForm({
 				required: true
 			}
 		},
-
 		{
 			type: SELECT,
 			id: "role-id",
