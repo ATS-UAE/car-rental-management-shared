@@ -276,7 +276,9 @@ export const api = {
 	fetchUsers: () => executeFromAPI("get", "/api/carbooking/users"),
 	fetchUser: id => executeFromAPI("get", `/api/carbooking/users/${id}`),
 	createUser: user =>
-		executeFromAPI("post", "/api/carbooking/users", user, { formData: true }),
+		executeFromAPI("post", "/api/carbooking/users", user, {
+			formData: true
+		}),
 	updateUser: user =>
 		executeFromAPI("patch", `/api/carbooking/users/${user.id}`, user, {
 			formData: true
@@ -349,6 +351,18 @@ export const api = {
 	deleteAccident: id =>
 		executeFromAPI("delete", `/api/carbooking/accidents/${id}`),
 
+	// categories
+	fetchCategories: () => executeFromAPI("get", "/api/carbooking/categories"),
+	createCategories: category =>
+		executeFromAPI("post", "/api/carbooking/categories", category),
+	updateCategory: category =>
+		executeFromAPI(
+			"patch",
+			`/api/carbooking/categories/${category.id}`,
+			category
+		),
+	deleteCategory: category =>
+		executeFromAPI("delete", `/api/carbooking/categories/${category.id}`),
 	// access
 	checkAccess: accessParams =>
 		executeFromAPI("post", "/api/carbooking/access", accessParams)
