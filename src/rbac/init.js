@@ -133,6 +133,7 @@ adminRole.addPermission(new Action(DELETE, vehicleResource));
 
 // Booking permissions.
 adminRole.addPermission(new Action(DELETE, bookingsResource));
+adminRole.addPermission(new Action(CREATE, bookingsResource));
 
 // User permissions.
 adminRole.addPermission(new Action(CREATE, usersResource));
