@@ -59,7 +59,8 @@ generalRole.addPermission(
 	new Action(
 		UPDATE,
 		usersResource,
-		({ user, targetUser }) => user.id === targetUser.id
+		({ user, targetUser }) => user.id === targetUser.id,
+		["roleId"]
 	)
 );
 
@@ -137,14 +138,7 @@ adminRole.addPermission(new Action(CREATE, bookingsResource));
 
 // User permissions.
 adminRole.addPermission(new Action(CREATE, usersResource));
-adminRole.addPermission(
-	new Action(
-		UPDATE,
-		usersResource,
-		({ targetUser }) => targetUser && targetUser.role.name !== roleEnums.GUEST,
-		["password", "passwordConfirm"]
-	)
-);
+adminRole.addPermission(new Action(UPDATE, usersResource, null, ["roleId"]));
 adminRole.addPermission(new Action(DELETE, usersResource));
 
 // Accidents Permissions
