@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import GuestInvite from "../../presentational/forms/GuestInvite";
 import PasswordChange from "../../presentational/forms/PasswordChange";
-import { Grid, Button, Paper, Typography } from "@material-ui/core";
+import { Grid, Button, Typography } from "@material-ui/core";
 import { api } from "../../../utils";
 
 export default function InviteGuestButtonDialog({
@@ -61,7 +61,7 @@ export default function InviteGuestButtonDialog({
 											});
 									}}
 								>
-									Invite
+									Confirm
 								</Button>
 							</Grid>
 						}
