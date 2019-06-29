@@ -16,7 +16,8 @@ function UserForm({
 	errors,
 	readOnly,
 	hints,
-	ticksMap
+	ticksMap,
+	categoryList
 }) {
 	let samePassword = new Validator(
 		password => password === values.password,
@@ -113,6 +114,15 @@ function UserForm({
 				fullWidth: true,
 				items: roleList,
 				required: true
+			}
+		},
+		{
+			type: MULTI,
+			id: "categories",
+			name: "categories",
+			props: {
+				label: "Vehicle Categories",
+				items: categoryList
 			}
 		}
 	];

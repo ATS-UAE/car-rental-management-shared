@@ -22,7 +22,8 @@ function UserFormContainer({
 	ticksMap,
 	showFooter,
 	fetchCurrentUserDetails,
-	auth
+	auth,
+	categories
 }) {
 	let [errors, setErrors] = useState({});
 	let [disableButton, setDisabledButton] = useState(false);
@@ -45,6 +46,12 @@ function UserFormContainer({
 			label: "Loading"
 		}
 	];
+	let categoryList = [
+		{
+			value: "",
+			label: "Loading"
+		}
+	];
 	if (enums && enums.data && auth && auth.data) {
 		roleList = enums.data.roles.reduce((acc, role) => {
 			if (auth.data.role.name === roles.ADMIN || readOnly === true) {
@@ -60,6 +67,14 @@ function UserFormContainer({
 			}
 		}, []);
 	}
+
+	if (categories && categories.data) {
+		categoryList = categories.data.map(({ id, name }) => ({
+			value: id,
+			label: name
+		}));
+	}
+
 	let footer = showFooter && (
 		<Fragment>
 			<Grid item>
@@ -80,6 +95,7 @@ function UserFormContainer({
 	);
 	return (
 		<UserForm
+			categoryList={categoryList}
 			exclude={exclude}
 			title={title}
 			values={values}
@@ -95,12 +111,20 @@ function UserFormContainer({
 		/>
 	);
 }
-const mapStateToProps = ({ users, enums, vehicles, locations, auth }) => ({
+const mapStateToProps = ({
 	users,
 	enums,
 	vehicles,
 	locations,
-	auth
+	auth,
+	categories
+}) => ({
+	users,
+	enums,
+	vehicles,
+	locations,
+	auth,
+	categories
 });
 
 export default connect(
