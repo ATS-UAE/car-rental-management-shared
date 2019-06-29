@@ -8,7 +8,7 @@ import { DialogChildren } from "../../presentational/forms/ConfirmDialog";
 import UserForm from "../forms/users/UserForm";
 import UserFormUpdate from "../forms/users/UserFormUpdate";
 import * as reduxActions from "../../../actions";
-import { resources, actions } from "../../../variables/enums";
+import { resources, actions, roles } from "../../../variables/enums";
 import { RBAC } from "../../../config/rbac";
 import { toTitleWords, api } from "../../../utils";
 
@@ -245,7 +245,7 @@ class UserTableView extends Component {
 							),
 							exclude: RBAC.getExcludedFields(
 								auth.data.role.name,
-								actions.UPDATE,
+								actions.READ,
 								resources.USERS,
 								{
 									user: auth.data,
@@ -254,6 +254,8 @@ class UserTableView extends Component {
 								}
 							)
 						};
+						if (user.data.role.name !== roles.GUEST)
+							read.exclude.push("categories");
 
 						const update = {
 							access: await RBAC.can(
