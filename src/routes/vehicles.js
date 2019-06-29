@@ -14,7 +14,7 @@ const { RBAC, OPERATIONS, resources } = require("../rbac/init");
 const { CREATE, READ, UPDATE, DELETE } = OPERATIONS;
 const db = require("../models");
 const { errorCodes } = require("../utils/variables");
-const { ResponseBuilder, getFileURL } = require("../utils");
+const { ResponseBuilder, getFileURL, pickFields } = require("../utils");
 
 router.use(requireLogin);
 
@@ -24,19 +24,15 @@ router.get("/", async ({ user }, res) => {
 	if (accessible) {
 		let results = [];
 		let vehicles = await db.Vehicle.findAll({ include: [{ all: true }] });
-		for (let i = 0; i < vehicles.length; i++) {
-			let vehicle = vehicles[i];
-			let vehicleBookings = await db.Booking.findAll({
-				where: { vehicleId: vehicle.id }
-			});
+		for (const vehicle of vehicles) {
 			results.push({
 				...vehicle.get({ plain: true }),
-				bookings: vehicleBookings
+				categories: (await vehicle.getCategories()).map(c => c.id)
 			});
 		}
 		response.setData(results);
 		response.setCode(200);
-		response.setMessage(`Found ${results.length} vehicles with bookings.`);
+		response.setMessage(`Found ${results.length} vehicles.`);
 		response.setSuccess(true);
 		res.status(200);
 	} else {
@@ -67,8 +63,16 @@ router.post(
 					...body,
 					vehicleImageSrc: fileLocation
 				});
-
-				response.setData(createdVehicle);
+				if (body.categories) {
+					let categories = await db.Category.findAll({
+						where: { id: body.categories }
+					});
+					await createdVehicle.setCategories(categories);
+				}
+				response.setData({
+					...createdVehicle.get({ plain: true }),
+					categories: await createdVehicle.getCategories().map(c => c.id)
+				});
 				response.setMessage("Vehicle has been created.");
 				response.setCode(200);
 				response.setSuccess(true);
@@ -100,7 +104,10 @@ router.get("/:id", async ({ user, params }, res) => {
 		try {
 			let foundVehicle = await db.Vehicle.findByPk(params.id);
 			if (foundVehicle) {
-				response.setData(foundVehicle);
+				response.setData({
+					...foundVehicle.get({ plain: true }),
+					categories: (await foundVehicle.getCategories()).map(c => c.id)
+				});
 				response.setCode(200);
 				response.setMessage(`Vehicle with ID ${params.id} found.`);
 				response.setSuccess(true);
@@ -110,9 +117,12 @@ router.get("/:id", async ({ user, params }, res) => {
 				response.setMessage(`Vehicle with ID ${params.id} not found.`);
 			}
 		} catch (e) {
-			res.status(errorCodes.UNAUTHORIZED.statusCode);
-			response.setCode(errorCodes.UNAUTHORIZED.statusCode);
-			response.setMessage(errorCodes.UNAUTHORIZED.message);
+			response.setMessage(e.message);
+			response.setCode(422);
+			res.status(422);
+			if (e.errors && e.errors.length > 0) {
+				e.errors.forEach(error => response.appendError(error.path));
+			}
 		}
 	} else {
 		response.setMessage(errorCodes.UNAUTHORIZED.message);
@@ -129,7 +139,6 @@ router.patch(
 	disallowGuests,
 	async (req, res, next) => {
 		const { user, params, body, file } = req;
-		console.log(file);
 		const fileLocation =
 			file &&
 			file.filename &&
@@ -143,6 +152,12 @@ router.patch(
 			});
 			if (foundVehicle) {
 				try {
+					if (body.categories) {
+						let categories = await db.Category.findAll({
+							where: { id: body.categories }
+						});
+						await foundVehicle.setCategories(categories);
+					}
 					fileLocation &&
 						addReplacedFiles(res, {
 							url: foundVehicle.vehicleImageSrc,
@@ -150,16 +165,31 @@ router.patch(
 							field: "vehicleImageSrc"
 						});
 					let updatedVehicle = await foundVehicle.update({
-						...body,
+						...pickFields(
+							[
+								"objectId",
+								"brand",
+								"model",
+								"plateNumber",
+								"vin",
+								"parkingLocation",
+								"locationId"
+							],
+							body
+						),
 						vehicleImageSrc: fileLocation || foundVehicle.vehicleImageSrc
 					});
-					response.setData(updatedVehicle);
+					response.setData({
+						...updatedVehicle.get({ plain: true }),
+						categories: (await updatedVehicle.getCategories()).map(c => c.id)
+					});
 					response.setCode(200);
 					response.setMessage(`Vehicle with ID ${params.id} updated.`);
 					response.setSuccess(true);
 				} catch (e) {
 					response.setMessage(e.message);
 					response.setCode(422);
+					res.status(422);
 					if (e.errors && e.errors.length > 0) {
 						e.errors.forEach(error => response.appendError(error.path));
 					}
