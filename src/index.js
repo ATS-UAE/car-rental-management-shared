@@ -18,6 +18,7 @@ const bookingRoutes = require("./routes/bookings");
 const locationRoutes = require("./routes/locations");
 const accessRoutes = require("./routes/access");
 const accidentRoutes = require("./routes/accidents");
+const categoryRoutes = require("./routes/categories");
 
 const app = express();
 
@@ -89,6 +90,7 @@ app.use("/api/carbooking/bookings", bookingRoutes);
 app.use("/api/carbooking/locations", locationRoutes);
 app.use("/api/carbooking/access", accessRoutes);
 app.use("/api/carbooking/accidents", accidentRoutes);
+app.use("/api/carbooking/categories", categoryRoutes);
 
 app.use("/static", express.static(getStaticFilesPath()));
 app.use("/static", express.static(path.join(__dirname, "public")));
