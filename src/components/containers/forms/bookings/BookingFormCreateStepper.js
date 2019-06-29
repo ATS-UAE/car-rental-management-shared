@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Fragment } from "react";
+import React, { Component, useState, useEffect, Fragment } from "react";
 import { withRouter } from "react-router";
 import { connect } from "react-redux";
 import moment from "moment";
@@ -24,15 +24,11 @@ import CardList from "../../../presentational/display/CardList";
 import LocationMapSelectForm from "../../../presentational/forms/LocationMapSelectForm";
 import BookingForm from "../../../presentational/forms/BookingForm";
 import BookingVehicleListForm from "../../../presentational/forms/BookingVehicleListForm";
+import VehicleFormReplacement from "../../../presentational/forms/VehicleForm";
 
-const steps = [
-	"Select a booking schedule & type",
-	"Select pickup location",
-	"Select a vehicle"
-];
-
-function BookingFromCreate({
+function BookingFormCreateStepper({
 	fetchBookings,
+	fetchVehicles,
 	vehicles,
 	locations,
 	classes,
@@ -40,22 +36,64 @@ function BookingFromCreate({
 	enums
 }) {
 	const [errorNotes, setErrorNotes] = useState([]);
+	const [steps, setSteps] = useState([
+		{
+			label: "Select a booking schedule & type",
+			disabled: false,
+			completed: false
+		},
+		{
+			label: "Specify replaced vehicle",
+			disabled: true,
+			completed: false
+		},
+		{
+			label: "Select pickup location",
+			disabled: false,
+			completed: false
+		},
+		{
+			label: "Select a vehicle",
+			disabled: false,
+			completed: false
+		}
+	]);
+
+	const [values, setValues] = useState([
+		{
+			from: moment()
+				.add(30, "minutes")
+				.unix(),
+			to: moment()
+				.endOf("day")
+				.unix()
+		},
+		{},
+		{},
+		{}
+	]);
+	const [errors, setErrors] = useState([{}, {}, {}, {}]);
+	const [loading, setLoading] = useState(false);
+	const [disabled, setDisabledButton] = useState(false);
+
 	const [activeStep, setActiveStep] = useState(0);
-	const [step, setStep] = useState(
-		steps.map(label => ({ completed: false, error: false }))
-	);
-	const [errors, setErrors] = useState({});
 	const [availableVehicles, setAvailableVehicles] = useState([]);
-	const [values, setValues] = useState({
-		from: moment()
-			.add(30, "minutes")
-			.unix(),
-		to: moment()
-			.endOf("day")
-			.unix()
-	});
-	let [loading, setLoading] = useState(false);
-	let [bookingTypeList, setBookingTypeList] = useState([]);
+	const [bookingTypeList, setBookingTypeList] = useState([]);
+
+	useEffect(() => {
+		const newSteps = [...steps];
+		if (values[0].bookingTypeId) {
+			let bookingType = bookingTypeList.find(
+				type => type.id === values[0].bookingTypeId
+			);
+			if (bookingType.name === bookingTypes.REPLACEMENT) {
+				newSteps[1].disabled = false;
+			} else {
+				newSteps[1].disabled = true;
+			}
+		}
+		setSteps(newSteps);
+	}, [values, bookingTypeList]);
 
 	useEffect(() => {
 		let availableVehicles =
@@ -63,8 +101,8 @@ function BookingFromCreate({
 			vehicles.data &&
 			vehicles.data.reduce((acc, vehicle) => {
 				if (
-					isVehicleAvailableForBooking(values.from, values.to, vehicle) &&
-					vehicle.locationId === values.locationId
+					isVehicleAvailableForBooking(values[0].from, values[0].to, vehicle) &&
+					vehicle.locationId === values[2].locationId
 				)
 					acc.push(vehicle);
 				return acc;
@@ -80,30 +118,32 @@ function BookingFromCreate({
 		}
 	}, [enums]);
 
-	const checkCompletionAndResetNextSteps = (currentPage, errors) => {
-		let newStep = [...step];
+	useEffect(() => {
+		let isButtonDisabled = false;
+		for (const error of Object.values(errors[activeStep])) {
+			if (error.length) {
+				isButtonDisabled = true;
+			}
+		}
+		if (values[0].bookingTypeId === undefined) {
+			isButtonDisabled = true;
+		}
+		setDisabledButton(isButtonDisabled);
+	}, [activeStep, errors, values]);
 
-		for (let startPage = currentPage + 1; startPage < steps.length; startPage++)
-			newStep[startPage].completed = false;
-		if (errors) {
-			let errored = false;
-			for (let key in errors) if (errors[key].length) errored = true;
-			newStep[currentPage].completed = !errored;
-			newStep[currentPage].error = errored;
-		}
-		// TODO: move validations to a form.
-		if (!values.bookingTypeId) {
-			newStep[0].error = true;
-		}
-		setStep(newStep);
-	};
+	const availableSteps = steps.filter(step => !step.disabled);
+	let skippedSteps = 0;
+	for (let i = 0; i < activeStep; i++) {
+		if (steps[i].disabled) skippedSteps++;
+	}
+
 	function getStepContent(step) {
 		switch (step) {
 			case 0:
 				return (
 					<Fragment>
 						<BookingForm
-							errors={errors}
+							errors={errors[step]}
 							allowBefore={false}
 							exclude={["userId", "vehicleId", "bookingTypeId"]}
 							fieldProps={{
@@ -127,15 +167,17 @@ function BookingFromCreate({
 								}
 							}}
 							errorNotes={errorNotes}
-							values={values}
+							values={values[step]}
 							vehicles={vehicles && vehicles.data ? vehicles.data : []}
 							onChange={dates => {
-								setValues({ ...values, ...dates, locationId: undefined });
-								checkCompletionAndResetNextSteps(step);
+								let newValues = [...values];
+								newValues[step] = { ...newValues[step], ...dates };
+								setValues(newValues);
 							}}
 							onError={e => {
-								setErrors({ ...errors, ...e });
-								checkCompletionAndResetNextSteps(step, e);
+								let newErrors = [...errors];
+								newErrors[step] = { ...newErrors[step], ...e };
+								setErrors([...newErrors]);
 							}}
 							hints=""
 						/>
@@ -165,18 +207,30 @@ function BookingFromCreate({
 										lg: 4
 									},
 									title: toTitleWords(type.name),
-									onClick: () => setValues({ ...values, locationId: type.id }),
 									id: type.id,
 									props: {
 										iconName,
-										selected: values.bookingTypeId === type.id,
-										onClick: () =>
-											setValues({ ...values, bookingTypeId: type.id }),
+										selected: values[step].bookingTypeId === type.id,
+										onClick: () => {
+											if (type.name === bookingTypes.REPLACEMENT) {
+												const newSteps = [...steps];
+												newSteps[1].disabled = false;
+												setSteps(newSteps);
+											}
+											let newValues = [...values];
+											newValues[step] = {
+												...newValues[step],
+												bookingTypeId: type.id
+											};
+											setValues(newValues);
+										},
 										classes: {
 											card: classes.bookingListCard
 										},
 										cardContentProps: {
-											classes: { root: classes.bookingListCardContent }
+											classes: {
+												root: classes.bookingListCardContent
+											}
 										},
 										titleProps: {
 											classes: {
@@ -192,36 +246,77 @@ function BookingFromCreate({
 				);
 			case 1:
 				return (
-					<LocationMapSelectForm
-						errors={errors}
-						errorNotes={errorNotes}
-						values={values}
-						locations={locations && locations.data}
-						onMarkerClick={locationId => {
-							setValues({ ...values, locationId, vehicleId: undefined });
-							checkCompletionAndResetNextSteps(step);
+					<VehicleFormReplacement
+						title="Specify vehicle to be replaced"
+						values={values[step]}
+						onChangeEvent={(data, name, event) => {
+							let newValues = [...values];
+							newValues[step] = {
+								...newValues[step],
+								...data
+							};
+							setValues(newValues);
 						}}
+						errors={errors[step]}
 						onError={e => {
-							setErrors({ ...errors, ...e });
-							checkCompletionAndResetNextSteps(step, e);
+							let newErrors = [...errors];
+							newErrors[step] = { ...newErrors[step], ...e };
+							setErrors([...newErrors]);
 						}}
+						exclude={[
+							"vehicleImageSrc",
+							"objectId",
+							"parkingLocation",
+							"locationId",
+							"categories"
+						]}
+						showFooter={false}
 					/>
 				);
 			case 2:
+				return (
+					<LocationMapSelectForm
+						errors={errors[step]}
+						errorNotes={errorNotes}
+						values={values[step]}
+						locations={locations && locations.data}
+						onMarkerClick={locationId => {
+							let newValues = [...values];
+							newValues[step] = {
+								...newValues[step],
+								locationId,
+								vehicleId: undefined
+							};
+							setValues(newValues);
+						}}
+						onError={e => {
+							let newErrors = [...errors];
+							newErrors[step] = { ...newErrors[step], ...e };
+							setErrors([...newErrors]);
+						}}
+					/>
+				);
+
+			case 3:
 				return availableVehicles.length > 0 ? (
 					<BookingVehicleListForm
-						errors={errors}
+						errors={errors[step]}
 						errorNotes={errorNotes}
-						values={values}
+						values={values[step]}
 						vehicles={availableVehicles}
 						onError={e => {
-							setErrors({ ...errors, ...e });
-							checkCompletionAndResetNextSteps(step, e);
+							let newErrors = [...errors];
+							newErrors[step] = { ...newErrors[step], ...e };
+							setErrors([...newErrors]);
 						}}
 						hints=""
 						onClick={vehicle => {
-							setValues({ ...values, ...vehicle });
-							checkCompletionAndResetNextSteps(step);
+							let newValues = [...values];
+							newValues[step] = {
+								...newValues[step],
+								...vehicle
+							};
+							setValues(newValues);
 						}}
 					/>
 				) : (
@@ -243,12 +338,18 @@ function BookingFromCreate({
 	return (
 		<div className={classes.root}>
 			<div className={classes.stepper}>
-				<Stepper alternativeLabel nonLinear activeStep={activeStep}>
-					{steps.map((label, index) => (
-						<Step key={label} completed={step[index].completed}>
-							<StepLabel>{label}</StepLabel>
-						</Step>
-					))}
+				<Stepper
+					alternativeLabel
+					nonLinear
+					activeStep={activeStep - skippedSteps}
+				>
+					{steps
+						.filter(step => !step.disabled)
+						.map(step => (
+							<Step key={step.label} completed={step.completed}>
+								<StepLabel>{step.label}</StepLabel>
+							</Step>
+						))}
 				</Stepper>
 			</div>
 			<div className={classes.form}>{getStepContent(activeStep)}</div>
@@ -260,7 +361,14 @@ function BookingFromCreate({
 					onClick={() => {
 						let beginning = activeStep > 0;
 						if (beginning) {
-							setActiveStep(activeStep - 1);
+							let prevStep;
+							for (let i = activeStep - 1; i >= 0; i--) {
+								if (!steps[i].disabled) {
+									prevStep = i;
+									break;
+								}
+							}
+							setActiveStep(prevStep);
 						} else {
 							history.push("/bookings");
 						}
@@ -271,17 +379,29 @@ function BookingFromCreate({
 				<Button
 					variant="contained"
 					color="primary"
-					disabled={
-						!step[activeStep].completed || step[activeStep].error || loading
-					}
+					disabled={disabled || loading}
 					onClick={() => {
-						let last = activeStep < step.length - 1;
-						if (last) {
-							setActiveStep(activeStep + 1);
+						let last = activeStep - skippedSteps >= availableSteps.length - 1;
+						if (!last) {
+							let nextStep;
+							for (let i = activeStep + 1; i < steps.length; i++) {
+								if (!steps[i].disabled) {
+									nextStep = i;
+									break;
+								}
+							}
+							setActiveStep(nextStep);
 						} else {
 							setLoading(true);
+							let bookingData = {};
+
+							for (const data of values) {
+								for (const key in data) {
+									bookingData[key] = data[key];
+								}
+							}
 							api
-								.createBooking(values)
+								.createBooking(bookingData)
 								.then(() => {
 									setLoading(false);
 									fetchBookings();
@@ -289,12 +409,16 @@ function BookingFromCreate({
 								})
 								.catch(e => {
 									setErrorNotes([e]);
+									fetchBookings();
+									fetchVehicles();
 									setLoading(false);
 								});
 						}
 					}}
 				>
-					{activeStep < step.length - 1 ? "Next" : "Finish"}
+					{activeStep - skippedSteps < availableSteps.length - 1
+						? "Next"
+						: "Finish"}
 				</Button>
 			</div>
 		</div>
@@ -362,4 +486,4 @@ export default compose(
 		mapStateToProps,
 		reduxActions
 	)
-)(BookingFromCreate);
+)(BookingFormCreateStepper);
