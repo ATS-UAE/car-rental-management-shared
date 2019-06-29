@@ -5,7 +5,7 @@ const requireLogin = require("../middlewares/requireLogin");
 const { RBAC, OPERATIONS, resources } = require("../rbac/init");
 const { CREATE, READ, UPDATE, DELETE } = OPERATIONS;
 const db = require("../models");
-const { errorCodes, ROLES } = require("../utils/variables");
+const { errorCodes, ROLES, BOOKING_TYPES } = require("../utils/variables");
 const {
 	ResponseBuilder,
 	pickFields,
@@ -46,16 +46,41 @@ router.post("/", async ({ user, body }, res) => {
 	if (accessible) {
 		try {
 			let userId = user.role.name === ROLES.GUEST ? user.id : body.userId;
-			let createdBooking = await db.Booking.create({
-				...pickFields(["bookingTypeId", "vehicleId"], body),
-				userId,
-				to: toMySQLDate(body.to),
-				from: toMySQLDate(body.from)
-			});
-			response.setData(createdBooking.get({ plain: true }));
-			response.setMessage("Booking has been created.");
-			response.setCode(200);
-			response.setSuccess(true);
+			let bookingType = await db.BookingType.findByPk(body.bookingTypeId);
+			let createdBooking;
+			let replacementVehicle;
+			try {
+				if (bookingType.name === BOOKING_TYPES.REPLACEMENT) {
+					const { brand, model, plateNumber, vin } = body;
+					replacementVehicle = await db.ReplacementVehicle.create({
+						brand,
+						model,
+						plateNumber,
+						vin
+					});
+				}
+				createdBooking = await db.Booking.create({
+					...pickFields(["bookingTypeId", "vehicleId"], body),
+					userId,
+					to: toMySQLDate(body.to),
+					from: toMySQLDate(body.from),
+					replacementVehicleId:
+						(replacementVehicle && replacementVehicle.id) || null
+				});
+				response.setData(createdBooking.get({ plain: true }));
+				response.setMessage("Booking has been created.");
+				response.setCode(200);
+				response.setSuccess(true);
+			} catch (e) {
+				createdBooking && (await createdBooking.destroy());
+				replacementVehicle && (await replacementVehicle.destroy());
+				response.setMessage(e.message);
+				response.setCode(422);
+				res.status(422);
+				if (e.errors && e.errors.length > 0) {
+					e.errors.forEach(error => response.appendError(error.path));
+				}
+			}
 		} catch (e) {
 			response.setMessage(e.message);
 			response.setCode(422);
