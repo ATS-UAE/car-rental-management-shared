@@ -117,6 +117,49 @@ const getPathFromURL = fileURL =>
 const deleteFileFromUrl = fileUrl =>
 	fs.promises.unlink(getPathFromURL(fileUrl));
 
+const convertSequelizeDatesToUnix = obj => {
+	if (obj instanceof Array) {
+		for (let value of obj) {
+			convertSequelizeDatesToUnix(value);
+		}
+	} else if (obj && typeof obj === "object") {
+		if (obj.dataValues) {
+			if (obj.dataValues.createdAt)
+				obj.dataValues.createdAt = toUnix(obj.dataValues.createdAt);
+			if (obj.dataValues.updatedAt)
+				obj.dataValues.updatedAt = toUnix(obj.dataValues.updatedAt);
+			if (obj.dataValues.deletedAt)
+				obj.dataValues.deletedAt = toUnix(obj.dataValues.deletedAt);
+			for (let key in obj.dataValues) {
+				if (typeof obj.dataValues[key] === "object") {
+					convertSequelizeDatesToUnix(obj.dataValues[key]);
+				}
+			}
+		} else {
+			let sequelizeModel = false;
+			if (obj.createdAt) {
+				obj.createdAt = toUnix(obj.createdAt);
+				sequelizeModel = true;
+			}
+			if (obj.updatedAt) {
+				obj.updatedAt = toUnix(obj.updatedAt);
+				sequelizeModel = true;
+			}
+			if (obj.deletedAt) {
+				obj.deletedAt = toUnix(obj.deletedAt);
+				sequelizeModel = true;
+			}
+			if (sequelizeModel) {
+				for (let key in obj.dataValues) {
+					if (typeof obj.dataValues[key] === "object") {
+						convertSequelizeDatesToUnix(obj[key]);
+					}
+				}
+			}
+		}
+	}
+};
+
 module.exports = {
 	deleteFileFromUrl,
 	getPathFromURL,
@@ -131,5 +174,6 @@ module.exports = {
 	toMySQLDate,
 	containsField,
 	sendPasswordResetToken,
-	getGoogleMapsStaticURL
+	getGoogleMapsStaticURL,
+	convertSequelizeDatesToUnix
 };
