@@ -40,6 +40,12 @@ module.exports = (sequelize, DataTypes) => {
 			as: "bookings",
 			foreignKey: "bookingId"
 		});
+		models.Vehicle.belongsToMany(models.Category, {
+			as: "categories",
+			through: "VehicleCategories",
+			foreignKey: "vehicleId",
+			otherKey: "categoryId"
+		});
 	};
 	return Vehicle;
 };
