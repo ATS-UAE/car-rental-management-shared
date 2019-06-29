@@ -18,11 +18,13 @@ function Users({
 	fetchCurrentUserDetails,
 	location,
 	match,
-	history
+	history,
+	fetchCategories
 }) {
 	useEffect(() => {
 		fetchUsers();
 		fetchCurrentUserDetails();
+		fetchCategories();
 	}, []);
 	return (
 		<Paper className={classNames(classes.paper, classes.root)}>
