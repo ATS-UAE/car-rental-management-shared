@@ -1,7 +1,7 @@
 import React from "react";
 import { validators } from "../../../utils";
 import Form, { FIELDS } from "./Form";
-const { TEXT, SELECT, IMAGE } = FIELDS;
+const { TEXT, SELECT, IMAGE, MULTI } = FIELDS;
 
 function VehicleForm({
 	title,
@@ -14,7 +14,8 @@ function VehicleForm({
 	onError,
 	errors,
 	readOnly,
-	hints
+	hints,
+	categoryList
 }) {
 	const fields = [
 		{
@@ -92,6 +93,15 @@ function VehicleForm({
 				label: "Location",
 				fullWidth: true,
 				items: locationList
+			}
+		},
+		{
+			type: MULTI,
+			id: "categories",
+			name: "categories",
+			props: {
+				label: "Vehicle Categories",
+				items: categoryList
 			}
 		}
 	];

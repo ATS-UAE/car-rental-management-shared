@@ -14,7 +14,8 @@ function VehicleFormContainer({
 	onChangeEvent,
 	errorNotes,
 	locations,
-	showFooter
+	showFooter,
+	categories
 }) {
 	let [errors, setErrors] = useState({});
 	let [disableButton, setDisabledButton] = useState(false);
@@ -30,6 +31,12 @@ function VehicleFormContainer({
 	}, [errors, values]);
 
 	let locationList = [{ value: "", label: "Loading..." }];
+	let categoryList = [
+		{
+			value: "",
+			label: "Loading"
+		}
+	];
 
 	if (locations && locations.data) {
 		let $locationList = locations.data.map(({ id, name }) => ({
@@ -39,6 +46,13 @@ function VehicleFormContainer({
 		locationList = $locationList.length
 			? $locationList
 			: [{ value: "", label: "No locations found..." }];
+	}
+
+	if (categories && categories.data) {
+		categoryList = categories.data.map(({ id, name }) => ({
+			value: id,
+			label: name
+		}));
 	}
 
 	let footer = showFooter && (
@@ -72,12 +86,14 @@ function VehicleFormContainer({
 			errors={errors}
 			hints={hints}
 			readOnly={readOnly}
+			categoryList={categoryList}
 		/>
 	);
 }
-const mapStateToProps = ({ vehicles, locations }) => ({
+const mapStateToProps = ({ vehicles, locations, categories }) => ({
 	vehicles,
-	locations
+	locations,
+	categories
 });
 
 export default connect(mapStateToProps)(VehicleFormContainer);
