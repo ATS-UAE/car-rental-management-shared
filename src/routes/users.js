@@ -36,30 +36,35 @@ router.get("/", requireLogin, async ({ user }, res) => {
 		}
 	}
 
-	let result = $userList.map(user => ({
-		...pickFields(
-			[
-				"id",
-				"username",
-				"firstName",
-				"lastName",
-				"gender",
-				"email",
-				"mobileNumber",
-				"lastLogin",
-				"userImageSrc",
-				"licenseImageSrc",
-				"approved",
-				"blocked",
-				"createdAt",
-				"updatedAt",
-				"userCreatorId",
-				"roleId"
-			],
-			user.get({ plain: true })
-		),
-		role: pickFields(["id", "name"], user.get({ plain: true }).role)
-	}));
+	let result = [];
+	for (let user of $userList) {
+		result.push({
+			...pickFields(
+				[
+					"id",
+					"username",
+					"firstName",
+					"lastName",
+					"gender",
+					"email",
+					"mobileNumber",
+					"lastLogin",
+					"userImageSrc",
+					"licenseImageSrc",
+					"approved",
+					"blocked",
+					"createdAt",
+					"updatedAt",
+					"userCreatorId",
+					"roleId"
+				],
+				user.get({ plain: true })
+			),
+			role: pickFields(["id", "name"], user.get({ plain: true }).role),
+			categories: (await user.getCategories()).map(c => c.id)
+		});
+	}
+
 	response.setSuccess(true);
 	response.setCode(200);
 	response.setMessage(`Found ${$userList.length} users.`);
@@ -139,7 +144,8 @@ router.post(
 					role: {
 						id: inviteTokenUsed ? guestRole.id : role.id,
 						name: inviteTokenUsed ? guestRole.name : role.name
-					}
+					},
+					categories: (await createdUser.getCategories()).map(c => c.id)
 				});
 
 				response.setMessage("User has been created.");
@@ -207,7 +213,8 @@ router.get("/:id", requireLogin, async ({ user, params }, res) => {
 					role: {
 						id: role.id,
 						name: role.name
-					}
+					},
+					categories: (await foundUser.getCategories()).map(c => c.id)
 				});
 				response.setCode(200);
 				response.setMessage(`User with ID ${params.id} found.`);
@@ -240,7 +247,6 @@ router.patch(
 			file &&
 			file.filename &&
 			getFileURL("carbooking/media/users/profile", file.filename);
-
 		let response = new ResponseBuilder();
 		let foundUser = await db.User.findByPk(params.id, {
 			include: [{ model: db.Role, as: "role" }]
@@ -262,6 +268,13 @@ router.patch(
 						field: "userImageSrc"
 					});
 				try {
+					if (body.categories) {
+						let categories = await db.Category.findAll({
+							where: { id: body.categories }
+						});
+						await foundUser.setCategories(categories);
+					}
+
 					let updatedUser = await foundUser.update(
 						{
 							...pickFields(
@@ -281,7 +294,12 @@ router.patch(
 							),
 							userImageSrc: fileLocation || foundUser.userImageSrc
 						},
-						{ include: [{ model: db.Role, as: "role" }] }
+						{
+							include: [
+								{ model: db.Role, as: "role" },
+								{ model: db.Category, as: "categories" }
+							]
+						}
 					);
 					let role = updatedUser.role;
 					response.setData({
@@ -309,7 +327,8 @@ router.patch(
 						role: {
 							id: role.id,
 							name: role.name
-						}
+						},
+						categories: (await updatedUser.getCategories()).map(c => c.id)
 					});
 					response.setCode(200);
 					response.setMessage(`User with ID ${params.id} updated.`);
