@@ -26,13 +26,6 @@ module.exports = (sequelize, { STRING, DATE, BOOLEAN }) => {
 					notNull: { msg: "Last name is required" }
 				}
 			},
-			gender: {
-				type: STRING(1),
-				allowNull: false,
-				validate: {
-					notNull: { msg: "Gender is required" }
-				}
-			},
 			email: {
 				type: STRING,
 				unique: { args: true, msg: "Email address already in use!" },
@@ -102,11 +95,6 @@ module.exports = (sequelize, { STRING, DATE, BOOLEAN }) => {
 					if (!this.parentCompanyId && this.userTypeId > 2) {
 						throw new Error("User must have a parent company!");
 					}
-				},
-				checkGender() {
-					if (this.gender !== "m" && this.gender !== "f") {
-						throw new Error("Invalid gender. Only 'm' | 'f' is allowed");
-					}
 				}
 			}
 		}
@@ -133,6 +121,12 @@ module.exports = (sequelize, { STRING, DATE, BOOLEAN }) => {
 			through: models.AccidentUserStatus,
 			as: "accidentStatus",
 			foreignKey: "userId"
+		});
+		models.User.belongsToMany(models.Category, {
+			through: "UserVehicleCategories",
+			as: "categories",
+			foreignKey: "userId",
+			otherKey: "categoryId"
 		});
 	};
 
