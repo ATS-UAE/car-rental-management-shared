@@ -21,23 +21,26 @@ function Bookings({
 	history
 }) {
 	useEffect(() => {
-		fetchBookings();
-		fetchUsers();
-		fetchEnums();
-		fetchVehicles();
-		fetchLocations();
-		fetchCurrentUserDetails();
+		const start = () => {
+			fetchBookings();
+			fetchUsers();
+			fetchEnums();
+			fetchVehicles();
+			fetchLocations();
+			fetchCurrentUserDetails();
+		};
+		start();
 	}, []);
 	return (
 		<Paper className={classNames(classes.root, classes.items)}>
 			<Switch>
 				<Route
 					path="/bookings/new"
-					render={() => <BookingFormCreateStepper />}
+					render={props => <BookingFormCreateStepper {...props} />}
 				/>
 				<Route
 					path="/bookings"
-					render={() => {
+					render={props => {
 						return (
 							<Fragment>
 								<div className={classes.items}>
@@ -51,7 +54,7 @@ function Bookings({
 										</Button>
 									)}
 
-									<BookingTableView />
+									<BookingTableView {...props} />
 								</div>
 							</Fragment>
 						);
