@@ -35,7 +35,6 @@ export const isVehicleAvailableForBooking = (vehicle, bookingId) => {
 	if (vehicle && vehicle.bookings) {
 		for (const booking of vehicle.bookings) {
 			let status = getBookingStatus(booking);
-			console.log(status);
 			if (
 				status === bookingStatus.PENDING ||
 				status === bookingStatus.ONGOING ||
