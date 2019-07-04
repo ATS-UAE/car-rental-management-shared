@@ -81,6 +81,10 @@ function BookingFormCreateStepper({
 	const [bookingTypeList, setBookingTypeList] = useState([]);
 
 	useEffect(() => {
+		fetchVehicles();
+	}, []);
+
+	useEffect(() => {
 		const newSteps = [...steps];
 		if (values[0].bookingTypeId) {
 			let bookingType = bookingTypeList.find(
@@ -96,21 +100,23 @@ function BookingFormCreateStepper({
 	}, [values, bookingTypeList]);
 
 	useEffect(() => {
-		let availableVehicles =
-			vehicles &&
-			vehicles.data &&
-			vehicles.data.reduce((acc, vehicle) => {
+		let availableVehicles = [];
+
+		if (vehicles && vehicles.data) {
+			availableVehicles = vehicles.data.reduce((acc, vehicle) => {
 				if (
-					isVehicleAvailableForBooking(values[0].from, values[0].to, vehicle) &&
+					isVehicleAvailableForBooking(vehicle) &&
 					vehicle.locationId === values[2].locationId
-				)
+				) {
 					acc.push(vehicle);
+				}
 				return acc;
 			}, []);
+		}
 		if (availableVehicles) {
 			setAvailableVehicles(availableVehicles);
 		}
-	}, [vehicles, values]);
+	}, [vehicles, values, steps]);
 
 	useEffect(() => {
 		if (enums && enums.data) {
@@ -128,15 +134,48 @@ function BookingFormCreateStepper({
 		if (values[0].bookingTypeId === undefined) {
 			isButtonDisabled = true;
 		}
+		if (values[3].vehicleId === undefined && activeStep === 3) {
+			isButtonDisabled = true;
+		}
 		setDisabledButton(isButtonDisabled);
 	}, [activeStep, errors, values]);
+
+	useEffect(() => {
+		const newValues = [...values];
+		const newSteps = [...steps];
+		for (let i = activeStep + 1; i < newValues.length; i++) {
+			newValues[i] = {};
+			newSteps[i].completed = false;
+		}
+		setValues(newValues);
+		setSteps(newSteps);
+	}, [activeStep]);
+
+	useEffect(() => {
+		let newSteps = [...steps];
+		for (const [page, error] of errors.entries()) {
+			for (const field of Object.values(error)) {
+				if (field.length) {
+					newSteps[page].completed = false;
+				} else {
+					newSteps[page].completed = true;
+				}
+			}
+		}
+		if (!disabled) {
+			newSteps[activeStep].completed = true;
+		} else {
+			newSteps[activeStep].completed = false;
+		}
+		setSteps(newSteps);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [errors, values, activeStep, disabled]);
 
 	const availableSteps = steps.filter(step => !step.disabled);
 	let skippedSteps = 0;
 	for (let i = 0; i < activeStep; i++) {
 		if (steps[i].disabled) skippedSteps++;
 	}
-
 	function getStepContent(step) {
 		switch (step) {
 			case 0:
@@ -284,8 +323,7 @@ function BookingFormCreateStepper({
 							let newValues = [...values];
 							newValues[step] = {
 								...newValues[step],
-								locationId,
-								vehicleId: undefined
+								locationId
 							};
 							setValues(newValues);
 						}}
@@ -379,7 +417,7 @@ function BookingFormCreateStepper({
 				<Button
 					variant="contained"
 					color="primary"
-					disabled={disabled || loading}
+					disabled={disabled || loading || !steps[activeStep].completed}
 					onClick={() => {
 						let last = activeStep - skippedSteps >= availableSteps.length - 1;
 						if (!last) {
@@ -404,7 +442,6 @@ function BookingFormCreateStepper({
 								.createBooking(bookingData)
 								.then(() => {
 									setLoading(false);
-									fetchBookings();
 									history.push("/bookings");
 								})
 								.catch(e => {
