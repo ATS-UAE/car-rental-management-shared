@@ -30,26 +30,22 @@ Validator.runThroughValidators = function runThroughValidators(
 	return errors;
 };
 
-export const isVehicleAvailableForBooking = (
-	bookingFrom,
-	bookingTo,
-	vehicle,
-	bookingId
-) => {
-	let available = false;
+export const isVehicleAvailableForBooking = (vehicle, bookingId) => {
+	let available = true;
 	if (vehicle && vehicle.bookings) {
-		available = vehicle.bookings.every(booking => {
+		for (const booking of vehicle.bookings) {
+			let status = getBookingStatus(booking);
+			console.log(status);
 			if (
-				booking.approved !== false &&
-				rangeOverlap(bookingFrom, bookingTo, booking.from, booking.to)
+				status === bookingStatus.PENDING ||
+				status === bookingStatus.ONGOING ||
+				status === bookingStatus.APPROVED
 			) {
-				if (bookingId) {
-					return bookingId === booking.id;
-				}
-				return false;
+				available = false;
+			} else if (bookingId && bookingId === booking.id) {
+				available = true;
 			}
-			return true;
-		});
+		}
 	}
 	return available;
 };
