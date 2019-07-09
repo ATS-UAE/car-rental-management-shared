@@ -77,7 +77,7 @@ const styles = theme => ({
 		overflow: "auto"
 	},
 	items: {
-		"&:not(:last-child)": {
+		"& > :not(:last-child)": {
 			marginBottom: theme.spacing(2),
 			[theme.breakpoints.down("sm")]: {
 				marginBottom: theme.spacing(1),
