@@ -176,6 +176,15 @@ function BookingFormCreateStepper({
 	for (let i = 0; i < activeStep; i++) {
 		if (steps[i].disabled) skippedSteps++;
 	}
+
+	function resetNextSteps(currentStep) {
+		const newSteps = [...steps];
+		for (let i = currentStep + 1; i < newSteps.length; i++) {
+			newSteps[i].completed = false;
+		}
+		setSteps(newSteps);
+	}
+
 	function getStepContent(step) {
 		switch (step) {
 			case 0:
@@ -189,13 +198,13 @@ function BookingFormCreateStepper({
 								from: {
 									GridProps: {
 										xs: 12,
-										sm: 12
+										sm: 6
 									}
 								},
 								to: {
 									GridProps: {
 										xs: 12,
-										sm: 12
+										sm: 6
 									}
 								},
 								bookingTypeId: {
@@ -212,6 +221,7 @@ function BookingFormCreateStepper({
 								let newValues = [...values];
 								newValues[step] = { ...newValues[step], ...dates };
 								setValues(newValues);
+								resetNextSteps(step);
 							}}
 							onError={e => {
 								let newErrors = [...errors];
@@ -262,6 +272,7 @@ function BookingFormCreateStepper({
 												bookingTypeId: type.id
 											};
 											setValues(newValues);
+											resetNextSteps(step);
 										},
 										classes: {
 											card: classes.bookingListCard
@@ -295,6 +306,7 @@ function BookingFormCreateStepper({
 								...data
 							};
 							setValues(newValues);
+							resetNextSteps(step);
 						}}
 						errors={errors[step]}
 						onError={e => {
@@ -326,6 +338,7 @@ function BookingFormCreateStepper({
 								locationId
 							};
 							setValues(newValues);
+							resetNextSteps(step);
 						}}
 						onError={e => {
 							let newErrors = [...errors];
@@ -355,6 +368,7 @@ function BookingFormCreateStepper({
 								...vehicle
 							};
 							setValues(newValues);
+							resetNextSteps(step);
 						}}
 					/>
 				) : (
@@ -480,7 +494,9 @@ const styles = theme => ({
 	form: {
 		flexGrow: 1,
 		overflowY: "auto",
-		overflowX: "hidden"
+		overflowX: "hidden",
+		display: "flex",
+		flexDirection: "column"
 	},
 	actions: {
 		"& > *": {
