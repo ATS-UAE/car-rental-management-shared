@@ -62,12 +62,12 @@ class BookingTableView extends Component {
 	state = {
 		bookingData: null,
 		bookingActions: [],
-		loadingRows: [],
 		finalizeFormData: {},
 		open: false,
 		formData: null,
 		finalizeDialogOpen: false,
 		isLoading: false,
+		isTableLoading: false,
 		bookingColumns: [
 			{
 				title: "ID",
@@ -149,9 +149,14 @@ class BookingTableView extends Component {
 		]
 	};
 
+	componentDidMount() {
+		this.resetActions();
+		this.reduceBookingData();
+	}
+
 	componentDidUpdate(prevProps, prevState) {
 		const { auth, bookings, users, vehicles } = this.props;
-		const { bookingColumns, loadingRows } = this.state;
+		const { bookingColumns } = this.state;
 		if (auth !== prevProps.auth) {
 			// Hide columns for guest.
 			if (auth && auth.data && auth.data.role.name === roles.GUEST) {
@@ -161,163 +166,138 @@ class BookingTableView extends Component {
 			}
 		}
 
-		if (
-			auth !== prevProps.auth ||
-			bookings !== prevProps.bookings ||
-			loadingRows !== prevState.loadingRows
-		) {
-			if (auth && auth.data && auth.data.role.name !== roles.GUEST) {
-				// Set actions for users
-				this.resetActions();
-			}
+		if (auth !== prevProps.auth || bookings !== prevProps.bookings) {
+			this.resetActions();
 		}
 
 		if (
 			bookings !== prevProps.bookings ||
 			auth !== prevProps.auth ||
 			users !== prevProps.users ||
-			vehicles !== prevProps.vehicles ||
-			loadingRows !== prevState.loadingRows
+			vehicles !== prevProps.vehicles
 		) {
 			this.reduceBookingData();
 		}
 	}
 
 	resetActions = async () => {
-		const { history } = this.props;
-		const { loadingRows } = this.state;
+		// Set actions for user
+		const { history, auth } = this.props;
 		let userRole = this.props.auth.data.role.name;
 		let canUpdate = await RBAC.can(
 			userRole,
 			actions.UPDATE,
 			resources.BOOKINGS
 		);
-		const newActions = [
-			({ booking }) => {
-				let expiredBooking = booking.from < moment().unix();
-				const visible =
-					booking.approved === null && !expiredBooking && canUpdate;
-				const rowStatus = loadingRows.indexOf(booking.id);
-				return {
-					icon: ThumbUp,
-					tooltip: "Approve",
-					hidden: !visible,
-					disabled: rowStatus >= 0,
-
-					onClick: (event, { booking }) => {
-						this.setState({
-							loadingRows: [...loadingRows, booking.id]
-						});
-						api.updateBooking({ id: booking.id, approved: true }).then(() => {
-							this.props.fetchBookings().then(() => {
-								const rowStatusIndex = loadingRows.indexOf(booking.id);
-								if (rowStatusIndex >= 0) {
-									const newStatus = [...loadingRows];
-									newStatus.splice(rowStatusIndex, 1);
-									this.setState({
-										loadingRows: newStatus
-									});
-								}
+		if (auth && auth.data && auth.data.role.name !== roles.GUEST) {
+			const newActions = [
+				({ booking }) => {
+					let expiredBooking = booking.from < moment().unix();
+					const visible =
+						booking.approved === null && !expiredBooking && canUpdate;
+					return {
+						icon: ThumbUp,
+						tooltip: "Approve",
+						hidden: !visible,
+						onClick: (event, { booking }) => {
+							this.setState({
+								isTableLoading: true
 							});
-						});
-					}
-				};
-			},
-			({ booking }) => {
-				let expiredBooking = booking.from < moment().unix();
-				const visible =
-					booking.approved === null && !expiredBooking && canUpdate;
-
-				const rowStatus = loadingRows.indexOf(booking.id);
-				return {
-					icon: ThumbDown,
-					tooltip: "Deny",
-					hidden: !visible,
-					disabled: rowStatus >= 0,
-
-					onClick: (event, { booking }) => {
-						this.setState({
-							loadingRows: [...loadingRows, booking.id]
-						});
-						api.updateBooking({ id: booking.id, approved: false }).then(() => {
-							this.props.fetchBookings().then(() => {
-								const rowStatusIndex = loadingRows.indexOf(booking.id);
-								if (rowStatusIndex >= 0) {
-									const newStatus = [...loadingRows];
-									newStatus.splice(rowStatusIndex, 1);
+							api.updateBooking({ id: booking.id, approved: true }).then(() => {
+								this.props.fetchBookings().then(() => {
 									this.setState({
-										loadingRows: newStatus
+										isTableLoading: false
 									});
-								}
+								});
 							});
-						});
-					}
-				};
-			},
-			({ booking }) => {
-				const visible = !booking.approved;
-				const rowStatus = loadingRows.indexOf(booking.id);
-				return {
-					icon: Delete,
-					tooltip: "Delete",
-					hidden: !visible,
-					disabled: rowStatus >= 0,
-					onClick: (event, { booking }) => {
-						history.push(`/bookings/${booking.id}/delete`);
-					}
-				};
-			},
-			({ booking }) => {
-				const visible =
-					booking.approved === null ||
-					(booking.approved === true && booking.amount === null);
-				const rowStatus = loadingRows.indexOf(booking.id);
-				return {
-					icon: Edit,
-					tooltip: "Update",
-					hidden: !visible,
-					disabled: rowStatus >= 0,
+						}
+					};
+				},
+				({ booking }) => {
+					let expiredBooking = booking.from < moment().unix();
+					const visible =
+						booking.approved === null && !expiredBooking && canUpdate;
+					return {
+						icon: ThumbDown,
+						tooltip: "Deny",
+						hidden: !visible,
 
-					onClick: (event, { booking }) => {
-						history.push(`/bookings/${booking.id}/edit`);
-					}
-				};
-			},
-			({ booking }) => {
-				const visible = booking.approved && booking.amount === null;
-				const rowStatus = loadingRows.indexOf(booking.id);
-				return {
-					icon: Check,
-					tooltip: "Finalize",
-					hidden: !visible,
-					disabled: rowStatus >= 0,
+						onClick: (event, { booking }) => {
+							this.setState({
+								isTableLoading: true
+							});
+							api
+								.updateBooking({
+									id: booking.id,
+									approved: false
+								})
+								.then(() => {
+									this.props.fetchBookings().then(() => {
+										this.setState({
+											isTableLoading: false
+										});
+									});
+								});
+						}
+					};
+				},
+				({ booking }) => {
+					const visible = !booking.approved;
+					return {
+						icon: Delete,
+						tooltip: "Delete",
+						hidden: !visible,
+						onClick: (event, { booking }) => {
+							history.push(`/bookings/${booking.id}/delete`);
+						}
+					};
+				},
+				({ booking }) => {
+					const visible =
+						booking.approved === null ||
+						(booking.approved === true && booking.amount === null);
 
-					onClick: (event, { booking }) => {
-						history.push(`/bookings/${booking.id}/finalize`);
-					}
-				};
-			},
-			({ booking }) => {
-				const visible =
-					booking.approved && booking.amount !== null && !booking.paid;
-				const rowStatus = loadingRows.indexOf(booking.id);
-				return {
-					icon: Payment,
-					tooltip: "Mark as paid",
-					hidden: !visible,
-					disabled: rowStatus >= 0,
+					return {
+						icon: Edit,
+						tooltip: "Update",
+						hidden: !visible,
+						onClick: (event, { booking }) => {
+							history.push(`/bookings/${booking.id}/edit`);
+						}
+					};
+				},
+				({ booking }) => {
+					const visible = booking.approved && booking.amount === null;
 
-					onClick: (event, { booking }) => {
-						history.push(`/bookings/${booking.id}/pay`);
-					}
-				};
-			}
-		];
-		this.setState({ bookingActions: newActions });
+					return {
+						icon: Check,
+						tooltip: "Finalize",
+						hidden: !visible,
+						onClick: (event, { booking }) => {
+							history.push(`/bookings/${booking.id}/finalize`);
+						}
+					};
+				},
+				({ booking }) => {
+					const visible =
+						booking.approved && booking.amount !== null && !booking.paid;
+					return {
+						icon: Payment,
+						tooltip: "Mark as paid",
+						hidden: !visible,
+						onClick: (event, { booking }) => {
+							history.push(`/bookings/${booking.id}/pay`);
+						}
+					};
+				}
+			];
+			this.setState({ bookingActions: newActions });
+		}
 	};
 
 	reduceBookingData = async () => {
 		const { bookings, auth, vehicles, users } = this.props;
+
 		if (
 			bookings &&
 			bookings.data &&
@@ -367,8 +347,8 @@ class BookingTableView extends Component {
 						booking
 					});
 				}
-				this.setState({ bookingData: newBookingData });
 			}
+			this.setState({ bookingData: newBookingData });
 		}
 	};
 	render() {
