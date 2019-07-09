@@ -51,7 +51,8 @@ function BookingForm({
 			name: "from",
 			validators: [validators.requiredField, startLessEnd],
 			props: {
-				label: "Book Start"
+				label: "Book Start",
+				fullWidth: true
 			}
 		},
 		{
@@ -60,7 +61,8 @@ function BookingForm({
 			name: "to",
 			validators: [validators.requiredField, endGreaterStart],
 			props: {
-				label: "Book End"
+				label: "Book End",
+				fullWidth: true
 			}
 		},
 		{

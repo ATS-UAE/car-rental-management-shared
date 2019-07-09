@@ -4,7 +4,7 @@ import moment from "moment";
 import { withStyles } from "@material-ui/core/styles";
 import { DateTimePicker } from "@material-ui/pickers";
 
-function Picker({ value, id, onChange, classes, label, error, disabled }) {
+function Picker({ value, id, onChange, label, error, disabled, fullWidth }) {
 	let dateTime;
 
 	try {
@@ -23,25 +23,16 @@ function Picker({ value, id, onChange, classes, label, error, disabled }) {
 			onChange={handleDateChange}
 			disabled={disabled}
 			id={id}
-			fullWidth
+			fullWidth={fullWidth}
 			error={error}
 			label={label}
 			showTodayButton
 		/>
 	);
 }
+
 Picker.propTypes = {
 	value: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
 };
 
-const styles = theme => ({
-	slider: {
-		marginTop: theme.spacing(1)
-	},
-	textField: {
-		marginLeft: theme.spacing(6),
-		marginRight: theme.spacing(6)
-	}
-});
-
-export default withStyles(styles)(Picker);
+export default Picker;
