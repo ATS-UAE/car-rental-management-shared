@@ -143,6 +143,10 @@ class BookingTableView extends Component {
 				hidden: true
 			},
 			{
+				title: "Type",
+				field: "bookingType"
+			},
+			{
 				title: "Status",
 				field: "status"
 			}
@@ -296,7 +300,7 @@ class BookingTableView extends Component {
 	};
 
 	reduceBookingData = async () => {
-		const { bookings, auth, vehicles, users } = this.props;
+		const { bookings, auth, vehicles, users, enums } = this.props;
 
 		if (
 			bookings &&
@@ -306,7 +310,9 @@ class BookingTableView extends Component {
 			vehicles &&
 			vehicles.data &&
 			users &&
-			users.data
+			users.data &&
+			enums &&
+			enums.data
 		) {
 			let newBookingData = [];
 			for (let booking of bookings.data) {
@@ -325,6 +331,9 @@ class BookingTableView extends Component {
 					const bookingSent = moment(booking.createdAt, "X");
 					const bookingStart = moment(booking.from, "X");
 					const bookingEnd = moment(booking.to, "X");
+					const bookingType = enums.data.bookingTypes.find(
+						type => type.id === booking.bookingTypeId
+					);
 					newBookingData.push({
 						id: booking.id,
 						username: userData.username,
@@ -344,7 +353,7 @@ class BookingTableView extends Component {
 						toMonth: bookingEnd.format("MMM"),
 						toDay: bookingEnd.date(),
 						status: toTitleWords(getBookingStatus(booking)),
-						booking
+						bookingType: toTitleWords(bookingType.name)
 					});
 				}
 			}
