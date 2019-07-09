@@ -4,6 +4,7 @@ const moment = require("moment");
 const jwt = require("jsonwebtoken");
 const config = require("../config");
 const { getTransport } = require("../mail/utils");
+const { BOOKING_STATUS } = require("./variables");
 
 const asyncForEach = async (array, cb) => {
 	for (let i = 0; i < array.length; i++) {
@@ -81,7 +82,16 @@ function sendInviteToken({ email, url }) {
 		html: `<h1>Welcome</h1><a href="${url}?token=${token}">Click here to sign up!</a>`
 	});
 }
-const toUnix = date => moment(date, "YYYY-MM-DDTHH:mm:ss").unix();
+
+const sqlDateToMoment = date => moment(date, "YYYY-MM-DDTHH:mm:ss");
+
+const toUnix = date => sqlDateToMoment(date).unix();
+
+const isSqlDate = date =>
+	/^[0-9]{2,4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]\.\d*Z?$/.test(
+		date
+	);
+
 const toMySQLDate = unixS => {
 	if (unixS === undefined || unixS === null) {
 		return undefined;
@@ -123,44 +133,58 @@ const convertSequelizeDatesToUnix = obj => {
 			convertSequelizeDatesToUnix(value);
 		}
 	} else if (obj && typeof obj === "object") {
-		if (obj.dataValues) {
-			if (obj.dataValues.createdAt)
-				obj.dataValues.createdAt = toUnix(obj.dataValues.createdAt);
-			if (obj.dataValues.updatedAt)
-				obj.dataValues.updatedAt = toUnix(obj.dataValues.updatedAt);
-			if (obj.dataValues.deletedAt)
-				obj.dataValues.deletedAt = toUnix(obj.dataValues.deletedAt);
-			for (let key in obj.dataValues) {
-				if (typeof obj.dataValues[key] === "object") {
-					convertSequelizeDatesToUnix(obj.dataValues[key]);
-				}
-			}
-		} else {
-			let sequelizeModel = false;
-			if (obj.createdAt) {
-				obj.createdAt = toUnix(obj.createdAt);
-				sequelizeModel = true;
-			}
-			if (obj.updatedAt) {
-				obj.updatedAt = toUnix(obj.updatedAt);
-				sequelizeModel = true;
-			}
-			if (obj.deletedAt) {
-				obj.deletedAt = toUnix(obj.deletedAt);
-				sequelizeModel = true;
-			}
-			if (sequelizeModel) {
-				for (let key in obj.dataValues) {
-					if (typeof obj.dataValues[key] === "object") {
-						convertSequelizeDatesToUnix(obj[key]);
-					}
-				}
+		const values = obj.dataValues ? obj.dataValues : obj;
+
+		for (let key in values) {
+			if (values[key] instanceof Date) {
+				values[key] = moment(values[key]).unix();
+			} else if (typeof values[key] === "object") {
+				convertSequelizeDatesToUnix(values[key]);
 			}
 		}
 	}
 };
 
+const getBookingStatus = booking => {
+	let status = BOOKING_STATUS.UNKNOWN;
+	let currentTime = moment();
+	let hasPassedFrom = moment(booking.from, "X").isSameOrBefore(currentTime);
+	let hasPassedTo = moment(booking.to, "X").isSameOrBefore(currentTime);
+	if (booking.approved) {
+		if (hasPassedFrom && !hasPassedTo) status = BOOKING_STATUS.ONGOING;
+		else if (hasPassedTo) status = BOOKING_STATUS.FINISHED;
+		else status = BOOKING_STATUS.APPROVED;
+	} else {
+		if (booking.approved === null) {
+			if (hasPassedFrom) status = BOOKING_STATUS.EXPIRED;
+			else status = BOOKING_STATUS.PENDING;
+		} else if (booking.approved === false) status = BOOKING_STATUS.DENIED;
+	}
+	return status;
+};
+
+const isVehicleAvailableForBooking = (vehicle, bookingId) => {
+	let available = true;
+	if (vehicle && vehicle.bookings) {
+		for (const booking of vehicle.bookings) {
+			let status = getBookingStatus(booking);
+			if (
+				status === BOOKING_STATUS.PENDING ||
+				status === BOOKING_STATUS.ONGOING ||
+				status === BOOKING_STATUS.APPROVED
+			) {
+				available = false;
+			} else if (bookingId && bookingId === booking.id) {
+				available = true;
+			}
+		}
+	}
+	return available;
+};
+
 module.exports = {
+	isVehicleAvailableForBooking,
+	getBookingStatus,
 	deleteFileFromUrl,
 	getPathFromURL,
 	getFileURL,
@@ -175,5 +199,7 @@ module.exports = {
 	containsField,
 	sendPasswordResetToken,
 	getGoogleMapsStaticURL,
+	sqlDateToMoment,
+	isSqlDate,
 	convertSequelizeDatesToUnix
 };
