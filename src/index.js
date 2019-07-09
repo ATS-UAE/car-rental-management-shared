@@ -6,6 +6,8 @@ import { createStore, applyMiddleware } from "redux";
 import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import { Provider } from "react-redux";
 import { StylesProvider, jssPreset } from "@material-ui/styles";
+import { MuiPickersUtilsProvider } from "@material-ui/pickers";
+import MomentUtils from "@date-io/moment";
 import { create } from "jss";
 import "typeface-roboto";
 
@@ -66,7 +68,9 @@ ReactDOM.render(
 	<Provider store={store}>
 		<StylesProvider jss={jss}>
 			<MuiThemeProvider theme={theme}>
-				<App />
+				<MuiPickersUtilsProvider utils={MomentUtils}>
+					<App />
+				</MuiPickersUtilsProvider>
 			</MuiThemeProvider>
 		</StylesProvider>
 	</Provider>,

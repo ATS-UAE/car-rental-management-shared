@@ -2,87 +2,35 @@ import React from "react";
 import PropTypes from "prop-types";
 import moment from "moment";
 import { withStyles } from "@material-ui/core/styles";
-import { TextField } from "@material-ui/core";
-import Slider from "./Slider";
+import { DateTimePicker } from "@material-ui/pickers";
 
-function DateTimePicker({
-	value,
-	id,
-	onChange,
-	classes,
-	label,
-	error,
-	disabled
-}) {
+function Picker({ value, id, onChange, classes, label, error, disabled }) {
 	let dateTime;
 
 	try {
 		dateTime = moment(value, "X");
 	} catch (e) {
 		dateTime = moment();
-	}
+	} // Time elapsed for the day.
 
-	let date = dateTime.format("YYYY-MM-DD"); // Parse date for input.
-	let sliderLabel = dateTime.format("LT"); // Local time
-	let timeUnix = dateTime.format("X") - dateTime.startOf("day").format("X"); // Time elapsed for the day.
-	const handleDateChange = e => {
-		let date;
-		if (e.target.value) {
-			date = moment(e.target.value, "YYYY-MM-DD")
-				.add(timeUnix, "seconds")
-				.unix();
-		} else {
-			date = dateTime.unix();
-		}
-
-		onChange({ target: { value: date } });
-	};
-	const handleTimeChange = e => {
-		let addSeconds = e.target.value;
-		if (e.target.value >= 86400) {
-			addSeconds = 86399;
-		}
-		if (e.target.value < 0) {
-			addSeconds = 1;
-		}
-		let date = dateTime
-			.startOf("day")
-			.add(addSeconds, "seconds")
-			.unix();
-
-		onChange({ target: { value: date } });
+	const handleDateChange = date => {
+		onChange({ target: { value: moment(date).unix() } });
 	};
 	return (
-		<div>
-			<div className={classes.textField}>
-				<TextField
-					disabled={disabled}
-					id={id + "-picker"}
-					value={date}
-					label={label}
-					type="date"
-					fullWidth
-					onChange={handleDateChange}
-					error={error}
-				/>
-			</div>
-			<div className={classes.slider}>
-				<Slider
-					disabled={disabled}
-					min={0}
-					max={86400}
-					step={60}
-					label={sliderLabel}
-					id={id + "-slider"}
-					value={timeUnix}
-					onChange={handleTimeChange}
-					error={error}
-				/>
-			</div>
-		</div>
+		<DateTimePicker
+			value={dateTime.toDate()}
+			disablePast
+			onChange={handleDateChange}
+			disabled={disabled}
+			id={id}
+			fullWidth
+			error={error}
+			label={label}
+			showTodayButton
+		/>
 	);
 }
-DateTimePicker.propTypes = {
+Picker.propTypes = {
 	value: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
 };
 
@@ -96,4 +44,4 @@ const styles = theme => ({
 	}
 });
 
-export default withStyles(styles)(DateTimePicker);
+export default withStyles(styles)(Picker);
