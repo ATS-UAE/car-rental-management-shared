@@ -33,7 +33,8 @@ function BookingTimeRangeForm({
 				sm: 12
 			},
 			props: {
-				label: "Book Start"
+				label: "Book Start",
+				fullWidth: true
 			}
 		},
 		{
@@ -46,7 +47,8 @@ function BookingTimeRangeForm({
 				sm: 12
 			},
 			props: {
-				label: "Book End"
+				label: "Book End",
+				fullWidth: true
 			}
 		}
 	];

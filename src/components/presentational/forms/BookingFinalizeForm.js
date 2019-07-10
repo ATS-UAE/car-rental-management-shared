@@ -26,7 +26,8 @@ function BookingFinalizeForm({
 			name: "from",
 			validators: [validators.requiredField],
 			props: {
-				label: "Book Start"
+				label: "Book Start",
+				fullWidth: true
 			}
 		},
 		{
@@ -35,7 +36,8 @@ function BookingFinalizeForm({
 			name: "to",
 			validators: [validators.requiredField],
 			props: {
-				label: "Book End"
+				label: "Book End",
+				fullWidth: true
 			}
 		},
 		{
