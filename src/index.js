@@ -55,7 +55,10 @@ passport.deserializeUser(async (id, cb) => {
 		let user = await db.User.findByPk(id, {
 			include: [{ model: db.Role, as: "role" }]
 		});
-		cb(null, user.get({ plain: true }));
+		cb(null, {
+			...user.get({ plain: true }),
+			categories: (await user.getCategories()).map(c => c.id)
+		});
 	} catch (e) {
 		cb(e);
 	}
