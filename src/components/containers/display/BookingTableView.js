@@ -353,7 +353,8 @@ class BookingTableView extends Component {
 						toMonth: bookingEnd.format("MMM"),
 						toDay: bookingEnd.date(),
 						status: toTitleWords(getBookingStatus(booking)),
-						bookingType: toTitleWords(bookingType.name)
+						bookingType: toTitleWords(bookingType.name),
+						booking
 					});
 				}
 			}
