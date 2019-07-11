@@ -38,7 +38,7 @@ module.exports = (sequelize, DataTypes) => {
 		});
 		models.Vehicle.hasMany(models.Booking, {
 			as: "bookings",
-			foreignKey: "bookingId"
+			foreignKey: "vehicleId"
 		});
 		models.Vehicle.belongsToMany(models.Category, {
 			as: "categories",
