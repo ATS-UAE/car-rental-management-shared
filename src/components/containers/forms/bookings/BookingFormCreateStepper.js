@@ -19,7 +19,7 @@ import {
 	isVehicleAvailableForBooking,
 	toTitleWords
 } from "../../../../utils";
-import { bookingTypes } from "../../../../variables/enums";
+import { bookingTypes, roles } from "../../../../variables/enums";
 import CardList from "../../../presentational/display/CardList";
 import LocationMapSelectForm from "../../../presentational/forms/LocationMapSelectForm";
 import BookingForm from "../../../presentational/forms/BookingForm";
@@ -33,7 +33,8 @@ function BookingFormCreateStepper({
 	locations,
 	classes,
 	history,
-	enums
+	enums,
+	auth
 }) {
 	const [errorNotes, setErrorNotes] = useState([]);
 	const [steps, setSteps] = useState([
@@ -102,21 +103,33 @@ function BookingFormCreateStepper({
 	useEffect(() => {
 		let availableVehicles = [];
 
-		if (vehicles && vehicles.data) {
+		if (vehicles && vehicles.data && auth && auth.data) {
 			availableVehicles = vehicles.data.reduce((acc, vehicle) => {
 				if (
 					isVehicleAvailableForBooking(vehicle) &&
 					vehicle.locationId === values[2].locationId
 				) {
-					acc.push(vehicle);
+					if (auth.data.role.name === roles.GUEST) {
+						let inCategory = false;
+						if (!auth.data.categories.length) {
+							inCategory = true;
+						} else {
+							for (const categoryId of auth.data.categories) {
+								if (vehicle.categories.includes(categoryId)) inCategory = true;
+							}
+						}
+						inCategory && acc.push(vehicle);
+					} else {
+						acc.push(vehicle);
+					}
 				}
 				return acc;
 			}, []);
 		}
-		if (availableVehicles) {
+		if (availableVehicles.length) {
 			setAvailableVehicles(availableVehicles);
 		}
-	}, [vehicles, values, steps]);
+	}, [vehicles, values, steps, auth]);
 
 	useEffect(() => {
 		if (enums && enums.data) {
@@ -476,10 +489,11 @@ function BookingFormCreateStepper({
 	);
 }
 
-const mapStateToProps = ({ vehicles, locations, enums }) => ({
+const mapStateToProps = ({ vehicles, locations, enums, auth }) => ({
 	vehicles,
 	locations,
-	enums
+	enums,
+	auth
 });
 
 const styles = theme => ({

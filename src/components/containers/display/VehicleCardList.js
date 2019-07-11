@@ -8,7 +8,7 @@ import { Edit, Visibility, Build } from "@material-ui/icons";
 import BookingFormCreateMaintenance from "../forms/bookings/BookingFormCreateMaintenance";
 import VehicleFormUpdate from "../forms/vehicles/VehicleFormUpdate";
 import * as reduxActions from "../../../actions";
-import { actions, resources } from "../../../variables/enums";
+import { actions, resources, roles } from "../../../variables/enums";
 import { api } from "../../../utils";
 import { RBAC } from "../../../config/rbac";
 import CardList from "../../presentational/display/CardList";
@@ -179,7 +179,7 @@ function VehicleCardList({ vehicles, history, classes, auth, fetchVehicles }) {
 				details={cards => (
 					<VehicleBookingRange vehicleList={cards.map(card => card.vehicle)} />
 				)}
-				cards={vehicles.map(vehicle => {
+				cards={vehicles.reduce((acc, vehicle) => {
 					const {
 						id,
 						brand,
@@ -189,7 +189,7 @@ function VehicleCardList({ vehicles, history, classes, auth, fetchVehicles }) {
 						vehicleImageSrc
 					} = vehicle;
 
-					return {
+					let data = {
 						id,
 						vehicle,
 						title: `${brand} ${model}`,
@@ -256,7 +256,26 @@ function VehicleCardList({ vehicles, history, classes, auth, fetchVehicles }) {
 							/>
 						)
 					};
-				})}
+
+					if (auth && auth.data) {
+						if (auth.data.role.name === roles.GUEST) {
+							let inCategory = false;
+							if (!auth.data.categories.length) {
+								inCategory = true;
+							} else {
+								for (const categoryId of auth.data.categories) {
+									if (vehicle.categories.includes(categoryId))
+										inCategory = true;
+								}
+							}
+							inCategory && acc.push(data);
+						} else {
+							acc.push(data);
+						}
+					}
+
+					return acc;
+				}, [])}
 			/>
 		</Fragment>
 	);
