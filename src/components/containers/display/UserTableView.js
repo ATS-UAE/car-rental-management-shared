@@ -183,12 +183,14 @@ class UserTableView extends Component {
 				);
 				if (accessible) {
 					const userRole = auth.data.role.name;
-					const canUpdate = await RBAC.can(
-						userRole,
-						actions.UPDATE,
-						resources.USERS,
-						{ targetUser: user, user: auth.data, role: auth.data.role }
-					);
+					const canUpdate =
+						user.id === 1
+							? false
+							: await RBAC.can(userRole, actions.UPDATE, resources.USERS, {
+									targetUser: user,
+									user: auth.data,
+									role: auth.data.role
+							  });
 					const canDelete = await RBAC.can(
 						userRole,
 						actions.DELETE,
