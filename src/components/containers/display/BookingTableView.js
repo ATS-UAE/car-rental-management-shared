@@ -37,6 +37,7 @@ import Delete from "@material-ui/icons/Delete";
 import ThumbDown from "@material-ui/icons/ThumbDown";
 import ThumbUp from "@material-ui/icons/ThumbUp";
 import Payment from "@material-ui/icons/Payment";
+import Refresh from "@material-ui/icons/Refresh";
 
 const tableIcons = {
 	Add: AddBox,
@@ -193,8 +194,25 @@ class BookingTableView extends Component {
 			actions.UPDATE,
 			resources.BOOKINGS
 		);
+		const newActions = [
+			{
+				icon: Refresh,
+				tooltip: "Refresh Bookings",
+				isFreeAction: true,
+				onClick: () => {
+					this.setState({
+						isTableLoading: true
+					});
+					this.props.fetchBookings().then(() =>
+						this.setState({
+							isTableLoading: false
+						})
+					);
+				}
+			}
+		];
 		if (auth && auth.data && auth.data.role.name !== roles.GUEST) {
-			const newActions = [
+			newActions.push(
 				({ booking }) => {
 					let expiredBooking = booking.from < moment().unix();
 					const visible =
@@ -294,9 +312,9 @@ class BookingTableView extends Component {
 						}
 					};
 				}
-			];
-			this.setState({ bookingActions: newActions });
+			);
 		}
+		this.setState({ bookingActions: newActions });
 	};
 
 	reduceBookingData = async () => {
@@ -684,7 +702,7 @@ class BookingTableView extends Component {
 					/>
 				</Switch>
 				<MaterialTable
-					isLoading={bookingData === null}
+					isLoading={bookingData === null || this.state.isTableLoading}
 					icons={tableIcons}
 					columns={bookingColumns}
 					data={bookingData || []}
