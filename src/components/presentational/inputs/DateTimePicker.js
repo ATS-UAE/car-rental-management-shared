@@ -1,7 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
 import moment from "moment";
-import { withStyles } from "@material-ui/core/styles";
 import { DateTimePicker } from "@material-ui/pickers";
 
 function Picker({ value, id, onChange, label, error, disabled, fullWidth }) {
@@ -19,7 +18,6 @@ function Picker({ value, id, onChange, label, error, disabled, fullWidth }) {
 	return (
 		<DateTimePicker
 			value={dateTime.toDate()}
-			disablePast
 			onChange={handleDateChange}
 			disabled={disabled}
 			id={id}
