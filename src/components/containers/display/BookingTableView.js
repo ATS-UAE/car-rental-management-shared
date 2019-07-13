@@ -197,7 +197,7 @@ class BookingTableView extends Component {
 		const newActions = [
 			{
 				icon: Refresh,
-				tooltip: "Refresh Bookings",
+				tooltip: "Refresh Booking List",
 				isFreeAction: true,
 				onClick: () => {
 					this.setState({
@@ -386,7 +386,8 @@ class BookingTableView extends Component {
 			isLoading,
 			bookingData,
 			bookingColumns,
-			bookingActions
+			bookingActions,
+			isTableLoading
 		} = this.state;
 
 		const renderDialog = ({ match, children }) => (
@@ -702,7 +703,7 @@ class BookingTableView extends Component {
 					/>
 				</Switch>
 				<MaterialTable
-					isLoading={bookingData === null || this.state.isTableLoading}
+					isLoading={bookingData === null || isTableLoading}
 					icons={tableIcons}
 					columns={bookingColumns}
 					data={bookingData || []}

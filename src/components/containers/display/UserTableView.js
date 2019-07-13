@@ -31,6 +31,7 @@ import ViewColumn from "@material-ui/icons/ViewColumn";
 import Visibility from "@material-ui/icons/Visibility";
 import Block from "@material-ui/icons/Block";
 import CheckCircle from "@material-ui/icons/CheckCircle";
+import Refresh from "@material-ui/icons/Refresh";
 
 const tableIcons = {
 	Add: AddBox,
@@ -57,6 +58,7 @@ class UserTableView extends Component {
 		userActions: [],
 		loadingRows: [],
 		isLoading: false,
+		isTableLoading: false,
 		formData: null,
 		userColumns: [
 			{
@@ -120,8 +122,25 @@ class UserTableView extends Component {
 	resetActions = async () => {
 		const { auth, history } = this.props;
 		const { loadingRows } = this.state;
+		const newActions = [
+			{
+				icon: Refresh,
+				tooltip: "Refresh User List",
+				isFreeAction: true,
+				onClick: () => {
+					this.setState({
+						isTableLoading: true
+					});
+					this.props.fetchUsers().then(() =>
+						this.setState({
+							isTableLoading: false
+						})
+					);
+				}
+			}
+		];
 		if (auth && auth.data) {
-			const newActions = [
+			newActions.push(
 				({ user, canDelete }) => {
 					const visible = canDelete;
 					const rowStatus = loadingRows.indexOf(user.id);
@@ -164,9 +183,9 @@ class UserTableView extends Component {
 						}
 					};
 				}
-			];
-			this.setState({ userActions: newActions });
+			);
 		}
+		this.setState({ userActions: newActions });
 	};
 
 	reduceUserData = async () => {
@@ -217,13 +236,14 @@ class UserTableView extends Component {
 	};
 
 	render() {
-		const { history, auth, fetchUsers } = this.props;
+		const { history, auth, fetchUsers, users } = this.props;
 		const {
 			formData,
 			isLoading,
 			userColumns,
 			userData,
-			userActions
+			userActions,
+			isTableLoading
 		} = this.state;
 
 		const renderDialog = ({ match, children }) => (
@@ -452,6 +472,7 @@ class UserTableView extends Component {
 				<MaterialTable
 					icons={tableIcons}
 					columns={userColumns}
+					isLoading={users === null || isTableLoading}
 					data={userData}
 					title="Users"
 					options={{
