@@ -49,6 +49,26 @@ export const isVehicleAvailableForBooking = (vehicle, bookingId) => {
 	return available;
 };
 
+export const isBookingTimeSlotTaken = (vehicle, from, to, bookingId) => {
+	let taken = false;
+	if (vehicle && vehicle.bookings) {
+		for (const booking of vehicle.bookings) {
+			let status = getBookingStatus(booking);
+			if (
+				status === bookingStatus.PENDING ||
+				status === bookingStatus.ONGOING ||
+				status === bookingStatus.APPROVED
+			) {
+				taken = rangeOverlap(from, to, booking.from, booking.to);
+				if (taken && bookingId !== booking.id) {
+					return taken;
+				}
+			}
+		}
+	}
+	return taken;
+};
+
 export const getBookingStatus = booking => {
 	let status = bookingStatus.UNKNOWN;
 	let currentTime = moment();

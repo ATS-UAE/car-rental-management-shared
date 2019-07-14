@@ -49,6 +49,7 @@ function BookingFromCreate({
 			onChange={setValues}
 			loading={loading}
 			inLocation={false}
+			checkTimeSlot={true}
 			unavailableVehicleErrorText="Vehicle is currently booked during this time."
 			onSubmit={() => {
 				setLoading(true);

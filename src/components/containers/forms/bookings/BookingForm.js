@@ -4,7 +4,11 @@ import { connect } from "react-redux";
 import { Grid, Button } from "@material-ui/core";
 import BookingForm from "../../../presentational/forms/BookingForm";
 import * as reduxActions from "../../../../actions";
-import { toTitleWords, isVehicleAvailableForBooking } from "../../../../utils";
+import {
+	toTitleWords,
+	isVehicleAvailableForBooking,
+	isBookingTimeSlotTaken
+} from "../../../../utils";
 
 import VehicleBookingRange from "../../../presentational/display/VehicleBookingRange";
 
@@ -25,6 +29,7 @@ function BookingFormContainer({
 	users,
 	inLocation: inLocationProp,
 	available: availableProp,
+	checkTimeSlot,
 	hints,
 	showMap,
 	unavailableVehicleErrorText
@@ -67,7 +72,7 @@ function BookingFormContainer({
 	}
 	if (vehicles && vehicles.data) {
 		let $vehicleList = vehicles.data.reduce((acc, vehicle) => {
-			const { from, to } = values;
+			const { from, to, id } = values;
 			let available = false;
 			let inLocation = false;
 			if (values.locationId) {
@@ -76,11 +81,20 @@ function BookingFormContainer({
 			if (inLocation) {
 				available = isVehicleAvailableForBooking(from, to, vehicle, values.id);
 			}
-
-			if (!inLocationProp) inLocation = true;
-			if (!availableProp) available = true;
-			else if (availableProp && !inLocationProp)
+			if (!inLocationProp) {
+				inLocation = true;
+			}
+			if (availableProp && !inLocationProp) {
 				available = isVehicleAvailableForBooking(from, to, vehicle, values.id);
+			}
+			console.log(available);
+			if (checkTimeSlot) {
+				available = !isBookingTimeSlotTaken(vehicle, from, to, id);
+			}
+			if (!availableProp) {
+				available = true;
+			}
+
 			if (available && inLocation) {
 				acc.push({
 					value: vehicle.id,
@@ -132,13 +146,7 @@ function BookingFormContainer({
 			readOnly={readOnly}
 			allowBefore={allowBefore}
 			onChange={values => {
-				let from = values.from;
-				let to = values.to;
-				if (to < from) {
-					let temp = to;
-					to = from;
-					from = temp;
-				}
+				const { from, to } = values;
 				onChange && onChange({ ...values, from, to });
 			}}
 			errorNotes={errorNotes}
@@ -164,7 +172,8 @@ BookingFormContainer.propTypes = {
 BookingFormContainer.defaultProps = {
 	inLocation: true,
 	available: true,
-	showMap: true
+	showMap: true,
+	checkTimeSlot: false
 };
 
 const mapStateToProps = ({ users, enums, vehicles, locations }) => ({
