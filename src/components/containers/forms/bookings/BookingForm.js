@@ -87,7 +87,6 @@ function BookingFormContainer({
 			if (availableProp && !inLocationProp) {
 				available = isVehicleAvailableForBooking(from, to, vehicle, values.id);
 			}
-			console.log(available);
 			if (checkTimeSlot) {
 				available = !isBookingTimeSlotTaken(vehicle, from, to, id);
 			}
