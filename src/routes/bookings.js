@@ -64,7 +64,7 @@ router.post("/", async ({ user, body }, res) => {
 					userId,
 					to: toMySQLDate(body.to),
 					from: toMySQLDate(body.from),
-					replacementVehicleId:
+					replaceVehicleId:
 						(replacementVehicle && replacementVehicle.id) || null
 				});
 				response.setData(createdBooking.get({ plain: true }));
@@ -147,6 +147,16 @@ router.patch("/:id", async ({ user, params, body }, res) => {
 			to: toMySQLDate(body.to),
 			from: toMySQLDate(body.from)
 		});
+
+		if (body.replaceVehicle) {
+			let replaceVehicle = await db.ReplaceVehicle.findByPk(
+				body.replaceVehicle.id
+			);
+			replaceVehicle &&
+				(await replaceVehicle.update(
+					pickFields(["vin", "plateNo", "brand", "model"], body.replaceVehicle)
+				));
+		}
 
 		if (
 			body.amount !== undefined &&
