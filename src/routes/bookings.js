@@ -134,75 +134,109 @@ router.patch("/:id", async ({ user, params, body }, res) => {
 	let booking = await db.Booking.findByPk(params.id, {
 		include: [{ all: true }]
 	});
-	// Allow only on own bookings.
-	let accessible = await RBAC.can(user.role.name, UPDATE, resources.bookings, {
-		booking,
-		user
-	});
-	if (accessible) {
-		// If amount is being changed, then it must mean it is being finalized. Send invoice.
-		let previousValue = booking.get({ plain: true });
-		await booking.update({
-			...body,
-			to: toMySQLDate(body.to),
-			from: toMySQLDate(body.from)
-		});
+	if (booking) {
+		// Allow only on own bookings.
+		let accessible = await RBAC.can(
+			user.role.name,
+			UPDATE,
+			resources.bookings,
+			{
+				booking,
+				user
+			}
+		);
+		if (accessible) {
+			try {
+				// If amount is being changed, then it must mean it is being finalized. Send invoice.
+				let previousValue = booking.get({ plain: true });
+				await booking.update({
+					...body,
+					to: toMySQLDate(body.to),
+					from: toMySQLDate(body.from)
+				});
 
-		if (body.replaceVehicle) {
-			let replaceVehicle = await db.ReplaceVehicle.findByPk(
-				body.replaceVehicle.id
-			);
-			replaceVehicle &&
-				(await replaceVehicle.update(
-					pickFields(["vin", "plateNo", "brand", "model"], body.replaceVehicle)
-				));
+				if (body.replaceVehicle) {
+					if (booking.replaceVehicleId) {
+						let replaceVehicle = await db.ReplaceVehicle.findByPk(
+							booking.replaceVehicleId
+						);
+						await replaceVehicle.update(
+							pickFields(
+								["vin", "plateNumber", "brand", "model"],
+								body.replaceVehicle
+							)
+						);
+					} else {
+						let replaceVehicle = await db.ReplaceVehicle.create(
+							pickFields(
+								["vin", "plateNumber", "brand", "model"],
+								body.replaceVehicle
+							)
+						);
+						await booking.update({ replaceVehicleId: replaceVehicle.id });
+					}
+				}
+
+				if (
+					body.amount !== undefined &&
+					body.amount !== null &&
+					previousValue.amount === null
+				) {
+					sendInvoice({
+						email: booking.user.email,
+						amount: body.amount,
+						customerName: booking.user.firstName,
+						vehicleName: `${booking.vehicle.brand} ${booking.vehicle.model}`,
+						from: booking.from,
+						to: booking.to,
+						bookingId: booking.id
+					});
+				}
+
+				if (body.approved === true && previousValue.approved === null) {
+					let location = await db.Location.findByPk(booking.vehicle.locationId);
+					sendBookingConfirmation({
+						email: booking.user.email,
+						customerName: booking.user.firstName,
+						vehicleName: `${booking.vehicle.brand} ${booking.vehicle.model} ${
+							booking.vehicle.plateNumber
+						}`,
+						from: booking.from,
+						to: booking.to,
+						bookingId: booking.id,
+						parkingLocation: booking.vehicle.parkingLocation,
+						mapURL: location
+							? getGoogleMapsStaticURL({
+									lat: location.lat,
+									lng: location.lng
+							  })
+							: null
+					});
+				}
+
+				response.setSuccess(true);
+				response.setCode(200);
+				response.setMessage(
+					`Booking with ID of ${booking.id} has been updated.`
+				);
+				response.setData(booking.get({ plain: true }));
+			} catch (e) {
+				response.setMessage(e.message);
+				response.setCode(422);
+				res.status(422);
+				if (e.errors && e.errors.length > 0) {
+					e.errors.forEach(error => response.appendError(error.path));
+				}
+			}
+		} else {
+			response.setMessage(errorCodes.UNAUTHORIZED.message);
+			response.setCode(errorCodes.UNAUTHORIZED.statusCode);
+			res.status(errorCodes.UNAUTHORIZED.statusCode);
 		}
-
-		if (
-			body.amount !== undefined &&
-			body.amount !== null &&
-			previousValue.amount === null
-		) {
-			sendInvoice({
-				email: booking.user.email,
-				amount: body.amount,
-				customerName: booking.user.firstName,
-				vehicleName: `${booking.vehicle.brand} ${booking.vehicle.model}`,
-				from: booking.from,
-				to: booking.to,
-				bookingId: booking.id
-			});
-		}
-
-		if (body.approved === true && previousValue.approved === null) {
-			let location = await db.Location.findByPk(booking.vehicle.locationId);
-			sendBookingConfirmation({
-				email: booking.user.email,
-				customerName: booking.user.firstName,
-				vehicleName: `${booking.vehicle.brand} ${booking.vehicle.model} ${
-					booking.vehicle.plateNumber
-				}`,
-				from: booking.from,
-				to: booking.to,
-				bookingId: booking.id,
-				parkingLocation: booking.vehicle.parkingLocation,
-				mapURL: location
-					? getGoogleMapsStaticURL({
-							lat: location.lat,
-							lng: location.lng
-					  })
-					: null
-			});
-		}
-
-		response.setSuccess(true);
-		response.setCode(200);
-		response.setMessage(`Booking with ID of ${booking.id} has been updated.`);
-		response.setData(booking.get({ plain: true }));
 	} else {
-		response.setMessage(errorCodes.UNAUTHORIZED.message);
-		response.setCode(errorCodes.UNAUTHORIZED.statusCode);
-		res.status(errorCodes.UNAUTHORIZED.statusCode);
+		res.status(404);
+		response.setCode(404);
+		response.setMessage(`Booking with ID of ${booking.id} cannot be found.`);
 	}
 	res.json(response);
 });
