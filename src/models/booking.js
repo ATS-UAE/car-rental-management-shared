@@ -62,9 +62,9 @@ module.exports = (sequelize, DataTypes) => {
 			},
 			as: "bookingType"
 		});
-		models.Booking.belongsTo(models.ReplacementVehicle, {
+		models.Booking.belongsTo(models.ReplaceVehicle, {
 			foreignKey: {
-				name: "replacementVehicleId"
+				name: "replaceVehicleId"
 			},
 			as: "replaceVehicle"
 		});
