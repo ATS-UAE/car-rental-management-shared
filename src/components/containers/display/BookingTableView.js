@@ -15,7 +15,12 @@ import {
 	getBookingStatus,
 	getRelatedDataById
 } from "../../../utils";
-import { resources, actions, roles } from "../../../variables/enums";
+import {
+	resources,
+	actions,
+	roles,
+	bookingTypes
+} from "../../../variables/enums";
 import { RBAC } from "../../../config/rbac";
 import BookingFinalizeForm from "../forms/bookings/BookingFinalizeForm";
 import AddBox from "@material-ui/icons/AddBox";
@@ -400,9 +405,11 @@ class BookingTableView extends Component {
 						const vehicle = await api
 							.fetchVehicle(booking.data.vehicleId)
 							.catch(() => history.replace("/bookings"));
-						const location = await api
-							.fetchLocation(vehicle.data.locationId)
-							.catch(() => history.replace("/bookings"));
+						const location =
+							vehicle.data.locationId &&
+							(await api
+								.fetchLocation(vehicle.data.locationId)
+								.catch(() => history.replace("/bookings")));
 
 						const read = {
 							access: await RBAC.can(
@@ -489,13 +496,14 @@ class BookingTableView extends Component {
 									) {
 										history.replace("/bookings");
 									} else {
-										if (formData === null && booking)
+										if (formData === null && booking) {
 											this.setState({
 												formData: {
 													...booking.data,
-													locationId: location.data.id
+													locationId: location && location.data.id
 												}
 											});
+										}
 
 										if (auth && formData && read && update && update.access) {
 											return (
@@ -510,13 +518,18 @@ class BookingTableView extends Component {
 													readOnly={update.exclude}
 													allowBefore={true}
 													onSubmit={() => {
-														this.setState({
-															formData: null
-														});
 														fetchBookings().then(() => {
 															history.replace("/bookings");
+															this.setState({
+																formData: null
+															});
 														});
 													}}
+													showMap={formData.locationId !== null}
+													showReplacementVehicleForm={
+														formData.bookingType.name ===
+														bookingTypes.REPLACEMENT
+													}
 												/>
 											);
 										} else if (update && !update.access)
@@ -594,7 +607,7 @@ class BookingTableView extends Component {
 										this.setState({
 											formData: {
 												...booking.data,
-												locationId: location.data.id,
+												locationId: location && location.data.id,
 												amount:
 													booking.data.amount === null
 														? undefined
@@ -607,11 +620,11 @@ class BookingTableView extends Component {
 												values={formData}
 												onChange={formData => this.setState({ formData })}
 												onSubmit={() => {
-													this.setState({
-														formData: null
-													});
 													fetchBookings().then(() => {
 														history.replace("/bookings");
+														this.setState({
+															formData: null
+														});
 													});
 												}}
 											/>
@@ -680,7 +693,7 @@ class BookingTableView extends Component {
 										this.setState({
 											formData: {
 												...booking.data,
-												locationId: location.data.id
+												locationId: location && location.data.id
 											}
 										});
 
@@ -713,7 +726,8 @@ class BookingTableView extends Component {
 						grouping: true,
 						columnsButton: true,
 						pageSizeOptions: [1, 5, 10, 20, 50, 100, 200, 500, 1000],
-						exportButton: true
+						exportButton: true,
+						emptyRowsWhenPaging: false
 					}}
 					actions={bookingActions}
 				/>
