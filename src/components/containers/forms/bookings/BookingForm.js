@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { Grid, Button } from "@material-ui/core";
 import BookingForm from "../../../presentational/forms/BookingForm";
+import VehicleForm from "../../../presentational/forms/VehicleForm";
 import * as reduxActions from "../../../../actions";
 import {
 	toTitleWords,
@@ -32,7 +33,8 @@ function BookingFormContainer({
 	checkTimeSlot,
 	hints,
 	showMap,
-	unavailableVehicleErrorText
+	unavailableVehicleErrorText,
+	showReplaceVehicleForm
 }) {
 	let [errors, setErrors] = useState({});
 	let [disableButton, setDisabledButton] = useState(false);
@@ -133,6 +135,33 @@ function BookingFormContainer({
 			</Grid>
 		</Fragment>
 	);
+
+	let replaceVehicleForm = showReplaceVehicleForm && (
+		<VehicleForm
+			title="Specify vehicle to be replaced"
+			values={values.replaceVehicle}
+			onChangeEvent={data =>
+				onChange({
+					...values,
+					replaceVehicle: { ...values.replaceVehicle, ...data }
+				})
+			}
+			errors={errors}
+			onError={e => {
+				setErrors(errors => ({ ...errors, ...e }));
+			}}
+			exclude={[
+				"vehicleImageSrc",
+				"objectId",
+				"parkingLocation",
+				"locationId",
+				"categories"
+			]}
+			wrapper="div"
+			showFooter={false}
+		/>
+	);
+
 	return (
 		<BookingForm
 			unavailableVehicleErrorText={unavailableVehicleErrorText}
@@ -150,13 +179,14 @@ function BookingFormContainer({
 			}}
 			errorNotes={errorNotes}
 			errors={errors}
-			onError={setErrors}
+			onError={e => setErrors(errors => ({ ...errors, ...e }))}
 			title={title}
 			footer={footer}
 			locations={locations && locations.data ? locations.data : []}
 			onLocationClick={({ id: locationId }) =>
 				onChange && onChange({ ...values, locationId })
 			}
+			children={replaceVehicleForm}
 			hints={hints}
 		/>
 	);
