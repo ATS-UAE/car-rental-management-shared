@@ -5,6 +5,7 @@ import { Paper, Tabs, Tab } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 
 import * as actions from "../../actions";
+import { roles } from "../../variables/enums";
 import PasswordChangeButtonDialog from "../containers/forms/PasswordChangeButtonDialog";
 import CategoryTableView from "../containers/display/CategoryTableView";
 
@@ -12,6 +13,7 @@ function Settings({
 	classes,
 	fetchCategories,
 	fetchCurrentUserDetails,
+	fetchVehicles,
 	location,
 	match,
 	history,
@@ -20,6 +22,7 @@ function Settings({
 	useEffect(() => {
 		fetchCategories();
 		fetchCurrentUserDetails();
+		fetchVehicles();
 	}, []);
 
 	const [value, setValue] = useState(0);
@@ -30,7 +33,7 @@ function Settings({
 			case 0:
 				return <PasswordChangeButtonDialog />;
 			case 1:
-				if (auth && auth.data) {
+				if (auth && auth.data && auth.data.role.name === roles.ADMIN) {
 					return (
 						<CategoryTableView
 							location={location}
