@@ -13,7 +13,8 @@ function BookingFromCreate({
 	ticksMap,
 	vehicle,
 	enums,
-	auth
+	auth,
+	children
 }) {
 	let [errorNotes, setErrorNotes] = useState([]);
 	const [values, setValues] = useState({
@@ -30,16 +31,17 @@ function BookingFromCreate({
 			const replacementType = enums.data.bookingTypes.find(
 				type => type.name === bookingTypes.SERVICE
 			);
-			setValues({
-				...values,
+			setValues(prev => ({
+				...prev,
 				bookingTypeId: replacementType.id,
 				vehicleId: vehicle.id,
 				userId: auth.data.id
-			});
+			}));
 		}
 	}, [enums, vehicle, auth]);
 	return (
 		<BookingForm
+			children={children}
 			showMap={false}
 			values={values}
 			exclude={[exclude]}
