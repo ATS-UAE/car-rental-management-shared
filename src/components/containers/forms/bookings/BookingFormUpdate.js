@@ -11,13 +11,16 @@ function BookingFormUpdate({
 	values,
 	onChange,
 	readOnly,
-	allowBefore
+	allowBefore,
+	showMap,
+	showReplacementVehicleForm
 }) {
 	let [errorNotes, setErrorNotes] = useState([]);
 	let [loading, setLoading] = useState(false);
 
 	return (
 		<BookingForm
+			showReplaceVehicleForm={showReplacementVehicleForm}
 			values={values}
 			exclude={exclude}
 			errorNotes={errorNotes}
@@ -25,6 +28,7 @@ function BookingFormUpdate({
 			onChange={onChange}
 			loading={loading}
 			readOnly={readOnly}
+			showMap={showMap}
 			onSubmit={() => {
 				setLoading(true);
 				api
