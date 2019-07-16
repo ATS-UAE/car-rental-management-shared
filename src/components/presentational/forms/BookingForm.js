@@ -27,7 +27,8 @@ function BookingForm({
 	allowBefore,
 	showMap,
 	fieldProps,
-	unavailableVehicleErrorText
+	unavailableVehicleErrorText,
+	children
 }) {
 	const notBefore = new Validator(
 		() => values.from > moment().unix(),
@@ -156,6 +157,7 @@ function BookingForm({
 					</WorldMap>
 				</Grid>
 			)}
+			{children}
 		</Form>
 	);
 }
