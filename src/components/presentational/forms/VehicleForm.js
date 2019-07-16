@@ -15,7 +15,8 @@ function VehicleForm({
 	errors,
 	readOnly,
 	hints,
-	categoryList
+	categoryList,
+	wrapper
 }) {
 	const fields = [
 		{
@@ -119,6 +120,7 @@ function VehicleForm({
 			onError={onError}
 			hints={hints}
 			readOnly={readOnly}
+			wrapper={wrapper}
 		/>
 	);
 }

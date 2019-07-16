@@ -37,7 +37,8 @@ function Form({
 	readOnly,
 	hints,
 	onChangeEvent,
-	gridContainerProps
+	gridContainerProps,
+	wrapper
 }) {
 	const handleChange = (name, { persistEvent, passEvent }) => e => {
 		persistEvent && e.persist();
@@ -68,8 +69,9 @@ function Form({
 		}
 		onError && onError(fieldErrors);
 	}, [values]);
+	let Wrapper = wrapper;
 	return (
-		<form className={classes.root}>
+		<Wrapper className={classes.root}>
 			{errorNotes.map((e, i) => (
 				<ErrorChip key={i} label={e} className={classes.errorChip} />
 			))}
@@ -135,7 +137,7 @@ function Form({
 					</Grid>
 				)}
 			</Grid>
-		</form>
+		</Wrapper>
 	);
 }
 
@@ -172,7 +174,8 @@ Form.defaultProps = {
 	errorNotes: [],
 	buttonLabel: "Confirm",
 	readOnly: false,
-	hints: "*Required"
+	hints: "*Required",
+	wrapper: "form"
 };
 
 const style = theme => ({
