@@ -66,7 +66,11 @@ class CategoryTableView extends Component {
 		categoryData: []
 	};
 
-	componentDidUpdate = (prevProps, prevState) => {
+	componentDidMount = () => {
+		this.reduceCategoryData();
+	};
+
+	componentDidUpdate = prevProps => {
 		const { categories } = this.props;
 		if (categories !== prevProps.categories) {
 			this.reduceCategoryData();
@@ -74,28 +78,47 @@ class CategoryTableView extends Component {
 	};
 
 	reduceCategoryData = () => {
-		const { categories } = this.props;
+		const { categories, vehicles } = this.props;
 
 		let categoryData = [];
-		if (categories && categories.data) {
-			categoryData = categories.data.map(({ id, name }) => ({ id, name }));
+		if (categories && categories.data && vehicles && vehicles.data) {
+			categoryData = categories.data.map(({ id, name }) => {
+				let count = 0;
+
+				for (const vehicle of vehicles.data) {
+					if (vehicle.categories.includes(id)) count++;
+				}
+				return {
+					name,
+					count
+				};
+			});
 		}
 
 		this.setState({ categoryData });
 	};
 
 	render() {
-		const { categories, fetchCategories } = this.props;
+		const { categories, fetchCategories, fetchVehicles } = this.props;
 		const { categoryColumns, categoryData } = this.state;
 		return (
 			<MaterialTable
 				editable={{
 					onRowAdd: ({ name }) =>
-						api.createCategories({ name }).then(fetchCategories),
+						api
+							.createCategories({ name })
+							.then(fetchVehicles)
+							.then(fetchCategories),
 					onRowUpdate: ({ id, name }) =>
-						api.updateCategory({ id, name }).then(fetchCategories),
+						api
+							.updateCategory({ id, name })
+							.then(fetchVehicles)
+							.then(fetchCategories),
 					onRowDelete: ({ id }) =>
-						api.deleteCategory({ id }).then(fetchCategories)
+						api
+							.deleteCategory({ id })
+							.then(fetchVehicles)
+							.then(fetchCategories)
 				}}
 				isLoading={categories === null}
 				title="Vehicle categories"
@@ -107,7 +130,10 @@ class CategoryTableView extends Component {
 	}
 }
 
-const mapStateToProps = ({ categories }) => ({ categories });
+const mapStateToProps = ({ categories, vehicles }) => ({
+	categories,
+	vehicles
+});
 
 export default compose(
 	withRouter,
