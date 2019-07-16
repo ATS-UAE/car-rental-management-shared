@@ -52,7 +52,7 @@ router.post("/", async ({ user, body }, res) => {
 			try {
 				if (bookingType.name === BOOKING_TYPES.REPLACEMENT) {
 					const { brand, model, plateNumber, vin } = body;
-					replacementVehicle = await db.ReplacementVehicle.create({
+					replacementVehicle = await db.ReplaceVehicle.create({
 						brand,
 						model,
 						plateNumber,
