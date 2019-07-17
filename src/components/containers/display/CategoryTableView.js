@@ -1,16 +1,9 @@
-import React, { Component, Fragment } from "react";
-import { Route, withRouter, Switch } from "react-router-dom";
+import React, { Component } from "react";
+import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import moment from "moment";
 import { compose } from "recompose";
-import Dialog from "../../presentational/display/Dialog";
-import { DialogChildren } from "../../presentational/forms/ConfirmDialog";
-import UserForm from "../forms/users/UserForm";
-import UserFormUpdate from "../forms/users/UserFormUpdate";
 import * as reduxActions from "../../../actions";
-import { resources, actions } from "../../../variables/enums";
-import { RBAC } from "../../../config/rbac";
-import { toTitleWords, api } from "../../../utils";
+import { api } from "../../../utils";
 
 import MaterialTable from "material-table";
 import AddBox from "@material-ui/icons/AddBox";
@@ -28,9 +21,6 @@ import Remove from "@material-ui/icons/Remove";
 import SaveAlt from "@material-ui/icons/SaveAlt";
 import Search from "@material-ui/icons/Search";
 import ViewColumn from "@material-ui/icons/ViewColumn";
-import Visibility from "@material-ui/icons/Visibility";
-import Block from "@material-ui/icons/Block";
-import CheckCircle from "@material-ui/icons/CheckCircle";
 
 const tableIcons = {
 	Add: AddBox,
@@ -89,6 +79,7 @@ class CategoryTableView extends Component {
 					if (vehicle.categories.includes(id)) count++;
 				}
 				return {
+					id,
 					name,
 					count
 				};
