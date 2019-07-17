@@ -269,7 +269,8 @@ class BookingTableView extends Component {
 					};
 				},
 				({ booking }) => {
-					const visible = !booking.approved;
+					const visible =
+						!booking.approved && auth.data.role.name === roles.ADMIN;
 					return {
 						icon: Delete,
 						tooltip: "Delete",
@@ -500,6 +501,7 @@ class BookingTableView extends Component {
 											this.setState({
 												formData: {
 													...booking.data,
+													replaceVehicle: booking.data.replaceVehicle || {},
 													locationId: location && location.data.id
 												}
 											});
