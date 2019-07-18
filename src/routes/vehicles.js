@@ -1,0 +1,250 @@
+const express = require("express");
+const router = express.Router();
+
+const requireLogin = require("../middlewares/requireLogin");
+const {
+	deleteReplacedFiles,
+	addReplacedFiles
+} = require("../middlewares/deleteReplacedFiles");
+const disallowGuests = require("../middlewares/disallowGuests");
+const parseBody = require("../middlewares/parseBody");
+const upload = require("../middlewares/multerUpload");
+const deleteFileOnError = require("../middlewares/deleteFileOnError");
+const { RBAC, OPERATIONS, resources } = require("../rbac/init");
+const { CREATE, READ, UPDATE, DELETE } = OPERATIONS;
+const db = require("../models");
+const { errorCodes } = require("../utils/variables");
+const { ResponseBuilder, getFileURL, pickFields } = require("../utils");
+
+router.use(requireLogin);
+
+router.get("/", async ({ user }, res) => {
+	let response = new ResponseBuilder();
+	let accessible = await RBAC.can(user.role.name, READ, resources.vehicles);
+	if (accessible) {
+		let results = [];
+		let vehicles = await db.Vehicle.findAll({ include: [{ all: true }] });
+		for (const vehicle of vehicles) {
+			results.push({
+				...vehicle.get({ plain: true }),
+				categories: (await vehicle.getCategories()).map(c => c.id)
+			});
+		}
+		response.setData(results);
+		response.setCode(200);
+		response.setMessage(`Found ${results.length} vehicles.`);
+		response.setSuccess(true);
+		res.status(200);
+	} else {
+		response.setCode(errorCodes.UNAUTHORIZED.statusCode);
+		response.setMessage(errorCodes.UNAUTHORIZED.message);
+		response.setSuccess(false);
+		res.status(errorCodes.UNAUTHORIZED.statusCode);
+	}
+
+	res.json(response);
+});
+
+router.post(
+	"/",
+	upload("carbooking/media/vehicles").single("vehicleImageSrc"),
+	parseBody,
+	disallowGuests,
+	async ({ user, body, file }, res, next) => {
+		const fileLocation =
+			file &&
+			file.filename &&
+			getFileURL("carbooking/media/vehicles", file.filename);
+		let response = new ResponseBuilder();
+		let accessible = await RBAC.can(user.role.name, CREATE, resources.vehicles);
+		if (accessible) {
+			try {
+				let createdVehicle = await db.Vehicle.create({
+					...body,
+					vehicleImageSrc: fileLocation
+				});
+				if (body.categories) {
+					let categories = await db.Category.findAll({
+						where: { id: body.categories }
+					});
+					await createdVehicle.setCategories(categories);
+				}
+				response.setData({
+					...createdVehicle.get({ plain: true }),
+					categories: await createdVehicle.getCategories().map(c => c.id)
+				});
+				response.setMessage("Vehicle has been created.");
+				response.setCode(200);
+				response.setSuccess(true);
+				res.status(200);
+			} catch (e) {
+				response.setMessage(e.message);
+				response.setCode(422);
+				res.status(422);
+				if (e.errors && e.errors.length > 0) {
+					e.errors.forEach(error => response.appendError(error.path));
+				}
+			}
+		} else {
+			response.setMessage(errorCodes.UNAUTHORIZED.message);
+			response.setCode(errorCodes.UNAUTHORIZED.statusCode);
+			res.status(errorCodes.UNAUTHORIZED.statusCode);
+		}
+
+		res.json(response);
+		next();
+	},
+	deleteFileOnError
+);
+
+router.get("/:id", async ({ user, params }, res) => {
+	let response = new ResponseBuilder();
+	let accessible = await RBAC.can(user.role.name, READ, resources.vehicles);
+	if (accessible) {
+		try {
+			let foundVehicle = await db.Vehicle.findByPk(params.id);
+			if (foundVehicle) {
+				response.setData({
+					...foundVehicle.get({ plain: true }),
+					categories: (await foundVehicle.getCategories()).map(c => c.id)
+				});
+				response.setCode(200);
+				response.setMessage(`Vehicle with ID ${params.id} found.`);
+				response.setSuccess(true);
+			} else {
+				res.status(404);
+				response.setCode(404);
+				response.setMessage(`Vehicle with ID ${params.id} not found.`);
+			}
+		} catch (e) {
+			response.setMessage(e.message);
+			response.setCode(422);
+			res.status(422);
+			if (e.errors && e.errors.length > 0) {
+				e.errors.forEach(error => response.appendError(error.path));
+			}
+		}
+	} else {
+		response.setMessage(errorCodes.UNAUTHORIZED.message);
+		response.setCode(errorCodes.UNAUTHORIZED.statusCode);
+		res.status(errorCodes.UNAUTHORIZED.statusCode);
+	}
+	res.json(response);
+});
+
+router.patch(
+	"/:id",
+	upload("carbooking/media/vehicles").single("vehicleImageSrc"),
+	parseBody,
+	disallowGuests,
+	async (req, res, next) => {
+		const { user, params, body, file } = req;
+		const fileLocation =
+			file &&
+			file.filename &&
+			getFileURL("carbooking/media/vehicles", file.filename);
+		let response = new ResponseBuilder();
+
+		let accessible = await RBAC.can(user.role.name, UPDATE, resources.vehicles);
+		if (accessible) {
+			let foundVehicle = await db.Vehicle.findByPk(params.id, {
+				include: [{ all: true }]
+			});
+			if (foundVehicle) {
+				try {
+					if (body.categories) {
+						let categories = await db.Category.findAll({
+							where: { id: body.categories }
+						});
+						await foundVehicle.setCategories(categories);
+					}
+					fileLocation &&
+						addReplacedFiles(res, {
+							url: foundVehicle.vehicleImageSrc,
+							model: db.Vehicle,
+							field: "vehicleImageSrc"
+						});
+					let updatedVehicle = await foundVehicle.update({
+						...pickFields(
+							[
+								"objectId",
+								"brand",
+								"model",
+								"plateNumber",
+								"vin",
+								"parkingLocation",
+								"locationId"
+							],
+							body
+						),
+						vehicleImageSrc: fileLocation || foundVehicle.vehicleImageSrc
+					});
+					response.setData({
+						...updatedVehicle.get({ plain: true }),
+						categories: (await updatedVehicle.getCategories()).map(c => c.id)
+					});
+					response.setCode(200);
+					response.setMessage(`Vehicle with ID ${params.id} updated.`);
+					response.setSuccess(true);
+				} catch (e) {
+					response.setMessage(e.message);
+					response.setCode(422);
+					res.status(422);
+					if (e.errors && e.errors.length > 0) {
+						e.errors.forEach(error => response.appendError(error.path));
+					}
+				}
+			} else {
+				res.status(404);
+				response.setCode(404);
+				response.setMessage(`Vehicle with ID ${params.id} not found.`);
+			}
+		} else {
+			response.setMessage(errorCodes.UNAUTHORIZED.message);
+			response.setCode(errorCodes.UNAUTHORIZED.statusCode);
+			res.status(errorCodes.UNAUTHORIZED.statusCode);
+		}
+
+		res.json(response);
+		next();
+	},
+	deleteFileOnError,
+	deleteReplacedFiles
+);
+
+router.delete(
+	"/:id",
+	disallowGuests,
+	async ({ user, params }, res) => {
+		let response = new ResponseBuilder();
+
+		let accessible = await RBAC.can(user.role.name, DELETE, resources.vehicles);
+
+		if (accessible) {
+			let foundVehicle = await db.Vehicle.findByPk(params.id);
+			if (foundVehicle) {
+				addReplacedFiles(res, {
+					url: foundVehicle.vehicleImageSrc,
+					model: db.Vehicle,
+					field: "vehicleImageSrc"
+				});
+				await foundVehicle.destroy();
+				response.setCode(200);
+				response.setSuccess(true);
+				response.setMessage(`Vehicle with ID ${params.id} has been deleted.`);
+			} else {
+				response.setCode(404);
+				response.setMessage(`Vehicle with ID ${params.id} is not found.`);
+			}
+		} else {
+			response.setMessage(errorCodes.UNAUTHORIZED.message);
+			response.setCode(errorCodes.UNAUTHORIZED.statusCode);
+			res.status(errorCodes.UNAUTHORIZED.statusCode);
+		}
+		res.json(response);
+		next();
+	},
+	deleteReplacedFiles
+);
+
+module.exports = router;

@@ -1,0 +1,16 @@
+{
+	"development": {
+		"username": "root",
+		"password": "atsuae2014",
+		"database": "CarBookingDev",
+		"host": "40.82.37.230",
+		"dialect": "mysql"
+	},
+	"production": {
+		"username": "root",
+		"password": "atsuae2014",
+		"database": "CarBookingProd",
+		"host": "40.82.37.230",
+		"dialect": "mysql"
+	}
+}
