@@ -1,6 +1,6 @@
 import React from "react";
 import { Paper, Typography } from "@material-ui/core";
-import { CloudUpload } from "@material-ui/icons";
+import * as icons from "@material-ui/icons";
 import { withStyles } from "@material-ui/core/styles";
 
 function ImageInput({
@@ -12,13 +12,15 @@ function ImageInput({
 	InputProps,
 	error,
 	value,
-	disabled
+	disabled,
+	icon
 }) {
 	let imgSrc = null;
 	if (value) {
 		if (typeof value === "string") imgSrc = value;
 		else imgSrc = URL.createObjectURL(value);
 	}
+	let Icon = icons[icon];
 	return (
 		<div className={classes.root}>
 			<input
@@ -36,11 +38,11 @@ function ImageInput({
 					{imgSrc ? (
 						<img src={imgSrc} alt="Upload" className={classes.uploaded} />
 					) : (
-						<CloudUpload className={classes.uploaded} />
+						<Icon className={classes.icon} />
 					)}
 				</Paper>
 				{!disabled && (
-					<Typography variant="caption" color={error ? "error" : "primary"}>
+					<Typography variant="caption" color={error ? "error" : undefined}>
 						{`${label}${required ? "*" : ""}`}
 					</Typography>
 				)}
@@ -49,6 +51,10 @@ function ImageInput({
 	);
 }
 
+ImageInput.defaultProps = {
+	icon: "CloudUpload"
+};
+
 const styles = theme => {
 	return {
 		input: {
@@ -56,19 +62,44 @@ const styles = theme => {
 		},
 		label: {
 			display: "inline-flex",
-			alignItems: "center"
+			flexDirection: "column",
+			alignItems: "center",
+			width: ({ fullWidth }) => fullWidth && "100%"
 		},
 		preview: {
 			display: "inline-flex",
 			borderRadius: "1000px",
-			width: "48px",
+			width: ({ main }) => {
+				let size = 48;
+				return main ? `${size * 3}px` : `${size}px`;
+			},
+			height: ({ main }) => {
+				let size = 48;
+				return main ? `${size * 3}px` : `${size}px`;
+			},
 			justifyContent: "center",
 			alignItems: "center",
-			marginRight: theme.spacing(1)
+			marginRight: theme.spacing(1),
+			margin: ({ fullWidth }) => fullWidth && "auto"
+		},
+		icon: {
+			width: ({ main }) => {
+				let size = 30;
+				return main ? `${size * 3}px` : `${size}px`;
+			},
+			height: ({ main }) => {
+				let size = 30;
+				return main ? `${size * 3}px` : `${size}px`;
+			}
 		},
 		uploaded: {
-			clipPath: "circle(23px at center)",
-			height: "48px"
+			clipPath: ({ main }) => {
+				let size = 23;
+				return main
+					? `circle(${size * 3}px at center)`
+					: `circle(${size}px at center)`;
+			},
+			height: "100%"
 		},
 		button: {
 			padding: theme.spacing(3),
