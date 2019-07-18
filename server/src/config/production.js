@@ -10,10 +10,7 @@ const {
 	MAIL_HOST,
 	SERVER_PORT,
 	SERVER_URL,
-	SECRET_KEY,
-	AWS_ACCESS_KEY_ID,
-	AWS_SECRET_ACCESS_KEY,
-	AWS_S3_BUCKET
+	SECRET_KEY
 } = process.env;
 
 module.exports = {
