@@ -24,8 +24,15 @@ function VehicleForm({
 			name: "vehicleImageSrc",
 			id: "vehicle-image",
 			persistEvent: true,
+			GridProps: {
+				xs: 12,
+				sm: 12,
+				md: 12
+			},
 			props: {
-				label: "Select profile picture"
+				label: "Select vehicle picture",
+				main: true,
+				icon: "DirectionsCar"
 			}
 		},
 		{

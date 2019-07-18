@@ -17,7 +17,8 @@ function UserForm({
 	readOnly,
 	hints,
 	ticksMap,
-	categoryList
+	categoryList,
+	classes
 }) {
 	let samePassword = new Validator(
 		password => password === values.password,
@@ -29,8 +30,15 @@ function UserForm({
 			name: "userImageSrc",
 			id: "profile-picture",
 			persistEvent: true,
+			GridProps: {
+				xs: 12,
+				sm: 12,
+				md: 12
+			},
 			props: {
-				label: "Select profile picture"
+				label: "Select profile picture",
+				main: true,
+				icon: "Face"
 			}
 		},
 		{
@@ -128,6 +136,7 @@ function UserForm({
 	];
 	return (
 		<Form
+			classes={classes}
 			title={title}
 			fields={fields}
 			exclude={exclude}

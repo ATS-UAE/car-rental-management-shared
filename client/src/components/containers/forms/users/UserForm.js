@@ -23,7 +23,8 @@ function UserFormContainer({
 	showFooter,
 	fetchCurrentUserDetails,
 	auth,
-	categories
+	categories,
+	classes
 }) {
 	let [errors, setErrors] = useState({});
 	let [disableButton, setDisabledButton] = useState(false);
@@ -108,6 +109,7 @@ function UserFormContainer({
 			ticksMap={ticksMap}
 			hints={hints}
 			readOnly={readOnly}
+			classes={classes}
 		/>
 	);
 }
