@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import { connect } from "react-redux";
-
 import UserForm from "./UserForm";
 import { api } from "../../../../utils";
 
-function UserFormGuestSignUp({ onSubmit, history }) {
+function UserFormGuestSignUp({ onSubmit, classes }) {
 	let [newUser, setNewUser] = useState({});
 	let [loading, setLoading] = useState(false);
 	let [errorNotes, setErrorNotes] = useState([]);
@@ -14,6 +13,7 @@ function UserFormGuestSignUp({ onSubmit, history }) {
 
 	return (
 		<UserForm
+			classes={classes}
 			title="Sign Up"
 			values={newUser}
 			onChangeEvent={(data, name, event) =>

@@ -7,9 +7,14 @@ import UserFormGuestSignUp from "../containers/forms/users/UserFormGuestSignUp";
 
 function SignUp({ classes, history }) {
 	return (
-		<Paper className={classes.root}>
-			<UserFormGuestSignUp onSubmit={() => history.push("/login")} />
-		</Paper>
+		<div className={classes.root}>
+			<Paper className={classes.signUpWrapper}>
+				<UserFormGuestSignUp
+					classes={{ root: classes.signUp }}
+					onSubmit={() => history.push("/login")}
+				/>
+			</Paper>
+		</div>
 	);
 }
 
@@ -20,8 +25,14 @@ const styles = theme => ({
 			padding: theme.spacing(2)
 		},
 		height: "100%",
-		overflow: "auto"
-	}
+		overflow: "auto",
+		display: "flex"
+	},
+	signUpWrapper: {
+		padding: theme.spacing(1),
+		margin: "auto"
+	},
+	signUp: { maxWidth: "500px" }
 });
 
 export default compose(
