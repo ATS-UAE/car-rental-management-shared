@@ -9,8 +9,12 @@ const upload = (uploadPath, options) => {
 			destination: function(req, file, cb) {
 				const filePath = path.join(getStaticFilesPath(), uploadPath);
 				fs.mkdir(filePath, { recursive: true }, err => {
-					if (err) console.error(err);
-					else cb(null, filePath);
+					if (err) {
+						console.error(err);
+						cb(err, filePath);
+					} else {
+						cb(null, filePath);
+					}
 				});
 			},
 			filename: function(req, file, cb) {
