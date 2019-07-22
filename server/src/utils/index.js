@@ -113,7 +113,7 @@ function sendPasswordResetToken({ email, url }) {
 }
 
 const getStaticFilesPath = () =>
-	path.join(__dirname, "/../../../static", process.env.NODE_ENV);
+	path.join(__dirname, "/../../../../static", process.env.NODE_ENV);
 
 const getFileURL = (filePath, fileName) =>
 	new URL(`${process.env.SERVER_URL}/static/${filePath}/${fileName}`).href;

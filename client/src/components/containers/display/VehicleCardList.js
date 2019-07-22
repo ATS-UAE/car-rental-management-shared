@@ -129,6 +129,7 @@ function VehicleCardList({ vehicles, history, classes, auth, fetchVehicles }) {
 									return (
 										<VehicleFormUpdate
 											hints={""}
+											title="Update Vehicle"
 											values={formData}
 											onChangeEvent={(data, name, event) =>
 												event.target.files

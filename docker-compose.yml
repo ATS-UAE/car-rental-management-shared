@@ -1,0 +1,24 @@
+version: "3"
+services:
+  nginx:
+    restart: always
+    image: ramilamparo/car-rental-management-network
+    build:
+      context: ./nginx
+    ports:
+      - "80:80"
+  api:
+    image: ramilamparo/car-rental-management-server
+    build:
+      context: ./server
+    volumes:
+      - /app/node_modules
+      - ./server:/app
+  client:
+    image: ramilamparo/car-rental-management-client
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./client
+    volumes:
+      - /app/node_modules
+      - ./client:/app
