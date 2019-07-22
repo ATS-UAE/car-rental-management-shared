@@ -15,6 +15,7 @@
 - **SERVER_URL** *Used for CORS*
 - **CLIENT_URL** *Used for CORS*
 - **SECRET_KEY** *Used to hash passwords*
+- **CAR_RENTAL_MANAGEMENT_API_STORAGE_PATH** *Where to save uploaded files*
 ### CLIENT
 - **REACT_APP_CAR_BOOKING_API_DOMAIN**
 - **REACT_APP_CAR_BOOKING_CLIENT_DOMAIN**

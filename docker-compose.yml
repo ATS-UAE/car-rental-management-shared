@@ -14,6 +14,23 @@ services:
     volumes:
       - /app/node_modules
       - ./server:/app
+      - /var/www/static:/var/www/static
+    environment:
+      - NODE_ENV=production
+      - DATABASE_NAME=###
+      - DATABASE_USERNAME=###
+      - DATABASE_PASSWORD=###
+      - DATABASE_HOST=###
+      - DATABASE_PORT=3306
+      - MAIL_HOST=###
+      - MAIL_USER=###
+      - MAIL_PASS=###
+      - MAIL_PORT=465
+      - SERVER_PORT=5000
+      - SERVER_URL=http://api.atsue.net
+      - CLIENT_URL=http://leaseplan-rentals.atsuae.net
+      - SECRET_KEY=###
+      - CAR_RENTAL_MANAGEMENT_API_STORAGE_PATH=/var/www/static
   client:
     image: ramilamparo/car-rental-management-client
     build:
@@ -22,3 +39,9 @@ services:
     volumes:
       - /app/node_modules
       - ./client:/app
+      - /var/www/static:/var/www/static
+    environment:
+      - REACT_APP_CAR_BOOKING_API_DOMAIN=http://api.atsuae.net
+      - REACT_APP_CAR_BOOKING_CLIENT_DOMAIN=http://leaseplan-rentals.atsuae.net
+      - REACT_APP_GOOGLE_MAPS_API_KEY=AIzaSyCMo38wjowp-jpIPbbc89adGU8MqMsUDss
+      - CHOKIDAR_USEPOLLING=true
