@@ -19,4 +19,3 @@
 - REACT_APP_CAR_BOOKING_API_DOMAIN
 - REACT_APP_CAR_BOOKING_CLIENT_DOMAIN
 - CHOKIDAR_USEPOLLING *true/false*
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
