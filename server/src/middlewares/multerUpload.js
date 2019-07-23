@@ -1,21 +1,16 @@
 const path = require("path");
 const fs = require("fs");
 const multer = require("multer");
-const { getStaticFilesPath } = require("../utils/");
+const { getStaticFilesPath, makeDirectoryIfNotExist } = require("../utils/");
 
 const upload = (uploadPath, options) => {
 	return multer({
 		storage: multer.diskStorage({
 			destination: function(req, file, cb) {
 				const filePath = path.join(getStaticFilesPath(), uploadPath);
-				fs.mkdir(filePath, { recursive: true }, err => {
-					if (err) {
-						console.error(err);
-						cb(err, filePath);
-					} else {
-						cb(null, filePath);
-					}
-				});
+				makeDirectoryIfNotExist(filePath)
+					.then(() => cb(null, filePath))
+					.catch(e => cb(e, filePath));
 			},
 			filename: function(req, file, cb) {
 				console.log(file);

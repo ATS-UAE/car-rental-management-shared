@@ -205,12 +205,8 @@ router.patch("/:id", async ({ user, params, body }, res) => {
 						to: booking.to,
 						bookingId: booking.id,
 						parkingLocation: booking.vehicle.parkingLocation,
-						mapURL: location
-							? getGoogleMapsStaticURL({
-									lat: location.lat,
-									lng: location.lng
-							  })
-							: null
+						lat: location.lat,
+						lng: location.lng
 					});
 				}
 

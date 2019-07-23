@@ -6,7 +6,8 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { check, oneOf, validationResult } = require("express-validator/check");
 
-const { ResponseBuilder, sendPasswordResetToken } = require("../utils");
+const { ResponseBuilder } = require("../utils");
+const { sendPasswordResetToken } = require("../mail/utils");
 const db = require("../models");
 const requireLogin = require("../middlewares/requireLogin");
 const { secretKey } = require("../config");

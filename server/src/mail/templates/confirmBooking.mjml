@@ -59,7 +59,7 @@
 
       <mj-section padding="0">
         <mj-column vertical-align="top" width="100%">
-          <mj-image src="{{mapURL}}" css-class="logo" padding="0px"></mj-image>
+          <mj-image href="http://maps.google.com/?q={{lat}},{{lng}}" src="{{mapURL}}" css-class="logo" padding="0px"></mj-image>
         </mj-column>
       </mj-section>
 

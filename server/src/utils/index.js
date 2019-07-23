@@ -1,9 +1,7 @@
 const path = require("path");
 const fs = require("fs");
 const moment = require("moment");
-const jwt = require("jsonwebtoken");
 const config = require("../config");
-const { getTransport } = require("../mail/utils");
 const { BOOKING_STATUS } = require("./variables");
 
 const asyncForEach = async (array, cb) => {
@@ -72,17 +70,6 @@ ResponseBuilder.prototype.getResponse = function() {
 	return ({ error, message, success, data } = this);
 };
 
-function sendInviteToken({ email, url }) {
-	// Send email invite
-	let token = jwt.sign({ email }, config.secretKey, { expiresIn: "7d" });
-	return getTransport().sendMail({
-		from: "no-reply@atsuae.net",
-		to: email,
-		subject: "You are invited to LeasePlan Car Booking!",
-		html: `<h1>Welcome</h1><a href="${url}?token=${token}">Click here to sign up!</a>`
-	});
-}
-
 const sqlDateToMoment = date => moment(date, "YYYY-MM-DDTHH:mm:ss");
 
 const toUnix = date => sqlDateToMoment(date).unix();
@@ -99,19 +86,6 @@ const toMySQLDate = unixS => {
 	return moment(unixS, "X").format("YYYY-MM-DD HH:mm:ss");
 };
 
-function sendPasswordResetToken({ email, url }) {
-	// Send email invite
-	let token = jwt.sign({ email, passwordReset: true }, config.secretKey, {
-		expiresIn: "1h"
-	});
-	return getTransport().sendMail({
-		from: "no-reply@atsuae.net",
-		to: email,
-		subject: "Password Reset",
-		html: `<h1>Hello</h1><a href="${url}?token=${token}">Click here to reset password!</a>`
-	});
-}
-
 const getStaticFilesPath = () =>
 	path.join(process.env.CAR_RENTAL_MANAGEMENT_API_STORAGE_PATH);
 
@@ -123,6 +97,18 @@ const getPathFromURL = fileURL =>
 		getStaticFilesPath(),
 		fileURL.replace(new RegExp(`^${process.env.SERVER_URL}/static`), "")
 	);
+
+const makeDirectoryIfNotExist = filePath => {
+	return new Promise((resolve, reject) => {
+		fs.mkdir(filePath, { recursive: true }, err => {
+			if (err) {
+				reject(err, filePath);
+			} else {
+				resolve(filePath);
+			}
+		});
+	});
+};
 
 const deleteFileFromUrl = fileUrl =>
 	fs.promises.unlink(getPathFromURL(fileUrl));
@@ -191,15 +177,14 @@ module.exports = {
 	getStaticFilesPath,
 	asyncForEach,
 	ResponseBuilder,
-	sendInviteToken,
 	exceptFields,
 	pickFields,
 	toUnix,
 	toMySQLDate,
 	containsField,
-	sendPasswordResetToken,
 	getGoogleMapsStaticURL,
 	sqlDateToMoment,
 	isSqlDate,
-	convertSequelizeDatesToUnix
+	convertSequelizeDatesToUnix,
+	makeDirectoryIfNotExist
 };

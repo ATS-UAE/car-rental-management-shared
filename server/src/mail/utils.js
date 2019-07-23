@@ -5,8 +5,9 @@ const fs = require("fs");
 const path = require("path");
 const jwt = require("jsonwebtoken");
 const moment = require("moment");
-
+const StaticMaps = require("staticmaps");
 const { mail, secretKey } = require("../config/");
+const { getStaticFilesPath, makeDirectoryIfNotExist } = require("../utils");
 
 const getTemplate = fileName =>
 	fs.readFileSync(`${__dirname}/templates/${fileName}.mjml`, "utf8");
@@ -14,6 +15,19 @@ const getTemplate = fileName =>
 const getTransport = () => nodemailer.createTransport(mail);
 
 const compileTemplate = (mjml, context) => compile(mjml)(context);
+
+function sendPasswordResetToken({ email, url }) {
+	// Send email invite
+	let token = jwt.sign({ email, passwordReset: true }, config.secretKey, {
+		expiresIn: "1h"
+	});
+	return getTransport().sendMail({
+		from: "no-reply@atsuae.net",
+		to: email,
+		subject: "Password Reset",
+		html: `<h1>Hello</h1><a href="${url}?token=${token}">Click here to reset password!</a>`
+	});
+}
 
 function sendInvite({ email }) {
 	const transporter = getTransport();
@@ -81,7 +95,7 @@ function sendInvoice({
 	});
 }
 
-function sendBookingConfirmation({
+const sendBookingConfirmation = async ({
 	email,
 	customerName,
 	vehicleName,
@@ -89,9 +103,33 @@ function sendBookingConfirmation({
 	to,
 	bookingId,
 	parkingLocation,
-	mapURL
-}) {
+	lat,
+	lng
+}) => {
 	const transporter = getTransport();
+
+	const options = {
+		width: 1200,
+		height: 800,
+		tileUrl: "https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png?lang=en"
+	};
+
+	const map = new StaticMaps(options);
+	const marker = {
+		img: path.join(__dirname, "../public/images/LocationMarker.png"),
+		coord: [lng, lat],
+		offsetX: 50,
+		offsetY: 100,
+		width: 100,
+		height: 100
+	};
+	map.addMarker(marker, { zoom: 10 });
+	await map.render([lng, lat]);
+	const filePath = path.join(getStaticFilesPath(), "/maps");
+	const fileName = `${Date.now()}.png`;
+	const fileSavePath = path.join(filePath, fileName);
+	await makeDirectoryIfNotExist(filePath);
+	await map.image.save(fileSavePath);
 	const compiled = compileTemplate(getTemplate("confirmBooking"), {
 		company: "LeasePlan",
 		contactEmail: "support@atsuae.net",
@@ -102,7 +140,9 @@ function sendBookingConfirmation({
 		vehicleName,
 		customerName,
 		bookingId,
-		mapURL,
+		mapURL: `cid:${fileName}`,
+		lat,
+		lng,
 		parkingLocation
 	});
 	const template = mjml2html(compiled);
@@ -110,22 +150,44 @@ function sendBookingConfirmation({
 		from: "LeasePlan Rentals <no-reply@atsuae.net>",
 		to: email,
 		subject: "Your booking has been confirmed!",
-		html: template.html
+		html: template.html,
+		attachments: [
+			{
+				filename: "Map Location.png",
+				path: fileSavePath,
+				cid: fileName
+			}
+		]
 	};
 	return new Promise((resolve, reject) => {
 		transporter.sendMail(mainOptions, function(err, info) {
+			fs.promises.unlink(fileSavePath);
+			console.log(err, info);
 			if (err) {
-				reject(err);
+				return reject(err);
 			} else {
-				resolve(info.response);
+				return resolve(info.response);
 			}
 		});
 	});
-}
+};
+
+sendBookingConfirmation({
+	email: "ramil@atsuae.net",
+	customerName: "Ramil",
+	vehicleName: "Prado",
+	from: moment().unix(),
+	to: moment().unix(),
+	bookingId: 1,
+	parkingLocation: "Parking location",
+	lat: 25.064181,
+	lng: 55.16367
+});
 
 module.exports = {
 	sendBookingConfirmation,
 	sendInvoice,
 	sendInvite,
-	getTransport
+	getTransport,
+	sendPasswordResetToken
 };
