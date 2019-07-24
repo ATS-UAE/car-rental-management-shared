@@ -172,18 +172,6 @@ const sendBookingConfirmation = async ({
 	});
 };
 
-sendBookingConfirmation({
-	email: "ramil@atsuae.net",
-	customerName: "Ramil",
-	vehicleName: "Prado",
-	from: moment().unix(),
-	to: moment().unix(),
-	bookingId: 1,
-	parkingLocation: "Parking location",
-	lat: 25.064181,
-	lng: 55.16367
-});
-
 module.exports = {
 	sendBookingConfirmation,
 	sendInvoice,
