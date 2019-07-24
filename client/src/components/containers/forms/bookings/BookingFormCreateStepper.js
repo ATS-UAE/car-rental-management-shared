@@ -14,11 +14,7 @@ import {
 } from "@material-ui/core";
 
 import * as reduxActions from "../../../../actions";
-import {
-	api,
-	isVehicleAvailableForBooking,
-	toTitleWords
-} from "../../../../utils";
+import { api, hasActiveBooking, toTitleWords } from "../../../../utils";
 import { bookingTypes, roles } from "../../../../variables/enums";
 import CardList from "../../../presentational/display/CardList";
 import LocationMapSelectForm from "../../../presentational/forms/LocationMapSelectForm";
@@ -106,7 +102,7 @@ function BookingFormCreateStepper({
 		if (vehicles && vehicles.data && auth && auth.data) {
 			availableVehicles = vehicles.data.reduce((acc, vehicle) => {
 				if (
-					isVehicleAvailableForBooking(vehicle) &&
+					!hasActiveBooking(vehicle) &&
 					vehicle.locationId === values[2].locationId
 				) {
 					if (auth.data.role.name === roles.GUEST) {

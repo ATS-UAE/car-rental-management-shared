@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import BookingForm from "./BookingForm";
 import * as reduxActions from "../../../../actions";
 import { api } from "../../../../utils";
+import { bookingTypes } from "../../../../variables/enums";
 
 function BookingFormUpdate({
 	fetchBookings,
@@ -13,6 +14,9 @@ function BookingFormUpdate({
 	readOnly,
 	allowBefore,
 	showMap,
+	available,
+	inLocation,
+	checkTimeSlot,
 	showReplacementVehicleForm
 }) {
 	let [errorNotes, setErrorNotes] = useState([]);
@@ -23,6 +27,9 @@ function BookingFormUpdate({
 			showReplaceVehicleForm={showReplacementVehicleForm}
 			values={values}
 			exclude={exclude}
+			available={available}
+			inLocation={inLocation}
+			checkTimeSlot={checkTimeSlot}
 			errorNotes={errorNotes}
 			title="Update Booking"
 			onChange={onChange}

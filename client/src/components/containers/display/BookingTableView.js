@@ -386,7 +386,14 @@ class BookingTableView extends Component {
 		}
 	};
 	render() {
-		const { history, auth, fetchBookings } = this.props;
+		const {
+			history,
+			auth,
+			fetchBookings,
+			fetchVehicles,
+			fetchLocations,
+			enums
+		} = this.props;
 		const {
 			formData,
 			isLoading,
@@ -400,6 +407,9 @@ class BookingTableView extends Component {
 			<Dialog
 				onMount={async () => {
 					try {
+						fetchVehicles();
+						fetchLocations();
+
 						const booking = await api
 							.fetchBooking(match.params.id)
 							.catch(() => history.replace("/bookings"));
@@ -501,16 +511,34 @@ class BookingTableView extends Component {
 											this.setState({
 												formData: {
 													...booking.data,
-													replaceVehicle: booking.data.replaceVehicle || {},
 													locationId: location && location.data.id
 												}
 											});
 										}
 
-										if (auth && formData && read && update && update.access) {
+										if (
+											enums &&
+											enums.data &&
+											auth &&
+											auth.data &&
+											formData &&
+											read &&
+											update &&
+											update.access
+										) {
+											let bookingType = enums.data.bookingTypes.find(
+												t => t.id === formData.bookingTypeId
+											).name;
+
 											return (
 												<BookingFormUpdate
-													values={formData}
+													values={{
+														...formData,
+														replaceVehicle:
+															bookingType === bookingTypes.REPLACEMENT
+																? formData.replaceVehicle || {}
+																: null
+													}}
 													onChange={formData =>
 														this.setState({
 															formData
@@ -519,6 +547,9 @@ class BookingTableView extends Component {
 													exclude={read.exclude}
 													readOnly={update.exclude}
 													allowBefore={true}
+													available={bookingType !== bookingTypes.SERVICE}
+													inLocation={bookingType !== bookingTypes.SERVICE}
+													checkTimeSlot={bookingType === bookingTypes.SERVICE}
 													onSubmit={() => {
 														fetchBookings().then(() => {
 															history.replace("/bookings");
@@ -529,8 +560,7 @@ class BookingTableView extends Component {
 													}}
 													showMap={formData.locationId !== null}
 													showReplacementVehicleForm={
-														formData.bookingType.name ===
-														bookingTypes.REPLACEMENT
+														bookingType === bookingTypes.REPLACEMENT
 													}
 												/>
 											);

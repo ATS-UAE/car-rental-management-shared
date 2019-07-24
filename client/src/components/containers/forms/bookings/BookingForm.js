@@ -7,7 +7,7 @@ import VehicleForm from "../../../presentational/forms/VehicleForm";
 import * as reduxActions from "../../../../actions";
 import {
 	toTitleWords,
-	isVehicleAvailableForBooking,
+	hasActiveBooking,
 	isBookingTimeSlotTaken
 } from "../../../../utils";
 
@@ -77,25 +77,20 @@ function BookingFormContainer({
 			const { from, to, id } = values;
 			let available = false;
 			let inLocation = false;
-			if (values.locationId) {
-				inLocation = vehicle.locationId === values.locationId;
-			}
-			if (inLocation) {
-				available = isVehicleAvailableForBooking(from, to, vehicle, values.id);
-			}
+
 			if (!inLocationProp) {
 				inLocation = true;
+			} else if (values.locationId) {
+				inLocation = vehicle.locationId === values.locationId;
 			}
-			if (availableProp && !inLocationProp) {
-				available = isVehicleAvailableForBooking(from, to, vehicle, values.id);
+
+			if (availableProp) {
+				available = !hasActiveBooking(vehicle, values.id);
 			}
+
 			if (checkTimeSlot) {
 				available = !isBookingTimeSlotTaken(vehicle, from, to, id);
 			}
-			if (!availableProp) {
-				available = true;
-			}
-
 			if (available && inLocation) {
 				acc.push({
 					value: vehicle.id,
@@ -140,12 +135,12 @@ function BookingFormContainer({
 		<VehicleForm
 			title="Specify vehicle to be replaced"
 			values={values.replaceVehicle}
-			onChangeEvent={data =>
+			onChangeEvent={data => {
 				onChange({
 					...values,
-					replaceVehicle: { ...values.replaceVehicle, ...data }
-				})
-			}
+					replaceVehicle: data
+				});
+			}}
 			errors={errors}
 			onError={e => {
 				setErrors(errors => ({ ...errors, ...e }));

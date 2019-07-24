@@ -30,8 +30,8 @@ Validator.runThroughValidators = function runThroughValidators(
 	return errors;
 };
 
-export const isVehicleAvailableForBooking = (vehicle, bookingId) => {
-	let available = true;
+export const hasActiveBooking = (vehicle, bookingId) => {
+	let active = false;
 	if (vehicle && vehicle.bookings) {
 		for (const booking of vehicle.bookings) {
 			let status = getBookingStatus(booking);
@@ -40,13 +40,11 @@ export const isVehicleAvailableForBooking = (vehicle, bookingId) => {
 				status === bookingStatus.ONGOING ||
 				status === bookingStatus.APPROVED
 			) {
-				available = false;
-			} else if (bookingId && bookingId === booking.id) {
-				available = true;
+				if (!bookingId || bookingId !== booking.id) return true;
 			}
 		}
 	}
-	return available;
+	return active;
 };
 
 export const isBookingTimeSlotTaken = (vehicle, from, to, bookingId) => {
