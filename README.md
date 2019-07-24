@@ -1,4 +1,9 @@
 # car-rental-management
+
+##Setup
+
+1. Create the folder in your *CAR_RENTAL_MANAGEMENT_API_STORAGE_PATH* environment variable
+
 ## Environment variables used:
 ### SERVER
 - **ENVIRONMENT** *(production/development)*
