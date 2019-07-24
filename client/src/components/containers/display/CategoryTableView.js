@@ -61,8 +61,11 @@ class CategoryTableView extends Component {
 	};
 
 	componentDidUpdate = prevProps => {
-		const { categories } = this.props;
-		if (categories !== prevProps.categories) {
+		const { categories, vehicles } = this.props;
+		if (
+			categories !== prevProps.categories ||
+			vehicles !== prevProps.vehicles
+		) {
 			this.reduceCategoryData();
 		}
 	};
