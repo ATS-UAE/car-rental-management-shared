@@ -58,7 +58,7 @@ export const isBookingTimeSlotTaken = (vehicle, from, to, bookingId) => {
 				status === bookingStatus.APPROVED
 			) {
 				taken = rangeOverlap(from, to, booking.from, booking.to);
-				if (taken && bookingId !== booking.id) {
+				if ((taken && !bookingId) || bookingId !== booking.id) {
 					return taken;
 				}
 			}

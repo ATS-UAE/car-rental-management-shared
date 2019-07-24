@@ -89,7 +89,7 @@ function BookingFormContainer({
 			}
 
 			if (checkTimeSlot) {
-				available = !isBookingTimeSlotTaken(vehicle, from, to, id);
+				available = !isBookingTimeSlotTaken(vehicle, from, to, values.id);
 			}
 			if (available && inLocation) {
 				acc.push({
