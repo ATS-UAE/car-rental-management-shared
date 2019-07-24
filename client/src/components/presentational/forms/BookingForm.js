@@ -50,7 +50,7 @@ function BookingForm({
 			type: DATE_TIME_PICKER,
 			id: "from",
 			name: "from",
-			validators: [validators.requiredField, notBefore, startLessEnd],
+			validators: [validators.requiredField, startLessEnd],
 			props: {
 				label: "Book Start",
 				fullWidth: true
