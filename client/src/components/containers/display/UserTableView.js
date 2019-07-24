@@ -146,7 +146,7 @@ class UserTableView extends Component {
 					const rowStatus = loadingRows.indexOf(user.id);
 					return {
 						icon: user.blocked ? CheckCircle : Block,
-						tooltip: user.blocked ? "Block" : "Unblock",
+						tooltip: user.blocked ? "Unblock" : "Block",
 						hidden: !visible,
 						disabled: rowStatus >= 0,
 
@@ -210,11 +210,10 @@ class UserTableView extends Component {
 									user: auth.data,
 									role: auth.data.role
 							  });
-					const canDelete = await RBAC.can(
-						userRole,
-						actions.DELETE,
-						resources.USERS
-					);
+					const canDelete =
+						user.id === 1
+							? false
+							: await RBAC.can(userRole, actions.DELETE, resources.USERS);
 					const userSignUpDate = moment(user.createdAt, "X");
 					newUserData.push({
 						id: user.id,
@@ -403,6 +402,7 @@ class UserTableView extends Component {
 													});
 													api
 														.updateUser({
+															id: user.data.id,
 															blocked: true
 														})
 														.then(() => {
