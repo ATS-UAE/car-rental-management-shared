@@ -28,7 +28,7 @@ module.exports = (sequelize, DataTypes) => {
 			type: DataTypes.STRING,
 			unique: { args: true, msg: "VIN already in use!" }
 		},
-		defleeted: { type: BOOLEAN, defaultValue: false },
+		defleeted: { type: DataTypes.BOOLEAN, defaultValue: false },
 		parkingLocation: { type: DataTypes.STRING },
 		vehicleImageSrc: { type: DataTypes.STRING }
 	});
