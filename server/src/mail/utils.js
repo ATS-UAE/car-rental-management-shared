@@ -104,7 +104,8 @@ const sendBookingConfirmation = async ({
 	bookingId,
 	parkingLocation,
 	lat,
-	lng
+	lng,
+	address
 }) => {
 	const transporter = getTransport();
 
@@ -143,7 +144,8 @@ const sendBookingConfirmation = async ({
 		mapURL: `cid:${fileName}`,
 		lat,
 		lng,
-		parkingLocation
+		parkingLocation,
+		address
 	});
 	const template = mjml2html(compiled);
 	const mainOptions = {
