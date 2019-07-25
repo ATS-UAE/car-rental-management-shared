@@ -89,6 +89,10 @@ Card.propTypes = {
 	)
 };
 
+Card.defaultProps = {
+	metaIcons: []
+};
+
 const style = theme => ({
 	root: {
 		width: "100%",
