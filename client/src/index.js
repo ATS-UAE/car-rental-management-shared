@@ -18,7 +18,7 @@ import * as serviceWorker from "./serviceWorker";
 const jss = create({
 	plugins: [...jssPreset().plugins]
 });
-
+console.log(process.env);
 const theme = createMuiTheme({
 	palette: {
 		primary: {
