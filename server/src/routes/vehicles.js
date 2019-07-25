@@ -173,7 +173,8 @@ router.patch(
 								"plateNumber",
 								"vin",
 								"parkingLocation",
-								"locationId"
+								"locationId",
+								"defleeted"
 							],
 							body
 						),
@@ -222,13 +223,13 @@ router.delete(
 
 		if (accessible) {
 			let foundVehicle = await db.Vehicle.findByPk(params.id);
-			if (foundVehicle) {
+			if (foundVehicle && typeof params.body.defleeted === "boolean") {
 				addReplacedFiles(res, {
 					url: foundVehicle.vehicleImageSrc,
 					model: db.Vehicle,
 					field: "vehicleImageSrc"
 				});
-				await foundVehicle.destroy();
+				await foundVehicle.update({ defleeted: true });
 				response.setCode(200);
 				response.setSuccess(true);
 				response.setMessage(`Vehicle with ID ${params.id} has been deleted.`);
