@@ -33,7 +33,7 @@ passport.use(
 				existingUser = existingUser.get({ plain: true });
 				let valid = await bcrypt.compare(password, existingUser.password);
 
-				if (!valid) {
+				if (!valid || existingUser.blocked) {
 					return cb(null, false);
 				} else {
 					return cb(null, existingUser);
