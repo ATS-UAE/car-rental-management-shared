@@ -366,6 +366,10 @@ class UserTableView extends Component {
 																formData: data
 														  })
 												}
+												onSubmit={() => {
+													history.replace("/users");
+													this.setState({ formData: null });
+												}}
 												title={"Update User"}
 											/>
 										);
@@ -384,6 +388,7 @@ class UserTableView extends Component {
 								match,
 								children: async ({ user, destroy }) => {
 									if (user && destroy && destroy.access) {
+										const { blocked, username, id } = user.data;
 										return (
 											<DialogChildren
 												onUnmount={() => {
@@ -391,10 +396,12 @@ class UserTableView extends Component {
 														isLoading: false
 													});
 												}}
-												title={`${user.data.blocked ? "Unblock" : "Block"} ${
-													user.data.username
-												}?`}
-												content={"This user will not be able to login."}
+												title={`${blocked ? "Unblock" : "Block"} ${username}?`}
+												content={
+													blocked
+														? "This user will able to login again."
+														: "This user will not be able to login."
+												}
 												disabled={isLoading}
 												yes={() => {
 													this.setState({
@@ -402,15 +409,15 @@ class UserTableView extends Component {
 													});
 													api
 														.updateUser({
-															id: user.data.id,
-															blocked: true
+															id,
+															blocked: !blocked
 														})
 														.then(() => {
 															fetchUsers().then(() => {
+																history.replace("/users");
 																this.setState({
 																	isLoading: false
 																});
-																history.replace("/users");
 															});
 														});
 												}}
@@ -457,7 +464,12 @@ class UserTableView extends Component {
 												}
 												title={"User Details"}
 												hints={""}
-												onSubmit={() => history.push("/users")}
+												onSubmit={() => {
+													history.push("/users");
+													this.setState({
+														formData: null
+													});
+												}}
 											/>
 										);
 									} else if (read && !read.access) {
