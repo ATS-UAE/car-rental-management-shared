@@ -3,8 +3,15 @@ import { withRouter, Route, Switch } from "react-router";
 import { compose } from "recompose";
 import { connect } from "react-redux";
 import { IconButton, Tooltip, withStyles } from "@material-ui/core";
-import { Edit, Visibility, Build } from "@material-ui/icons";
+import {
+	Edit,
+	Visibility,
+	Build,
+	Block,
+	CheckCircle
+} from "@material-ui/icons";
 
+import { DialogChildren } from "../../presentational/forms/ConfirmDialog";
 import BookingFormCreateMaintenance from "../forms/bookings/BookingFormCreateMaintenance";
 import VehicleFormUpdate from "../forms/vehicles/VehicleFormUpdate";
 import * as reduxActions from "../../../actions";
@@ -18,6 +25,7 @@ import VehicleBookingRange from "./VehicleBookingRange";
 
 function VehicleCardList({ vehicles, history, classes, auth, fetchVehicles }) {
 	const [formData, setFormData] = useState(null);
+	const [isLoading, setLoading] = useState(false);
 	const renderDialog = ({ match, children }) => (
 		<Dialog
 			onMount={async () => {
@@ -78,6 +86,7 @@ function VehicleCardList({ vehicles, history, classes, auth, fetchVehicles }) {
 			children={children}
 		/>
 	);
+
 	return (
 		<Fragment>
 			<Switch>
@@ -105,7 +114,6 @@ function VehicleCardList({ vehicles, history, classes, auth, fetchVehicles }) {
 											}
 											readOnly={true}
 											exclude={read.exclude}
-											onSubmit={() => history.push("/vehicles")}
 											showFooter={false}
 										/>
 									);
@@ -141,7 +149,10 @@ function VehicleCardList({ vehicles, history, classes, auth, fetchVehicles }) {
 											}
 											readOnly={update.exclude}
 											exclude={read.exclude}
-											onSubmit={() => history.push("/vehicles")}
+											onSubmit={() => {
+												history.push("/vehicles");
+												setFormData(null);
+											}}
 											showFooter={true}
 										/>
 									);
@@ -168,6 +179,61 @@ function VehicleCardList({ vehicles, history, classes, auth, fetchVehicles }) {
 										/>
 									);
 								} else if (update && !update.access) {
+									history.replace("/vehicles");
+								}
+								return null;
+							}
+						})
+					}
+				/>
+				<Route
+					path="/vehicles/:id(\d+)/defleet"
+					render={({ match }) =>
+						renderDialog({
+							match,
+							children: ({ vehicle, destroy }) => {
+								if (vehicle && vehicle.data && destroy && destroy.access) {
+									const {
+										brand,
+										model,
+										plateNumber,
+										defleeted,
+										id
+									} = vehicle.data;
+									return (
+										<DialogChildren
+											onUnmount={() => {
+												setLoading(false);
+											}}
+											title={
+												defleeted
+													? `Make ${brand} ${model} - ${plateNumber} available again?`
+													: `De-fleet ${brand} ${model} - ${plateNumber}?`
+											}
+											content={
+												defleeted
+													? "This vehicle will be available for bookings again."
+													: "This vehicle will not be available for bookings anymore."
+											}
+											disabled={isLoading}
+											yes={() => {
+												setLoading(true);
+
+												api
+													.updateVehicle({
+														id,
+														defleeted: !defleeted
+													})
+													.then(fetchVehicles)
+													.then(() => {
+														setLoading(false);
+														history.replace("/vehicles");
+													});
+											}}
+											no={() => history.replace("/vehicles")}
+										/>
+									);
+								} else if (destroy && !destroy.access) {
 									history.replace("/vehicles");
 								}
 								return null;
@@ -206,53 +272,77 @@ function VehicleCardList({ vehicles, history, classes, auth, fetchVehicles }) {
 								action={actions.READ}
 								resource={resources.VEHICLES}
 								yes={readAccess => (
-									<Can
-										action={actions.UPDATE}
-										resource={resources.VEHICLES}
-										yes={updateAccess => {
-											return (
-												<Fragment>
-													<Tooltip title="Edit">
+									<Fragment>
+										<Can
+											action={actions.UPDATE}
+											resource={resources.VEHICLES}
+											yes={updateAccess => {
+												return (
+													<Fragment>
+														<Tooltip title="Edit">
+															<IconButton
+																onClick={() =>
+																	history.push(`/vehicles/${vehicle.id}/edit`, {
+																		vehicle,
+																		updateAccess,
+																		readAccess
+																	})
+																}
+															>
+																<Edit />
+															</IconButton>
+														</Tooltip>
+														<Tooltip title="Maintenance">
+															<IconButton
+																onClick={() =>
+																	history.push(
+																		`/vehicles/${vehicle.id}/maintenance`
+																	)
+																}
+															>
+																<Build />
+															</IconButton>
+														</Tooltip>
+													</Fragment>
+												);
+											}}
+											no={() => {
+												return (
+													<Tooltip title="View">
 														<IconButton
 															onClick={() =>
-																history.push(`/vehicles/${vehicle.id}/edit`, {
-																	vehicle,
-																	updateAccess,
-																	readAccess
-																})
+																history.push(`/vehicles/${vehicle.id}`)
 															}
 														>
-															<Edit />
+															<Visibility />
 														</IconButton>
 													</Tooltip>
-													<Tooltip title="Maintenance">
-														<IconButton
-															onClick={() =>
-																history.push(
-																	`/vehicles/${vehicle.id}/maintenance`
-																)
-															}
-														>
-															<Build />
-														</IconButton>
-													</Tooltip>
-												</Fragment>
-											);
-										}}
-										no={() => {
-											return (
-												<Tooltip title="View">
-													<IconButton
-														onClick={() =>
-															history.push(`/vehicles/${vehicle.id}`)
+												);
+											}}
+										/>
+										<Can
+											action={actions.DELETE}
+											resource={resources.VEHICLES}
+											yes={() => {
+												const Icon = vehicle.defleeted ? CheckCircle : Block;
+												return (
+													<Tooltip
+														title={
+															vehicle.defleeted ? "Make available" : "De-fleet"
 														}
 													>
-														<Visibility />
-													</IconButton>
-												</Tooltip>
-											);
-										}}
-									/>
+														<IconButton
+															onClick={() =>
+																history.push(`/vehicles/${vehicle.id}/defleet`)
+															}
+														>
+															<Icon />
+														</IconButton>
+													</Tooltip>
+												);
+											}}
+										/>
+									</Fragment>
 								)}
 							/>
 						)
@@ -261,6 +351,7 @@ function VehicleCardList({ vehicles, history, classes, auth, fetchVehicles }) {
 					if (auth && auth.data) {
 						if (auth.data.role.name === roles.GUEST) {
 							let inCategory = false;
+
 							if (!auth.data.categories.length) {
 								inCategory = true;
 							} else {
@@ -269,7 +360,7 @@ function VehicleCardList({ vehicles, history, classes, auth, fetchVehicles }) {
 										inCategory = true;
 								}
 							}
-							inCategory && acc.push(data);
+							inCategory && !vehicle.defleeted && acc.push(data);
 						} else {
 							acc.push(data);
 						}
