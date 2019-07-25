@@ -103,6 +103,7 @@ function BookingFormCreateStepper({
 			availableVehicles = vehicles.data.reduce((acc, vehicle) => {
 				if (
 					!hasActiveBooking(vehicle) &&
+					!vehicle.defleeted &&
 					vehicle.locationId === values[2].locationId
 				) {
 					if (auth.data.role.name === roles.GUEST) {
