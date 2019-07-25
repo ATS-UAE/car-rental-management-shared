@@ -34,7 +34,8 @@ function BookingFormContainer({
 	hints,
 	showMap,
 	unavailableVehicleErrorText,
-	showReplaceVehicleForm
+	showReplaceVehicleForm,
+	showDefleeted
 }) {
 	let [errors, setErrors] = useState({});
 	let [disableButton, setDisabledButton] = useState(false);
@@ -91,7 +92,7 @@ function BookingFormContainer({
 			if (checkTimeSlot) {
 				available = !isBookingTimeSlotTaken(vehicle, from, to, values.id);
 			}
-			if (available && inLocation) {
+			if (available && inLocation && (!vehicle.defleeted || showDefleeted)) {
 				acc.push({
 					value: vehicle.id,
 					label: `${vehicle.brand} ${vehicle.model} - ${vehicle.plateNumber}`
@@ -190,14 +191,16 @@ function BookingFormContainer({
 BookingFormContainer.propTypes = {
 	inLocation: PropTypes.bool,
 	available: PropTypes.bool,
-	showMap: PropTypes.bool
+	showMap: PropTypes.bool,
+	showDefleeted: PropTypes.bool
 };
 
 BookingFormContainer.defaultProps = {
 	inLocation: true,
 	available: true,
 	showMap: true,
-	checkTimeSlot: false
+	checkTimeSlot: false,
+	showDefleeted: false
 };
 
 const mapStateToProps = ({ users, enums, vehicles, locations }) => ({
