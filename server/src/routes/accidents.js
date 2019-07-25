@@ -84,6 +84,9 @@ router.post(
 					accidentImageSrc,
 					accidentVideoSrc
 				});
+				let accidentVehicle = await db.Vehicle.findByPk(body.vehicleId);
+				await accidentVehicle.update({ defleeted: true });
+
 				response.setData(createdAccident);
 				response.setMessage("Accident has been created.");
 				response.setCode(200);
@@ -162,7 +165,7 @@ router.patch(
 			resources.accidents,
 			{ accident: foundAccident, user, body }
 		);
-		console.log(files);
+
 		if (accessible) {
 			if (foundAccident) {
 				const accidentImageSrc =
