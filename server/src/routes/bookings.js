@@ -204,6 +204,7 @@ router.patch("/:id", async ({ user, params, body }, res) => {
 						from: booking.from,
 						to: booking.to,
 						bookingId: booking.id,
+						address: location.address,
 						parkingLocation: booking.vehicle.parkingLocation,
 						lat: location.lat,
 						lng: location.lng
