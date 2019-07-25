@@ -4,8 +4,9 @@ COPY ./package.json ./
 COPY ./package-lock.json ./
 RUN npm install
 COPY ./ ./
+RUN npm run build
 
 FROM nginx
-COPY --from=builder /var/www/car-booking-v2/build /var/www/car-booking-v2/build
-WORKDIR /
+EXPOSE 3000
 COPY ./nginx.conf /etc/nginx/
+COPY --from=builder /var/www/car-booking-v2/build /usr/share/nginx/html

@@ -8,6 +8,7 @@ services:
     ports:
       - "80:80"
   api:
+    restart: always
     image: ramilamparo/car-rental-management-server
     build:
       context: ./server
@@ -15,15 +16,10 @@ services:
       - /app/node_modules
       - ./server:/app
       - /var/www/static:/var/www/static
-    environment:
-      - NODE_ENV=production
-      - DATABASE_PORT=3306
-      - MAIL_PORT=465
-      - SERVER_PORT=5000
-      - SERVER_URL=http://api.atsue.net
-      - CLIENT_URL=http://leaseplan-rentals.atsuae.net
-      - CAR_RENTAL_MANAGEMENT_API_STORAGE_PATH=/var/www/static
+    env_file:
+      - car-rental-management.env
   client:
+    restart: always
     image: ramilamparo/car-rental-management-client
     build:
       context: ./client
@@ -31,7 +27,5 @@ services:
       - /app/node_modules
       - ./client:/app
       - /var/www/static:/var/www/static
-    environment:
-      - REACT_APP_CAR_BOOKING_API_DOMAIN=http://api.atsuae.net
-      - REACT_APP_CAR_BOOKING_CLIENT_DOMAIN=http://leaseplan-rentals.atsuae.net
-      - CHOKIDAR_USEPOLLING=true
+    env_file:
+      - car-rental-management.env
