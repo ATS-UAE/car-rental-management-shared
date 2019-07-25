@@ -6,7 +6,8 @@ import {
 	CardContent,
 	CardMedia,
 	Typography,
-	CardActionArea
+	CardActionArea,
+	Tooltip
 } from "@material-ui/core";
 import * as icons from "@material-ui/icons";
 import classNames from "classnames";
@@ -21,7 +22,8 @@ function Card({
 	iconName,
 	cardContentProps,
 	titleProps,
-	selected
+	selected,
+	metaIcons
 }) {
 	const Icon = icons[iconName];
 	const Media = imgSrc ? CardMedia : "div";
@@ -45,6 +47,16 @@ function Card({
 			</div>
 			<Media className={classes.media} image={imgSrc || null} title={title}>
 				{iconName && <Icon className={classes.icon} />}
+				<div className={classes.metaIconContainer}>
+					{metaIcons.map(({ tooltip = "", iconName = "Info", className }) => {
+						const Icon = icons[iconName];
+						return (
+							<Tooltip title={tooltip}>
+								<Icon className={className} />
+							</Tooltip>
+						);
+					})}
+				</div>
 			</Media>
 		</MuiCard>
 	);
@@ -68,7 +80,13 @@ Card.propTypes = {
 	controls: PropTypes.node,
 	imgSrc: PropTypes.string,
 	onClick: PropTypes.func,
-	iconName: PropTypes.string
+	iconName: PropTypes.string,
+	metaIcons: PropTypes.arrayOf(
+		PropTypes.shape({
+			tooltip: PropTypes.string,
+			iconName: PropTypes.string
+		})
+	)
 };
 
 const style = theme => ({
@@ -86,6 +104,11 @@ const style = theme => ({
 		height: "100%",
 		width: "100%",
 		color: theme.palette.primary.main
+	},
+	metaIconContainer: {
+		display: "flex",
+		flexDirection: "row-reverse",
+		padding: theme.spacing(2)
 	},
 	selected: {
 		boxShadow: theme.shadows[5],
@@ -110,7 +133,9 @@ const style = theme => ({
 	},
 	media: {
 		position: "relative",
-		flexGrow: 1
+		flexGrow: 1,
+		display: "flex",
+		flexDirection: "column-reverse"
 	}
 });
 
