@@ -1,0 +1,6 @@
+{
+	"watch": ["src", "../shared"],
+	"ext": "ts,js",
+	"ignore": ["build"],
+	"exec": "npm run compile"
+}
