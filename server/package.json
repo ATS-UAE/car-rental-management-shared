@@ -5,13 +5,13 @@
 	"main": "src/index.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"start": "node src/index",
-		"dev-start": "nodemon -L src/index"
+		"start": "node build/index",
+		"compile": "tsc",
+		"dev-start": "nodemon -L --config nodemon.json"
 	},
 	"author": "",
 	"license": "ISC",
 	"dependencies": {
-		"aws-sdk": "^2.453.0",
 		"bcryptjs": "^2.4.3",
 		"body-parser": "^1.18.3",
 		"classnames": "^2.2.6",
