@@ -1,6 +1,7 @@
 const { RBAC, Role, Resource, Action } = require("./");
 const { ROLES, RESOURCES } = require("../utils/variables");
-const { READ, UPDATE, DELETE, CREATE } = Action.OPERATIONS;
+import Operation from "../variables/enums/Operation";
+const { READ, UPDATE, DELETE, CREATE } = Operation;
 const accessControl = new RBAC("Car Booking");
 const generalRole = new Role("GENERAL");
 const adminRole = new Role(ROLES.ADMIN);
@@ -150,7 +151,7 @@ accessControl.addRole(guestRole);
 
 module.exports = {
 	RBAC: accessControl,
-	OPERATIONS: Action.OPERATIONS,
+	OPERATIONS: Operation,
 	roles: {
 		admin: adminRole,
 		keyManager: keyManagerRole,

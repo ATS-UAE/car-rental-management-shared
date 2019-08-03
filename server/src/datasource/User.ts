@@ -33,6 +33,7 @@ export default class User extends DataSource {
 		if (!accessible) {
 			throw new InvalidPermissionException();
 		}
+
 		return foundUser;
 	}
 
@@ -55,7 +56,7 @@ export default class User extends DataSource {
 		return users;
 	}
 
-	async update(id: number, data?: object): Promise<any> {
+	async update(id: number, data?: object, options?: object): Promise<any> {
 		let role: UserType = this.user.role.name;
 		let foundUser = await this.get(id);
 		if (!foundUser) {
@@ -70,7 +71,7 @@ export default class User extends DataSource {
 		if (!accessible) {
 			throw new InvalidPermissionException();
 		}
-		await foundUser.update(data);
+		await foundUser.update(data, options);
 		return this.get(id);
 	}
 
@@ -93,33 +94,17 @@ export default class User extends DataSource {
 		return foundUser;
 	}
 
-	async block(id: number) {
-		let role: UserType = this.user.role.name;
-		let foundUser = await this.get(id);
-		if (!foundUser) {
-			throw new ResourceNotFoundException(
-				`User with ID of ${id} is not found.`
-			);
-		}
-		let accessible = await RBAC.can(role, Operation.DELETE, Resource.USERS, {
-			accessor: this.user,
-			target: foundUser
-		});
-		if (!accessible) {
-			throw new InvalidPermissionException();
-		}
-		await foundUser.update({
-			blocked: !foundUser.blocked
-		});
-		return foundUser;
-	}
-
-	async create(data: object) {
+	async create(
+		data: object,
+		options: { invited?: boolean } = {}
+	): Promise<any> {
 		let role: UserType = this.user.role.name;
 
-		let accessible = await RBAC.can(role, Operation.CREATE, Resource.USERS, {
-			accessor: this.user
-		});
+		let accessible =
+			options.invited ||
+			(await RBAC.can(role, Operation.CREATE, Resource.USERS, {
+				accessor: this.user
+			}));
 		if (!accessible) {
 			throw new InvalidPermissionException();
 		}

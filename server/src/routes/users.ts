@@ -20,6 +20,10 @@ const { ResponseBuilder, pickFields, getFileURL } = require("../utils");
 const { ROLES } = require("../utils/variables");
 const config = require("../config");
 import { User } from "../datasource";
+import {
+	InvalidPermissionException,
+	ResourceNotFoundException
+} from "../utils/exceptions";
 
 router.get("/", requireLogin, async ({ user }, res) => {
 	const response = new ResponseBuilder();
@@ -36,57 +40,7 @@ router.get("/", requireLogin, async ({ user }, res) => {
 		response.setMessage(e.message);
 	}
 
-	UserDataSource.getAll();
 	res.json(response);
-	// let users = await db.User.findAll({
-	// 	include: [{ model: db.Role, as: "role" }]
-	// });
-	// let $userList = [];
-	// for (let targetUser of users) {
-	// 	let accessible = await RBAC.can(user.role.name, READ, resources.users, {
-	// 		targetUser: targetUser,
-	// 		user
-	// 	});
-	// 	if (accessible) {
-	// 		$userList.push(targetUser);
-	// 	}
-	// }
-
-	// let result = [];
-	// for (let user of $userList) {
-	// 	result.push({
-	// 		...pickFields(
-	// 			[
-	// 				"id",
-	// 				"username",
-	// 				"firstName",
-	// 				"lastName",
-	// 				"gender",
-	// 				"email",
-	// 				"mobileNumber",
-	// 				"lastLogin",
-	// 				"userImageSrc",
-	// 				"licenseImageSrc",
-	// 				"approved",
-	// 				"blocked",
-	// 				"createdAt",
-	// 				"updatedAt",
-	// 				"userCreatorId",
-	// 				"roleId"
-	// 			],
-	// 			user.get({ plain: true })
-	// 		),
-	// 		role: pickFields(["id", "name"], user.get({ plain: true }).role),
-	// 		categories: (await user.getCategories()).map(c => c.id)
-	// 	});
-	// }
-
-	// response.setSuccess(true);
-	// response.setCode(200);
-	// response.setMessage(`Found ${$userList.length} users.`);
-	// response.setData(result);
-
-	// res.json(response);
 });
 
 router.post(
@@ -95,91 +49,61 @@ router.post(
 	parseBody,
 	async ({ user, body, file = {} }, res, next) => {
 		const { location: fileLocation = null, key: fileKey = null } = file;
-		// If user being created is a guest role,
-		// an email will be sent to the invitee.
-		// Else, create directly with approved = true.
-		let response = new ResponseBuilder();
-		let accessible = false;
+		const response = new ResponseBuilder();
+		const UserDataSource = new User(db, user);
 		let inviteTokenUsed = false;
 		let email = body.email;
 		let role = await db.Role.findByPk(body.roleId);
+
+		// Consume invite token
 		if (body.inviteToken) {
-			// Consume invite token
-			let inviteToken = jwt.verify(body.inviteToken, config.secretKey);
+			const inviteToken = jwt.verify(body.inviteToken, config.secretKey);
 			if (inviteToken) {
 				inviteTokenUsed = true;
 				email = inviteToken.email;
 			}
-		} else if (user && user.role && user.role.name) {
-			accessible = await RBAC.can(user.role.name, CREATE, resources.users, {
-				role
-			});
 		}
-		if (accessible || inviteTokenUsed) {
-			let guestRole = await db.Role.findOne({ where: { name: ROLES.GUEST } });
 
-			try {
-				// Immediately create the user otherwise.
-				let approved = !inviteTokenUsed; // Approve if userCreated is not guest
-				let hashedPassword = await bcrypt.hash(body.password, 10);
-				let createdUser = await db.User.create({
-					...pickFields(
-						[
-							"username",
-							"firstName",
-							"lastName",
-							"gender",
-							"mobileNumber",
-							"userImageSrc",
-							"licenseImageSrc",
-							"roleId"
-						],
-						body
-					),
+		let guestRole = await db.Role.findOne({ where: { name: ROLES.GUEST } });
+		try {
+			let hashedPassword = await bcrypt.hash(body.password, 10);
+			let createdUser = await UserDataSource.create(
+				{
+					...body,
 					userImageSrc: fileLocation,
 					email,
 					roleId: inviteTokenUsed ? guestRole.id : role.id,
-					approved,
+					approved: !inviteTokenUsed,
 					password: hashedPassword
-				});
-				response.setData({
-					...pickFields(
-						[
-							"id",
-							"username",
-							"firstName",
-							"lastName",
-							"gender",
-							"email",
-							"mobileNumber",
-							"userImageSrc",
-							"licenseImageSrc"
-						],
-						createdUser.get({ plain: true })
-					),
-					role: {
-						id: inviteTokenUsed ? guestRole.id : role.id,
-						name: inviteTokenUsed ? guestRole.name : role.name
-					},
-					categories: (await createdUser.getCategories()).map(c => c.id)
-				});
+				},
+				{
+					invited: inviteTokenUsed
+				}
+			);
 
-				response.setMessage("User has been created.");
-				response.setCode(200);
-				response.setSuccess(true);
-				res.status(200);
-			} catch (e) {
-				response.setMessage(e.message);
+			response.setData({
+				createdUser,
+				categories: (await createdUser.getCategories()).map(c => c.id)
+			});
+
+			response.setMessage("User has been created.");
+			response.setCode(200);
+			response.setSuccess(true);
+			res.status(200);
+		} catch (e) {
+			response.setMessage(e.message);
+			if (e instanceof InvalidPermissionException) {
 				response.setCode(422);
 				res.status(422);
-				if (e.errors && e.errors.length > 0) {
-					e.errors.forEach(error => response.appendError(error.path));
-				}
+			} else {
+				response.setMessage(e.message);
+				response.setCode(403);
+				res.status(403);
 			}
-		} else {
-			response.setMessage(errorCodes.UNAUTHORIZED.message);
-			response.setCode(errorCodes.UNAUTHORIZED.statusCode);
-			res.status(errorCodes.UNAUTHORIZED.statusCode);
+
+			if (e.errors && e.errors.length > 0) {
+				e.errors.forEach(error => response.appendError(error.path));
+			}
 		}
 
 		res.json(response);
@@ -189,67 +113,29 @@ router.post(
 );
 
 router.get("/:id", requireLogin, async ({ user, params }, res) => {
-	let response = new ResponseBuilder();
-	let foundUser = await db.User.findByPk(params.id, {
-		include: [{ all: true }]
-	});
-	if (foundUser) {
-		let accessible = await RBAC.can(user.role.name, READ, resources.users, {
-			user,
-			targetUser: foundUser
+	const response = new ResponseBuilder();
+	const UserDataSource = new User(db, user);
+
+	try {
+		const foundUser = await UserDataSource.get(params.id);
+		response.setData({
+			...foundUser.get({ plain: true }),
+			categories: (await foundUser.getCategories()).map(c => c.id)
 		});
-		if (accessible) {
-			try {
-				let foundUser = await db.User.findByPk(params.id, {
-					include: [{ all: true }]
-				});
-				let { role } = foundUser;
-				response.setData({
-					...pickFields(
-						[
-							"id",
-							"username",
-							"firstName",
-							"lastName",
-							"gender",
-							"email",
-							"mobileNumber",
-							"lastLogin",
-							"userImageSrc",
-							"licenseImageSrc",
-							"approved",
-							"blocked",
-							"createdAt",
-							"updatedAt",
-							"userCreatorId",
-							"roleId"
-						],
-						foundUser.get({ plain: true })
-					),
-					role: {
-						id: role.id,
-						name: role.name
-					},
-					categories: (await foundUser.getCategories()).map(c => c.id)
-				});
-				response.setCode(200);
-				response.setMessage(`User with ID ${params.id} found.`);
-				response.setSuccess(true);
-			} catch (e) {
-				res.status(errorCodes.UNAUTHORIZED.statusCode);
-				response.setCode(errorCodes.UNAUTHORIZED.statusCode);
-				response.setMessage(e.message || errorCodes.UNAUTHORIZED.message);
-			}
+		response.setCode(200);
+		response.setMessage(`User with ID ${params.id} found.`);
+		response.setSuccess(true);
+	} catch (e) {
+		if (e instanceof ResourceNotFoundException) {
+			res.status(404);
+			response.setCode(404);
 		} else {
-			response.setMessage(errorCodes.UNAUTHORIZED.message);
-			response.setCode(errorCodes.UNAUTHORIZED.statusCode);
-			res.status(errorCodes.UNAUTHORIZED.statusCode);
+			res.status(403);
+			response.setCode(403);
 		}
-	} else {
-		res.status(404);
-		response.setCode(404);
-		response.setMessage(`User with ID ${params.id} not found.`);
+		response.setMessage(e.message);
 	}
+
 	res.json(response);
 });
 
@@ -264,109 +150,44 @@ router.patch(
 			file.filename &&
 			getFileURL("carbooking/media/users/profile", file.filename);
 		let response = new ResponseBuilder();
-		let foundUser = await db.User.findByPk(params.id, {
-			include: [{ model: db.Role, as: "role" }]
-		});
-		let accessible = false;
-		if (foundUser) {
-			accessible = await RBAC.can(user.role.name, UPDATE, resources.users, {
-				targetUser: foundUser,
-				user,
-				role: foundUser.role
-			});
-		}
-		if (accessible) {
-			if (foundUser) {
-				fileLocation &&
-					addReplacedFiles(res, {
-						url: foundUser.userImageSrc,
-						model: db.User,
-						field: "userImageSrc"
-					});
-				try {
-					if (body.categories) {
-						let categories = await db.Category.findAll({
-							where: { id: body.categories }
-						});
-						await foundUser.setCategories(categories);
-					}
+		const UserDataSource = new User(db, user);
 
-					let updatedUser = await foundUser.update(
-						{
-							...pickFields(
-								[
-									"username",
-									"firstName",
-									"lastName",
-									"gender",
-									"email",
-									"mobileNumber",
-									"userImageSrc",
-									"licenseImageSrc",
-									"blocked",
-									"roleId"
-								],
-								body
-							),
-							userImageSrc: fileLocation || foundUser.userImageSrc
-						},
-						{
-							include: [
-								{ model: db.Role, as: "role" },
-								{ model: db.Category, as: "categories" }
-							]
-						}
-					);
-					let role = updatedUser.role;
-					response.setData({
-						...pickFields(
-							[
-								"id",
-								"username",
-								"firstName",
-								"lastName",
-								"gender",
-								"email",
-								"mobileNumber",
-								"lastLogin",
-								"userImageSrc",
-								"licenseImageSrc",
-								"approved",
-								"blocked",
-								"createdAt",
-								"updatedAt",
-								"userCreatorId",
-								"roleId"
-							],
-							updatedUser.get({ plain: true })
-						),
-						role: {
-							id: role.id,
-							name: role.name
-						},
-						categories: (await updatedUser.getCategories()).map(c => c.id)
-					});
-					response.setCode(200);
-					response.setMessage(`User with ID ${params.id} updated.`);
-					response.setSuccess(true);
-				} catch (e) {
-					response.setMessage(e.message);
-					response.setCode(422);
-					res.status(422);
-					if (e.errors && e.errors.length > 0) {
-						e.errors.forEach(error => response.appendError(error.path));
-					}
-				}
-			} else {
-				res.status(404);
-				response.setCode(404);
-				response.setMessage(`User with ID ${params.id} not found.`);
-				res.status(404);
+		try {
+			let foundUser = await UserDataSource.get(body.id);
+
+			fileLocation &&
+				addReplacedFiles(res, {
+					url: foundUser.userImageSrc,
+					model: db.User,
+					field: "userImageSrc"
+				});
+			if (body.categories) {
+				let categories = await db.Category.findAll({
+					where: { id: body.categories }
+				});
+				await foundUser.setCategories(categories);
 			}
-		} else {
-			response.setMessage(errorCodes.UNAUTHORIZED.message);
-			response.setCode(errorCodes.UNAUTHORIZED.statusCode);
-			res.status(errorCodes.UNAUTHORIZED.statusCode);
+			let updatedUser = await UserDataSource.update(foundUser.id, {
+				...foundUser,
+				userImageSrc: fileLocation || foundUser.userImageSrc
+			});
+
+			response.setData(updatedUser.get({ plain: true }));
+			response.setCode(200);
+			response.setMessage(`User with ID ${params.id} updated.`);
+			response.setSuccess(true);
+		} catch (e) {
+			if (e instanceof InvalidPermissionException) {
+				response.setMessage(e.message);
+				response.setCode(422);
+				res.status(422);
+			} else {
+				response.setCode(403);
+				res.status(403);
+			}
+			if (e.errors && e.errors.length > 0) {
+				e.errors.forEach(error => response.appendError(error.path));
+			}
 		}
 
 		res.json(response);
@@ -384,28 +205,33 @@ router.delete(
 		let response = new ResponseBuilder();
 
 		let accessible = await RBAC.can(user.role.name, DELETE, resources.users);
+		const UserDataSource = new User(db, user);
+		try {
+			let deletedUser = await UserDataSource.delete(params.id);
 
-		if (accessible) {
-			let foundUser = await db.User.findByPk(params.id);
-			if (foundUser) {
-				addReplacedFiles(res, {
-					url: foundUser.userImageSrc,
-					model: db.User,
-					field: "userImageSrc"
-				});
-				await foundUser.destroy();
-				response.setCode(200);
-				response.setSuccess(true);
-				response.setMessage(`User with ID ${params.id} has been deleted.`);
+			addReplacedFiles(res, {
+				url: deletedUser.userImageSrc,
+				model: db.User,
+				field: "userImageSrc"
+			});
+
+			response.setCode(200);
+			response.setSuccess(true);
+			response.setMessage(`User with ID ${params.id} has been deleted.`);
+		} catch (e) {
+			if (e instanceof InvalidPermissionException) {
+				response.setMessage(e.message);
+				response.setCode(422);
+				res.status(422);
 			} else {
-				response.setCode(404);
-				response.setMessage(`User with ID ${params.id} is not found.`);
+				response.setCode(403);
+				res.status(403);
 			}
-		} else {
-			response.setMessage(errorCodes.UNAUTHORIZED.message);
-			response.setCode(errorCodes.UNAUTHORIZED.statusCode);
-			res.status(errorCodes.UNAUTHORIZED.statusCode);
+			if (e.errors && e.errors.length > 0) {
+				e.errors.forEach(error => response.appendError(error.path));
+			}
 		}
+
 		res.json(response);
 		next();
 	},
