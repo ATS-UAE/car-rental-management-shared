@@ -16,7 +16,6 @@ const inviteRoutes = require("./routes/invites");
 const vehicleRoutes = require("./routes/vehicles");
 const bookingRoutes = require("./routes/bookings");
 const locationRoutes = require("./routes/locations");
-const accessRoutes = require("./routes/access");
 const accidentRoutes = require("./routes/accidents");
 const categoryRoutes = require("./routes/categories");
 
@@ -91,7 +90,6 @@ app.use("/api/carbooking/invites", inviteRoutes);
 app.use("/api/carbooking/vehicles", vehicleRoutes);
 app.use("/api/carbooking/bookings", bookingRoutes);
 app.use("/api/carbooking/locations", locationRoutes);
-app.use("/api/carbooking/access", accessRoutes);
 app.use("/api/carbooking/accidents", accidentRoutes);
 app.use("/api/carbooking/categories", categoryRoutes);
 
