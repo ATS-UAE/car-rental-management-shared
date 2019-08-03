@@ -84,27 +84,6 @@ export default class Vehicle extends DataSource {
 		return foundVehicle;
 	}
 
-	async defleet(id: number) {
-		let role: UserType = this.user.role.name;
-		let foundVehicle = await this.get(id);
-		if (!foundVehicle) {
-			throw new ResourceNotFoundException(
-				`Vehicle with ID of ${id} is not found.`
-			);
-		}
-		let accessible = await RBAC.can(role, Operation.DELETE, Resource.VEHICLES, {
-			accessor: this.user,
-			target: foundVehicle
-		});
-		if (!accessible) {
-			throw new InvalidPermissionException();
-		}
-		await foundVehicle.update({
-			defleeted: !foundVehicle.defleeted
-		});
-		return foundVehicle;
-	}
-
 	async create(data: object) {
 		let role: UserType = this.user.role.name;
 
