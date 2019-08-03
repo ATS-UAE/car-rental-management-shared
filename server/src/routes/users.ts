@@ -19,58 +19,74 @@ const { errorCodes } = require("../utils/variables");
 const { ResponseBuilder, pickFields, getFileURL } = require("../utils");
 const { ROLES } = require("../utils/variables");
 const config = require("../config");
+import { User } from "../datasource";
 
 router.get("/", requireLogin, async ({ user }, res) => {
-	let response = new ResponseBuilder();
-	let users = await db.User.findAll({
-		include: [{ model: db.Role, as: "role" }]
-	});
-	let $userList = [];
-	for (let targetUser of users) {
-		let accessible = await RBAC.can(user.role.name, READ, resources.users, {
-			targetUser: targetUser,
-			user
-		});
-		if (accessible) {
-			$userList.push(targetUser);
-		}
+	const response = new ResponseBuilder();
+	const UserDataSource = new User(db, user);
+
+	try {
+		const users = await UserDataSource.getAll();
+		response.setData(users);
+		response.setCode(200);
+		response.setSuccess(true);
+	} catch (e) {
+		res.status(403);
+		response.setCode(403);
+		response.setMessage(e.message);
 	}
 
-	let result = [];
-	for (let user of $userList) {
-		result.push({
-			...pickFields(
-				[
-					"id",
-					"username",
-					"firstName",
-					"lastName",
-					"gender",
-					"email",
-					"mobileNumber",
-					"lastLogin",
-					"userImageSrc",
-					"licenseImageSrc",
-					"approved",
-					"blocked",
-					"createdAt",
-					"updatedAt",
-					"userCreatorId",
-					"roleId"
-				],
-				user.get({ plain: true })
-			),
-			role: pickFields(["id", "name"], user.get({ plain: true }).role),
-			categories: (await user.getCategories()).map(c => c.id)
-		});
-	}
-
-	response.setSuccess(true);
-	response.setCode(200);
-	response.setMessage(`Found ${$userList.length} users.`);
-	response.setData(result);
-
+	UserDataSource.getAll();
 	res.json(response);
+	// let users = await db.User.findAll({
+	// 	include: [{ model: db.Role, as: "role" }]
+	// });
+	// let $userList = [];
+	// for (let targetUser of users) {
+	// 	let accessible = await RBAC.can(user.role.name, READ, resources.users, {
+	// 		targetUser: targetUser,
+	// 		user
+	// 	});
+	// 	if (accessible) {
+	// 		$userList.push(targetUser);
+	// 	}
+	// }
+
+	// let result = [];
+	// for (let user of $userList) {
+	// 	result.push({
+	// 		...pickFields(
+	// 			[
+	// 				"id",
+	// 				"username",
+	// 				"firstName",
+	// 				"lastName",
+	// 				"gender",
+	// 				"email",
+	// 				"mobileNumber",
+	// 				"lastLogin",
+	// 				"userImageSrc",
+	// 				"licenseImageSrc",
+	// 				"approved",
+	// 				"blocked",
+	// 				"createdAt",
+	// 				"updatedAt",
+	// 				"userCreatorId",
+	// 				"roleId"
+	// 			],
+	// 			user.get({ plain: true })
+	// 		),
+	// 		role: pickFields(["id", "name"], user.get({ plain: true }).role),
+	// 		categories: (await user.getCategories()).map(c => c.id)
+	// 	});
+	// }
+
+	// response.setSuccess(true);
+	// response.setCode(200);
+	// response.setMessage(`Found ${$userList.length} users.`);
+	// response.setData(result);
+
+	// res.json(response);
 });
 
 router.post(
