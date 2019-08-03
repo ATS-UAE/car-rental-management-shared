@@ -19,7 +19,7 @@ export class RBAC {
 	can(
 		role: Role | UserType,
 		action: string,
-		resource: Resource,
+		resource: Resource | ResourceType,
 		params: any
 	): Promise<boolean> {
 		return new Promise(async resolve => {

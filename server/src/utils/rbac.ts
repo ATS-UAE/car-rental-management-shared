@@ -1,5 +1,5 @@
 import RBAC, { Role, Resource, Action } from "../rbac";
-import enums from "../variables/enums";
+import * as enums from "../variables/enums";
 
 const { READ, UPDATE, DELETE, CREATE } = enums.Operation;
 const accessControl = new RBAC("Car Booking");
@@ -152,20 +152,19 @@ accessControl.addRole(guestRole);
 // MASTER ROLE CONFIG //
 ////////////////////////
 
+export default accessControl;
 
-export default {
-	RBAC: accessControl,
-	roles: {
-		admin: adminRole,
-		keyManager: keyManagerRole,
-		guest: guestRole
-	},
-	resources: {
-		bookings: bookingsResource,
-		vehicles: vehicleResource,
-		locations: locationsResource,
-		users: usersResource,
-		enums: enumsResource,
-		accidents: accidentsResource
-	}
+export const roles = {
+	admin: adminRole,
+	keyManager: keyManagerRole,
+	guest: guestRole
+};
+
+export const resources = {
+	bookings: bookingsResource,
+	vehicles: vehicleResource,
+	locations: locationsResource,
+	users: usersResource,
+	enums: enumsResource,
+	accidents: accidentsResource
 };
