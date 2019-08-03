@@ -1,29 +1,28 @@
-const express = require("express");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const router = express.Router();
+import express from "express";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
-const {
+import {
 	deleteReplacedFiles,
 	addReplacedFiles
-} = require("../middlewares/deleteReplacedFiles");
-const deleteFileOnError = require("../middlewares/deleteFileOnError");
-const requireLogin = require("../middlewares/requireLogin");
-const disallowGuests = require("../middlewares/disallowGuests");
-const parseBody = require("../middlewares/parseBody");
-const upload = require("../middlewares/multerUpload");
-const { RBAC, OPERATIONS, resources } = require("../rbac/init");
-const { CREATE, READ, UPDATE, DELETE } = OPERATIONS;
-const db = require("../models");
-const { errorCodes } = require("../utils/variables");
-const { ResponseBuilder, pickFields, getFileURL } = require("../utils");
-const { ROLES } = require("../utils/variables");
-const config = require("../config");
+} from "../middlewares/deleteReplacedFiles";
+import deleteFileOnError from "../middlewares/deleteFileOnError";
+import requireLogin from "../middlewares/requireLogin";
+import disallowGuests from "../middlewares/disallowGuests";
+import parseBody from "../middlewares/parseBody";
+import upload from "../middlewares/multerUpload";
+import db from "../models";
+import { getFileURL } from "../utils";
+import { ResponseBuilder } from "../utils/helpers";
+import { ROLES } from "../utils/variables";
+import config from "../config";
 import { User } from "../datasource";
 import {
 	InvalidPermissionException,
 	ResourceNotFoundException
 } from "../utils/exceptions";
+
+const router = express.Router();
 
 router.get("/", requireLogin, async ({ user }, res) => {
 	const response = new ResponseBuilder();

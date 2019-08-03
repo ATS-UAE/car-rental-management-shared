@@ -1,22 +1,21 @@
-const express = require("express");
-const router = express.Router();
+import express from "express";
 
-const requireLogin = require("../middlewares/requireLogin");
-const {
+import requireLogin from "../middlewares/requireLogin";
+import {
 	deleteReplacedFiles,
 	addReplacedFiles
-} = require("../middlewares/deleteReplacedFiles");
-const disallowGuests = require("../middlewares/disallowGuests");
-const parseBody = require("../middlewares/parseBody");
-const upload = require("../middlewares/multerUpload");
-const deleteFileOnError = require("../middlewares/deleteFileOnError");
-const { RBAC, OPERATIONS, resources } = require("../rbac/init");
-const { CREATE, READ, UPDATE, DELETE } = OPERATIONS;
-const db = require("../models");
-const { errorCodes } = require("../utils/variables");
-const { getFileURL, pickFields } = require("../utils");
+} from "../middlewares/deleteReplacedFiles";
+import disallowGuests from "../middlewares/disallowGuests";
+import parseBody from "../middlewares/parseBody";
+import upload from "../middlewares/multerUpload";
+import deleteFileOnError from "../middlewares/deleteFileOnError";
+import db from "../models";
+import { errorCodes } from "../utils/variables";
+import { getFileURL, pickFields } from "../utils";
 import { ResponseBuilder } from "../utils/helpers";
 import { Vehicle } from "../datasource";
+
+const router = express.Router();
 router.use(requireLogin);
 
 router.get("/", async ({ user }, res) => {
