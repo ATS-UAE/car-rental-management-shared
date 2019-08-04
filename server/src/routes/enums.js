@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { RBAC } = require("../rbac/init");
 const db = require("../models");
-const { ResponseBuilder } = require("../utils");
+const { ResponseBuilder } = require("../utils/helpers");
 
 router.get("/", async (req, res) => {
 	let response = new ResponseBuilder();
