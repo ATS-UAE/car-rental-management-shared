@@ -10,8 +10,7 @@ import parseBody from "../middlewares/parseBody";
 import upload from "../middlewares/multerUpload";
 import deleteFileOnError from "../middlewares/deleteFileOnError";
 import db from "../models";
-import { errorCodes } from "../utils/variables";
-import { getFileURL, pickFields } from "../utils";
+import { getFileURL } from "../utils";
 import { ResponseBuilder } from "../utils/helpers";
 import { Vehicle } from "../datasource";
 
@@ -170,4 +169,4 @@ router.delete(
 	deleteReplacedFiles
 );
 
-module.exports = router;
+export default router;

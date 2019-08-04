@@ -31,12 +31,9 @@ router.get("/", requireLogin, async ({ user }, res) => {
 	try {
 		const users = await UserDataSource.getAll();
 		response.setData(users);
-		response.setCode(200);
-		response.setSuccess(true);
+		response.handleSuccess(res, `Found ${users.length} users.`);
 	} catch (e) {
-		res.status(403);
-		response.setCode(403);
-		response.setMessage(e.message);
+		response.handleError(e, res);
 	}
 
 	res.json(response);
@@ -203,7 +200,6 @@ router.delete(
 	async ({ user, params }, res, next) => {
 		let response = new ResponseBuilder();
 
-		let accessible = await RBAC.can(user.role.name, DELETE, resources.users);
 		const UserDataSource = new User(db, user);
 		try {
 			let deletedUser = await UserDataSource.delete(params.id);
@@ -237,4 +233,4 @@ router.delete(
 	deleteReplacedFiles
 );
 
-module.exports = router;
+export default router;
