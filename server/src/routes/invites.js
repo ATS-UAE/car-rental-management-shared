@@ -38,4 +38,5 @@ router.post("/", async ({ body }, res) => {
 
 	res.json(response);
 });
-module.exports = router;
+
+export default router;
