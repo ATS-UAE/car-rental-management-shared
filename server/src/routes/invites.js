@@ -1,12 +1,12 @@
-const express = require("express");
+import express from "express";
+
+import { ResponseBuilder } from "../utils/helpers";
+import { sendInvite } from "../mail/utils";
+import requireLogin from "../middlewares/requireLogin";
+import disallowGuests from "../middlewares/disallowGuests";
+import db from "../models";
+
 const router = express.Router();
-
-const { ResponseBuilder } = require("../utils");
-const { sendInvite } = require("../mail/utils");
-const requireLogin = require("../middlewares/requireLogin");
-const disallowGuests = require("../middlewares/disallowGuests");
-const db = require("../models");
-
 router.use(requireLogin);
 router.use(disallowGuests);
 
@@ -24,20 +24,12 @@ router.post("/", async ({ body }, res) => {
 			});
 			if (!existingEmail) {
 				await sendInvite({ email: body.email });
-				response.setCode(200);
-				response.setSuccess(true);
-				response.setMessage(`Invite has been sent to ${body.email}`);
+				response.handleSuccess(`Invite has been sent to ${body.email}`);
 			} else {
-				res.status(422);
-				response.setCode(422);
-				response.setSuccess(true);
-				response.setMessage(`Email address has already been used.`);
+				throw new Error("Email is already registered.");
 			}
 		} catch (e) {
-			response.appendError(e.message || "Cannot send invite.");
-			res.status(500);
-			response.setCode(500);
-			response.setSuccess(false);
+			response.handleError(e, res);
 		}
 	} else {
 		response.setMessage("Please provide an email address.");
