@@ -35,7 +35,7 @@ export class RBAC {
 		});
 	}
 
-	getExcludedFields(role: string, action: string, resource: string) {
+	getExcludedFields(role: string, action: string, resource: string): string[] {
 		let $role: Role | undefined = this.roles.find(
 			($role: Role) => $role.name === role
 		);
