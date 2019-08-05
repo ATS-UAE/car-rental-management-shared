@@ -47,4 +47,14 @@ export default abstract class DataSource {
 	protected getBooking(id: number, options?: object): Promise<any> {
 		return this.db.Booking.findByPk(id, options);
 	}
+
+	protected createAccident(data: object): Promise<any> {
+		return this.db.Accident.create(data);
+	}
+	protected getAccidents(options?: object): Promise<any> {
+		return this.db.Accident.findAll(options);
+	}
+	protected getAccident(id: number, options?: object): Promise<any> {
+		return this.db.Accident.findByPk(id, options);
+	}
 }
