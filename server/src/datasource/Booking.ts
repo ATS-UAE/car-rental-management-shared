@@ -6,7 +6,8 @@ import {
 	InvalidPermissionException,
 	ResourceNotFoundException
 } from "../utils/exceptions";
-
+import { toMySQLDate, pickFields } from "../utils/helpers";
+import { BookingType } from "../variables/enums";
 export default class Booking extends DataSource {
 	user: userAccessor;
 
@@ -17,7 +18,9 @@ export default class Booking extends DataSource {
 
 	async get(id: number): Promise<any> {
 		let role: UserType = this.user.role.name;
-		let foundBooking = await this.getBooking(id);
+		let foundBooking = await this.getBooking(id, {
+			exclude: RBAC.getExcludedFields(role, Operation.READ, Resource.BOOKINGS)
+		});
 		if (!foundBooking) {
 			throw new ResourceNotFoundException(
 				`User with ID of ${id} is not found.`
@@ -52,7 +55,7 @@ export default class Booking extends DataSource {
 		return bookings;
 	}
 
-	async update(id: number, data?: object): Promise<any> {
+	async update(id: number, data: any): Promise<any> {
 		let role: UserType = this.user.role.name;
 		let foundBooking = await this.get(id);
 
@@ -64,6 +67,26 @@ export default class Booking extends DataSource {
 		if (!accessible) {
 			throw new InvalidPermissionException();
 		}
+
+		if (data.replaceVehicle) {
+			const replaceVehicle = await this.db.ReplaceVehicle.findByPk(
+				foundBooking.replaceVehicleId
+			);
+			if (replaceVehicle) {
+				await replaceVehicle.update(data.replaceVehicle);
+			} else {
+				await replaceVehicle.create(data.replaceVehicle);
+			}
+		} else if (
+			foundBooking.replaceVehicle !== null &&
+			data.replaceVehicle === undefined
+		) {
+			const replaceVehicle = await this.db.ReplaceVehicle.findByPk(
+				foundBooking.replaceVehicleId
+			);
+			replaceVehicle.destroy();
+		}
+
 		await foundBooking.update(data);
 		return this.get(id);
 	}
@@ -84,18 +107,42 @@ export default class Booking extends DataSource {
 		return foundBooking;
 	}
 
-	async create(data: object) {
+	async create(data: any) {
 		let role: UserType = this.user.role.name;
 
 		let accessible = await RBAC.can(role, Operation.CREATE, Resource.BOOKINGS, {
 			accessor: this.user
 		});
-
-		if (!accessible) {
-			throw new InvalidPermissionException();
+		let replacementVehicle;
+		try {
+			const bookingType = this.db.BookingType.findByPk(data.bookingTypeId);
+			if (bookingType.name === BookingType.REPLACEMENT) {
+				const { brand, model, plateNumber, vin } = data;
+				replacementVehicle = await this.db.ReplaceVehicle.create({
+					brand,
+					model,
+					plateNumber,
+					vin
+				});
+			}
+			if (!accessible) {
+				throw new InvalidPermissionException();
+			}
+			let exceptions = RBAC.getExcludedFields(
+				role,
+				Operation.CREATE,
+				Resource.BOOKINGS
+			);
+			let createdBooking = await this.createBooking({
+				...pickFields(data, exceptions),
+				to: toMySQLDate(data.to),
+				from: toMySQLDate(data.from),
+				replaceVehicleId: (replacementVehicle && replacementVehicle.id) || null
+			});
+			return createdBooking;
+		} catch (e) {
+			replacementVehicle && (await replacementVehicle.destroy());
+			throw e;
 		}
-
-		let createdUser = await this.createBooking(data);
-		return createdUser;
 	}
 }
