@@ -1,17 +1,17 @@
-const passport = require("passport");
-const express = require("express");
+import passport from "passport";
+import express from "express";
+import moment from "moment";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { check, oneOf, validationResult } from "express-validator/check";
+
+import { ResponseBuilder } from "../utils/helpers";
+import { sendPasswordResetToken } from "../mail/utils";
+import db from "../models";
+import requireLogin from "../middlewares/requireLogin";
+import { secretKey } from "../config";
+
 const router = express.Router();
-const moment = require("moment");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const { check, oneOf, validationResult } = require("express-validator/check");
-
-const { ResponseBuilder } = require("../utils");
-const { sendPasswordResetToken } = require("../mail/utils");
-const db = require("../models");
-const requireLogin = require("../middlewares/requireLogin");
-const { secretKey } = require("../config");
-
 router.get("/me", requireLogin, function(req, res) {
 	let response = new ResponseBuilder();
 	response.setData(req.user);
@@ -98,7 +98,7 @@ router.get("/logout", function(req, res) {
 	response.setMessage("Successfully logged out.");
 	response.setSuccess(true);
 	req.logout();
-	res.status = 200;
+	res.status(200);
 	res.send(response);
 });
 
@@ -180,4 +180,4 @@ router.post(
 	}
 );
 
-module.exports = router;
+export default router;
