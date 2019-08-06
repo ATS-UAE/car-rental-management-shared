@@ -1,6 +1,7 @@
 import {
 	InvalidPermissionException,
-	ResourceNotFoundException
+	ResourceNotFoundException,
+	InvalidInputException
 } from "../exceptions";
 export default class ResponseBuilder {
 	private code: number = 500;
@@ -35,13 +36,15 @@ export default class ResponseBuilder {
 		} else if (e instanceof ResourceNotFoundException) {
 			this.setCode(404);
 			res.status(404);
-		} else {
+		} else if (e instanceof InvalidInputException) {
 			this.setCode(403);
 			res.status(403);
+		} else {
+			res.status(500);
 		}
 		this.setMessage(e.message);
-		if (e.errors && e.errors.length > 0) {
-			e.errors.forEach((error: any) => this.appendError(error.path));
+		if (e.fields && e.fields.length > 0) {
+			e.fields.forEach((error: string) => this.appendError(error));
 		}
 	}
 
