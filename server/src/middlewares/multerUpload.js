@@ -1,7 +1,7 @@
 const path = require("path");
 const fs = require("fs");
 const multer = require("multer");
-const { getStaticFilesPath, makeDirectoryIfNotExist } = require("../utils/");
+const { getStaticFilesPath, makeDirectoryIfNotExist } = require("../utils/helpers");
 
 const upload = (uploadPath, options) => {
 	return multer({

@@ -1,23 +1,24 @@
-require("dotenv").config();
-const express = require("express");
-const passport = require("passport");
-const { Strategy } = require("passport-local");
-const bcrypt = require("bcryptjs");
-const cors = require("cors");
-const path = require("path");
+import env from "dotenv";
+env.config();
+import express from "express";
+import passport from "passport";
+import { Strategy } from "passport-local";
+import bcrypt from "bcryptjs";
+import cors from "cors";
+import path from "path";
 
-const { getStaticFilesPath } = require("./utils");
-const config = require("./config");
-const db = require("./models");
-const authRoutes = require("./routes/auth");
-const userRoutes = require("./routes/users");
-const enumRoutes = require("./routes/enums");
-const inviteRoutes = require("./routes/invites");
-const vehicleRoutes = require("./routes/vehicles");
-const bookingRoutes = require("./routes/bookings");
-const locationRoutes = require("./routes/locations");
-const accidentRoutes = require("./routes/accidents");
-const categoryRoutes = require("./routes/categories");
+import { getStaticFilesPath } from "./utils/helpers";
+import config from "./config";
+import db from "./models";
+import authRoutes from "./routes/auth";
+import userRoutes from "./routes/users";
+import enumRoutes from "./routes/enums";
+import inviteRoutes from "./routes/invites";
+import vehicleRoutes from "./routes/vehicles";
+import bookingRoutes from "./routes/bookings";
+import locationRoutes from "./routes/locations";
+import accidentRoutes from "./routes/accidents";
+import categoryRoutes from "./routes/categories";
 
 const app = express();
 

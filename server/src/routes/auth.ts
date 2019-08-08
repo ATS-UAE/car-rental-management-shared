@@ -6,12 +6,14 @@ import jwt from "jsonwebtoken";
 import { check, oneOf, validationResult } from "express-validator/check";
 
 import { ResponseBuilder } from "../utils/helpers";
-import { sendPasswordResetToken } from "../mail/utils";
+import { sendPasswordResetToken } from "../utils/mail";
 import db from "../models";
 import requireLogin from "../middlewares/requireLogin";
-import { secretKey } from "../config";
+import config from "../config";
 
+const { secretKey } = config;
 const router = express.Router();
+
 router.get("/me", requireLogin, function(req, res) {
 	let response = new ResponseBuilder();
 	response.setData(req.user);
@@ -125,7 +127,7 @@ router.post(
 
 		const errors = validationResult(req);
 		if (!errors.isEmpty()) {
-			for (let error of errors.array()) response.appendError(error.msg);
+			for (let error of <any>errors.array()) response.appendError(error.msg);
 			response.setMessage("Invalid fields");
 			response.setCode(422);
 			return res.status(422).json(response);

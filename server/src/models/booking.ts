@@ -1,5 +1,3 @@
-const { toUnix } = require("../utils");
-
 module.exports = (sequelize, DataTypes) => {
 	let Booking = sequelize.define("Booking", {
 		paid: { type: DataTypes.BOOLEAN, defaultValue: false },

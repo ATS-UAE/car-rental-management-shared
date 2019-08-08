@@ -4,3 +4,4 @@ export {
 export {
 	default as ResourceNotFoundException
 } from "./ResourceNotFoundException";
+export { default as InvalidInputException } from "./InvalidInputException";

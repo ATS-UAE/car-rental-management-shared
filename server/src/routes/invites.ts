@@ -1,7 +1,7 @@
 import express from "express";
 
 import { ResponseBuilder } from "../utils/helpers";
-import { sendInvite } from "../mail/utils";
+import { sendInvite } from "../utils/mail";
 import requireLogin from "../middlewares/requireLogin";
 import disallowGuests from "../middlewares/disallowGuests";
 import db from "../models";
@@ -24,7 +24,7 @@ router.post("/", async ({ body }, res) => {
 			});
 			if (!existingEmail) {
 				await sendInvite({ email: body.email });
-				response.handleSuccess(`Invite has been sent to ${body.email}`);
+				response.handleSuccess(res, `Invite has been sent to ${body.email}`);
 			} else {
 				throw new Error("Email is already registered.");
 			}

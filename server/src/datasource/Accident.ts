@@ -4,7 +4,8 @@ import userAccessor from "./types/userAccessor";
 import RBAC from "../utils/rbac";
 import {
 	InvalidPermissionException,
-	ResourceNotFoundException
+	ResourceNotFoundException,
+	InvalidInputException
 } from "../utils/exceptions";
 import { toMySQLDate, pickFields } from "../utils/helpers";
 export default class Accident extends DataSource {
@@ -59,7 +60,7 @@ export default class Accident extends DataSource {
 		return bookings;
 	}
 
-	async update(id: number, data: any): Promise<any> {
+	async update(id: number, data: any): Promise<[any, any]> {
 		let role: UserType = this.user.role.name;
 		let foundAccident = await this.get(id);
 
@@ -78,7 +79,14 @@ export default class Accident extends DataSource {
 		}
 
 		await foundAccident.update(data);
-		return this.get(id);
+
+		if (data.read) {
+			let foundUser = await this.getUser(this.user.id);
+			foundAccident.setUserStatus(foundUser, {
+				through: { read: true }
+			});
+		}
+		return [foundAccident, this.get(id)];
 	}
 
 	async delete(id: number): Promise<any> {
@@ -112,11 +120,19 @@ export default class Accident extends DataSource {
 			{
 				accessor: this.user
 			}
-        );
-        
+		);
+		const accidentVehicle = await this.getVehicle(data.vehicleId);
+
+		if (!accidentVehicle) {
+			throw new InvalidInputException("Vehicle is not found.", ["vehicleId"]);
+		}
 		if (!accessible) {
 			throw new InvalidPermissionException();
 		}
+
+		await accidentVehicle.update({
+			defleeted: true
+		});
 
 		return this.createAccident(
 			pickFields(

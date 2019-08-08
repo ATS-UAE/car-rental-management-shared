@@ -1,5 +1,5 @@
 import DataSource from "./DataSource";
-import { UserType, Operation, Resource } from "../variables/enums";
+import { UserType, Operation, Resource, Role } from "../variables/enums";
 import userAccessor from "./types/userAccessor";
 import RBAC from "../utils/rbac";
 import {
@@ -94,10 +94,7 @@ export default class User extends DataSource {
 		return foundUser;
 	}
 
-	async create(
-		data: object,
-		options: { invited?: boolean } = {}
-	): Promise<any> {
+	async create(data: any, options: { invited?: boolean } = {}): Promise<any> {
 		let role: UserType = this.user.role.name;
 
 		let accessible =
@@ -108,7 +105,15 @@ export default class User extends DataSource {
 		if (!accessible) {
 			throw new InvalidPermissionException();
 		}
-		let createdUser = await this.createUser(data);
+		let newUserRole = await this.db.Role.findByPk(data.roleId);
+		let guestRole = await this.db.Role.findOne({
+			where: { name: Role.GUEST }
+		});
+		let createdUser = await this.createUser({
+			...data,
+			roleId: options.invited ? guestRole.id : newUserRole.id,
+			approved: !options.invited
+		});
 		return createdUser;
 	}
 }

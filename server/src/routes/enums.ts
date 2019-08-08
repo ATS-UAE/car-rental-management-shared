@@ -1,8 +1,10 @@
-const express = require("express");
+import express from "express";
+
+import RBAC from "../utils/rbac";
+import db from "../models";
+import { ResponseBuilder } from "../utils/helpers";
+
 const router = express.Router();
-const { RBAC } = require("../rbac/init");
-const db = require("../models");
-const { ResponseBuilder } = require("../utils/helpers");
 
 router.get("/", async (req, res) => {
 	let response = new ResponseBuilder();
@@ -28,4 +30,4 @@ router.get("/", async (req, res) => {
 	res.json(response);
 });
 
-module.exports = router;
+export default router;

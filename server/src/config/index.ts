@@ -13,7 +13,7 @@ const {
 	SECRET_KEY
 } = process.env;
 
-module.exports = {
+export default {
 	database: {
 		name: DATABASE_NAME,
 		username: DATABASE_USERNAME,
@@ -21,7 +21,7 @@ module.exports = {
 		host: DATABASE_HOST,
 		port: DATABASE_PORT,
 		sequelize: {
-			dialect: "mysql",
+			dialect: <const>"mysql",
 			pool: {
 				max: 5,
 				min: 0,

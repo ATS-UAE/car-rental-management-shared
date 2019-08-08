@@ -1,8 +1,8 @@
-const { ROLES } = require("../utils/variables");
-const { ResponseBuilder } = require("../utils");
+const { Role } = require("../variables/enums");
+const { ResponseBuilder } = require("../utils/helpers");
 
 module.exports = function(req, res, next) {
-	if (req.user.role !== ROLES.GUEST) {
+	if (req.user.role !== Role.GUEST) {
 		next();
 	} else {
 		let response = new ResponseBuilder();

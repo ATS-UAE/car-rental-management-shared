@@ -1,5 +1,5 @@
 const fs = require("fs");
-const { deleteFileFromUrl } = require("../utils");
+const { deleteFileFromUrl } = require("../utils/helpers");
 
 module.exports = async ({ file, files }, res, next) => {
 	if (res.statusCode >= 400) {

@@ -12,9 +12,7 @@ import disallowGuests from "../middlewares/disallowGuests";
 import parseBody from "../middlewares/parseBody";
 import upload from "../middlewares/multerUpload";
 import db from "../models";
-import { getFileURL } from "../utils";
-import { ResponseBuilder } from "../utils/helpers";
-import { ROLES } from "../utils/variables";
+import { ResponseBuilder, getFileURL } from "../utils/helpers";
 import config from "../config";
 import { User } from "../datasource";
 import {
@@ -49,7 +47,6 @@ router.post(
 		const UserDataSource = new User(db, user);
 		let inviteTokenUsed = false;
 		let email = body.email;
-		let role = await db.Role.findByPk(body.roleId);
 
 		// Consume invite token
 		if (body.inviteToken) {
@@ -60,7 +57,6 @@ router.post(
 			}
 		}
 
-		let guestRole = await db.Role.findOne({ where: { name: ROLES.GUEST } });
 		try {
 			let hashedPassword = await bcrypt.hash(body.password, 10);
 			let createdUser = await UserDataSource.create(
@@ -68,8 +64,6 @@ router.post(
 					...body,
 					userImageSrc: fileLocation,
 					email,
-					roleId: inviteTokenUsed ? guestRole.id : role.id,
-					approved: !inviteTokenUsed,
 					password: hashedPassword
 				},
 				{

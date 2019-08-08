@@ -1,9 +1,10 @@
-const express = require("express");
+import express from "express";
+
+import db from "../models";
+import { ResponseBuilder } from "../utils/helpers/";
+import requireLogin from "../middlewares/requireLogin";
+
 const router = express.Router();
-const { RBAC } = require("../rbac/init");
-const db = require("../models");
-const { ResponseBuilder } = require("../utils");
-const requireLogin = require("../middlewares/requireLogin");
 
 router.get("/", requireLogin, async (req, res) => {
 	let response = new ResponseBuilder();
@@ -47,4 +48,4 @@ router.delete("/:id", requireLogin, async ({ params }, res) => {
 	res.json(response);
 });
 
-module.exports = router;
+export default router;

@@ -6,11 +6,13 @@ import nodemailer from "nodemailer";
 import jwt from "jsonwebtoken";
 import moment from "moment";
 import StaticMaps from "staticmaps";
-import { mail, secretKey } from "../../config";
+import config from "../../config";
 import {
 	getStaticFilesPath,
 	makeDirectoryIfNotExist
 } from "../../utils/helpers";
+
+const { mail, secretKey } = config;
 
 const getTemplate = (fileName: string): string =>
 	fs.readFileSync(`${__dirname}/templates/${fileName}.mjml`, "utf8");

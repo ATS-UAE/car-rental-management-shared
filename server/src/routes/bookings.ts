@@ -3,7 +3,7 @@ import express from "express";
 import requireLogin from "../middlewares/requireLogin";
 import db from "../models";
 import { ResponseBuilder } from "../utils/helpers";
-import { sendInvoice, sendBookingConfirmation } from "../mail/utils";
+import { sendInvoice, sendBookingConfirmation } from "../utils/mail";
 import { Booking } from "../datasource";
 const router = express.Router();
 router.use(requireLogin);

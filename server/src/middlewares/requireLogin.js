@@ -1,4 +1,4 @@
-const { ResponseBuilder } = require("../utils");
+const { ResponseBuilder } = require("../utils/helpers");
 
 module.exports = function(req, res, next) {
 	if (!req.user) {
