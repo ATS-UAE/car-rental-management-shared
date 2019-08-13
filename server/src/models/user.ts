@@ -85,6 +85,18 @@ export default (sequelize, { STRING, DATE, BOOLEAN }) => {
 	);
 
 	User.associate = models => {
+		models.User.belongsTo(models.Client, {
+			foreignKey: {
+				name: "clientId",
+				allowNull: false,
+				validate: {
+					notNull: {
+						msg: "Please specify which client this user belongs to required"
+					}
+				}
+			},
+			as: "client"
+		});
 		models.User.belongsTo(models.Role, {
 			foreignKey: {
 				name: "roleId",

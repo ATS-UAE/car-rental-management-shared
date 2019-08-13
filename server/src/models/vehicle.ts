@@ -33,6 +33,18 @@ export default (sequelize, DataTypes) => {
 		vehicleImageSrc: { type: DataTypes.STRING }
 	});
 	Vehicle.associate = models => {
+		models.Vehicle.belongsTo(models.Client, {
+			as: "client",
+			foreignKey: {
+				name: "clientId",
+				allowNull: false,
+				validate: {
+					notNull: {
+						msg: "Please specify which client this vehicle belongs to."
+					}
+				}
+			}
+		});
 		models.Vehicle.belongsTo(models.Location, {
 			as: "location",
 			foreignKey: "locationId"
