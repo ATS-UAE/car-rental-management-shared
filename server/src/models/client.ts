@@ -23,6 +23,18 @@ export default (sequelize, { STRING }) => {
 			},
 			as: "vehicles"
 		});
+		models.Client.hasMany(models.Category, {
+			foreignKey: {
+				name: "clientId"
+			},
+			as: "categories"
+		});
+		models.Client.hasMany(models.Location, {
+			foreignKey: {
+				name: "clientId"
+			},
+			as: "locations"
+		});
 	};
 
 	return Client;
