@@ -1,6 +1,4 @@
-const { toUnix } = require("../utils");
-
-module.exports = (sequelize, { STRING, DATE, BOOLEAN }) => {
+export default (sequelize, { STRING, DATE, BOOLEAN }) => {
 	let User = sequelize.define(
 		"User",
 		{

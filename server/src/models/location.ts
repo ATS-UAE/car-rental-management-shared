@@ -1,4 +1,4 @@
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
 	let Location = sequelize.define("Location", {
 		name: {
 			type: DataTypes.STRING,

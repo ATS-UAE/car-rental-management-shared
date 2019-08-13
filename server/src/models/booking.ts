@@ -1,4 +1,4 @@
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
 	let Booking = sequelize.define("Booking", {
 		paid: { type: DataTypes.BOOLEAN, defaultValue: false },
 		amount: { type: DataTypes.FLOAT, defaultValue: null },

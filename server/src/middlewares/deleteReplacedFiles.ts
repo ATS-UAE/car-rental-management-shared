@@ -7,7 +7,7 @@ type ReplaceFileURI = {
 	field: string;
 };
 
-const addReplacedFiles = (
+export const addReplacedFiles = (
 	res: { [key: string]: any; locals: any },
 	{ url, model, field }: ReplaceFileURI
 ) => {
@@ -16,7 +16,7 @@ const addReplacedFiles = (
 		: (res.locals.replacedFiles = [{ url, model, field }]);
 };
 
-const deleteReplacedFiles = async (
+export const deleteReplacedFiles = async (
 	req,
 	{ locals }: { locals: any; [key: string]: any },
 	next
@@ -41,4 +41,5 @@ const deleteReplacedFiles = async (
 
 	next();
 };
-export default { addReplacedFiles, deleteReplacedFiles };
+
+export default deleteReplacedFiles;

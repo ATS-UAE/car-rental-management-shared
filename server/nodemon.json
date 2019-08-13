@@ -1,5 +1,5 @@
 {
-	"watch": ["src", "../shared"],
+	"watch": ["src"],
 	"ext": "ts,js",
 	"ignore": ["build"],
 	"exec": "ts-node src/index"

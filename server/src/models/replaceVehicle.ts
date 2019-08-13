@@ -1,4 +1,4 @@
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
 	let Vehicle = sequelize.define("ReplaceVehicle", {
 		brand: {
 			type: DataTypes.STRING

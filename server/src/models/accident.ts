@@ -1,4 +1,4 @@
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
 	let Accident = sequelize.define("Accident", {
 		message: {
 			type: DataTypes.STRING(500),

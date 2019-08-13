@@ -1,8 +1,9 @@
 import fs from "fs";
 import path from "path";
 import { Sequelize } from "sequelize";
-import config from "../config";
 import bcrypt from "bcryptjs";
+
+import config from "../config";
 import { convertSequelizeDatesToUnix } from "../utils/helpers";
 import { Role, BookingType } from "../variables/enums";
 
@@ -11,7 +12,7 @@ class DB {
 	constructor() {
 		return this.sequelize();
 	}
-	public sequelize(): any {
+	private sequelize(): any {
 		const sequelize = new Sequelize(
 			config.database.name,
 			config.database.username,
@@ -20,10 +21,12 @@ class DB {
 				logging: process.env.NODE_ENV === "development" ? console.log : false,
 				host: config.database.host,
 				port: parseInt(config.database.port),
-				hooks: {
-					afterFind: (results): void => {
-						if (results) {
-							convertSequelizeDatesToUnix(results);
+				define: {
+					hooks: {
+						afterFind: (results): void => {
+							if (results) {
+								convertSequelizeDatesToUnix(results);
+							}
 						}
 					}
 				},
@@ -33,15 +36,16 @@ class DB {
 		const db: any = {};
 		const modelPath = path.join(__dirname);
 		const basename = path.basename(__filename);
+		const fileTypes = /\.(js|ts)/;
 		fs.readdirSync(modelPath)
 			.filter(
 				file =>
 					file.indexOf(".") !== 0 &&
 					file !== basename &&
-					file.slice(-3) === ".js"
+					fileTypes.test(file.slice(-3))
 			)
 			.forEach(file => {
-				const model = sequelize.import(modelPath + file);
+				const model = sequelize.import(path.resolve(modelPath, file));
 				db[model.name] = model;
 			});
 

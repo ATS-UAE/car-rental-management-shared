@@ -1,4 +1,4 @@
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
 	let Accident = sequelize.define("AccidentUserStatus", {
 		read: {
 			type: DataTypes.BOOLEAN,

@@ -6,8 +6,8 @@
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"start": "node build/index",
-		"compile": "tsc",
-		"dev-start": "nodemon -L --config nodemon.json"
+		"build": "tsc",
+		"dev:start": "nodemon -L --config nodemon.json"
 	},
 	"author": "",
 	"license": "ISC",
@@ -19,10 +19,8 @@
 		"@types/sequelize": "^4.28.4",
 		"bcryptjs": "^2.4.3",
 		"body-parser": "^1.18.3",
-		"classnames": "^2.2.6",
 		"cors": "^2.8.5",
 		"dotenv": "^6.2.0",
-		"ejs": "^2.6.1",
 		"express": "^4.16.4",
 		"express-session": "^1.15.6",
 		"express-validator": "^5.3.1",
@@ -37,8 +35,12 @@
 		"nodemailer": "^6.3.0",
 		"passport": "^0.4.0",
 		"passport-local": "^1.0.0",
-		"q": "^1.5.1",
 		"sequelize": "^5.8.6",
 		"staticmaps": "^1.1.3"
+	},
+	"devDependencies": {
+		"nodemon": "^1.19.1",
+		"ts-node": "^8.3.0",
+		"typescript": "^3.5.3"
 	}
 }

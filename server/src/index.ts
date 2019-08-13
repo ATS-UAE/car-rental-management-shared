@@ -6,6 +6,8 @@ import { Strategy } from "passport-local";
 import bcrypt from "bcryptjs";
 import cors from "cors";
 import path from "path";
+import bodyParser from "body-parser";
+import expressSession from "express-session";
 
 import { getStaticFilesPath } from "./utils/helpers";
 import config from "./config";
@@ -47,7 +49,7 @@ passport.use(
 );
 
 passport.serializeUser(function(user, cb) {
-	cb(null, user.id);
+	cb(null, (<any>user).id);
 });
 
 passport.deserializeUser(async (id, cb) => {
@@ -66,9 +68,9 @@ passport.deserializeUser(async (id, cb) => {
 
 // EXPRESS CONFIGURATIONS
 
-app.use(require("body-parser").urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
-	require("express-session")({
+	expressSession({
 		secret: config.secretKey,
 		resave: false,
 		saveUninitialized: false

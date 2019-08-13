@@ -2,7 +2,7 @@ import path from "path";
 import multer from "multer";
 import { getStaticFilesPath, makeDirectoryIfNotExist } from "../utils/helpers";
 
-const upload = (uploadPath, options) => {
+const upload = (uploadPath, options?) => {
 	return multer({
 		storage: multer.diskStorage({
 			destination: function(req, file, cb) {
