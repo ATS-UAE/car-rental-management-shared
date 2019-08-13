@@ -1,6 +1,5 @@
 FROM node:alpine
 WORKDIR /app
-RUN npm install -g nodemon ts-node typescript
 COPY ./package.json ./
 RUN npm install
 COPY . .

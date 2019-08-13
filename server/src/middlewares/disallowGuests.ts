@@ -1,7 +1,7 @@
-const { Role } = require("../variables/enums");
-const { ResponseBuilder } = require("../utils/helpers");
+import { Role } from "../variables/enums";
+import { ResponseBuilder } from "../utils/helpers";
 
-module.exports = function(req, res, next) {
+export default (req, res, next) => {
 	if (req.user.role !== Role.GUEST) {
 		next();
 	} else {

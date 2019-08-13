@@ -1,7 +1,6 @@
-const path = require("path");
-const fs = require("fs");
-const multer = require("multer");
-const { getStaticFilesPath, makeDirectoryIfNotExist } = require("../utils/helpers");
+import path from "path";
+import multer from "multer";
+import { getStaticFilesPath, makeDirectoryIfNotExist } from "../utils/helpers";
 
 const upload = (uploadPath, options) => {
 	return multer({
@@ -23,4 +22,4 @@ const upload = (uploadPath, options) => {
 		}
 	});
 };
-module.exports = upload;
+export default upload;

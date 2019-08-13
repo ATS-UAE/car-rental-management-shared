@@ -1,12 +1,26 @@
-const { deleteFileFromUrl } = require("../utils/helpers");
+import { deleteFileFromUrl } from "../utils/helpers";
+import { Model } from "sequelize";
 
-const addReplacedFiles = (res, { url, model, field }) => {
+type ReplaceFileURI = {
+	url: string;
+	model: Model<unknown, unknown>;
+	field: string;
+};
+
+const addReplacedFiles = (
+	res: { [key: string]: any; locals: any },
+	{ url, model, field }: ReplaceFileURI
+) => {
 	res.locals.replacedFiles
 		? res.locals.replacedFiles.push({ url, model, field })
 		: (res.locals.replacedFiles = [{ url, model, field }]);
 };
 
-const deleteReplacedFiles = async (req, { locals }, next) => {
+const deleteReplacedFiles = async (
+	req,
+	{ locals }: { locals: any; [key: string]: any },
+	next
+) => {
 	if (locals.replacedFiles) {
 		for (let file of locals.replacedFiles) {
 			if (file.url && file.model && file.field) {
@@ -27,5 +41,4 @@ const deleteReplacedFiles = async (req, { locals }, next) => {
 
 	next();
 };
-
-module.exports = { addReplacedFiles, deleteReplacedFiles };
+export default { addReplacedFiles, deleteReplacedFiles };
