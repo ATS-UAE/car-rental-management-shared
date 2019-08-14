@@ -91,7 +91,7 @@ export default (sequelize, { STRING, DATE, BOOLEAN }) => {
 				allowNull: false,
 				validate: {
 					notNull: {
-						msg: "Please specify which client this user belongs to required"
+						msg: "Please specify which client this user belongs to."
 					}
 				}
 			},
