@@ -11,6 +11,7 @@
     "axios": "^0.18.0",
     "classnames": "^2.2.6",
     "debounce": "^1.2.0",
+    "formik": "^1.5.8",
     "leaflet": "^1.5.1",
     "material-table": "^1.39.0",
     "moment": "^2.24.0",
