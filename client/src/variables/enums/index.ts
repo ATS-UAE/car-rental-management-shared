@@ -1,4 +1,4 @@
-import Action from "../Action"
+import Action from "./Action";
 import BookingType from "./BookingType";
 import Resource from "./Resource";
 import Role from "./Role";
