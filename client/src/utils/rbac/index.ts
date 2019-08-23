@@ -1,156 +1,170 @@
-export class RBAC {
-	constructor(name) {
-		this.name = name;
-		this.roles = [];
-	}
-	addRole(role) {
-		let existing = this.roles.find(roleItem => roleItem.name === role.name);
-		if (existing) throw new Error("Role already exists");
-		this.roles.push(role);
-	}
-	can(role, action, resource, params) {
-		return new Promise(async resolve => {
-			let existingRole = this.roles.find(roleItem => {
-				if (role.name) {
-					return role.name === roleItem.name;
-				}
-				return role === roleItem.name;
-			});
-			if (!existingRole) throw new Error("Role does not exist.");
-			let permitted = await existingRole.can(action, resource, params);
-			resolve(permitted);
-		});
-	}
-	getExcludedFields(role, action, resource) {
-		let $role = this.roles.find($role => $role.name === role);
-		if ($role) {
-			let excludedFields = [];
-			if ($role.extends) {
-				for (let role of $role.extends) {
-					let $action = role.actions.find(
-						$action =>
-							$action.name === action && $action.resource.name === resource
-					);
-					if ($action) {
-						excludedFields.push(...$action.excludedFields);
-					}
-				}
-			}
-			let $action = $role.actions.find(
-				$action => $action.name === action && $action.resource.name === resource
-			);
-			if ($action) {
-				excludedFields.push(...$action.excludedFields);
-			}
-			return excludedFields;
-		} else throw new Error("Role does not exist.");
-	}
-	toObject() {
-		return {
-			name: this.name,
-			roles: this.roles.map(role => ({
-				name: role.name,
-				access: role.actions.reduce(
-					(acc, action) => {
-						if (!acc.resources[action.resource.name]) {
-							acc.resources[action.resource.name] = {
-								permissions: {}
-							};
-						}
-						acc.resources[action.resource.name].permissions[action.name] = {
-							conditional: action.condition ? true : false,
-							excludedFields: action.excludedFields
-						};
-						return acc;
-					},
-					{
-						resources: {}
-					}
-				),
-				extends: role.extends.map(role => role.name)
-			}))
-		};
-	}
-}
+import RBAC, { Role, Resource, Action } from "../rbac";
+import * as enums from "../variables/enums";
 
-export class Role {
-	constructor(name) {
-		this.name = name;
-		this.actions = [];
-		this.extends = [];
-	}
-	addPermission(action) {
-		let existingAction = this.actions.find(
-			currentAction =>
-				currentAction.name === action.name &&
-				currentAction.resource.name === action.resource.name
-		);
-		if (existingAction) throw new Error("Action already exists.");
-		this.actions.push(action);
-	}
-	extend(role) {
-		this.extends.push(role);
-	}
-	can(action, resource, params) {
-		return new Promise(async resolve => {
-			let actions = this.actions;
-			let resourceName = resource.name || resource;
-			for (let i = 0; i < actions.length; i++) {
-				let currentAction = actions[i];
-				if (
-					action === currentAction.name &&
-					currentAction.resource.name === resourceName
-				) {
-					let permitted;
-					try {
-						permitted = await currentAction.perform(params);
-					} catch (e) {
-						permitted = false;
-					}
-					if (permitted) {
-						return resolve(permitted);
-					}
-				}
-			}
-			// Contine looking for matching actions, incase role is extended.
-			if (this.extends) {
-				for (let i = 0; i < this.extends.length; i++) {
-					let extendedRole = this.extends[i];
-					let permitted = await extendedRole.can(action, resource, params);
-					if (permitted) {
-						return resolve(permitted);
-					}
-				}
-			}
-			return resolve(false);
-		});
-	}
-}
+const { READ, UPDATE, DELETE, CREATE } = enums.Operation;
+const accessControl = new RBAC("Car Booking");
+const generalRole = new Role("GENERAL");
+const masterRole = new Role(enums.Role.MASTER);
+const adminRole = new Role(enums.Role.ADMIN);
+const keyManagerRole = new Role(enums.Role.KEY_MANAGER);
+const guestRole = new Role(enums.Role.GUEST);
 
-export class Resource {
-	constructor(name) {
-		this.name = name;
-	}
-}
+const vehicleResource = new Resource(enums.Resource.VEHICLES);
+const locationsResource = new Resource(enums.Resource.LOCATIONS);
+const bookingsResource = new Resource(enums.Resource.BOOKINGS);
+const usersResource = new Resource(enums.Resource.USERS);
+const enumsResource = new Resource(enums.Resource.ENUMS);
+const accidentsResource = new Resource(enums.Resource.ACCIDENTS);
 
-export class Action {
-	constructor(name, resource, condition = null, excludedFields = []) {
-		this.name = name;
-		this.resource = resource;
-		this.condition = condition;
-		this.excludedFields = excludedFields;
-	}
-	perform(params) {
-		if (this.condition) {
-			return this.condition(params);
-		}
-		return true;
-	}
-}
+/////////////////////////
+// GENERAL ROLE CONFIG //
+/////////////////////////
+// All roles will extend this role.
+// Users permission.
+generalRole.addPermission(
+	new Action(
+		READ,
+		usersResource,
+		({ targetUser, user }) => targetUser.id === user.id,
+		["password", "passwordConfirm"]
+	)
+);
 
-Action.OPERATIONS = {
-	READ: "READ",
-	UPDATE: "UPDATE",
-	DELETE: "DELETE",
-	CREATE: "CREATE"
+// Vehicle permissions.
+generalRole.addPermission(
+	new Action(READ, vehicleResource, null, ["objectId"])
+);
+generalRole.addPermission(new Action(READ, locationsResource));
+// Booking permissions.
+// generalRole.addPermission(
+// 	new Action(UPDATE, bookingsResource, () => {
+// 		// Bookings that are not yet finalized / ongoing / approved.
+// 	})
+// );
+
+// generalRole.addPermission(
+// 	new Action(DELETE, bookingsResource, () => {
+// 		// Bookings that are not yet finalized / paid / ongoing / approved.
+// 	})
+// );
+generalRole.addPermission(
+	new Action(
+		READ,
+		bookingsResource,
+		({ booking, user }) => booking.userId === user.id,
+		["userId"]
+	)
+);
+
+// Users permission.
+generalRole.addPermission(
+	new Action(
+		UPDATE,
+		usersResource,
+		({ user, targetUser }) => user.id === targetUser.id,
+		["roleId"]
+	)
+);
+
+// Enums permission.
+generalRole.addPermission(new Action(READ, enumsResource));
+
+// Accidents permissions.
+generalRole.addPermission(
+	new Action(
+		READ,
+		accidentsResource,
+		({ accident, user }) => accident.userId === user.id
+	)
+);
+generalRole.addPermission(
+	new Action(UPDATE, accidentsResource, ({ accident, user, body }) => true)
+);
+
+////////////////////////
+// GUESTS ROLE CONFIG //
+////////////////////////
+guestRole.extend(generalRole);
+// Bookings permissions.
+// Only guests can create bookings.
+guestRole.addPermission(
+	new Action(CREATE, bookingsResource, null, ["userId", "paid"])
+);
+
+// Accidents permissions.
+guestRole.addPermission(
+	new Action(CREATE, accidentsResource, null, ["userId", "bookingId"])
+);
+
+/////////////////////////////
+// KEY_MANAGER ROLE CONFIG //
+/////////////////////////////
+keyManagerRole.extend(generalRole);
+// Vehicle Permissions. Extended from guest.
+
+keyManagerRole.addPermission(new Action(UPDATE, vehicleResource));
+// Locations permissions. Extended from guest.
+keyManagerRole.addPermission(new Action(CREATE, locationsResource));
+keyManagerRole.addPermission(new Action(UPDATE, locationsResource));
+keyManagerRole.addPermission(new Action(DELETE, locationsResource));
+
+// Booking permissions. Extended from guest.
+keyManagerRole.addPermission(new Action(READ, bookingsResource));
+keyManagerRole.addPermission(
+	new Action(UPDATE, bookingsResource, null, ["userId"])
+);
+
+// Users permission
+keyManagerRole.addPermission(
+	new Action(READ, usersResource, null, ["password", "passwordConfirm"])
+);
+
+// Accidents permission
+keyManagerRole.addPermission(new Action(READ, accidentsResource));
+
+///////////////////////
+// ADMIN ROLE CONFIG //
+///////////////////////
+adminRole.extend(keyManagerRole);
+// Vehicle Permissions.
+adminRole.addPermission(new Action(CREATE, vehicleResource));
+adminRole.addPermission(new Action(READ, vehicleResource));
+adminRole.addPermission(new Action(UPDATE, vehicleResource));
+adminRole.addPermission(new Action(DELETE, vehicleResource));
+
+// Booking permissions.
+adminRole.addPermission(new Action(DELETE, bookingsResource));
+adminRole.addPermission(new Action(CREATE, bookingsResource));
+
+// User permissions.
+adminRole.addPermission(new Action(CREATE, usersResource));
+adminRole.addPermission(new Action(UPDATE, usersResource, null, ["roleId"]));
+adminRole.addPermission(new Action(DELETE, usersResource));
+
+// Accidents Permissions
+adminRole.addPermission(new Action(DELETE, accidentsResource));
+
+accessControl.addRole(adminRole);
+accessControl.addRole(keyManagerRole);
+accessControl.addRole(guestRole);
+
+////////////////////////
+// MASTER ROLE CONFIG //
+////////////////////////
+
+export default accessControl;
+
+export const roles = {
+	admin: adminRole,
+	keyManager: keyManagerRole,
+	guest: guestRole
+};
+
+export const resources = {
+	bookings: bookingsResource,
+	vehicles: vehicleResource,
+	locations: locationsResource,
+	users: usersResource,
+	enums: enumsResource,
+	accidents: accidentsResource
 };
