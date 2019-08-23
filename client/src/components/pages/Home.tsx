@@ -1,7 +1,15 @@
-import React, { useEffect, Fragment } from "react";
+import React, { useEffect, Fragment, FC } from "react";
 import { connect } from "react-redux";
 import { compose } from "recompose";
-import { Paper, Grid, withStyles, Typography } from "@material-ui/core";
+import {
+	Paper,
+	Grid,
+	withStyles,
+	Typography,
+	createStyles,
+	Theme,
+	WithStyles
+} from "@material-ui/core";
 import moment from "moment";
 import {
 	BarChart,
@@ -16,12 +24,27 @@ import {
 import tinygradient from "tinygradient";
 
 import * as actions from "../../actions";
-import { roles } from "../../variables/enums";
-import { getBookingStatus, toTitleWords } from "../../utils";
+import { Role } from "../../variables/enums";
+import { getBookingStatus, toTitleWords } from "../../utils/helpers";
+import {
+	IBooking,
+	IVehicle,
+	IUser,
+	IAccident,
+	IAuth
+} from "../../utils/typings/api";
 
 let gradients = ["#FF8E53", "#ffd400", "#FE6B8B", "#a500ff", "#0072ff"];
 
-function Home({
+interface IPageHome {
+	auth: IAuth;
+	bookings: Array<IBooking>;
+	vehicles: Array<IVehicle>;
+	users: Array<IUser>;
+	accidents: Array<IAccident>;
+}
+
+const Home: FC<IPageHome & typeof actions & WithStyles<typeof styles>> = ({
 	fetchBookings,
 	fetchVehicles,
 	fetchUsers,
@@ -29,10 +52,9 @@ function Home({
 	auth,
 	bookings,
 	vehicles,
-	users,
 	accidents,
 	classes
-}) {
+}) => {
 	useEffect(() => {
 		fetchBookings();
 		fetchVehicles();
@@ -45,11 +67,11 @@ function Home({
 	let monthEnd = moment().endOf("month");
 	let monthStart = moment().startOf("month");
 
-	if (auth && auth.data) {
-		if (bookings && bookings.data) {
-			let statuses = [];
+	if (auth && auth) {
+		if (bookings && bookings) {
+			let statuses: Array<any> = [];
 			statuses.push("Total");
-			let data = bookings.data.reduce((acc, booking) => {
+			let data = bookings.reduce((acc: Array<any>, booking) => {
 				let bookingStart = moment(booking.from, "X");
 				if (bookingStart.isBetween(monthStart, monthEnd)) {
 					let day = `${bookingStart.format("D")}`;
@@ -101,47 +123,44 @@ function Home({
 				</Fragment>
 			);
 		}
-		if (vehicles && vehicles.data) {
-			let data = vehicles.data.reduce(
-				(acc, vehicle) => {
-					return acc;
+
+		let data: any = vehicles.reduce(
+			(acc, vehicle) => {
+				return acc;
+			},
+			[
+				{
+					Booked: 5
 				},
-				[
-					{
-						Booked: 5
-					},
-					{
-						Available: 9
-					}
-				]
-			);
-			children.push(
-				<Fragment>
-					<Typography align="center" variant="h6" component="h1">
-						Vehicle Status
-					</Typography>
-					<ResponsiveContainer width="100%" height={300}>
-						<BarChart data={data}>
-							<CartesianGrid strokeDasharray="3 3" />
-							<YAxis />
-							<Tooltip />
-							<Legend />
-							<Bar dataKey={"Available"} fill={gradients[0]} />
-							<Bar dataKey={"Booked"} fill={gradients[1]} />
-						</BarChart>
-					</ResponsiveContainer>
-				</Fragment>
-			);
-		}
-		if (users && users.data && auth.data.role !== roles.GUEST) {
-			// Add tables
-		}
-		if (accidents && accidents.data && auth.data.role !== roles.GUEST) {
-			let data = accidents.data.reduce((acc, accident) => {
+				{
+					Available: 9
+				}
+			]
+		);
+		children.push(
+			<Fragment>
+				<Typography align="center" variant="h6" component="h1">
+					Vehicle Status
+				</Typography>
+				<ResponsiveContainer width="100%" height={300}>
+					<BarChart data={data}>
+						<CartesianGrid strokeDasharray="3 3" />
+						<YAxis />
+						<Tooltip />
+						<Legend />
+						<Bar dataKey={"Available"} fill={gradients[0]} />
+						<Bar dataKey={"Booked"} fill={gradients[1]} />
+					</BarChart>
+				</ResponsiveContainer>
+			</Fragment>
+		);
+
+		if (auth.role.name !== Role.GUEST) {
+			let data: any = accidents.reduce((acc: any, accident) => {
 				let accidentTime = moment(accident.createdAt, "X");
 				if (accidentTime.isBetween(monthStart, monthEnd)) {
 					let day = `${accidentTime.format("D")}`;
-					let existingDay = acc.find(data => data.name === day);
+					let existingDay = acc.find((data: any) => data.name === day);
 					if (existingDay) {
 						existingDay["Total"]++;
 					} else {
@@ -174,7 +193,7 @@ function Home({
 	}
 
 	return (
-		<Grid container className={classes.root}>
+		<Grid container>
 			{children.map((child, index) => (
 				<Grid item xs={12} md={6} key={index}>
 					<Paper className={classes.paper}>{child}</Paper>
@@ -182,16 +201,26 @@ function Home({
 			))}
 		</Grid>
 	);
-}
+};
 
-const styles = themes => ({
-	paper: {
-		padding: themes.spacing(3),
-		margin: themes.spacing(1)
-	}
-});
+const styles = (theme: Theme) =>
+	createStyles({
+		paper: {
+			padding: theme.spacing(3),
+			margin: theme.spacing(1)
+		}
+	});
 
-const mapStateToProps = ({ bookings, vehicles, users, accidents, auth }) => ({
+const mapStateToProps = ({
+	bookings,
+	vehicles,
+	users,
+	accidents,
+	auth
+}: Pick<
+	IPageHome,
+	"bookings" | "vehicles" | "users" | "accidents" | "auth"
+>) => ({
 	bookings,
 	vehicles,
 	users,
@@ -199,7 +228,10 @@ const mapStateToProps = ({ bookings, vehicles, users, accidents, auth }) => ({
 	auth
 });
 
-export default compose(
+export default compose<
+	IPageHome & typeof actions & WithStyles<typeof styles>,
+	{}
+>(
 	connect(
 		mapStateToProps,
 		actions
