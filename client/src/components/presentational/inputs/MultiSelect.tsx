@@ -1,14 +1,12 @@
 import React from "react";
-import PropTypes from "prop-types";
-import clsx from "clsx";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import { makeStyles, useTheme, Theme } from "@material-ui/core/styles";
 import Input from "@material-ui/core/Input";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
-import FormHelperText from "@material-ui/core/FormHelperText";
 import Select from "@material-ui/core/Select";
 import Chip from "@material-ui/core/Chip";
+import { InputValue, IMultiSelectInputProps } from "../../../utils/typings";
 
 const useStyles = makeStyles(theme => ({
 	root: {
@@ -43,68 +41,54 @@ const MenuProps = {
 	}
 };
 
-function getStyles(name, personName, theme) {
+function getStyles(name: InputValue, value: Array<InputValue>, theme: Theme) {
 	return {
 		fontWeight:
-			personName.indexOf(name) === -1
+			value.indexOf(name) === -1
 				? theme.typography.fontWeightRegular
 				: theme.typography.fontWeightMedium
 	};
 }
 
-export default function MultiSelect({
-	value,
-	onChange,
-	required,
+const MultiSelect: React.FC<IMultiSelectInputProps> = ({
+	field,
 	haveNone,
 	items,
-	helperText,
-	id,
 	label,
-	name,
 	fullWidth,
-	FormControlProps,
-	SelectProps,
-	InputProps,
-	onError,
 	disabled
-}) {
+}) => {
 	const classes = useStyles();
 	const theme = useTheme();
-	if (required && (value === undefined || value === "")) {
-		onError && onError(value);
-	}
+
 	return (
-		<FormControl
-			required={required}
-			fullWidth={fullWidth}
-			{...FormControlProps}
-		>
-			{label && <InputLabel htmlFor={id}>{label}</InputLabel>}
+		<FormControl fullWidth={fullWidth}>
+			{label && <InputLabel htmlFor={field.name}>{label}</InputLabel>}
 			<Select
 				multiple
-				{...SelectProps}
-				value={value || []}
+				onBlur={field.onBlur}
+				value={field.value}
 				autoWidth
-				onChange={e => {
-					onChange && onChange(e);
-				}}
-				name={name}
-				input={<Input {...InputProps} name={name} id={id} />}
+				onChange={field.onChange}
+				input={<Input id={field.name} />}
 				disabled={disabled}
 				renderValue={selected => (
 					<div className={classes.chips}>
-						{items.reduce((acc, item) => {
-							if (selected.indexOf(item.value) >= 0)
-								acc.push(
-									<Chip
-										key={item.value}
-										label={item.label}
-										className={classes.chip}
-									/>
-								);
-							return acc;
-						}, [])}
+						{items.reduce(
+							(acc, item) => {
+								if ((selected as Array<InputValue>).indexOf(item.value) >= 0) {
+									acc.push(
+										<Chip
+											key={item.value}
+											label={item.label}
+											className={classes.chip}
+										/>
+									);
+								}
+								return acc;
+							},
+							[] as Array<React.ReactNode>
+						)}
 					</div>
 				)}
 				MenuProps={MenuProps}
@@ -118,39 +102,14 @@ export default function MultiSelect({
 					<MenuItem
 						value={item.value}
 						key={item.value}
-						style={getStyles(item.value, value, theme)}
+						style={getStyles(item.value, field.value, theme)}
 					>
 						{item.label}
 					</MenuItem>
 				))}
 			</Select>
-			{helperText && <FormHelperText>{helperText}</FormHelperText>}
 		</FormControl>
 	);
-}
-
-MultiSelect.propTypes = {
-	haveNone: PropTypes.bool,
-	items: PropTypes.arrayOf(
-		PropTypes.shape({
-			value: PropTypes.any,
-			label: PropTypes.string
-		})
-	),
-	onChange: PropTypes.func,
-	required: PropTypes.bool,
-	id: PropTypes.string.isRequired,
-	label: PropTypes.string,
-	helperText: PropTypes.string,
-	fullWidth: PropTypes.bool,
-	SelectProps: PropTypes.object,
-	InputProps: PropTypes.object,
-	FormControlProps: PropTypes.object
 };
 
-MultiSelect.defaultProps = {
-	required: false,
-	haveNone: false,
-	items: [],
-	fullWidth: false
-};
+export default MultiSelect;

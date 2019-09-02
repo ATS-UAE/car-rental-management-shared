@@ -1,11 +1,10 @@
-import React from "react";
+import React, { FC } from "react";
 import { compose } from "recompose";
 import { withRouter } from "react-router";
-import { Paper } from "@material-ui/core";
-import { withStyles } from "@material-ui/core/styles";
-import UserFormGuestSignUp from "../containers/forms/users/UserFormGuestSignUp";
+import { Paper, createStyles, Theme, withStyles } from "@material-ui/core";
+import UserFormGuestSignUp from "../containers.deprecated/forms.deprecated/users/UserFormGuestSignUp";
 
-function SignUp({ classes, history }) {
+const SignUp: FC<any> = ({ classes, history }) => {
 	return (
 		<div className={classes.root}>
 			<Paper className={classes.signUpWrapper}>
@@ -16,24 +15,25 @@ function SignUp({ classes, history }) {
 			</Paper>
 		</div>
 	);
-}
+};
 
-const styles = theme => ({
-	root: {
-		padding: theme.spacing(3),
-		[theme.breakpoints.down("sm")]: {
-			padding: theme.spacing(2)
+const styles = (theme: Theme) =>
+	createStyles({
+		root: {
+			padding: theme.spacing(3),
+			[theme.breakpoints.down("sm")]: {
+				padding: theme.spacing(2)
+			},
+			height: "100%",
+			overflow: "auto",
+			display: "flex"
 		},
-		height: "100%",
-		overflow: "auto",
-		display: "flex"
-	},
-	signUpWrapper: {
-		padding: theme.spacing(1),
-		margin: "auto"
-	},
-	signUp: { maxWidth: "500px" }
-});
+		signUpWrapper: {
+			padding: theme.spacing(1),
+			margin: "auto"
+		},
+		signUp: { maxWidth: "500px" }
+	});
 
 export default compose(
 	withRouter,

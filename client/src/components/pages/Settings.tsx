@@ -1,15 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, FC } from "react";
 import { compose } from "recompose";
 import { connect } from "react-redux";
-import { Paper, Tabs, Tab } from "@material-ui/core";
-import { withStyles } from "@material-ui/core/styles";
-
+import {
+	Paper,
+	Tabs,
+	Tab,
+	withStyles,
+	createStyles,
+	Theme
+} from "@material-ui/core";
 import * as actions from "../../actions";
-import { roles } from "../../variables/enums";
-import PasswordChangeButtonDialog from "../containers/forms/PasswordChangeButtonDialog";
-import CategoryTableView from "../containers/display/CategoryTableView";
+import { Role } from "../../variables/enums";
+import PasswordChangeButtonDialog from "../containers.deprecated/forms.deprecated/PasswordChangeButtonDialog";
+import CategoryTableView from "../containers.deprecated/display/CategoryTableView";
 
-function Settings({
+const Settings: FC<any> = ({
 	classes,
 	fetchCategories,
 	fetchCurrentUserDetails,
@@ -18,7 +23,7 @@ function Settings({
 	match,
 	history,
 	auth
-}) {
+}) => {
 	useEffect(() => {
 		fetchCategories();
 		fetchCurrentUserDetails();
@@ -33,7 +38,7 @@ function Settings({
 			case 0:
 				return <PasswordChangeButtonDialog />;
 			case 1:
-				if (auth && auth.data && auth.data.role.name === roles.ADMIN) {
+				if (auth && auth && auth.role.name === Role.ADMIN) {
 					return (
 						<CategoryTableView
 							location={location}
@@ -63,23 +68,27 @@ function Settings({
 			<div>{getTabContent(value)}</div>
 		</Paper>
 	);
-}
+};
 
-const styles = theme => ({
-	root: {
-		padding: theme.spacing(3),
-		[theme.breakpoints.down("sm")]: {
-			padding: theme.spacing(1)
+const styles = (theme: Theme) =>
+	createStyles({
+		root: {
+			padding: theme.spacing(3),
+			[theme.breakpoints.down("sm")]: {
+				padding: theme.spacing(1)
+			},
+			height: "100%",
+			overflow: "auto"
 		},
-		height: "100%",
-		overflow: "auto"
-	},
-	tabs: {
-		marginBottom: theme.spacing(1)
-	}
-});
+		tabs: {
+			marginBottom: theme.spacing(1)
+		}
+	});
 
-const mapStateToProps = ({ auth, categories }) => ({ auth, categories });
+const mapStateToProps = ({ auth, categories }) => ({
+	auth,
+	categories
+});
 
 export default compose(
 	connect(

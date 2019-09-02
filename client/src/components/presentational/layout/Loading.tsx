@@ -11,7 +11,7 @@ function Loading({ classes }) {
 	);
 }
 
-const styles = theme => ({
+const styles = {
 	root: {
 		height: "100%",
 		display: "flex",
@@ -23,6 +23,6 @@ const styles = theme => ({
 		display: "flex",
 		justifyContent: "center"
 	}
-});
+};
 
-export default withStyles(styles, { withTheme: true })(Loading);
+export default withStyles(styles)(Loading);

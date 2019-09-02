@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, FC } from "react";
 import { Route } from "react-router";
 import { Paper, Button } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
@@ -6,13 +6,13 @@ import classNames from "classnames";
 import { compose } from "recompose";
 import { connect } from "react-redux";
 import * as reduxActions from "../../actions";
-import { resources, actions } from "../../variables/enums";
-import InviteGuestButtonDialog from "../containers/forms/InviteGuestButtonDialog";
-import Can from "../containers/layout/Can";
-import UserTableView from "../containers/display/UserTableView";
-import UserFormCreateDialog from "../containers/forms/users/UserFormCreateDialog";
+import { Resource, Action } from "../../variables/enums";
+import InviteGuestButtonDialog from "../containers.deprecated/forms.deprecated/InviteGuestButtonDialog";
+import Can from "../containers.deprecated/layout/Can";
+import UserTableView from "../containers.deprecated/display/UserTableView";
+import UserFormCreateDialog from "../containers.deprecated/forms.deprecated/users/UserFormCreateDialog";
 
-function Users({
+const Users: FC<any> = ({
 	classes,
 	fetchUsers,
 	fetchCurrentUserDetails,
@@ -20,7 +20,7 @@ function Users({
 	match,
 	history,
 	fetchCategories
-}) {
+}) => {
 	useEffect(() => {
 		fetchUsers();
 		fetchCurrentUserDetails();
@@ -42,8 +42,8 @@ function Users({
 			<div className={classes.actions}>
 				<InviteGuestButtonDialog />
 				<Can
-					action={actions.CREATE}
-					resource={resources.USERS}
+					action={Action.CREATE}
+					resource={Resource.USERS}
 					yes={() => (
 						<Button
 							color="primary"
@@ -58,7 +58,7 @@ function Users({
 			<UserTableView location={location} match={match} history={history} />
 		</Paper>
 	);
-}
+};
 
 const styles = theme => ({
 	root: {

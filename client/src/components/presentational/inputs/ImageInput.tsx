@@ -1,39 +1,41 @@
 import React from "react";
-import { Paper, Typography } from "@material-ui/core";
-import * as icons from "@material-ui/icons";
-import { withStyles } from "@material-ui/core/styles";
+import {
+	Paper,
+	Typography,
+	createStyles,
+	Theme,
+	withStyles,
+	WithStyles
+} from "@material-ui/core";
+import { CloudUpload } from "@material-ui/icons";
 
-function ImageInput({
+import { IImageInputProps } from "../../../utils/typings";
+
+const ImageInput: React.FC<IImageInputProps & WithStyles<typeof styles>> = ({
+	field,
 	classes,
-	onChange,
-	id,
-	label,
-	required,
-	InputProps,
 	error,
-	value,
 	disabled,
-	icon
-}) {
+	icon: Icon,
+	label
+}) => {
 	let imgSrc = null;
-	if (value) {
-		if (typeof value === "string") imgSrc = value;
-		else imgSrc = URL.createObjectURL(value);
+	if (field.value) {
+		if (typeof field.value === "string") imgSrc = field.value;
+		else imgSrc = URL.createObjectURL(field.value);
 	}
-	let Icon = icons[icon];
 	return (
 		<div className={classes.root}>
 			<input
 				accept="image/*"
 				className={classes.input}
-				id={id}
+				id={field.name}
 				type="file"
-				onChange={e => onChange && onChange(e)}
-				required={required}
-				{...InputProps}
+				onBlur={field.onBlur}
+				onChange={field.onChange}
 				disabled={disabled}
 			/>
-			<label htmlFor={id} className={classes.label}>
+			<label htmlFor={field.name} className={classes.label}>
 				<Paper className={classes.preview}>
 					{imgSrc ? (
 						<img src={imgSrc} alt="Upload" className={classes.uploaded} />
@@ -43,20 +45,21 @@ function ImageInput({
 				</Paper>
 				{!disabled && (
 					<Typography variant="caption" color={error ? "error" : undefined}>
-						{`${label}${required ? "*" : ""}`}
+						{label}
 					</Typography>
 				)}
 			</label>
 		</div>
 	);
-}
-
-ImageInput.defaultProps = {
-	icon: "CloudUpload"
 };
 
-const styles = theme => {
-	return {
+ImageInput.defaultProps = {
+	icon: CloudUpload
+};
+
+const styles = (theme: Theme) =>
+	createStyles({
+		root: {},
 		input: {
 			display: "none"
 		},
@@ -64,36 +67,38 @@ const styles = theme => {
 			display: "inline-flex",
 			flexDirection: "column",
 			alignItems: "center",
-			width: ({ fullWidth }) => fullWidth && "100%"
+			width: ({ fullWidth }: IImageInputProps) =>
+				fullWidth ? "100%" : undefined
 		},
 		preview: {
 			display: "inline-flex",
 			borderRadius: "1000px",
-			width: ({ main }) => {
+			width: ({ main }: IImageInputProps) => {
 				let size = 48;
 				return main ? `${size * 3}px` : `${size}px`;
 			},
-			height: ({ main }) => {
+			height: ({ main }: IImageInputProps) => {
 				let size = 48;
 				return main ? `${size * 3}px` : `${size}px`;
 			},
 			justifyContent: "center",
 			alignItems: "center",
 			marginRight: theme.spacing(1),
-			margin: ({ fullWidth }) => fullWidth && "auto"
+			margin: ({ fullWidth }: IImageInputProps) =>
+				fullWidth ? "100%" : undefined
 		},
 		icon: {
-			width: ({ main }) => {
+			width: ({ main }: IImageInputProps) => {
 				let size = 30;
 				return main ? `${size * 3}px` : `${size}px`;
 			},
-			height: ({ main }) => {
+			height: ({ main }: IImageInputProps) => {
 				let size = 30;
 				return main ? `${size * 3}px` : `${size}px`;
 			}
 		},
 		uploaded: {
-			clipPath: ({ main }) => {
+			clipPath: ({ main }: IImageInputProps) => {
 				let size = 23;
 				return main
 					? `circle(${size * 3}px at center)`
@@ -105,7 +110,6 @@ const styles = theme => {
 			padding: theme.spacing(3),
 			margin: theme.spacing(3)
 		}
-	};
-};
+	});
 
 export default withStyles(styles)(ImageInput);

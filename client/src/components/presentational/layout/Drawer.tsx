@@ -13,8 +13,6 @@ import {
 	Typography
 } from "@material-ui/core";
 
-import { runIfExistFunction } from "../../../utils";
-
 const styles = theme => ({
 	list: {
 		width: 250,
@@ -119,12 +117,7 @@ function TemporaryDrawer({
 
 	return (
 		<Drawer open={isOpen} onClose={() => onClose && onClose()}>
-			<div
-				onClick={runIfExistFunction(onClick)}
-				onKeyDown={runIfExistFunction(onClick)}
-			>
-				{sideList}
-			</div>
+			<div onClick={onClick && onClick()}>{sideList}</div>
 		</Drawer>
 	);
 }

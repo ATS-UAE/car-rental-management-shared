@@ -1,20 +1,20 @@
-import React, { useEffect } from "react";
+import React, { useEffect, FC } from "react";
 import { connect } from "react-redux";
 import { compose } from "recompose";
 import { Paper } from "@material-ui/core";
 import { withStyles } from "@material-ui/core";
 
 import * as actions from "../../actions";
-import VehicleFormCreateButtonDialog from "../containers/forms/vehicles/VehicleFormCreateButtonDialog";
-import VehicleCardList from "../containers/display/VehicleCardList";
+import VehicleFormCreateButtonDialog from "../containers.deprecated/forms.deprecated/vehicles/VehicleFormCreateButtonDialog";
+import VehicleCardList from "../containers.deprecated/display/VehicleCardList";
 
-function Vehicles({
+const Vehicles: FC<any> = ({
 	classes,
 	fetchVehicles,
 	fetchLocations,
 	fetchUsers,
 	fetchCategories
-}) {
+}) => {
 	useEffect(() => {
 		fetchVehicles();
 		fetchLocations();
@@ -27,7 +27,7 @@ function Vehicles({
 			<VehicleCardList />
 		</Paper>
 	);
-}
+};
 const styles = theme => ({
 	root: {
 		padding: theme.spacing(3),

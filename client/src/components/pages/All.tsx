@@ -1,19 +1,23 @@
-import React, { useEffect } from "react";
-
+import React, { useEffect, FC } from "react";
+import { RouteComponentProps } from "react-router";
 import { connect } from "react-redux";
 
-import AppBarWithDrawer from "../containers/layout/AppBarWithDrawer";
+import AppBarWithDrawer from "../containers.deprecated/layout/AppBarWithDrawer";
 import * as actions from "../../actions";
 
-function All({ fetchEnums, fetchCurrentUserDetails, location }) {
+const All: FC<typeof actions & RouteComponentProps> = ({
+	fetchEnums,
+	fetchCurrentUserDetails,
+	location
+}) => {
 	useEffect(() => {
 		fetchEnums();
 		fetchCurrentUserDetails();
 	}, []);
 	return <AppBarWithDrawer />;
-}
+};
 
-export default connect(
+export default connect<typeof actions>(
 	null,
 	actions
 )(All);

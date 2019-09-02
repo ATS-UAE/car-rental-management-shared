@@ -1,15 +1,15 @@
-import React, { useEffect } from "react";
+import React, { useEffect, FC } from "react";
 import { connect } from "react-redux";
 
 import * as actions from "../../actions";
-import AccidentListView from "../containers/display/AccidentListView";
+import AccidentListView from "../containers.deprecated/display/AccidentListView";
 
-function Accidents({
+const Accidents: FC<typeof actions> = ({
 	fetchAccidents,
 	fetchBookings,
 	fetchCurrentUserDetails,
 	fetchVehicles
-}) {
+}) => {
 	useEffect(() => {
 		fetchAccidents();
 		fetchBookings();
@@ -17,9 +17,9 @@ function Accidents({
 		fetchVehicles();
 	});
 	return <AccidentListView />;
-}
+};
 
-export default connect(
+export default connect<typeof actions>(
 	null,
 	actions
 )(Accidents);

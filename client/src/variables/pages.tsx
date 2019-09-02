@@ -169,16 +169,6 @@ const pages: IPage[] = [
 		wrapPaper: true
 	},
 	{
-		id: "Sandbox",
-		path: "/Sandbox",
-		component: (props: any): React.ReactNode => (
-			<DynamicImport load={() => import("../components/pages/Sandbox")}>
-				{Component => (Component ? <Component {...props} /> : <Loading />)}
-			</DynamicImport>
-		),
-		exact: true
-	},
-	{
 		id: "404",
 		path: "/",
 		component: (props: any): React.ReactNode => (

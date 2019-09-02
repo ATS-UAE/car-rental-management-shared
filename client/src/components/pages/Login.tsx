@@ -1,14 +1,25 @@
-import React from "react";
-import { withStyles } from "@material-ui/core/styles";
-import { withRouter, Route, Link } from "react-router-dom";
+import React, { FC } from "react";
+import {
+	withStyles,
+	WithStyles,
+	createStyles,
+	Theme
+} from "@material-ui/core/styles";
+import { withRouter, Route, Link, RouteComponentProps } from "react-router-dom";
+import { History } from "history";
 import { connect } from "react-redux";
 import { compose } from "redux";
 import { Paper, Dialog, Link as MuiLink } from "@material-ui/core";
-import LoginContainer from "../containers/forms/Login";
+import LoginContainer from "../containers.deprecated/forms.deprecated/Login";
 import * as actions from "../../actions";
-import ForgotPassword from "../containers/forms/ForgotPassword";
+import ForgotPassword from "../containers.deprecated/forms.deprecated/ForgotPassword";
 
-function Login({ classes, history, fetchEnums, fetchCurrentUserDetails }) {
+const Login: FC<any> = ({
+	classes,
+	history,
+	fetchEnums,
+	fetchCurrentUserDetails
+}) => {
 	return (
 		<Paper className={classes.root}>
 			<LoginContainer
@@ -43,26 +54,27 @@ function Login({ classes, history, fetchEnums, fetchCurrentUserDetails }) {
 			/>
 		</Paper>
 	);
-}
+};
 
-const styles = theme => ({
-	root: {
-		padding: theme.spacing(3),
-		width: "80%",
-		maxWidth: "500px",
-		position: "absolute",
-		top: "50%",
-		left: "50%",
-		transform: "translate(-50%, -50%)"
-	},
-	forgot: {
-		margin: theme.spacing(1),
-		float: "right"
-	},
-	forgotDialog: {
-		padding: theme.spacing(3)
-	}
-});
+const styles = (theme: Theme) =>
+	createStyles({
+		root: {
+			padding: theme.spacing(3),
+			width: "80%",
+			maxWidth: "500px",
+			position: "absolute",
+			top: "50%",
+			left: "50%",
+			transform: "translate(-50%, -50%)"
+		},
+		forgot: {
+			margin: theme.spacing(1),
+			float: "right"
+		},
+		forgotDialog: {
+			padding: theme.spacing(3)
+		}
+	});
 
 export default compose(
 	connect(

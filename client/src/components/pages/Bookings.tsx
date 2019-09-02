@@ -1,15 +1,26 @@
-import React, { useEffect, Fragment } from "react";
+import React, { useEffect, Fragment, FC } from "react";
 import { connect } from "react-redux";
 import { compose } from "recompose";
-import { Switch, Route } from "react-router";
-import { withStyles, Button, Paper } from "@material-ui/core";
+import { Switch, Route, RouteComponentProps } from "react-router";
+import {
+	withStyles,
+	Button,
+	Paper,
+	WithStyles,
+	createStyles,
+	Theme
+} from "@material-ui/core";
 import classNames from "classnames";
-import * as reduxActions from "../../actions";
-import { roles } from "../../variables/enums";
-import BookingFormCreateStepper from "../containers/forms/bookings/BookingFormCreateStepper";
-import BookingTableView from "../containers/display/BookingTableView";
+import * as actions from "../../actions";
+import { Role } from "../../variables/enums";
+import BookingFormCreateStepper from "../containers.deprecated/forms.deprecated/bookings/BookingFormCreateStepper";
+import BookingTableView from "../containers.deprecated/display/BookingTableView";
+import { IAuth } from "../../utils/typings/api";
+interface IBookingsPage extends RouteComponentProps, WithStyles<typeof styles> {
+	auth: IAuth;
+}
 
-function Bookings({
+const Bookings: FC<typeof actions & IBookingsPage> = ({
 	classes,
 	auth,
 	fetchUsers,
@@ -19,7 +30,7 @@ function Bookings({
 	fetchBookings,
 	fetchCurrentUserDetails,
 	history
-}) {
+}) => {
 	useEffect(() => {
 		const start = () => {
 			fetchBookings();
@@ -44,7 +55,7 @@ function Bookings({
 						return (
 							<Fragment>
 								<div className={classes.items}>
-									{auth && auth.data && auth.data.role.name === roles.GUEST && (
+									{auth && auth.role.name === Role.GUEST && (
 										<Button
 											variant="contained"
 											color="primary"
@@ -63,38 +74,39 @@ function Bookings({
 			</Switch>
 		</Paper>
 	);
-}
-const styles = theme => ({
-	root: {
-		padding: theme.spacing(3),
-		[theme.breakpoints.down("sm")]: {
-			padding: theme.spacing(1),
-			"& > :not(:last-child)": {
-				marginBottom: theme.spacing(1)
-			}
-		},
-		height: "100%",
-		overflow: "auto"
-	},
-	items: {
-		"& > :not(:last-child)": {
-			marginBottom: theme.spacing(2),
+};
+const styles = (theme: Theme) =>
+	createStyles({
+		root: {
+			padding: theme.spacing(3),
 			[theme.breakpoints.down("sm")]: {
-				marginBottom: theme.spacing(1),
+				padding: theme.spacing(1),
 				"& > :not(:last-child)": {
 					marginBottom: theme.spacing(1)
 				}
+			},
+			height: "100%",
+			overflow: "auto"
+		},
+		items: {
+			"& > :not(:last-child)": {
+				marginBottom: theme.spacing(2),
+				[theme.breakpoints.down("sm")]: {
+					marginBottom: theme.spacing(1),
+					"& > :not(:last-child)": {
+						marginBottom: theme.spacing(1)
+					}
+				}
 			}
 		}
-	}
-});
+	});
 
-const mapStateToProps = ({ auth }) => ({ auth });
+const mapStateToProps = ({ auth }: Pick<IBookingsPage, "auth">) => ({ auth });
 
-export default compose(
+export default compose<typeof actions & IBookingsPage, {}>(
 	withStyles(styles),
 	connect(
 		mapStateToProps,
-		reduxActions
+		actions
 	)
 )(Bookings);
