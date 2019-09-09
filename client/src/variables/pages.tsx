@@ -11,7 +11,7 @@ import {
 
 import Role from "./enums/Role";
 
-import DynamicImport from "../components/containers.deprecated/layout/DynamicImport";
+import DynamicImport from "../components/containers/layout/DynamicImport";
 import Loading from "../components/presentational/layout/Loading";
 import { IPage } from "../utils/typings";
 
@@ -172,7 +172,7 @@ const pages: IPage[] = [
 		id: "404",
 		path: "/",
 		component: (props: any): React.ReactNode => (
-			<DynamicImport load={() => import("../components/pages/Sandbox")}>
+			<DynamicImport load={() => import("../components/pages/404")}>
 				{Component => (Component ? <Component {...props} /> : <Loading />)}
 			</DynamicImport>
 		),

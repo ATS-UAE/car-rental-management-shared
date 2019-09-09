@@ -1,4 +1,4 @@
-import React, { useEffect, Fragment, FC } from "react";
+import React, { useEffect, Fragment, FC, ReactNode } from "react";
 import { connect } from "react-redux";
 import { compose } from "recompose";
 import {
@@ -31,17 +31,18 @@ import {
 	IVehicle,
 	IUser,
 	IAccident,
-	IAuth
+	IAuth,
+	Response
 } from "../../utils/typings/api";
 
 let gradients = ["#FF8E53", "#ffd400", "#FE6B8B", "#a500ff", "#0072ff"];
 
 interface IPageHome {
-	auth: IAuth;
-	bookings: Array<IBooking>;
-	vehicles: Array<IVehicle>;
-	users: Array<IUser>;
-	accidents: Array<IAccident>;
+	auth?: Response<IAuth>;
+	bookings?: Response<IBooking[]>;
+	vehicles?: Response<IVehicle[]>;
+	users?: Response<IUser[]>;
+	accidents?: Response<IAccident[]>;
 }
 
 const Home: FC<IPageHome & typeof actions & WithStyles<typeof styles>> = ({
@@ -62,16 +63,16 @@ const Home: FC<IPageHome & typeof actions & WithStyles<typeof styles>> = ({
 		fetchAccidents();
 	}, []);
 
-	const children = [];
+	const children: ReactNode[] = [];
 	let currentTime = moment();
 	let monthEnd = moment().endOf("month");
 	let monthStart = moment().startOf("month");
 
 	if (auth && auth) {
-		if (bookings && bookings) {
+		if (bookings) {
 			let statuses: Array<any> = [];
 			statuses.push("Total");
-			let data = bookings.reduce((acc: Array<any>, booking) => {
+			let data = bookings.data.reduce((acc: Array<any>, booking) => {
 				let bookingStart = moment(booking.from, "X");
 				if (bookingStart.isBetween(monthStart, monthEnd)) {
 					let day = `${bookingStart.format("D")}`;
@@ -124,71 +125,77 @@ const Home: FC<IPageHome & typeof actions & WithStyles<typeof styles>> = ({
 			);
 		}
 
-		let data: any = vehicles.reduce(
-			(acc, vehicle) => {
-				return acc;
-			},
-			[
-				{
-					Booked: 5
+		let data: any =
+			vehicles &&
+			vehicles.data.reduce(
+				(acc, vehicle) => {
+					return acc;
 				},
-				{
-					Available: 9
-				}
-			]
-		);
-		children.push(
-			<Fragment>
-				<Typography align="center" variant="h6" component="h1">
-					Vehicle Status
-				</Typography>
-				<ResponsiveContainer width="100%" height={300}>
-					<BarChart data={data}>
-						<CartesianGrid strokeDasharray="3 3" />
-						<YAxis />
-						<Tooltip />
-						<Legend />
-						<Bar dataKey={"Available"} fill={gradients[0]} />
-						<Bar dataKey={"Booked"} fill={gradients[1]} />
-					</BarChart>
-				</ResponsiveContainer>
-			</Fragment>
-		);
-
-		if (auth.role.name !== Role.GUEST) {
-			let data: any = accidents.reduce((acc: any, accident) => {
-				let accidentTime = moment(accident.createdAt, "X");
-				if (accidentTime.isBetween(monthStart, monthEnd)) {
-					let day = `${accidentTime.format("D")}`;
-					let existingDay = acc.find((data: any) => data.name === day);
-					if (existingDay) {
-						existingDay["Total"]++;
-					} else {
-						acc.push({
-							name: day,
-							Total: 1
-						});
+				[
+					{
+						Booked: 5
+					},
+					{
+						Available: 9
 					}
-				}
-				return acc;
-			}, []);
+				]
+			);
+		data &&
 			children.push(
 				<Fragment>
 					<Typography align="center" variant="h6" component="h1">
-						{`${currentTime.format("MMM")} Accidents`}
+						Vehicle Status
 					</Typography>
 					<ResponsiveContainer width="100%" height={300}>
 						<BarChart data={data}>
 							<CartesianGrid strokeDasharray="3 3" />
-							<XAxis dataKey="name" />
 							<YAxis />
 							<Tooltip />
 							<Legend />
-							<Bar dataKey={"Total"} fill={gradients[0]} />
+							<Bar dataKey={"Available"} fill={gradients[0]} />
+							<Bar dataKey={"Booked"} fill={gradients[1]} />
 						</BarChart>
 					</ResponsiveContainer>
 				</Fragment>
 			);
+
+		if (auth.data.role.name !== Role.GUEST) {
+			let data: any =
+				accidents &&
+				accidents.data.reduce((acc: any, accident) => {
+					let accidentTime = moment(accident.createdAt, "X");
+					if (accidentTime.isBetween(monthStart, monthEnd)) {
+						let day = `${accidentTime.format("D")}`;
+						let existingDay = acc.find((data: any) => data.name === day);
+						if (existingDay) {
+							existingDay["Total"]++;
+						} else {
+							acc.push({
+								name: day,
+								Total: 1
+							});
+						}
+					}
+					return acc;
+				}, []);
+			data &&
+				children.push(
+					<Fragment>
+						<Typography align="center" variant="h6" component="h1">
+							{`${currentTime.format("MMM")} Accidents`}
+						</Typography>
+						<ResponsiveContainer width="100%" height={300}>
+							<BarChart data={data}>
+								<CartesianGrid strokeDasharray="3 3" />
+								<XAxis dataKey="name" />
+								<YAxis />
+								<Tooltip />
+								<Legend />
+								<Bar dataKey={"Total"} fill={gradients[0]} />
+							</BarChart>
+						</ResponsiveContainer>
+					</Fragment>
+				);
 		}
 	}
 

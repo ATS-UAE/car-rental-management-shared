@@ -2,6 +2,7 @@ import moment from "moment";
 import BookingStatus from "../../variables/enums/BookingStatus";
 import { IBooking } from "../typings/api";
 export { default as CancellablePromise } from "./CancellablePromise";
+export { default as api } from "./api";
 
 export const hasActiveBooking = (
 	vehicle: { [key: string]: any; bookings: any[] },
@@ -112,4 +113,98 @@ export const waitForAll = async (obj: any): Promise<any> => {
 		}
 	}
 	return obj;
+};
+
+export class Validator {
+	constructor(public test: (v: any) => boolean, public error: string) {}
+
+	static runThroughValidators(
+		validators: Validator[],
+		validatee: any
+	): Validator[] {
+		let errors: Validator[] = [];
+		for (let i = 0; i < validators.length; i++) {
+			let validator = validators[i].test.bind(validators[i].test);
+			if (!validator(validatee)) errors.push(validators[i]);
+		}
+		return errors;
+	}
+}
+
+export const validators = {
+	username: new Validator(
+		v => /^.{4,16}$/.test(v),
+		"Min 4 characters, max 16 characters."
+	),
+	minLength: length =>
+		new Validator(
+			v => new RegExp(`^.{${length},}$`).test(v),
+			`Minimum ${length} characters.`
+		),
+	maxLength: length =>
+		new Validator(
+			v => new RegExp(`^.{0,${length}}$`).test(v),
+			`Maximum ${length} characters.`
+		),
+	usernameCharacters: new Validator(
+		v => /^[a-z0-9_-]+$/.test(v),
+		"No special characters."
+	),
+	password: new Validator(
+		v => /.{8,}/.test(v),
+		"Password should be greater than 8 characters."
+	),
+	email: new Validator(
+		v =>
+			/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
+				v
+			),
+		"Invalid email."
+	),
+	requiredField: new Validator(
+		v => (v === undefined || v === "" ? false : true),
+		"This field is required."
+	)
+};
+
+export const getRelatedDataById = (findId, list, many = false) => {
+	let data: any[] = [];
+	for (let item of list) {
+		if (item.id === findId) {
+			if (!many) return item;
+			else data.push(item);
+		}
+	}
+	return data;
+};
+
+export const search = (keyWord, word) => {
+	let pass = true;
+	if (keyWord && word) {
+		pass = Boolean(
+			keyWord.split(" ").every(key => new RegExp(key, "i").test(word))
+		);
+	}
+	return pass;
+};
+
+export const cancelablePromise = promise => {
+	let hasCanceled = false;
+
+	const wrappedPromise = new Promise(async (resolve, reject) => {
+		if (promise instanceof Promise) {
+			promise.then(
+				value =>
+					hasCanceled ? reject({ isCanceled: true, value }) : resolve(value),
+				error => reject({ isCanceled: hasCanceled, error })
+			);
+		} else {
+			resolve(promise);
+		}
+	});
+
+	return {
+		promise: wrappedPromise,
+		cancel: () => (hasCanceled = true)
+	};
 };

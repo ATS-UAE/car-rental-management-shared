@@ -1,8 +1,8 @@
 import React, { FC } from "react";
 import { Paper } from "@material-ui/core";
 import { withStyles, WithStyles, createStyles, Theme } from "@material-ui/core";
-import NewLocationButtonDialog from "../containers.deprecated/forms.deprecated/NewLocationButtonDialog";
-import LocationsView from "../containers.deprecated/display/LocationsView";
+import NewLocationButtonDialog from "../containers/forms/NewLocationButtonDialog";
+import LocationsView from "../containers/display/LocationsView";
 
 const Locations: FC<WithStyles<typeof styles>> = ({ classes }) => {
 	return (

@@ -1,6 +1,7 @@
 import React, { useEffect, Fragment, FC } from "react";
 import { connect } from "react-redux";
 import { compose } from "recompose";
+import { History } from "history";
 import { Switch, Route, RouteComponentProps } from "react-router";
 import {
 	withStyles,
@@ -13,11 +14,12 @@ import {
 import classNames from "classnames";
 import * as actions from "../../actions";
 import { Role } from "../../variables/enums";
-import BookingFormCreateStepper from "../containers.deprecated/forms.deprecated/bookings/BookingFormCreateStepper";
-import BookingTableView from "../containers.deprecated/display/BookingTableView";
-import { IAuth } from "../../utils/typings/api";
+import BookingFormCreateStepper from "../containers/forms/bookings/BookingFormCreateStepper";
+import BookingTableView from "../containers/display/BookingTableView";
+import { IAuth, Response } from "../../utils/typings/api";
 interface IBookingsPage extends RouteComponentProps, WithStyles<typeof styles> {
-	auth: IAuth;
+	auth: Response<IAuth>;
+	history: History;
 }
 
 const Bookings: FC<typeof actions & IBookingsPage> = ({
@@ -55,7 +57,7 @@ const Bookings: FC<typeof actions & IBookingsPage> = ({
 						return (
 							<Fragment>
 								<div className={classes.items}>
-									{auth && auth.role.name === Role.GUEST && (
+									{auth && auth.data.role.name === Role.GUEST && (
 										<Button
 											variant="contained"
 											color="primary"

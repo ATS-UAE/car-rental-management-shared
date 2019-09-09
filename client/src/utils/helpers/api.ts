@@ -161,4 +161,20 @@ const api = {
 		executeFromAPI("delete", `/api/carbooking/categories/${category.id}`)
 };
 
+export class Sync<T> {
+	constructor(
+		private baseHost: string = process.env.REACT_APP_CAR_BOOKING_API_DOMAIN!
+	) {}
+
+	async save(props: Partial<T>): Promise<T> {
+		return (await axios.put(this.baseHost, props)).data;
+	}
+	async create(props: Partial<T>): Promise<T> {
+		return (await axios.post(this.baseHost, props)).data;
+	}
+	async delete(): Promise<T> {
+		return (await axios.delete(this.baseHost)).data;
+	}
+}
+
 export default api;
