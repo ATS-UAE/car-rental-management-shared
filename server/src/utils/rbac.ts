@@ -15,6 +15,7 @@ const bookingsResource = new Resource(enums.Resource.BOOKINGS);
 const usersResource = new Resource(enums.Resource.USERS);
 const enumsResource = new Resource(enums.Resource.ENUMS);
 const accidentsResource = new Resource(enums.Resource.ACCIDENTS);
+const clientsResource = new Resource(enums.Resource.CLIENTS);
 
 /////////////////////////
 // GENERAL ROLE CONFIG //
@@ -144,13 +145,50 @@ adminRole.addPermission(new Action(DELETE, usersResource));
 // Accidents Permissions
 adminRole.addPermission(new Action(DELETE, accidentsResource));
 
-accessControl.addRole(adminRole);
-accessControl.addRole(keyManagerRole);
-accessControl.addRole(guestRole);
-
 ////////////////////////
 // MASTER ROLE CONFIG //
 ////////////////////////
+
+// User permissions
+masterRole.addPermission(new Action(CREATE, usersResource));
+masterRole.addPermission(new Action(READ, usersResource));
+masterRole.addPermission(new Action(UPDATE, usersResource));
+masterRole.addPermission(new Action(DELETE, usersResource));
+
+// Vehicle permissions
+masterRole.addPermission(new Action(CREATE, vehicleResource));
+masterRole.addPermission(new Action(READ, vehicleResource));
+masterRole.addPermission(new Action(UPDATE, vehicleResource));
+masterRole.addPermission(new Action(DELETE, vehicleResource));
+
+// Location permissions
+masterRole.addPermission(new Action(CREATE, locationsResource));
+masterRole.addPermission(new Action(READ, locationsResource));
+masterRole.addPermission(new Action(UPDATE, locationsResource));
+masterRole.addPermission(new Action(DELETE, locationsResource));
+
+// Booking permissions
+masterRole.addPermission(new Action(CREATE, bookingsResource));
+masterRole.addPermission(new Action(READ, bookingsResource));
+masterRole.addPermission(new Action(UPDATE, bookingsResource));
+masterRole.addPermission(new Action(DELETE, bookingsResource));
+
+// Accident permission
+masterRole.addPermission(new Action(CREATE, accidentsResource));
+masterRole.addPermission(new Action(READ, accidentsResource));
+masterRole.addPermission(new Action(UPDATE, accidentsResource));
+masterRole.addPermission(new Action(DELETE, accidentsResource));
+
+// Client permissions
+masterRole.addPermission(new Action(CREATE, clientsResource));
+masterRole.addPermission(new Action(READ, clientsResource));
+masterRole.addPermission(new Action(UPDATE, clientsResource));
+masterRole.addPermission(new Action(DELETE, clientsResource));
+
+accessControl.addRole(masterRole);
+accessControl.addRole(adminRole);
+accessControl.addRole(keyManagerRole);
+accessControl.addRole(guestRole);
 
 export default accessControl;
 
