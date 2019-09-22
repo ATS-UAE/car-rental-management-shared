@@ -53,51 +53,61 @@ const tableIcons = {
 	ViewColumn: ViewColumn
 };
 class UserTableView extends Component {
-	state = {
-		userData: [],
-		userActions: [],
-		loadingRows: [],
-		isLoading: false,
-		isTableLoading: false,
-		formData: null,
-		userColumns: [
-			{
-				title: "ID",
-				type: "numeric",
-				field: "id"
-			},
-			{
-				title: "Username",
-				field: "username"
-			},
-			{
-				title: "First Name",
-				field: "firstName"
-			},
-			{
-				title: "Last Name",
-				field: "lastName"
-			},
-			{
-				title: "Email",
-				field: "email"
-			},
-			{
-				title: "Mobile Number",
-				field: "mobileNumber"
-			},
-			{
-				title: "Role",
-				field: "role"
-			},
-			{
-				title: "Sign Up Date",
-				type: "datetime",
-				field: "createdAt",
-				hidden: true
-			}
-		]
-	};
+	constructor(props) {
+		super(props);
+		this.state = state = {
+			userData: [],
+			userActions: [],
+			loadingRows: [],
+			isLoading: false,
+			isTableLoading: false,
+			formData: null,
+			userColumns: [
+				{
+					title: "ID",
+					type: "numeric",
+					field: "id"
+				},
+				{
+					title: "Username",
+					field: "username"
+				},
+				{
+					title: "First Name",
+					field: "firstName"
+				},
+				{
+					title: "Last Name",
+					field: "lastName"
+				},
+				{
+					title: "Email",
+					field: "email"
+				},
+				{
+					title: "Mobile Number",
+					field: "mobileNumber"
+				},
+				{
+					title: "Role",
+					field: "role"
+				},
+				{
+					title: "Sign Up Date",
+					type: "datetime",
+					field: "createdAt",
+					hidden: true
+				}
+			]
+		};
+
+		if (props.auth.data.role.name === Role.MASTER) {
+			this.state.userColumns.push({
+				title: "Client",
+				field: "client"
+			});
+		}
+	}
 
 	componentDidUpdate(prevProps, prevState) {
 		const { auth, users, clients } = this.props;
@@ -193,15 +203,7 @@ class UserTableView extends Component {
 		const { auth, users, clients } = this.props;
 
 		if (auth && auth.data && users && users.data) {
-			const newColumns = [...this.state.userColumns];
 			let newUserData = [];
-
-			if (auth.data.role.name === Role.MASTER) {
-				newColumns.push({
-					title: "Client",
-					field: "client"
-				});
-			}
 
 			for (let user of users.data) {
 				let accessible = await RBAC.can(
