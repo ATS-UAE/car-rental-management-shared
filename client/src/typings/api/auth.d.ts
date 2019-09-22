@@ -1,5 +1,5 @@
 import Role from "../../../variables/enums";
-export interface IAuth {
+export interface Auth {
 	id: number;
 	role: {
 		id: number;

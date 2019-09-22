@@ -19,12 +19,14 @@ const Users = ({
 	location,
 	match,
 	history,
-	fetchCategories
+	fetchCategories,
+	fetchClients
 }) => {
 	useEffect(() => {
 		fetchUsers();
 		fetchCurrentUserDetails();
 		fetchCategories();
+		fetchClients();
 	}, []);
 	return (
 		<Paper className={classNames(classes.paper, classes.root)}>
@@ -40,9 +42,13 @@ const Users = ({
 				}}
 			/>
 			<div className={classes.actions}>
-				<InviteGuestButtonDialog />
 				<Can
-					action={Action.CREATE}
+					action={"INVITE"}
+					resource={Resource.USERS}
+					yes={() => <InviteGuestButtonDialog />}
+				/>
+				<Can
+					action={"CREATE"}
 					resource={Resource.USERS}
 					yes={() => (
 						<Button

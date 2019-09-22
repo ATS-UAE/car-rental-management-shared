@@ -100,7 +100,7 @@ class UserTableView extends Component {
 	};
 
 	componentDidUpdate(prevProps, prevState) {
-		const { auth, users } = this.props;
+		const { auth, users, clients } = this.props;
 		const { loadingRows } = this.state;
 		if (
 			auth !== prevProps.auth ||
@@ -113,6 +113,7 @@ class UserTableView extends Component {
 		if (
 			auth !== prevProps.auth ||
 			users !== prevProps.users ||
+			clients !== prevProps.clients ||
 			loadingRows !== prevState.loadingRows
 		) {
 			this.reduceUserData();
@@ -189,10 +190,19 @@ class UserTableView extends Component {
 	};
 
 	reduceUserData = async () => {
-		const { auth, users } = this.props;
+		const { auth, users, clients } = this.props;
 
 		if (auth && auth.data && users && users.data) {
+			const newColumns = [...this.state.userColumns];
 			let newUserData = [];
+
+			if (auth.data.role.name === Role.MASTER) {
+				newColumns.push({
+					title: "Client",
+					field: "client"
+				});
+			}
+
 			for (let user of users.data) {
 				let accessible = await RBAC.can(
 					auth.data.role.name,
@@ -215,7 +225,8 @@ class UserTableView extends Component {
 							? false
 							: await RBAC.can(userRole, Action.DELETE, Resource.USERS);
 					const userSignUpDate = moment(user.createdAt, "X");
-					newUserData.push({
+
+					const data = {
 						id: user.id,
 						username: user.username,
 						firstName: user.firstName,
@@ -227,9 +238,20 @@ class UserTableView extends Component {
 						user,
 						canDelete,
 						canUpdate
-					});
+					};
+
+					if (auth.data.role.name === Role.MASTER && clients && clients.data) {
+						const clientName = clients.data.find(
+							client => client.id === user.clientId
+						);
+						data["client"] =
+							(clientName && clientName.name) || user.role.name === Role.MASTER
+								? "MASTER"
+								: "Unassigned";
+					}
+					newUserData.push(data);
 				}
-				this.setState({ userData: newUserData });
+				this.setState({ userData: newUserData, userColumns: newColumns });
 			}
 		}
 	};
@@ -499,10 +521,11 @@ class UserTableView extends Component {
 	}
 }
 
-const mapStateToProps = ({ enums, auth, users }) => ({
+const mapStateToProps = ({ enums, auth, users, clients }) => ({
 	users,
 	enums,
-	auth
+	auth,
+	clients
 });
 
 export default compose(

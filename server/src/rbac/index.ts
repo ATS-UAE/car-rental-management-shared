@@ -1,4 +1,4 @@
-import UserType from "../variables/enums/UserType";
+import { Role as RoleEnum } from "../variables/enums/";
 import ResourceType from "../variables/enums/Resource";
 
 export class RBAC {
@@ -17,7 +17,7 @@ export class RBAC {
 	}
 
 	can(
-		role: Role | UserType,
+		role: Role | RoleEnum,
 		action: string,
 		resource: Resource | ResourceType,
 		params: any

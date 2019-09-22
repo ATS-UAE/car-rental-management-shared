@@ -21,6 +21,7 @@ import bookingRoutes from "./routes/bookings";
 import locationRoutes from "./routes/locations";
 import accidentRoutes from "./routes/accidents";
 import categoryRoutes from "./routes/categories";
+import clientRoutes from "./routes/clients";
 
 const app = express();
 
@@ -32,7 +33,6 @@ passport.use(
 				where: { username }
 			});
 			if (existingUser) {
-				existingUser = existingUser.get({ plain: true });
 				let valid = await bcrypt.compare(password, existingUser.password);
 
 				if (!valid || existingUser.blocked) {
@@ -48,8 +48,8 @@ passport.use(
 	})
 );
 
-passport.serializeUser(function(user, cb) {
-	cb(null, (<any>user).id);
+passport.serializeUser(function(user: { id: number }, cb) {
+	cb(null, user.id);
 });
 
 passport.deserializeUser(async (id, cb) => {
@@ -95,6 +95,7 @@ app.use("/api/carbooking/bookings", bookingRoutes);
 app.use("/api/carbooking/locations", locationRoutes);
 app.use("/api/carbooking/accidents", accidentRoutes);
 app.use("/api/carbooking/categories", categoryRoutes);
+app.use("/api/carbooking/clients", clientRoutes);
 
 app.use("/static", express.static(getStaticFilesPath()));
 app.use("/static", express.static(path.join(__dirname, "public")));

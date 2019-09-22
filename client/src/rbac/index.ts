@@ -17,10 +17,10 @@ export class RBAC {
 	}
 
 	can(
-		role: Role | UserType,
+		role: Role | UserType | string,
 		action: string,
 		resource: Resource | ResourceType,
-		params?: any
+		params: any
 	): Promise<boolean> {
 		return new Promise(async resolve => {
 			let existingRole: Role | undefined = this.roles.find((roleItem: Role) => {
@@ -116,7 +116,7 @@ export class Role {
 	can(
 		action: string,
 		resource: Resource | ResourceType,
-		params?: any
+		params: any
 	): Promise<boolean> {
 		return new Promise(async resolve => {
 			let actions = this.actions;

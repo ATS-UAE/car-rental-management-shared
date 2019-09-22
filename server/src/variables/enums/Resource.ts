@@ -5,6 +5,8 @@ enum Resource {
 	USERS = "USERS",
 	ENUMS = "ENUMS",
 	INVITES = "INVITES",
-	ACCIDENTS = "ACCIDENTS"
+	ACCIDENTS = "ACCIDENTS",
+	CLIENTS = "CLIENTS"
 }
+
 export default Resource;

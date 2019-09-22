@@ -1,6 +1,7 @@
+import { AxiosError } from "axios";
 import moment from "moment";
 import BookingStatus from "../../variables/enums/BookingStatus";
-import { IBooking } from "../typings/api";
+import { Booking } from "../../typings/api";
 export { default as CancellablePromise } from "./CancellablePromise";
 export { default as api } from "./api";
 
@@ -25,7 +26,7 @@ export const hasActiveBooking = (
 };
 
 export const isBookingTimeSlotTaken = (
-	vehicleBookings: Array<IBooking>,
+	vehicleBookings: Array<Booking>,
 	from: number,
 	to: number,
 	bookingId: number
@@ -49,7 +50,7 @@ export const isBookingTimeSlotTaken = (
 	return taken;
 };
 
-export const getBookingStatus = (booking: IBooking): BookingStatus => {
+export const getBookingStatus = (booking: Booking): BookingStatus => {
 	let status = BookingStatus.UNKNOWN;
 	let currentTime = moment();
 	let hasPassedFrom = moment(booking.from, "X").isSameOrBefore(currentTime);
@@ -207,4 +208,21 @@ export const cancelablePromise = promise => {
 		promise: wrappedPromise,
 		cancel: () => (hasCanceled = true)
 	};
+};
+
+interface ApiError {
+	message: string;
+	errors: string[];
+}
+
+export const apiErrorHandler = (e: AxiosError): ApiError => {
+	let message = "Unknown error.";
+	let errors: string[] = [];
+
+	if (e && e.response && e.response.data) {
+		message = e.response.data.message;
+		errors = e.response.data.errors;
+	}
+
+	return { message, errors };
 };

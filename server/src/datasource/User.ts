@@ -1,5 +1,5 @@
 import DataSource from "./DataSource";
-import { UserType, Operation, Resource, Role } from "../variables/enums";
+import { Operation, Resource, Role } from "../variables/enums";
 import userAccessor from "./types/userAccessor";
 import RBAC from "../utils/rbac";
 import {
@@ -16,7 +16,7 @@ export default class User extends DataSource {
 	}
 
 	async get(id: number): Promise<any> {
-		let role: UserType = this.user.role.name;
+		let role: Role = this.user.role.name;
 		let foundUser = await this.getUser(id, {
 			exclude: RBAC.getExcludedFields(role, Operation.READ, Resource.USERS)
 		});
@@ -38,7 +38,7 @@ export default class User extends DataSource {
 	}
 
 	async getAll(): Promise<any> {
-		let role: UserType = this.user.role.name;
+		let role: Role = this.user.role.name;
 		let foundUsers = await this.getUsers({
 			exclude: RBAC.getExcludedFields(role, Operation.READ, Resource.USERS)
 		});
@@ -57,7 +57,7 @@ export default class User extends DataSource {
 	}
 
 	async update(id: number, data?: object, options?: object): Promise<any> {
-		let role: UserType = this.user.role.name;
+		let role: Role = this.user.role.name;
 		let foundUser = await this.get(id);
 		if (!foundUser) {
 			throw new ResourceNotFoundException(
@@ -76,7 +76,7 @@ export default class User extends DataSource {
 	}
 
 	async delete(id: number): Promise<any> {
-		let role: UserType = this.user.role.name;
+		let role: Role = this.user.role.name;
 		let foundUser = await this.get(id);
 		if (!foundUser) {
 			throw new ResourceNotFoundException(
@@ -95,7 +95,7 @@ export default class User extends DataSource {
 	}
 
 	async create(data: any, options: { invited?: boolean } = {}): Promise<any> {
-		let role: UserType = this.user.role.name;
+		let role: Role = this.user.role.name;
 
 		let accessible =
 			options.invited ||

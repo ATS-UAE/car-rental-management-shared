@@ -1,11 +1,24 @@
 import moment from "moment-timezone";
 import path from "path";
 import fs from "fs";
+import _ from "lodash";
 import { BookingStatus } from "../../variables/enums";
 import { Moment } from "moment";
 import { URL } from "url";
 
 export { default as ResponseBuilder } from "./ResponseBuilder";
+
+export const pickAndMerge = <
+	T1 extends object,
+	T2 extends object,
+	K extends keyof T2
+>(
+	obj1: T1,
+	obj2: T2,
+	fields: K[] = []
+): Pick<T2, K> & T1 => {
+	return { ...obj1, ..._.pick(obj2, fields) };
+};
 
 export const pickFields = (target: object, fields: string[]): object => {
 	const result = {};

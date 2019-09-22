@@ -27,22 +27,22 @@ import * as actions from "../../actions";
 import { Role } from "../../variables/enums";
 import { getBookingStatus, toTitleWords } from "../../utils/helpers";
 import {
-	IBooking,
-	IVehicle,
-	IUser,
-	IAccident,
-	IAuth,
+	Booking,
+	Vehicle,
+	User,
+	Accident,
+	Auth,
 	Response
-} from "../../utils/typings/api";
+} from "../../typings/api";
 
 let gradients = ["#FF8E53", "#ffd400", "#FE6B8B", "#a500ff", "#0072ff"];
 
 interface IPageHome {
-	auth?: Response<IAuth>;
-	bookings?: Response<IBooking[]>;
-	vehicles?: Response<IVehicle[]>;
-	users?: Response<IUser[]>;
-	accidents?: Response<IAccident[]>;
+	auth?: Response<Auth>;
+	bookings?: Response<Booking[]>;
+	vehicles?: Response<Vehicle[]>;
+	users?: Response<User[]>;
+	accidents?: Response<Accident[]>;
 }
 
 const Home: FC<IPageHome & typeof actions & WithStyles<typeof styles>> = ({
@@ -69,7 +69,7 @@ const Home: FC<IPageHome & typeof actions & WithStyles<typeof styles>> = ({
 	let monthStart = moment().startOf("month");
 
 	if (auth && auth) {
-		if (bookings) {
+		if (bookings && bookings.data) {
 			let statuses: Array<any> = [];
 			statuses.push("Total");
 			let data = bookings.data.reduce((acc: Array<any>, booking) => {
@@ -127,6 +127,7 @@ const Home: FC<IPageHome & typeof actions & WithStyles<typeof styles>> = ({
 
 		let data: any =
 			vehicles &&
+			vehicles.data &&
 			vehicles.data.reduce(
 				(acc, vehicle) => {
 					return acc;
@@ -159,9 +160,10 @@ const Home: FC<IPageHome & typeof actions & WithStyles<typeof styles>> = ({
 				</Fragment>
 			);
 
-		if (auth.data.role.name !== Role.GUEST) {
+		if (auth && auth.data && auth.data.role.name !== Role.GUEST) {
 			let data: any =
 				accidents &&
+				accidents.data &&
 				accidents.data.reduce((acc: any, accident) => {
 					let accidentTime = moment(accident.createdAt, "X");
 					if (accidentTime.isBetween(monthStart, monthEnd)) {

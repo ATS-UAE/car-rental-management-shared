@@ -6,21 +6,24 @@ import {
 	ChromeReaderMode,
 	Settings,
 	Home,
-	Warning
+	Warning,
+	People
 } from "@material-ui/icons";
 
 import Role from "./enums/Role";
 
 import DynamicImport from "../components/containers/layout/DynamicImport";
 import Loading from "../components/presentational/layout/Loading";
-import { IPage } from "../utils/typings";
+import { IPage } from "../typings";
 
 const pages: IPage[] = [
 	{
 		id: "Home",
 		path: "/",
 		component: props => (
-			<DynamicImport load={() => import("../components/pages/Home")}>
+			<DynamicImport
+				load={async () => (await import("../components/pages/Home")).default}
+			>
 				{Component => (Component ? <Component {...props} /> : <Loading />)}
 			</DynamicImport>
 		),
@@ -37,7 +40,11 @@ const pages: IPage[] = [
 		id: "Bookings",
 		path: "/bookings",
 		component: props => (
-			<DynamicImport load={() => import("../components/pages/Bookings")}>
+			<DynamicImport
+				load={async () =>
+					(await import("../components/pages/Bookings")).default
+				}
+			>
 				{Component => (Component ? <Component {...props} /> : <Loading />)}
 			</DynamicImport>
 		),
@@ -52,9 +59,13 @@ const pages: IPage[] = [
 	{
 		id: "Locations",
 		path: "/locations",
-		access: [Role.KEY_MANAGER, Role.ADMIN],
+		access: [Role.MASTER, Role.KEY_MANAGER, Role.ADMIN],
 		component: props => (
-			<DynamicImport load={() => import("../components/pages/Locations")}>
+			<DynamicImport
+				load={async () =>
+					(await import("../components/pages/Locations")).default
+				}
+			>
 				{Component => (Component ? <Component {...props} /> : <Loading />)}
 			</DynamicImport>
 		),
@@ -70,7 +81,9 @@ const pages: IPage[] = [
 		id: "Login",
 		path: "/login",
 		component: props => (
-			<DynamicImport load={() => import("../components/pages/Login")}>
+			<DynamicImport
+				load={async () => (await import("../components/pages/Login")).default}
+			>
 				{Component => (Component ? <Component {...props} /> : <Loading />)}
 			</DynamicImport>
 		)
@@ -79,7 +92,9 @@ const pages: IPage[] = [
 		id: "SignUp",
 		path: "/signup",
 		component: props => (
-			<DynamicImport load={() => import("../components/pages/SignUp")}>
+			<DynamicImport
+				load={async () => (await import("../components/pages/SignUp")).default}
+			>
 				{Component => (Component ? <Component {...props} /> : <Loading />)}
 			</DynamicImport>
 		),
@@ -89,12 +104,14 @@ const pages: IPage[] = [
 		id: "Users",
 		path: "/users",
 		component: props => (
-			<DynamicImport load={() => import("../components/pages/Users")}>
+			<DynamicImport
+				load={async () => (await import("../components/pages/Users")).default}
+			>
 				{Component => (Component ? <Component {...props} /> : <Loading />)}
 			</DynamicImport>
 		),
 		requireLogin: true,
-		access: [Role.KEY_MANAGER, Role.ADMIN],
+		access: [Role.MASTER, Role.KEY_MANAGER, Role.ADMIN],
 		sidebar: {
 			title: "Users",
 			icon: SupervisedUserCircle,
@@ -106,7 +123,11 @@ const pages: IPage[] = [
 		id: "Vehicles",
 		path: "/vehicles",
 		component: props => (
-			<DynamicImport load={() => import("../components/pages/Vehicles")}>
+			<DynamicImport
+				load={async () =>
+					(await import("../components/pages/Vehicles")).default
+				}
+			>
 				{Component => (Component ? <Component {...props} /> : <Loading />)}
 			</DynamicImport>
 		),
@@ -122,12 +143,14 @@ const pages: IPage[] = [
 		id: "Accidents",
 		path: "/accidents",
 		component: props => (
-			<DynamicImport load={() => import("../components/pages/Accidents")}>
+			<DynamicImport
+				load={async () => (await import("../components/pages/Clients")).default}
+			>
 				{Component => (Component ? <Component {...props} /> : <Loading />)}
 			</DynamicImport>
 		),
 		requireLogin: true,
-		access: [Role.KEY_MANAGER, Role.ADMIN],
+		access: [Role.MASTER, Role.KEY_MANAGER, Role.ADMIN],
 		sidebar: {
 			title: "Accidents",
 			icon: Warning,
@@ -136,19 +159,21 @@ const pages: IPage[] = [
 		wrapPaper: true
 	},
 	{
-		id: "Accidents",
-		path: "/accidents",
+		id: "Clients",
+		path: "/clients",
 		component: props => (
-			<DynamicImport load={() => import("../components/pages/Accidents")}>
+			<DynamicImport
+				load={async () => (await import("../components/pages/Clients")).default}
+			>
 				{Component => (Component ? <Component {...props} /> : <Loading />)}
 			</DynamicImport>
 		),
 		requireLogin: true,
-		access: [Role.GUEST],
+		access: [Role.MASTER],
 		sidebar: {
-			title: "Report an Accident",
-			icon: Warning,
-			location: "bottom"
+			title: "Clients",
+			icon: People,
+			location: "top"
 		},
 		wrapPaper: true
 	},
@@ -156,7 +181,11 @@ const pages: IPage[] = [
 		id: "Settings",
 		path: "/settings",
 		component: props => (
-			<DynamicImport load={() => import("../components/pages/Settings")}>
+			<DynamicImport
+				load={async () =>
+					(await import("../components/pages/Settings")).default
+				}
+			>
 				{Component => (Component ? <Component {...props} /> : <Loading />)}
 			</DynamicImport>
 		),
@@ -172,7 +201,9 @@ const pages: IPage[] = [
 		id: "404",
 		path: "/",
 		component: (props: any): React.ReactNode => (
-			<DynamicImport load={() => import("../components/pages/404")}>
+			<DynamicImport
+				load={async () => (await import("../components/pages/404")).default}
+			>
 				{Component => (Component ? <Component {...props} /> : <Loading />)}
 			</DynamicImport>
 		),

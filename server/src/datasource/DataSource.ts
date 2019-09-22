@@ -69,4 +69,17 @@ export default abstract class DataSource {
 			include: [{ all: true }]
 		});
 	}
+
+	protected createClient(data: object): Promise<any> {
+		return this.db.Client.create(data);
+	}
+	protected getClients(options?: object): Promise<any> {
+		return this.db.Client.findAll({ ...options, include: [{ all: true }] });
+	}
+	protected getClient(id: number, options?: object): Promise<any> {
+		return this.db.Client.findByPk(id, {
+			...options,
+			include: [{ all: true }]
+		});
+	}
 }

@@ -1,8 +1,8 @@
-import UserTypes from "../../variables/enums/UserType";
+import { Role } from "../../variables/enums";
 
 type userAccessor = {
 	id: number;
-	role: { name: UserTypes; id?: number };
+	role: { name: Role; id?: number };
 	[key: string]: any;
 };
 

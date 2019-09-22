@@ -1,5 +1,5 @@
 import DataSource from "./DataSource";
-import { UserType, Operation, Resource } from "../variables/enums";
+import { Role, Operation, Resource } from "../variables/enums";
 import userAccessor from "./types/userAccessor";
 import RBAC from "../utils/rbac";
 import {
@@ -17,7 +17,7 @@ export default class Accident extends DataSource {
 	}
 
 	async get(id: number): Promise<any> {
-		let role: UserType = this.user.role.name;
+		let role: Role = this.user.role.name;
 		let foundAccident = await this.getAccident(id, {
 			exclude: RBAC.getExcludedFields(role, Operation.READ, Resource.ACCIDENTS)
 		});
@@ -37,7 +37,7 @@ export default class Accident extends DataSource {
 	}
 
 	async getAll(): Promise<any> {
-		let role: UserType = this.user.role.name;
+		let role: Role = this.user.role.name;
 		let foundAccidents = await this.getAccidents({
 			exclude: RBAC.getExcludedFields(role, Operation.READ, Resource.ACCIDENTS)
 		});
@@ -61,7 +61,7 @@ export default class Accident extends DataSource {
 	}
 
 	async update(id: number, data: any): Promise<[any, any]> {
-		let role: UserType = this.user.role.name;
+		let role: Role = this.user.role.name;
 		let foundAccident = await this.get(id);
 
 		let accessible = await RBAC.can(
@@ -90,7 +90,7 @@ export default class Accident extends DataSource {
 	}
 
 	async delete(id: number): Promise<any> {
-		let role: UserType = this.user.role.name;
+		let role: Role = this.user.role.name;
 		let foundAccident = await this.get(id);
 
 		let accessible = await RBAC.can(
@@ -111,7 +111,7 @@ export default class Accident extends DataSource {
 	}
 
 	async create(data: any) {
-		let role: UserType = this.user.role.name;
+		let role: Role = this.user.role.name;
 
 		let accessible = await RBAC.can(
 			role,

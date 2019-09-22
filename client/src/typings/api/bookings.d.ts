@@ -1,4 +1,4 @@
-export interface IBooking {
+export interface Booking {
 	id: number;
 	from: number;
 	to: number;

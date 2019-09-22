@@ -119,6 +119,9 @@ keyManagerRole.addPermission(
 keyManagerRole.addPermission(
 	new Action(READ, usersResource, null, ["password", "passwordConfirm"])
 );
+keyManagerRole.addPermission(
+	new Action("INVITE", usersResource, null, ["password", "passwordConfirm"])
+);
 
 // Accidents permission
 keyManagerRole.addPermission(new Action(READ, accidentsResource));

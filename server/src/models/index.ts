@@ -57,7 +57,7 @@ class DB {
 		db.sequelize = sequelize;
 		sequelize
 			.authenticate()
-			.then(() => this.init(db, { sync: { options: {} } }))
+			.then(() => this.init(db, {}))
 			.then(() => console.log("Connection has been established successfully."))
 			.catch(err => {
 				console.error("Unable to connect to the database\n", err);
@@ -86,8 +86,8 @@ class DB {
 		}
 
 		if (users.length === 0) {
-			let adminRole = await db.Role.findOne({
-				where: { name: Role.ADMIN }
+			let masterRole = await db.Role.findOne({
+				where: { name: Role.MASTER }
 			});
 			// Create root user...
 			let rootPassword = await bcrypt.hash(config.database.password, 10);
@@ -98,7 +98,7 @@ class DB {
 				lastName: "Amparo",
 				gender: "m",
 				email: "ramil@atsuae.net",
-				roleId: adminRole.dataValues.id,
+				roleId: masterRole.dataValues.id,
 				mobileNumber: "+971562341841",
 				approved: true
 			});

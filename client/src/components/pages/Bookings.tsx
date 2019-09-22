@@ -16,9 +16,9 @@ import * as actions from "../../actions";
 import { Role } from "../../variables/enums";
 import BookingFormCreateStepper from "../containers/forms/bookings/BookingFormCreateStepper";
 import BookingTableView from "../containers/display/BookingTableView";
-import { IAuth, Response } from "../../utils/typings/api";
+import { Auth, Response } from "../../typings/api";
 interface IBookingsPage extends RouteComponentProps, WithStyles<typeof styles> {
-	auth: Response<IAuth>;
+	auth: Response<Auth>;
 	history: History;
 }
 
@@ -57,7 +57,7 @@ const Bookings: FC<typeof actions & IBookingsPage> = ({
 						return (
 							<Fragment>
 								<div className={classes.items}>
-									{auth && auth.data.role.name === Role.GUEST && (
+									{auth && auth.data && auth.data.role.name === Role.GUEST && (
 										<Button
 											variant="contained"
 											color="primary"

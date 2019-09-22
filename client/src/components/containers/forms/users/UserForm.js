@@ -55,17 +55,25 @@ function UserFormContainer({
 	];
 	if (enums && enums.data && auth && auth.data) {
 		roleList = enums.data.roles.reduce((acc, role) => {
-			if (auth.data.role.name === Role.ADMIN || readOnly === true) {
-				acc.push({ value: role.id, label: toTitleWords(role.name) });
-				return acc;
+			const userRole = auth.data.role.name;
+
+			if (readOnly === false || userRole !== Role.MASTER) {
+				if (userRole === Role.ADMIN && role.name === Role.Master) {
+					return acc;
+				} else if (
+					userRole === Role.KEY_MANAGER &&
+					(role.name === Role.admin || role.name === Role.Master)
+				) {
+					return acc;
+				}
 			}
-			if (role.name !== Role.GUEST) {
-				acc.push({
-					value: role.id,
-					label: toTitleWords(role.name)
-				});
-				return acc;
-			}
+
+			acc.push({
+				value: role.id,
+				label: toTitleWords(role.name)
+			});
+
+			return acc;
 		}, []);
 	}
 

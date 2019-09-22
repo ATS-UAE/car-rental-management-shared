@@ -4,7 +4,9 @@ import { connect } from "react-redux";
 import * as actions from "../../actions";
 import AccidentListView from "../containers/display/AccidentListView";
 
-const Accidents: FC<typeof actions> = ({
+type Props = typeof actions;
+
+const Accidents: FC<Props> = ({
 	fetchAccidents,
 	fetchBookings,
 	fetchCurrentUserDetails,
@@ -15,11 +17,11 @@ const Accidents: FC<typeof actions> = ({
 		fetchBookings();
 		fetchCurrentUserDetails();
 		fetchVehicles();
-	});
+	}, []);
 	return <AccidentListView />;
 };
 
-export default connect<typeof actions>(
+export default connect<{}, {}, Props>(
 	null,
 	actions
 )(Accidents);

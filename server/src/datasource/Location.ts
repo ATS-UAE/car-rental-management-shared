@@ -1,5 +1,5 @@
 import DataSource from "./DataSource";
-import { UserType, Operation, Resource } from "../variables/enums";
+import { Role, Operation, Resource } from "../variables/enums";
 import userAccessor from "./types/userAccessor";
 import RBAC from "../utils/rbac";
 import {
@@ -16,7 +16,7 @@ export default class Location extends DataSource {
 	}
 
 	async get(id: number): Promise<any> {
-		let role: UserType = this.user.role.name;
+		let role: Role = this.user.role.name;
 		let foundLocation = await this.getLocation(id);
 		if (!foundLocation) {
 			throw new ResourceNotFoundException(
@@ -34,7 +34,7 @@ export default class Location extends DataSource {
 	}
 
 	async getAll(): Promise<any> {
-		let role: UserType = this.user.role.name;
+		let role: Role = this.user.role.name;
 		let foundLocations = await this.getLocations({
 			exclude: RBAC.getExcludedFields(role, Operation.READ, Resource.LOCATIONS)
 		});
@@ -58,7 +58,7 @@ export default class Location extends DataSource {
 	}
 
 	async update(id: number, data?: object): Promise<any> {
-		let role: UserType = this.user.role.name;
+		let role: Role = this.user.role.name;
 		let foundLocation = await this.get(id);
 
 		let accessible = await RBAC.can(
@@ -79,7 +79,7 @@ export default class Location extends DataSource {
 	}
 
 	async delete(id: number): Promise<any> {
-		let role: UserType = this.user.role.name;
+		let role: Role = this.user.role.name;
 		let foundLocation = await this.get(id);
 
 		let accessible = await RBAC.can(
@@ -100,7 +100,7 @@ export default class Location extends DataSource {
 	}
 
 	async create(data: object) {
-		let role: UserType = this.user.role.name;
+		let role: Role = this.user.role.name;
 
 		let accessible = await RBAC.can(
 			role,

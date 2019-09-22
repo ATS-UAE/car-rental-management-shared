@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { Grid, Button } from "@material-ui/core";
 import LoginForm from "../../presentational/forms/LoginForm";
 import * as actions from "../../../actions";
+import { apiErrorHandler } from "../../../utils/helpers";
 
 function Login({ authLogin, onLogin }) {
 	let [auth, setAuth] = useState({});
@@ -33,7 +34,7 @@ function Login({ authLogin, onLogin }) {
 						.then(() => onLogin && onLogin())
 						.catch(e => {
 							setDisabledButton(false);
-							setAuthErrors([e.message]);
+							setAuthErrors([apiErrorHandler(e).message]);
 						});
 				}}
 			>
