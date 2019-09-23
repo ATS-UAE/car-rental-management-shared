@@ -1,3 +1,4 @@
+import _ from "lodash";
 import DataSource from "./DataSource";
 import { Role, Operation, Resource } from "../variables/enums";
 import userAccessor from "./types/userAccessor";
@@ -8,11 +9,8 @@ import {
 } from "../utils/exceptions";
 
 export default class Client extends DataSource {
-	user: userAccessor;
-
 	constructor(db: any, userAccessor: userAccessor) {
-		super(db);
-		this.user = userAccessor;
+		super(db, userAccessor, Resource.CLIENTS);
 	}
 
 	async get(id: number): Promise<any> {
@@ -52,20 +50,34 @@ export default class Client extends DataSource {
 		return vehicles;
 	}
 
-	async update(id: number, data?: object): Promise<any> {
+	async update(id: number, data?: any): Promise<[any, any]> {
 		let role: Role = this.user.role.name;
 		let foundClient = await this.get(id);
 
-		let accessible = await RBAC.can(role, Operation.UPDATE, Resource.CLIENTS, {
-			accessor: this.user,
-			target: foundClient
-		});
-
-		if (!accessible) {
+		const { access, excludedFields } = await this.getUserPermissions(
+			Operation.UPDATE,
+			{
+				accessor: this.user,
+				target: foundClient
+			}
+		);
+		if (!access) {
 			throw new InvalidPermissionException();
 		}
-		await foundClient.update(data);
-		return this.get(id);
+		if (data.locations && !excludedFields.includes("locations")) {
+			foundClient.setLocations(data.locations);
+		}
+		if (data.users && !excludedFields.includes("users")) {
+			foundClient.setUsers(data.users);
+		}
+		if (data.vehicles && !excludedFields.includes("vehicles")) {
+			foundClient.setVehicles(data.vehicles);
+		}
+
+		await foundClient.update(
+			_.omit(data, [...excludedFields, "locations", "users", "vehicles"])
+		);
+		return [foundClient, await this.get(id)];
 	}
 
 	async delete(id: number): Promise<any> {

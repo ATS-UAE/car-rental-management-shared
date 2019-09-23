@@ -9,16 +9,16 @@
 			"request": "launch",
 			"name": "Launch Program",
 			"program": "${workspaceFolder}\\start",
-			"localRoot": "${workspaceFolder}/src",
-			"remoteRoot": "/home/node/app/src"
+			"localRoot": "${workspaceFolder}/server/src",
+			"remoteRoot": "/app/src"
 		},
 		{
 			"type": "node",
 			"request": "launch",
 			"name": "Launch Program",
 			"program": "${workspaceFolder}\\start",
-			"localRoot": "${workspaceFolder}/src",
-			"remoteRoot": "/home/node/app/src"
+			"localRoot": "${workspaceFolder}/client/src",
+			"remoteRoot": "/app/src"
 		}
 	]
 }

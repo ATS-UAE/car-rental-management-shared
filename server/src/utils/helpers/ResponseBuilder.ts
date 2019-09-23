@@ -1,3 +1,4 @@
+import { Response } from "express";
 import {
 	InvalidPermissionException,
 	ResourceNotFoundException,
@@ -29,7 +30,7 @@ export default class ResponseBuilder {
 		this.message = message;
 	}
 
-	handleError(e: any, res: any) {
+	handleError(e: any, res: Response) {
 		if (e instanceof InvalidPermissionException) {
 			this.setCode(422);
 			res.status(422);
@@ -48,7 +49,7 @@ export default class ResponseBuilder {
 		}
 	}
 
-	handleSuccess(message: string, res: any) {
+	handleSuccess(message: string, res: Response) {
 		this.setMessage(message);
 		this.setCode(200);
 		this.setSuccess(true);

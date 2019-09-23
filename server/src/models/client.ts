@@ -29,11 +29,10 @@ export default (sequelize, { STRING }) => {
 			},
 			as: "categories"
 		});
-		models.Client.hasMany(models.Location, {
-			foreignKey: {
-				name: "clientId"
-			},
-			as: "locations"
+		models.Client.belongsToMany(models.Location, {
+			as: "locations",
+			foreignKey: "clientId",
+			through: "ClientLocations"
 		});
 	};
 

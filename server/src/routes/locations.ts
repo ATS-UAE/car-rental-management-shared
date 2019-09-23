@@ -42,7 +42,7 @@ router.post(
 		try {
 			const createdLocation = await LocationDataSource.create(body);
 			response.setData(createdLocation);
-			response.handleSuccess(res, "Location has been created.");
+			response.handleSuccess("Location has been created.", res);
 		} catch (e) {
 			response.handleError(e, res);
 		}
@@ -94,7 +94,7 @@ router.patch(
 				});
 
 			response.setData(updatedLocation.get({ plain: true }));
-			response.handleSuccess(res, `Location with ID ${params.id} updated.`);
+			response.handleSuccess(`Location with ID ${params.id} updated.`, res);
 		} catch (e) {
 			response.handleError(e, res);
 		}

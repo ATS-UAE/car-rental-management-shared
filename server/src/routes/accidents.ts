@@ -67,7 +67,7 @@ router.post(
 			});
 
 			response.setData(createdAccident);
-			response.handleSuccess(res, "Accident has been created.");
+			response.handleSuccess("Accident has been created.", res);
 		} catch (e) {
 			response.handleError(e, res);
 		}
@@ -145,8 +145,8 @@ router.patch(
 				});
 			response.setData(updatedAccident);
 			response.handleSuccess(
-				res,
-				`Accident with ID ${params.id} has been updated.`
+				`Accident with ID ${params.id} has been updated.`,
+				res
 			);
 		} catch (e) {
 			response.handleError(e, res);

@@ -31,17 +31,10 @@ export default (sequelize, DataTypes) => {
 		locationImageSrc: { type: DataTypes.STRING }
 	});
 	Location.associate = models => {
-		models.Location.belongsTo(models.Client, {
-			foreignKey: {
-				name: "clientId",
-				allowNull: false,
-				validate: {
-					notNull: {
-						msg: "Please specify which client this location belongs to."
-					}
-				}
-			},
-			as: "client"
+		models.Location.belongsToMany(models.Client, {
+			as: "clients",
+			foreignKey: "locationId",
+			through: "ClientLocations"
 		});
 	};
 	return Location;

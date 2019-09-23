@@ -1,8 +1,36 @@
+import userAccessor from "./types/userAccessor";
+import RBAC from "../utils/rbac";
+import { Operation, Resource } from "../variables/enums";
+
 export default abstract class DataSource {
-	protected db: any;
-	constructor(db: any) {
-		this.db = db;
-	}
+	constructor(
+		protected db: any,
+		protected user?: userAccessor,
+		protected resource?: Resource
+	) {}
+
+	protected getUserPermissions = async (
+		action: Operation,
+		params?: any
+	): Promise<{ access: boolean; excludedFields: string[] }> => {
+		if (this.user && this.resource) {
+			return {
+
+				access: await RBAC.can(
+					this.user.role.name,
+					action,
+					this.resource,
+					params
+				),
+				excludedFields: RBAC.getExcludedFields(
+					this.user.role.name,
+					action,
+					this.resource
+				)
+			};
+		}
+		return { access: false, excludedFields: [] };
+	};
 
 	protected createVehicle(data: object): Promise<any> {
 		return this.db.Vehicle.create(data);
@@ -32,7 +60,7 @@ export default abstract class DataSource {
 	}
 
 	protected createLocation(data: object): Promise<any> {
-		return this.db.Booking.create(data);
+		return this.db.Location.create(data);
 	}
 	protected getLocations(options?: object): Promise<any> {
 		return this.db.Location.findAll({ ...options, include: [{ all: true }] });
@@ -78,6 +106,19 @@ export default abstract class DataSource {
 	}
 	protected getClient(id: number, options?: object): Promise<any> {
 		return this.db.Client.findByPk(id, {
+			...options,
+			include: [{ all: true }]
+		});
+	}
+
+	protected createCategory(data: object): Promise<any> {
+		return this.db.Category.create(data);
+	}
+	protected getCategorys(options?: object): Promise<any> {
+		return this.db.Category.findAll({ ...options, include: [{ all: true }] });
+	}
+	protected getCategory(id: number, options?: object): Promise<any> {
+		return this.db.Category.findByPk(id, {
 			...options,
 			include: [{ all: true }]
 		});

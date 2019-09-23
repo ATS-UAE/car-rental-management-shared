@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Response } from "express";
 import { ResponseBuilder } from "../utils/helpers";
 import { Client } from "../datasource";
 import db from "../models";
@@ -20,7 +20,7 @@ router.get("/", async ({ user }, res) => {
 	res.json(response);
 });
 
-router.post("/", async ({ user, body }, res) => {
+router.post("/", async ({ user, body }, res: Response) => {
 	const response = new ResponseBuilder();
 	const ClientDataSource = new Client(db, user);
 
@@ -29,6 +29,7 @@ router.post("/", async ({ user, body }, res) => {
 		response.setData(createdClient);
 		response.handleSuccess("Client has been created", res);
 	} catch (e) {
+		console.log(e);
 		response.handleError(e, res);
 	}
 
@@ -68,6 +69,7 @@ router.patch("/:id", async ({ user, params, body }, res) => {
 			res
 		);
 	} catch (e) {
+		console.error(e);
 		response.handleError(e, res);
 	}
 

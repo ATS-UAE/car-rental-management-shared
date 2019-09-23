@@ -60,7 +60,7 @@ router.post(
 				...createdVehicle.get({ plain: true }),
 				categories: await createdVehicle.getCategories().map(c => c.id)
 			});
-			response.handleSuccess(res, "Vehicle has been created.");
+			response.handleSuccess("Vehicle has been created.", res);
 		} catch (e) {
 			response.handleError(e, res);
 		}
@@ -127,7 +127,7 @@ router.patch(
 				...updatedVehicle.get({ plain: true }),
 				categories: (await updatedVehicle.getCategories()).map(c => c.id)
 			});
-			response.handleSuccess(res, `Vehicle with ID ${params.id} updated.`);
+			response.handleSuccess(`Vehicle with ID ${params.id} updated.`, res);
 		} catch (e) {
 			response.handleError(e, res);
 		}
