@@ -16,9 +16,9 @@ import * as actions from "../../actions";
 import { Role } from "../../variables/enums";
 import BookingFormCreateStepper from "../containers/forms/bookings/BookingFormCreateStepper";
 import BookingTableView from "../containers/display/BookingTableView";
-import { Auth, Response } from "../../typings/api";
+import { Auth, WithServerResponse } from "../../typings/api";
 interface IBookingsPage extends RouteComponentProps, WithStyles<typeof styles> {
-	auth: Response<Auth>;
+	auth: WithServerResponse<Auth>;
 	history: History;
 }
 

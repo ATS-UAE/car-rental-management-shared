@@ -219,9 +219,11 @@ export const apiErrorHandler = (e: AxiosError): ApiError => {
 	let message = "Unknown error.";
 	let errors: string[] = [];
 
-	if (e && e.response && e.response.data) {
+	if (e.response && e.response.data) {
 		message = e.response.data.message;
 		errors = e.response.data.errors;
+	} else if (e.message) {
+		message = e.message;
 	}
 
 	return { message, errors };

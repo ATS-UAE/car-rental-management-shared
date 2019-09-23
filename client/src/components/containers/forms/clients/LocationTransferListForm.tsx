@@ -1,72 +1,105 @@
 import React, { useEffect, FC, useState } from "react";
-import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
-import {
-	Grid,
-	List,
-	Card,
-	CardHeader,
-	ListItem,
-	ListItemText,
-	ListItemIcon,
-	Checkbox,
-	Button,
-	Divider
-} from "@material-ui/core";
 import { connect } from "react-redux";
+import * as reduxActions from "../../../../actions";
 import api from "../../../../utils/helpers/api";
 import { ReduxState } from "../../../../typings/redux";
-import { Location } from "../../../../typings/api";
+import {
+	LocationResponse,
+	ClientResponse,
+	WithServerResponse
+} from "../../../../typings/api";
 import TransferList from "../../../presentational/display/TransferList";
-
+import Loading from "../../../presentational/layout/Loading";
 interface LocationTransferListFormProps {
 	clientId: number;
 }
 
-interface Props extends LocationTransferListFormProps {
+interface LocationTransferListFormStateProps {
 	locations: ReduxState["locations"];
 }
 
-const LocationTransferListForm: FC<Props> = ({ locations, clientId }) => {
-	const [items, setItems] = useState<Location[]>([]);
+type Props = LocationTransferListFormProps &
+	typeof reduxActions &
+	LocationTransferListFormStateProps;
+
+const LocationTransferListForm: FC<Props> = ({
+	locations,
+	clientId,
+	fetchLocations
+}) => {
+	const [items, setItems] = useState<LocationResponse[]>([]);
+	const [right, setRight] = useState<LocationResponse[]>([]);
+	const [clientData, setClientData] = useState<WithServerResponse<
+		ClientResponse
+	> | null>(null);
+
+	useEffect(() => {
+		const getClientData = async () => {
+			const clientData = await api.fetchClient(clientId);
+			setClientData(clientData);
+		};
+		getClientData();
+	}, []);
 
 	useEffect(() => {
 		if (locations && locations.data) {
-			const left: Location[] = [];
-			const right: Location[] = [];
+			const left: LocationResponse[] = [];
+			const right: LocationResponse[] = [];
 
 			for (const location of locations.data) {
-				if (clientId === location.clientId) {
+				if (
+					locations.data &&
+					locations.data.find(location =>
+						location.clients.find(client => client.id === clientId)
+					)
+				) {
 					right.push(location);
 				} else {
 					left.push(location);
 				}
 			}
+			setItems([...left, ...right]);
+			setRight(right);
 		}
-	}, [locations]);
+	}, [locations, clientData]);
 
 	return (
-		<TransferList<Location>
-			onSubmit={(e, data) => {
-				api.updateClient({
-					id: clientId,
-					locations: data.map(value => value.id)
-				});
-			}}
-			items={(locations && locations.data) || []}
-			right={items}
-			onChange={right => setItems(right)}
-			comparator={(a, b) => a.clientId === b.clientId}
-			listMapper={item => ({
-				id: item.id,
-				primaryLabel: item.name,
-				secondaryLabel: item.address
-			})}
-		/>
+		(clientData && (
+			<TransferList<LocationResponse>
+				onSubmit={(e, data) => {
+					api
+						.updateClient({
+							id: clientId,
+							locations: data.map(value => value.id)
+						})
+						.then(fetchLocations);
+				}}
+				items={items}
+				right={right}
+				onChange={right => setRight(right)}
+				comparator={(a, b) => a.clientId === b.clientId}
+				listMapper={item => ({
+					id: item.id,
+					primaryLabel: item.name,
+					secondaryLabel: item.address
+				})}
+			/>
+		)) || <Loading />
 	);
 };
 
-const mapStateToProps = ({ locations }: ReduxState) => ({
+const mapStateToProps = ({
+	locations
+}: ReduxState): LocationTransferListFormStateProps => ({
 	locations
 });
 
-export default connect(mapStateToProps)(LocationTransferListForm);
+export default connect<
+	LocationTransferListFormStateProps,
+	typeof reduxActions,
+	LocationTransferListFormProps,
+	ReduxState
+>(
+	mapStateToProps,
+	() => reduxActions
+)(LocationTransferListForm);

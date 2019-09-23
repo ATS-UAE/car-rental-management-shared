@@ -1,16 +1,21 @@
 import React, { Component, forwardRef } from "react";
-import { withRouter } from "react-router-dom";
+import { withRouter, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import { compose } from "recompose";
 import { Location, History } from "history";
 import * as reduxActions from "../../../actions";
 import api from "../../../utils/helpers/api";
 import { ReduxState } from "../../../typings";
-import { Client } from "../../../typings/api";
+import { ClientResponse } from "../../../typings/api";
 import { ModalSwitch } from "../../presentational/display/ModalSwitch";
 import MaterialTable, { Column, Icons } from "material-table";
-import { DialogModal } from "../../presentational/display/DialogModal";
+import {
+	DialogModal,
+	DialogModalProps
+} from "../../presentational/display/DialogModal";
 import LocationTransferListForm from "../forms/clients/LocationTransferListForm";
+import UserTransferListForm from "../forms/clients/UserTransferListForm";
+import VehicleTransferListForm from "../forms/clients/VehicleTransferListForm";
 import {
 	AddBox,
 	ArrowUpward,
@@ -27,7 +32,10 @@ import {
 	SaveAlt,
 	Search,
 	ViewColumn,
-	Refresh
+	Refresh,
+	LocationCity,
+	DirectionsCar,
+	People
 } from "@material-ui/icons";
 
 const tableIcons: Icons = {
@@ -56,9 +64,9 @@ const tableIcons: Icons = {
 
 interface ClientTableViewProps {}
 interface ClientTableViewState {
-	clientColumns: Column<Client>[];
-	clientData: Client[];
-	clientSelected: Client | null;
+	clientColumns: Column<ClientResponse>[];
+	clientData: ClientResponse[];
+	clientSelected: ClientResponse | null;
 }
 
 type Props = {
@@ -110,6 +118,17 @@ class ClientTableView extends Component<Props, ClientTableViewState> {
 			clientColumns: categoryColumns,
 			clientData: categoryData
 		} = this.state;
+
+		const renderModal = (props: Omit<DialogModalProps, "open" | "onClose">) => {
+			return (
+				<DialogModal
+					title={props.title}
+					open={true}
+					onClose={() => history.replace("/clients")}
+					content={props.content}
+				/>
+			);
+		};
 		return (
 			<>
 				<ModalSwitch
@@ -118,46 +137,39 @@ class ClientTableView extends Component<Props, ClientTableViewState> {
 					routes={[
 						{
 							path: "/clients/users/edit",
-							render: () => (
-								<DialogModal
-									title="Add users to client"
-									open={true}
-									onClose={() => history.replace("/clients")}
-									content="Users form"
-								/>
-							)
+							render: () =>
+								renderModal({
+									title: "Add users to client",
+									content: (this.state.clientSelected && (
+										<UserTransferListForm
+											clientId={this.state.clientSelected.id}
+										/>
+									)) || <Redirect to="/clients" />
+								})
 						},
 						{
 							path: "/clients/vehicles/edit",
-							render: () => (
-								<DialogModal
-									title="Add vehicles to client"
-									open={true}
-									onClose={() => history.replace("/clients")}
-									content="Vehicles form"
-								/>
-							)
+							render: () =>
+								renderModal({
+									title: "Add vehicles to client",
+									content: (this.state.clientSelected && (
+										<VehicleTransferListForm
+											clientId={this.state.clientSelected.id}
+										/>
+									)) || <Redirect to="/clients" />
+								})
 						},
 						{
 							path: "/clients/locations/edit",
-							render: () => (
-								<DialogModal
-									title="Add location to client"
-									open={true}
-									onClose={() => {
-										this.setState({ clientSelected: null });
-										history.replace("/clients");
-									}}
-									content={
-										(this.state.clientSelected && (
-											<LocationTransferListForm
-												clientId={this.state.clientSelected.id}
-											/>
-										)) ||
-										null
-									}
-								/>
-							)
+							render: () =>
+								renderModal({
+									title: "Add locations to client",
+									content: (this.state.clientSelected && (
+										<LocationTransferListForm
+											clientId={this.state.clientSelected.id}
+										/>
+									)) || <Redirect to="/clients" />
+								})
 						}
 					]}
 				/>
@@ -173,7 +185,9 @@ class ClientTableView extends Component<Props, ClientTableViewState> {
 						onRowAdd: ({ name }) =>
 							new Promise(resolve => {
 								api
-									.createClient({ name, locations: [] })
+									.createClient({
+										name
+									})
 									.then(fetchClients)
 									.then(() => resolve());
 							})
@@ -188,30 +202,29 @@ class ClientTableView extends Component<Props, ClientTableViewState> {
 							icon: () => <Refresh />,
 							tooltip: "Refresh",
 							isFreeAction: true,
-							onClick: (event, data) => {
-								console.log(event);
-								console.log(data);
-							}
+							onClick: (event, data) => this.props.fetchClients()
 						},
 						{
-							icon: () => <Refresh />,
+							icon: () => <DirectionsCar />,
 							tooltip: "Add vehicles",
 							onClick: (event, data) => {
+								this.setState({ clientSelected: data as ClientResponse });
 								history.replace("/clients/vehicles/edit", { modal: true });
 							}
 						},
 						{
-							icon: () => <Refresh />,
+							icon: () => <LocationCity />,
 							tooltip: "Add Locations",
 							onClick: (event, data) => {
-								this.setState({ clientSelected: data as Client });
+								this.setState({ clientSelected: data as ClientResponse });
 								history.replace("/clients/locations/edit", { modal: true });
 							}
 						},
 						{
-							icon: () => <Refresh />,
+							icon: () => <People />,
 							tooltip: "Add Users",
 							onClick: (event, data) => {
+								this.setState({ clientSelected: data as ClientResponse });
 								history.replace("/clients/users/edit", { modal: true });
 							}
 						}

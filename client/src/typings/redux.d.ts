@@ -1,15 +1,15 @@
 import Action from "../../actions/types";
 import {
-	Client,
-	Vehicle,
+	ClientResponse,
+	VehicleResponse,
 	Auth,
 	Booking,
 	Category,
-	User,
-	Response,
+	UserResponse,
+	WithServerResponse,
 	Enums,
 	Accident,
-	Location
+	LocationResponse
 } from "./api";
 import { Nullable } from "./utils";
 
@@ -19,13 +19,13 @@ export interface ReduxAction {
 }
 
 export type ReduxState = Nullable<{
-	users: Response<User[]>;
-	vehicles: Response<Vehicle[]>;
-	categories: Response<Category[]>;
-	bookings: Response<Booking[]>;
-	accidents: Response<Accident[]>;
-	auth: Response<Auth> | false;
-	clients: Response<Client[]>;
-	enums: Response<Enums>;
-	locations: Response<Location[]>;
+	users: WithServerResponse<UserResponse[]>;
+	vehicles: WithServerResponse<VehicleResponse[]>;
+	categories: WithServerResponse<Category[]>;
+	bookings: WithServerResponse<Booking[]>;
+	accidents: WithServerResponse<Accident[]>;
+	auth: WithServerResponse<Auth> | false;
+	clients: WithServerResponse<ClientResponse[]>;
+	enums: WithServerResponse<Enums>;
+	locations: WithServerResponse<LocationResponse[]>;
 }>;

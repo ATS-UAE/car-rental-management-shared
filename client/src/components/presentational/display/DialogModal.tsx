@@ -19,7 +19,7 @@ interface Action {
 	onClick: MouseEventHandler;
 }
 
-interface Props {
+export interface DialogModalProps {
 	open: boolean;
 	onClose: () => void;
 	dialogProps?: DialogProps;
@@ -28,7 +28,7 @@ interface Props {
 	actions?: Action[];
 }
 
-export const DialogModal: FC<Props> = ({
+export const DialogModal: FC<DialogModalProps> = ({
 	content: Content,
 	dialogProps,
 	title,

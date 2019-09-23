@@ -1,4 +1,4 @@
-export interface Response<Result> {
+export interface WithServerResponse<Result> {
 	code: number;
 	errors: string[];
 	success: boolean;

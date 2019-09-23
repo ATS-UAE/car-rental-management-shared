@@ -1,15 +1,16 @@
 import axios, { AxiosRequestConfig } from "axios";
 import {
 	Auth,
-	Response,
+	WithServerResponse,
 	Enums,
-	User,
-	Vehicle,
+	UserResponse,
+	VehicleResponse,
 	Booking,
-	Location,
+	LocationResponse,
 	Accident,
 	Category,
-	Client
+	ClientResponse,
+	ClientRequest
 } from "../../typings/api";
 import { PartialExcept } from "../../typings";
 
@@ -22,7 +23,7 @@ export const executeFromAPI = <Data>(
 	config: {
 		formData?: boolean;
 	} & AxiosRequestConfig = {}
-): Promise<Response<Data>> =>
+): Promise<WithServerResponse<Data>> =>
 	new Promise((resolve, reject) => {
 		let formData = body;
 		const axiosConfig: AxiosRequestConfig = {
@@ -70,35 +71,46 @@ const api = {
 	fetchEnums: () => executeFromAPI<Enums>("get", "/api/carbooking/enums"),
 
 	// users
-	fetchUsers: () => executeFromAPI<User[]>("get", "/api/carbooking/users"),
+	fetchUsers: () =>
+		executeFromAPI<UserResponse[]>("get", "/api/carbooking/users"),
 	fetchUser: (id: number) =>
-		executeFromAPI<User>("get", `/api/carbooking/users/${id}`),
-	createUser: (user: Omit<User, "id">) =>
-		executeFromAPI<User>("post", "/api/carbooking/users", user, {
+		executeFromAPI<UserResponse>("get", `/api/carbooking/users/${id}`),
+	createUser: (user: Omit<UserResponse, "id">) =>
+		executeFromAPI<UserResponse>("post", "/api/carbooking/users", user, {
 			formData: true
 		}),
-	updateUser: (user: PartialExcept<User, "id">) =>
-		executeFromAPI<User>("patch", `/api/carbooking/users/${user.id}`, user, {
-			formData: true
-		}),
+	updateUser: (user: PartialExcept<UserResponse, "id">) =>
+		executeFromAPI<UserResponse>(
+			"patch",
+			`/api/carbooking/users/${user.id}`,
+			user,
+			{
+				formData: true
+			}
+		),
 	deleteUser: (id: number) =>
-		executeFromAPI<User>("delete", `/api/carbooking/users/${id}`),
+		executeFromAPI<UserResponse>("delete", `/api/carbooking/users/${id}`),
 
 	// invites
 	inviteGuest: (invite: { email: string }) =>
 		executeFromAPI<null>("post", "/api/carbooking/invites", invite),
 
 	// vehicles
-	createVehicle: (vehicle: Omit<Vehicle, "id">) =>
-		executeFromAPI<Vehicle>("post", "/api/carbooking/vehicles", vehicle, {
-			formData: true
-		}),
+	createVehicle: (vehicle: Omit<VehicleResponse, "id">) =>
+		executeFromAPI<VehicleResponse>(
+			"post",
+			"/api/carbooking/vehicles",
+			vehicle,
+			{
+				formData: true
+			}
+		),
 	fetchVehicles: () =>
-		executeFromAPI<Vehicle[]>("get", "/api/carbooking/vehicles"),
+		executeFromAPI<VehicleResponse[]>("get", "/api/carbooking/vehicles"),
 	fetchVehicle: (id: number) =>
-		executeFromAPI<Vehicle>("get", `/api/carbooking/vehicles/${id}`),
-	updateVehicle: (vehicle: PartialExcept<Vehicle, "id">) =>
-		executeFromAPI<Vehicle>(
+		executeFromAPI<VehicleResponse>("get", `/api/carbooking/vehicles/${id}`),
+	updateVehicle: (vehicle: PartialExcept<VehicleResponse, "id">) =>
+		executeFromAPI<VehicleResponse>(
 			"patch",
 			`/api/carbooking/vehicles/${vehicle.id}`,
 			vehicle,
@@ -124,17 +136,22 @@ const api = {
 		executeFromAPI<Booking>("delete", `/api/carbooking/bookings/${id}`),
 
 	// locations
-	createLocation: (location: Omit<Location, "id">) =>
-		executeFromAPI<Location>("post", "/api/carbooking/locations", location, {
-			formData: true
-		}),
+	createLocation: (location: Omit<LocationResponse, "id">) =>
+		executeFromAPI<LocationResponse>(
+			"post",
+			"/api/carbooking/locations",
+			location,
+			{
+				formData: true
+			}
+		),
 	fetchLocations: () =>
-		executeFromAPI<Location[]>("get", "/api/carbooking/locations"),
+		executeFromAPI<LocationResponse[]>("get", "/api/carbooking/locations"),
 	fetchLocation: (id: number) =>
-		executeFromAPI<Location>("get", `/api/carbooking/locations/${id}`),
+		executeFromAPI<LocationResponse>("get", `/api/carbooking/locations/${id}`),
 
-	updateLocation: (location: PartialExcept<Location, "id">) =>
-		executeFromAPI<Location>(
+	updateLocation: (location: PartialExcept<LocationResponse, "id">) =>
+		executeFromAPI<LocationResponse>(
 			"patch",
 			`/api/carbooking/locations/${location.id}`,
 			location,
@@ -143,7 +160,10 @@ const api = {
 			}
 		),
 	deleteLocation: (id: number) =>
-		executeFromAPI<Location>("delete", `/api/carbooking/locations/${id}`),
+		executeFromAPI<LocationResponse>(
+			"delete",
+			`/api/carbooking/locations/${id}`
+		),
 
 	// Accidents
 	fetchAccident: (id: number) =>
@@ -182,17 +202,19 @@ const api = {
 
 	// Clients
 	fetchClients: () =>
-		executeFromAPI<Client[]>("get", "/api/carbooking/clients"),
-	createClient: (category: Omit<Client, "id">) =>
-		executeFromAPI<Client>("post", "/api/carbooking/clients", category),
-	updateClient: (category: PartialExcept<Client, "id">) =>
-		executeFromAPI<Client>(
+		executeFromAPI<ClientResponse[]>("get", "/api/carbooking/clients"),
+	fetchClient: id =>
+		executeFromAPI<ClientResponse>("get", `/api/carbooking/clients/${id}`),
+	createClient: (category: Pick<ClientResponse, "name">) =>
+		executeFromAPI<ClientResponse>("post", "/api/carbooking/clients", category),
+	updateClient: (category: PartialExcept<ClientRequest, "id">) =>
+		executeFromAPI<ClientResponse>(
 			"patch",
 			`/api/carbooking/clients/${category.id}`,
 			category
 		),
 	deleteClient: (id: number) =>
-		executeFromAPI<Client>("delete", `/api/carbooking/clients/${id}`)
+		executeFromAPI<ClientResponse>("delete", `/api/carbooking/clients/${id}`)
 };
 
 export class Sync<T> {

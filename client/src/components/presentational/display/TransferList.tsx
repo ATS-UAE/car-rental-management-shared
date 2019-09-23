@@ -74,6 +74,12 @@ class TransferList<T extends HasId> extends Component<
 		};
 	}
 
+	componentWillUpdate = nextProps => {
+		if (this.props.items !== nextProps.items) {
+			this.setState({ left: this.not(nextProps.items, this.props.right) });
+		}
+	};
+
 	not = (a: T[], b: T[]) =>
 		a.filter(
 			valueA =>

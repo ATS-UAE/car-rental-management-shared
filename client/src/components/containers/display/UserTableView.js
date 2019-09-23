@@ -55,7 +55,7 @@ const tableIcons = {
 class UserTableView extends Component {
 	constructor(props) {
 		super(props);
-		this.state = state = {
+		this.state = {
 			userData: [],
 			userActions: [],
 			loadingRows: [],
@@ -248,12 +248,12 @@ class UserTableView extends Component {
 						);
 						data["client"] =
 							(clientName && clientName.name) || user.role.name === Role.MASTER
-								? "MASTER"
+								? toTitleWords(Role.MASTER)
 								: "Unassigned";
 					}
 					newUserData.push(data);
 				}
-				this.setState({ userData: newUserData, userColumns: newColumns });
+				this.setState({ userData: newUserData });
 			}
 		}
 	};

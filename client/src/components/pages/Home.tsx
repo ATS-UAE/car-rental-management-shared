@@ -28,21 +28,21 @@ import { Role } from "../../variables/enums";
 import { getBookingStatus, toTitleWords } from "../../utils/helpers";
 import {
 	Booking,
-	Vehicle,
-	User,
+	VehicleResponse,
+	UserResponse,
 	Accident,
 	Auth,
-	Response
+	WithServerResponse
 } from "../../typings/api";
 
 let gradients = ["#FF8E53", "#ffd400", "#FE6B8B", "#a500ff", "#0072ff"];
 
 interface IPageHome {
-	auth?: Response<Auth>;
-	bookings?: Response<Booking[]>;
-	vehicles?: Response<Vehicle[]>;
-	users?: Response<User[]>;
-	accidents?: Response<Accident[]>;
+	auth?: WithServerResponse<Auth>;
+	bookings?: WithServerResponse<Booking[]>;
+	vehicles?: WithServerResponse<VehicleResponse[]>;
+	users?: WithServerResponse<UserResponse[]>;
+	accidents?: WithServerResponse<Accident[]>;
 }
 
 const Home: FC<IPageHome & typeof actions & WithStyles<typeof styles>> = ({

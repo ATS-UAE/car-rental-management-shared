@@ -1,185 +1,64 @@
-import React from "react";
-import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
-import Grid from "@material-ui/core/Grid";
-import List from "@material-ui/core/List";
-import Card from "@material-ui/core/Card";
-import CardHeader from "@material-ui/core/CardHeader";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import Checkbox from "@material-ui/core/Checkbox";
-import Button from "@material-ui/core/Button";
-import Divider from "@material-ui/core/Divider";
+import React, { useEffect, FC, useState } from "react";
 import { connect } from "react-redux";
 import api from "../../../../utils/helpers/api";
+import { ReduxState } from "../../../../typings/redux";
+import { UserResponse } from "../../../../typings/api";
+import TransferList from "../../../presentational/display/TransferList";
+import { Role } from "../../../../variables/enums";
+import { toTitleWords } from "../../../../utils/helpers";
 
-const useStyles = makeStyles((theme: Theme) =>
-	createStyles({
-		root: {
-			margin: "auto"
-		},
-		cardHeader: {
-			padding: theme.spacing(1, 2)
-		},
-		list: {
-			width: 200,
-			height: 230,
-			backgroundColor: theme.palette.background.paper,
-			overflow: "auto"
-		},
-		button: {
-			margin: theme.spacing(0.5, 0)
-		}
-	})
-);
-
-function not(a: number[], b: number[]) {
-	return a.filter(value => b.indexOf(value) === -1);
+interface UserTransferListFormProps {
+	clientId: number;
 }
 
-function intersection(a: number[], b: number[]) {
-	return a.filter(value => b.indexOf(value) !== -1);
+interface Props extends UserTransferListFormProps {
+	users: ReduxState["users"];
 }
 
-function union(a: number[], b: number[]) {
-	return [...a, ...not(b, a)];
-}
+const UserTransferListForm: FC<Props> = ({ users, clientId }) => {
+	const [items, setItems] = useState<UserResponse[]>([]);
+	const [right, setRight] = useState<UserResponse[]>([]);
 
-function LocationTransferListForm({ locations }) {
-	const classes = useStyles();
-	const [checked, setChecked] = React.useState<number[]>([]);
-	const [left, setLeft] = React.useState<number[]>([0, 1, 2, 3]);
-	const [right, setRight] = React.useState<number[]>([4, 5, 6, 7]);
+	useEffect(() => {
+		if (users && users.data) {
+			const left: UserResponse[] = [];
+			const right: UserResponse[] = [];
 
-	const leftChecked = intersection(checked, left);
-	const rightChecked = intersection(checked, right);
-
-	const handleToggle = (value: number) => () => {
-		const currentIndex = checked.indexOf(value);
-		const newChecked = [...checked];
-
-		if (currentIndex === -1) {
-			newChecked.push(value);
-		} else {
-			newChecked.splice(currentIndex, 1);
-		}
-
-		setChecked(newChecked);
-	};
-
-	const numberOfChecked = (items: number[]) =>
-		intersection(checked, items).length;
-
-	const handleToggleAll = (items: number[]) => () => {
-		if (numberOfChecked(items) === items.length) {
-			setChecked(not(checked, items));
-		} else {
-			setChecked(union(checked, items));
-		}
-	};
-
-	const handleCheckedRight = () => {
-		setRight(right.concat(leftChecked));
-		setLeft(not(left, leftChecked));
-		setChecked(not(checked, leftChecked));
-	};
-
-	const handleCheckedLeft = () => {
-		setLeft(left.concat(rightChecked));
-		setRight(not(right, rightChecked));
-		setChecked(not(checked, rightChecked));
-	};
-
-	const customList = (title: React.ReactNode, items: number[]) => (
-		<Card>
-			<CardHeader
-				className={classes.cardHeader}
-				avatar={
-					<Checkbox
-						onClick={handleToggleAll(items)}
-						checked={
-							numberOfChecked(items) === items.length && items.length !== 0
-						}
-						indeterminate={
-							numberOfChecked(items) !== items.length &&
-							numberOfChecked(items) !== 0
-						}
-						disabled={items.length === 0}
-						inputProps={{ "aria-label": "all items selected" }}
-					/>
+			for (const user of users.data) {
+				if (clientId === user.clientId) {
+					right.push(user);
+				} else if (user.clientId === null && user.role.name !== Role.MASTER) {
+					left.push(user);
 				}
-				title={title}
-				subheader={`${numberOfChecked(items)}/${items.length} selected`}
-			/>
-			<Divider />
-			<List className={classes.list} dense component="div" role="list">
-				{items.map((value: number) => {
-					const labelId = `transfer-list-all-item-${value}-label`;
-
-					return (
-						<ListItem
-							key={value}
-							role="listitem"
-							button
-							onClick={handleToggle(value)}
-						>
-							<ListItemIcon>
-								<Checkbox
-									checked={checked.indexOf(value) !== -1}
-									tabIndex={-1}
-									disableRipple
-									inputProps={{ "aria-labelledby": labelId }}
-								/>
-							</ListItemIcon>
-							<ListItemText id={labelId} primary={`List item ${value + 1}`} />
-						</ListItem>
-					);
-				})}
-				<ListItem />
-			</List>
-		</Card>
-	);
+			}
+			setItems([...left, ...right]);
+			setRight(right);
+		}
+	}, [users]);
 
 	return (
-		<Grid
-			container
-			spacing={2}
-			justify="center"
-			alignItems="center"
-			className={classes.root}
-		>
-			<Grid item>{customList("Choices", left)}</Grid>
-			<Grid item>
-				<Grid container direction="column" alignItems="center">
-					<Button
-						variant="outlined"
-						size="small"
-						className={classes.button}
-						onClick={handleCheckedRight}
-						disabled={leftChecked.length === 0}
-						aria-label="move selected right"
-					>
-						&gt;
-					</Button>
-					<Button
-						variant="outlined"
-						size="small"
-						className={classes.button}
-						onClick={handleCheckedLeft}
-						disabled={rightChecked.length === 0}
-						aria-label="move selected left"
-					>
-						&lt;
-					</Button>
-				</Grid>
-			</Grid>
-			<Grid item>{customList("Chosen", right)}</Grid>
-		</Grid>
+		<TransferList<UserResponse>
+			onSubmit={(e, data) => {
+				api.updateClient({
+					id: clientId,
+					users: data.map(value => value.id)
+				});
+			}}
+			items={items}
+			right={right}
+			onChange={right => setRight(right)}
+			comparator={(a, b) => a.clientId === b.clientId}
+			listMapper={item => ({
+				id: item.id,
+				primaryLabel: `${item.firstName} ${item.lastName}`,
+				secondaryLabel: `${item.username} ${toTitleWords(item.role.name)}`
+			})}
+		/>
 	);
-}
+};
 
-const mapStateToProps = ({ locations }) => ({
-	locations
+const mapStateToProps = ({ users }: ReduxState) => ({
+	users
 });
 
-export default connect(mapStateToProps)(LocationTransferListForm);
+export default connect(mapStateToProps)(UserTransferListForm);

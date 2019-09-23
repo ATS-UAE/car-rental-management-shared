@@ -1,177 +1,62 @@
-import React from "react";
-import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
-import Grid from "@material-ui/core/Grid";
-import List from "@material-ui/core/List";
-import Card from "@material-ui/core/Card";
-import CardHeader from "@material-ui/core/CardHeader";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import Checkbox from "@material-ui/core/Checkbox";
-import Button from "@material-ui/core/Button";
-import Divider from "@material-ui/core/Divider";
+import React, { useEffect, FC, useState } from "react";
+import { connect } from "react-redux";
+import api from "../../../../utils/helpers/api";
+import { ReduxState } from "../../../../typings/redux";
+import { VehicleResponse } from "../../../../typings/api";
+import TransferList from "../../../presentational/display/TransferList";
 
-const useStyles = makeStyles((theme: Theme) =>
-	createStyles({
-		root: {
-			margin: "auto"
-		},
-		cardHeader: {
-			padding: theme.spacing(1, 2)
-		},
-		list: {
-			width: 200,
-			height: 230,
-			backgroundColor: theme.palette.background.paper,
-			overflow: "auto"
-		},
-		button: {
-			margin: theme.spacing(0.5, 0)
-		}
-	})
-);
-
-function not(a: number[], b: number[]) {
-	return a.filter(value => b.indexOf(value) === -1);
+interface VehicleTransformListFormProps {
+	clientId: number;
 }
 
-function intersection(a: number[], b: number[]) {
-	return a.filter(value => b.indexOf(value) !== -1);
+interface Props extends VehicleTransformListFormProps {
+	vehicles: ReduxState["vehicles"];
 }
 
-function union(a: number[], b: number[]) {
-	return [...a, ...not(b, a)];
-}
+const VehicleTransferListForm: FC<Props> = ({ vehicles, clientId }) => {
+	const [items, setItems] = useState<VehicleResponse[]>([]);
+	const [right, setRight] = useState<VehicleResponse[]>([]);
 
-export default function TransferList() {
-	const classes = useStyles();
-	const [checked, setChecked] = React.useState<number[]>([]);
-	const [left, setLeft] = React.useState<number[]>([0, 1, 2, 3]);
-	const [right, setRight] = React.useState<number[]>([4, 5, 6, 7]);
+	useEffect(() => {
+		if (vehicles && vehicles.data) {
+			const left: VehicleResponse[] = [];
+			const right: VehicleResponse[] = [];
 
-	const leftChecked = intersection(checked, left);
-	const rightChecked = intersection(checked, right);
-
-	const handleToggle = (value: number) => () => {
-		const currentIndex = checked.indexOf(value);
-		const newChecked = [...checked];
-
-		if (currentIndex === -1) {
-			newChecked.push(value);
-		} else {
-			newChecked.splice(currentIndex, 1);
-		}
-
-		setChecked(newChecked);
-	};
-
-	const numberOfChecked = (items: number[]) =>
-		intersection(checked, items).length;
-
-	const handleToggleAll = (items: number[]) => () => {
-		if (numberOfChecked(items) === items.length) {
-			setChecked(not(checked, items));
-		} else {
-			setChecked(union(checked, items));
-		}
-	};
-
-	const handleCheckedRight = () => {
-		setRight(right.concat(leftChecked));
-		setLeft(not(left, leftChecked));
-		setChecked(not(checked, leftChecked));
-	};
-
-	const handleCheckedLeft = () => {
-		setLeft(left.concat(rightChecked));
-		setRight(not(right, rightChecked));
-		setChecked(not(checked, rightChecked));
-	};
-
-	const customList = (title: React.ReactNode, items: number[]) => (
-		<Card>
-			<CardHeader
-				className={classes.cardHeader}
-				avatar={
-					<Checkbox
-						onClick={handleToggleAll(items)}
-						checked={
-							numberOfChecked(items) === items.length && items.length !== 0
-						}
-						indeterminate={
-							numberOfChecked(items) !== items.length &&
-							numberOfChecked(items) !== 0
-						}
-						disabled={items.length === 0}
-						inputProps={{ "aria-label": "all items selected" }}
-					/>
+			for (const vehicle of vehicles.data) {
+				if (clientId === vehicle.clientId) {
+					right.push(vehicle);
+				} else if (vehicle.clientId === null) {
+					left.push(vehicle);
 				}
-				title={title}
-				subheader={`${numberOfChecked(items)}/${items.length} selected`}
-			/>
-			<Divider />
-			<List className={classes.list} dense component="div" role="list">
-				{items.map((value: number) => {
-					const labelId = `transfer-list-all-item-${value}-label`;
-
-					return (
-						<ListItem
-							key={value}
-							role="listitem"
-							button
-							onClick={handleToggle(value)}
-						>
-							<ListItemIcon>
-								<Checkbox
-									checked={checked.indexOf(value) !== -1}
-									tabIndex={-1}
-									disableRipple
-									inputProps={{ "aria-labelledby": labelId }}
-								/>
-							</ListItemIcon>
-							<ListItemText id={labelId} primary={`List item ${value + 1}`} />
-						</ListItem>
-					);
-				})}
-				<ListItem />
-			</List>
-		</Card>
-	);
+			}
+			setItems([...left, ...right]);
+			setRight(right);
+		}
+	}, [vehicles]);
 
 	return (
-		<Grid
-			container
-			spacing={2}
-			justify="center"
-			alignItems="center"
-			className={classes.root}
-		>
-			<Grid item>{customList("Choices", left)}</Grid>
-			<Grid item>
-				<Grid container direction="column" alignItems="center">
-					<Button
-						variant="outlined"
-						size="small"
-						className={classes.button}
-						onClick={handleCheckedRight}
-						disabled={leftChecked.length === 0}
-						aria-label="move selected right"
-					>
-						&gt;
-					</Button>
-					<Button
-						variant="outlined"
-						size="small"
-						className={classes.button}
-						onClick={handleCheckedLeft}
-						disabled={rightChecked.length === 0}
-						aria-label="move selected left"
-					>
-						&lt;
-					</Button>
-				</Grid>
-			</Grid>
-			<Grid item>{customList("Chosen", right)}</Grid>
-		</Grid>
+		<TransferList<VehicleResponse>
+			onSubmit={(e, data) => {
+				api.updateClient({
+					id: clientId,
+					vehicles: data.map(value => value.id)
+				});
+			}}
+			items={items}
+			right={right}
+			onChange={right => setRight(right)}
+			comparator={(a, b) => a.clientId === b.clientId}
+			listMapper={item => ({
+				id: item.id,
+				primaryLabel: item.plateNumber,
+				secondaryLabel: `${item.brand} ${item.model}`
+			})}
+		/>
 	);
-}
+};
+
+const mapStateToProps = ({ vehicles }: ReduxState) => ({
+	vehicles
+});
+
+export default connect(mapStateToProps)(VehicleTransferListForm);
