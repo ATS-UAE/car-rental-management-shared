@@ -24,7 +24,7 @@ router.post("/", async ({ body }, res) => {
 			});
 			if (!existingEmail) {
 				await sendInvite({ email: body.email });
-				response.handleSuccess(res, `Invite has been sent to ${body.email}`);
+				response.handleSuccess(`Invite has been sent to ${body.email}`, res);
 			} else {
 				throw new Error("Email is already registered.");
 			}

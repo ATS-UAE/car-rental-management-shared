@@ -23,7 +23,7 @@ router.get("/", async ({ user }, res) => {
 	try {
 		let vehicles = await VehicleDataSource.getAll();
 		response.setData(vehicles);
-		response.handleSuccess(res, `Found ${vehicles.length} vehicles.`);
+		response.handleSuccess(`Found ${vehicles.length} vehicles.`, res);
 	} catch (e) {
 		response.handleError(e, res);
 	}
@@ -82,7 +82,7 @@ router.get("/:id", async ({ user, params }, res) => {
 			...foundVehicle.get({ plain: true }),
 			categories: (await foundVehicle.getCategories()).map(c => c.id)
 		});
-		response.handleSuccess(res, `Vehicle with ID ${params.id} found.`);
+		response.handleSuccess(`Vehicle with ID ${params.id} found.`, res);
 	} catch (e) {
 		response.handleError(e, res);
 	}
@@ -155,8 +155,8 @@ router.delete(
 			});
 			response.setData(deletedVehicle.get({ plain: true }));
 			response.handleSuccess(
-				res,
-				`Vehicle with ID ${params.id} has been deleted.`
+				`Vehicle with ID ${params.id} has been deleted.`,
+				res
 			);
 		} catch (e) {
 			response.handleError(e, res);

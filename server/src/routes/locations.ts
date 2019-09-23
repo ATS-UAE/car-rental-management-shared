@@ -22,7 +22,7 @@ router.get("/", async ({ user }, res) => {
 	try {
 		const locations = await LocationDataSource.getAll();
 		response.setData(locations);
-		response.handleSuccess(res, `Found ${locations.length} locations. `);
+		response.handleSuccess(`Found ${locations.length} locations. `, res);
 	} catch (e) {
 		response.handleError(e, res);
 	}
@@ -44,7 +44,7 @@ router.post(
 			response.setData(createdLocation);
 			response.handleSuccess(res, "Location has been created.");
 		} catch (e) {
-			response.handleError(res, e);
+			response.handleError(e, res);
 		}
 
 		res.json(response);
@@ -61,8 +61,8 @@ router.get("/:id", async ({ user, params }, res) => {
 
 		response.setData(foundLocation.get({ plain: true }));
 		response.handleSuccess(
-			res,
-			`Found location with ID of ${foundLocation.id}`
+			`Found location with ID of ${foundLocation.id}`,
+			res
 		);
 	} catch (e) {
 		response.handleError(e, res);
@@ -113,8 +113,8 @@ router.delete("/:id", async ({ user, params }, res) => {
 		let deletedLocation = await LocationDataSource.delete(params.id);
 		response.setData(deletedLocation.get({ plain: true }));
 		response.handleSuccess(
-			res,
-			`Location with ID ${params.id} has been deleted.`
+			`Location with ID ${params.id} has been deleted.`,
+			res
 		);
 	} catch (e) {
 		response.handleError(e, res);

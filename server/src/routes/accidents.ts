@@ -22,7 +22,7 @@ router.get("/", async ({ user }, res) => {
 	try {
 		const accidents = await AccidentDataSource.getAll();
 		response.setData(accidents);
-		response.handleSuccess(res, `Found ${accidents.length} accidents.`);
+		response.handleSuccess(`Found ${accidents.length} accidents.`, res);
 	} catch (e) {
 		response.handleError(e, res);
 	}
@@ -85,7 +85,7 @@ router.get("/:id", async ({ user, params }, res) => {
 	try {
 		const foundAccident = await AccidentDataSource.get(params.id);
 		response.setData(foundAccident.get({ plain: true }));
-		response.handleSuccess(res, `Found accident with ID ${params.id}`);
+		response.handleSuccess(`Found accident with ID ${params.id}`, res);
 	} catch (e) {
 		response.handleError(e, res);
 	}
@@ -164,8 +164,8 @@ router.delete("/:id", async ({ user, params }, res, next) => {
 	try {
 		await AccidentDataSource.delete(params.id);
 		response.handleSuccess(
-			res,
-			`Accident with ID ${params.id} has been deleted.`
+			`Accident with ID ${params.id} has been deleted.`,
+			res
 		);
 	} catch (e) {
 		response.handleError(e, res);

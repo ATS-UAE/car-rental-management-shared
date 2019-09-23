@@ -12,7 +12,7 @@ router.get("/", async ({ user }, res) => {
 	try {
 		const clients = await ClientDataSource.getAll();
 		response.setData(clients);
-		response.handleSuccess(res, `Found ${clients.length} accidents.`);
+		response.handleSuccess(`Found ${clients.length} accidents.`, res);
 	} catch (e) {
 		response.handleError(e, res);
 	}
@@ -27,7 +27,7 @@ router.post("/", async ({ user, body }, res) => {
 	try {
 		const createdClient = await ClientDataSource.create(body);
 		response.setData(createdClient);
-		response.handleSuccess(res, "Client has been created");
+		response.handleSuccess("Client has been created", res);
 	} catch (e) {
 		response.handleError(e, res);
 	}
@@ -45,7 +45,7 @@ router.get("/:id", async ({ user, params }, res) => {
 			...foundClient.get({ plain: true }),
 			locations: (await foundClient.getLocations()).map(c => c.id)
 		});
-		response.handleSuccess(res, `Found accident with ID ${params.id}`);
+		response.handleSuccess(`Found accident with ID ${params.id}`, res);
 	} catch (e) {
 		response.handleError(e, res);
 	}
@@ -64,8 +64,8 @@ router.patch("/:id", async ({ user, params, body }, res) => {
 		);
 		response.setData(updatedValue);
 		response.handleSuccess(
-			res,
-			`Client with ID ${params.id} has been updated.`
+			`Client with ID ${params.id} has been updated.`,
+			res
 		);
 	} catch (e) {
 		response.handleError(e, res);
@@ -82,8 +82,8 @@ router.delete("/:id", async ({ user, params }, res) => {
 	} catch (e) {
 		await ClientDataSource.delete(params.id);
 		response.handleSuccess(
-			res,
-			`Client with ID ${params.id} has been deleted.`
+			`Client with ID ${params.id} has been deleted.`,
+			res
 		);
 	}
 

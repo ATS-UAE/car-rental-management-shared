@@ -29,7 +29,7 @@ router.get("/", requireLogin, async ({ user }, res) => {
 	try {
 		const users = await UserDataSource.getAll();
 		response.setData(users);
-		response.handleSuccess(res, `Found ${users.length} users.`);
+		response.handleSuccess(`Found ${users.length} users.`, res);
 	} catch (e) {
 		response.handleError(e, res);
 	}

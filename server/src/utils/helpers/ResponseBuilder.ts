@@ -48,7 +48,7 @@ export default class ResponseBuilder {
 		}
 	}
 
-	handleSuccess(res: any, message: string) {
+	handleSuccess(message: string, res: any) {
 		this.setMessage(message);
 		this.setCode(200);
 		this.setSuccess(true);
