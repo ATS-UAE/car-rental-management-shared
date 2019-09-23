@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { connect } from "react-redux";
 import UserForm from "./UserForm";
-import { api, apiErrorHandler } from "../../../utils/helpers";
+import { api, apiErrorHandler } from "../../../../utils/helpers";
 
 function UserFormGuestSignUp({ onSubmit, classes }) {
 	let [newUser, setNewUser] = useState({});

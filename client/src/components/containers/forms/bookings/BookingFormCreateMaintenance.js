@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import moment from "moment";
 import BookingForm from "./BookingForm";
 import * as reduxActions from "../../../../actions";
-import { api, apiErrorHandler } from "../../../utils/helpers";
+import { api, apiErrorHandler } from "../../../../utils/helpers";
 import { BookingType } from "../../../../variables/enums";
 
 function BookingFromCreate({

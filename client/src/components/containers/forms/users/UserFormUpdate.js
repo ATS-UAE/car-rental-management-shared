@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { connect } from "react-redux";
 import UserForm from "./UserForm";
 import * as reduxActions from "../../../../actions";
-import { api, apiErrorHandler } from "../../../utils/helpers";
+import { api, apiErrorHandler } from "../../../../utils/helpers";
 
 function UserFormUpdate({
 	fetchUsers,
