@@ -14,7 +14,7 @@ import {
 } from "@material-ui/core";
 
 import * as reduxActions from "../../../../actions";
-import { api, hasActiveBooking, toTitleWords } from "../../../../utils/helpers";
+import { api, hasActiveBooking, toTitleWords, apiErrorHandler } from "../../../../utils/helpers";
 import { BookingType, Role } from "../../../../variables/enums";
 import CardList from "../../../presentational/display/CardList";
 import LocationMapSelectForm from "../../../presentational/forms/LocationMapSelectForm";
@@ -469,7 +469,7 @@ function BookingFormCreateStepper({
 									history.push("/bookings");
 								})
 								.catch(e => {
-									setErrorNotes([e]);
+									setErrorNotes([apiErrorHandler(e).message]);
 									fetchBookings();
 									fetchVehicles();
 									setLoading(false);

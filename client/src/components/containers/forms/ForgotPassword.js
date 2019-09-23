@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import GuestInvite from "../../presentational/forms/GuestInvite";
 import PasswordChange from "../../presentational/forms/PasswordChange";
 import { Grid, Button, Typography } from "@material-ui/core";
-import { api } from "../../../utils/helpers";
+import { api, apiErrorHandler } from "../../../utils/helpers";
 
 export default function InviteGuestButtonDialog({
 	onSubmit,
@@ -57,7 +57,7 @@ export default function InviteGuestButtonDialog({
 											})
 											.catch(e => {
 												setDisabledButton(false);
-												setErrorNotes([e]);
+												setErrorNotes([apiErrorHandler(e).message]);
 											});
 									}}
 								>
@@ -119,7 +119,7 @@ export default function InviteGuestButtonDialog({
 												onPasswordReset && onPasswordReset();
 											})
 											.catch(e => {
-												setErrorNotes([e]);
+												setErrorNotes([apiErrorHandler(e).message]);
 												setDisabledButton(false);
 											});
 									}}

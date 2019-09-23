@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { connect } from "react-redux";
 import VehicleForm from "./VehicleForm";
 import * as reduxActions from "../../../../actions";
-import { api } from "../../../../utils/helpers";
+import { api, apiErrorHandler } from "../../../utils/helpers";
 
 function VehicleFormUpdate({
 	fetchVehicles,
@@ -38,7 +38,7 @@ function VehicleFormUpdate({
 						onSubmit && onSubmit();
 					})
 					.catch(e => {
-						setErrorNotes([e]);
+						setErrorNotes([apiErrorHandler(e).message]);
 						setLoading(false);
 					});
 			}}

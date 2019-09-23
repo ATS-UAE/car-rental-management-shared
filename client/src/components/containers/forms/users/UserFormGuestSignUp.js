@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { connect } from "react-redux";
 import UserForm from "./UserForm";
-import { api } from "../../../../utils/helpers";
+import { api, apiErrorHandler } from "../../../utils/helpers";
 
 function UserFormGuestSignUp({ onSubmit, classes }) {
 	let [newUser, setNewUser] = useState({});
@@ -31,7 +31,7 @@ function UserFormGuestSignUp({ onSubmit, classes }) {
 					.createUser({ ...newUser, inviteToken })
 					.then(() => onSubmit && onSubmit())
 					.catch(e => {
-						setErrorNotes([e]);
+						setErrorNotes([apiErrorHandler(e).message]);
 						setLoading(false);
 					});
 			}}

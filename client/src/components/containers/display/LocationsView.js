@@ -8,7 +8,7 @@ import WorldMap from "../../presentational/display/WorldMap";
 import LocationMapMarker from "../../presentational/display/LocationMapMarker";
 import LocationForm from "../../presentational/forms/LocationForm";
 import { Resource, Action } from "../../../variables/enums";
-import { api } from "../../../utils/helpers";
+import { api, apiErrorHandler } from "../../../utils/helpers";
 import Can from "../layout/Can";
 
 function LocationsView({ locations, fetchLocations, classes }) {
@@ -61,7 +61,7 @@ function LocationsView({ locations, fetchLocations, classes }) {
 									setFormData({});
 								})
 								.catch(e => {
-									setErrorNotes([e]);
+									setErrorNotes([apiErrorHandler(e).message]);
 									setDisabledButton(false);
 								});
 						}}
@@ -87,7 +87,7 @@ function LocationsView({ locations, fetchLocations, classes }) {
 									setFormData({});
 								})
 								.catch(e => {
-									setErrorNotes([e]);
+									setErrorNotes([apiErrorHandler(e).message]);
 									setDisabledButton(false);
 								});
 						}}

@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { Grid, Button } from "@material-ui/core";
 import VehicleForm from "../../presentational/forms/VehicleForm";
 import * as reduxActions from "../../../actions";
-import { api } from "../../../utils/helpers";
+import { api, apiErrorHandler } from "../../../utils/helpers";
 import DialogButton from "../../presentational/forms/DialogButton";
 import { Resource, Action } from "../../../variables/enums";
 import Can from "../layout/Can";
@@ -66,7 +66,7 @@ function NewVehicleButtonDialog({
 							onSubmit && onSubmit();
 						})
 						.catch(e => {
-							setErrorNotes([e]);
+							setErrorNotes([apiErrorHandler(e).message]);
 							setDisabledButton(false);
 						});
 				}}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import GuestInvite from "../../presentational/forms/GuestInvite";
 import { Grid, Button } from "@material-ui/core";
-import { api } from "../../../utils/helpers";
+import { api, apiErrorHandler } from "../../../utils/helpers";
 import { Resource, Action } from "../../../variables/enums";
 import DialogButton from "../../presentational/forms/DialogButton";
 import Can from "../layout/Can";
@@ -43,7 +43,7 @@ export default function InviteGuestButtonDialog({ onSubmit }) {
 						})
 						.catch(e => {
 							setDisabledButton(false);
-							setErrorNotes([e]);
+							setErrorNotes([apiErrorHandler(e).message]);
 						});
 				}}
 			>

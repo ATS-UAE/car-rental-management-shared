@@ -4,7 +4,7 @@ import { Grid, Button } from "@material-ui/core";
 import * as reduxActions from "../../../actions";
 import TableView from "../../presentational/forms/TableView";
 import VehicleForm from "../../presentational/forms/VehicleForm";
-import { api } from "../../../utils/helpers";
+import { api, apiErrorHandler } from "../../../utils/helpers";
 import { Resource, Action } from "../../../variables/enums";
 import Can from "../layout/Can";
 
@@ -116,7 +116,7 @@ function VehicleTableView({
 												onSubmit && onSubmit();
 											})
 											.catch(e => {
-												setErrorNotes([e]);
+												setErrorNotes([apiErrorHandler(e).message]);
 												setDisabledButton(false);
 											});
 									}}
