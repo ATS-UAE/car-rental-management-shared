@@ -63,11 +63,14 @@ router.post(
 	"/login",
 	function(req, res, next) {
 		passport.authenticate("local", function(err, user, info) {
+			let response = new ResponseBuilder();
 			if (err) {
-				return next(err);
+				response.setMessage(err.message);
+				response.setCode(401);
+				res.status(401);
+				return res.json(response);
 			}
 			if (!user) {
-				let response = new ResponseBuilder();
 				response.setMessage("Invalid login details");
 				response.setCode(401);
 				res.status(401);
@@ -78,14 +81,12 @@ router.post(
 				db.User.findByPk(user.id).then(user => {
 					user.update({ lastLogin: moment().format("YYYY-MM-DD HH:mm:ss") });
 				});
-				let response = new ResponseBuilder();
 				if (err) {
 					return next(err);
 				}
-				response.setMessage("Logged in successfully");
-				response.setCode(200);
-				response.setSuccess(true);
-				return res.json(response);
+				response.handleSuccess("Logged in successfully", res);
+
+				return res.json(response.toObject());
 			});
 		})(req, res, next);
 	},

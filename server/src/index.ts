@@ -10,6 +10,7 @@ import bodyParser from "body-parser";
 import expressSession from "express-session";
 
 import { getStaticFilesPath } from "./utils/helpers";
+import { Role } from "./variables/enums";
 import config from "./config";
 import db from "./models";
 import authRoutes from "./routes/auth";
@@ -30,13 +31,22 @@ passport.use(
 	new Strategy(async (username, password, cb) => {
 		try {
 			let existingUser = await db.User.findOne({
+				include: [{ model: db.Role, as: "role" }],
 				where: { username }
 			});
+
 			if (existingUser) {
 				let valid = await bcrypt.compare(password, existingUser.password);
 
 				if (!valid || existingUser.blocked) {
 					return cb(null, false);
+				} else if (
+					existingUser.role.name !== Role.MASTER &&
+					existingUser.clientId === null
+				) {
+					throw new Error(
+						"Your account does not belong to a client. Please contact customer support."
+					);
 				} else {
 					return cb(null, existingUser);
 				}
@@ -57,6 +67,7 @@ passport.deserializeUser(async (id, cb) => {
 		let user = await db.User.findByPk(id, {
 			include: [{ model: db.Role, as: "role" }]
 		});
+
 		cb(null, {
 			...user.get({ plain: true }),
 			categories: (await user.getCategories()).map(c => c.id)
