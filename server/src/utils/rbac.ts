@@ -195,7 +195,8 @@ export default accessControl;
 export const roles = {
 	admin: adminRole,
 	keyManager: keyManagerRole,
-	guest: guestRole
+	guest: guestRole,
+	master: masterRole
 };
 
 export const resources = {
@@ -204,5 +205,6 @@ export const resources = {
 	locations: locationsResource,
 	users: usersResource,
 	enums: enumsResource,
-	accidents: accidentsResource
+	accidents: accidentsResource,
+	clients: clientsResource
 };
