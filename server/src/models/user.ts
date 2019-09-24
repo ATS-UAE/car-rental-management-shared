@@ -47,9 +47,6 @@ export default (sequelize, { STRING, DATE, BOOLEAN }) => {
 					notNull: { msg: "Mobile number is required" }
 				}
 			},
-			clientNo: {
-				type: STRING
-			},
 			contractNo: {
 				type: STRING
 			},
@@ -66,18 +63,13 @@ export default (sequelize, { STRING, DATE, BOOLEAN }) => {
 		{
 			validate: {
 				checkUsername() {
-					if (this.username.length < 4) {
+					if (this.username && this.username.length < 4) {
 						throw new Error("Username length must be at least 4 characters.");
 					}
 				},
 				checkPasswordLength() {
-					if (this.password.length < 8) {
+					if (this.password && this.password.length < 8) {
 						throw new Error("Password length must be at least 8 characters.");
-					}
-				},
-				checkUserParent() {
-					if (!this.parentCompanyId && this.userTypeId > 2) {
-						throw new Error("User must have a parent company!");
 					}
 				}
 			}

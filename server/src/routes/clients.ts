@@ -63,13 +63,14 @@ router.patch("/:id", async ({ user, params, body }, res) => {
 			params.id,
 			body
 		);
+		console.log(previousValue, updatedValue);
 		response.setData(updatedValue);
 		response.handleSuccess(
 			`Client with ID ${params.id} has been updated.`,
 			res
 		);
 	} catch (e) {
-		console.error(e);
+		console.error("Errors", e);
 		response.handleError(e, res);
 	}
 

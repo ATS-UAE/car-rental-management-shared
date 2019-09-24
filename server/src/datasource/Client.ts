@@ -1,3 +1,4 @@
+import { Op } from "sequelize";
 import _ from "lodash";
 import DataSource from "./DataSource";
 import { Role, Operation, Resource } from "../variables/enums";
@@ -13,7 +14,7 @@ export default class Client extends DataSource {
 		super(db, userAccessor, Resource.CLIENTS);
 	}
 
-	async get(id: number): Promise<any> {
+	get = async (id: number): Promise<any> => {
 		let role: Role = this.user.role.name;
 		let foundClient = await this.getClient(id);
 		if (!foundClient) {
@@ -29,7 +30,7 @@ export default class Client extends DataSource {
 			throw new InvalidPermissionException();
 		}
 		return foundClient;
-	}
+	};
 
 	async getAll(): Promise<any> {
 		let role: Role = this.user.role.name;
@@ -50,8 +51,7 @@ export default class Client extends DataSource {
 		return vehicles;
 	}
 
-	async update(id: number, data?: any): Promise<[any, any]> {
-		let role: Role = this.user.role.name;
+	update = async (id: number, data?: any): Promise<[any, any]> => {
 		let foundClient = await this.get(id);
 
 		const { access, excludedFields } = await this.getUserPermissions(
@@ -65,20 +65,21 @@ export default class Client extends DataSource {
 			throw new InvalidPermissionException();
 		}
 		if (data.locations && !excludedFields.includes("locations")) {
-			foundClient.setLocations(data.locations);
+			await foundClient.setLocations(data.locations);
 		}
 		if (data.users && !excludedFields.includes("users")) {
-			foundClient.setUsers(data.users);
+			await foundClient.setUsers(data.users);
 		}
 		if (data.vehicles && !excludedFields.includes("vehicles")) {
-			foundClient.setVehicles(data.vehicles);
+			await foundClient.setVehicles(data.vehicles);
 		}
 
 		await foundClient.update(
 			_.omit(data, [...excludedFields, "locations", "users", "vehicles"])
 		);
+
 		return [foundClient, await this.get(id)];
-	}
+	};
 
 	async delete(id: number): Promise<any> {
 		let role: Role = this.user.role.name;

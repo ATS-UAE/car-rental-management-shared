@@ -44,7 +44,7 @@ export default class ResponseBuilder {
 			res.status(500);
 		}
 		this.setMessage(e.message);
-		if (e.fields && e.fields.length > 0) {
+		if (e.fields && e.fields.length) {
 			e.fields.forEach((error: string) => this.appendError(error));
 		}
 	}
