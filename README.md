@@ -49,3 +49,15 @@
 ### Guests
 
 - Can access only resource within its client.
+
+## Multi Client
+
+Vehicles, users, locations are divided into multiple clients
+
+### Creating a client
+
+1. Only a **MASTER** account can create clients.
+2. After a creating a client, an initial user must be provided.
+3. To provide access to some resources to the users in the clients, the resource must be added manually.
+
+### Vehicles

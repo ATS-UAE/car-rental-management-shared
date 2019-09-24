@@ -12,6 +12,7 @@ import TransferList from "../../../presentational/display/TransferList";
 import Loading from "../../../presentational/layout/Loading";
 interface LocationTransferListFormProps {
 	clientId: number;
+	onSubmit?: () => void;
 }
 
 interface LocationTransferListFormStateProps {
@@ -25,7 +26,8 @@ type Props = LocationTransferListFormProps &
 const LocationTransferListForm: FC<Props> = ({
 	locations,
 	clientId,
-	fetchLocations
+	fetchLocations,
+	onSubmit
 }) => {
 	const [items, setItems] = useState<LocationResponse[]>([]);
 	const [right, setRight] = useState<LocationResponse[]>([]);
@@ -72,12 +74,13 @@ const LocationTransferListForm: FC<Props> = ({
 							id: clientId,
 							locations: data.map(value => value.id)
 						})
-						.then(fetchLocations);
+						.then(fetchLocations)
+						.then(() => onSubmit && onSubmit());
 				}}
 				items={items}
 				right={right}
 				onChange={right => setRight(right)}
-				comparator={(a, b) => a.clientId === b.clientId}
+				comparator={(a, b) => a.id === b.id && a.clientId === b.clientId}
 				listMapper={item => ({
 					id: item.id,
 					primaryLabel: item.name,

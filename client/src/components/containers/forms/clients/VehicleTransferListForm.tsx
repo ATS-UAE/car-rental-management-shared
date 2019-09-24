@@ -7,13 +7,18 @@ import TransferList from "../../../presentational/display/TransferList";
 
 interface VehicleTransformListFormProps {
 	clientId: number;
+	onSubmit?: () => void;
 }
 
 interface Props extends VehicleTransformListFormProps {
 	vehicles: ReduxState["vehicles"];
 }
 
-const VehicleTransferListForm: FC<Props> = ({ vehicles, clientId }) => {
+const VehicleTransferListForm: FC<Props> = ({
+	vehicles,
+	clientId,
+	onSubmit
+}) => {
 	const [items, setItems] = useState<VehicleResponse[]>([]);
 	const [right, setRight] = useState<VehicleResponse[]>([]);
 
@@ -37,15 +42,17 @@ const VehicleTransferListForm: FC<Props> = ({ vehicles, clientId }) => {
 	return (
 		<TransferList<VehicleResponse>
 			onSubmit={(e, data) => {
-				api.updateClient({
-					id: clientId,
-					vehicles: data.map(value => value.id)
-				});
+				api
+					.updateClient({
+						id: clientId,
+						vehicles: data.map(value => value.id)
+					})
+					.then(() => onSubmit && onSubmit());
 			}}
 			items={items}
 			right={right}
 			onChange={right => setRight(right)}
-			comparator={(a, b) => a.clientId === b.clientId}
+			comparator={(a, b) => a.id === b.id && a.clientId === b.clientId}
 			listMapper={item => ({
 				id: item.id,
 				primaryLabel: item.plateNumber,

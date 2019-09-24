@@ -67,16 +67,16 @@ class TransferList<T extends HasId> extends Component<
 		super(props);
 
 		const { items, right } = props;
-
+		console.log(this.not(items, right));
 		this.state = {
 			checked: [],
 			left: this.not(items, right)
 		};
 	}
 
-	componentWillUpdate = nextProps => {
-		if (this.props.items !== nextProps.items) {
-			this.setState({ left: this.not(nextProps.items, this.props.right) });
+	componentDidUpdate = prevProps => {
+		if (this.props.items !== prevProps.items) {
+			this.setState({ left: this.not(this.props.items, this.props.right) });
 		}
 	};
 
@@ -136,8 +136,8 @@ class TransferList<T extends HasId> extends Component<
 		const { left, checked } = this.state;
 		const { right, onChange } = this.props;
 
-		this.setState({ left: left.concat(this.rightChecked) });
 		onChange(this.not(right, this.rightChecked));
+		this.setState({ left: left.concat(this.rightChecked) });
 		this.setState({ checked: this.not(checked, this.rightChecked) });
 	};
 
@@ -205,7 +205,7 @@ class TransferList<T extends HasId> extends Component<
 	render() {
 		const { checked, left } = this.state;
 		const { classes, onSubmit, right } = this.props;
-
+		console.log(left);
 		this.leftChecked = this.intersection(checked, left);
 		this.rightChecked = this.intersection(checked, right);
 
