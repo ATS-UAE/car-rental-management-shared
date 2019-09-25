@@ -47,6 +47,7 @@ router.post(
 		const UserDataSource = new User(db, user);
 		let inviteTokenUsed = false;
 		let email = body.email;
+		let clientId: number | null = (user && user.clientId) || null;
 
 		// Consume invite token
 		if (body.inviteToken) {
@@ -54,6 +55,7 @@ router.post(
 			if (inviteToken) {
 				inviteTokenUsed = true;
 				email = inviteToken.email;
+				clientId = inviteToken.clientId;
 			}
 		}
 
@@ -64,7 +66,8 @@ router.post(
 					...body,
 					userImageSrc: fileLocation,
 					email,
-					password: hashedPassword
+					password: hashedPassword,
+					clientId: clientId
 				},
 				{
 					invited: inviteTokenUsed
