@@ -210,7 +210,7 @@ class UserTableView extends Component {
 					auth.data.role.name,
 					Action.READ,
 					Resource.USERS,
-					{ targetUser: user, accessor: auth.data }
+					{ target: user, accessor: auth.data }
 				);
 				if (accessible) {
 					const userRole = auth.data.role.name;

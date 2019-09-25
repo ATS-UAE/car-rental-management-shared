@@ -43,7 +43,7 @@ const Users = ({
 				}}
 			/>
 			<div className={classes.actions}>
-				{auth.data.role.name !== Role.Guest && <InviteGuestButtonDialog />}
+				{auth.data.role.name !== Role.GUEST && <InviteGuestButtonDialog />}
 				<Can
 					action={"CREATE"}
 					resource={Resource.USERS}
