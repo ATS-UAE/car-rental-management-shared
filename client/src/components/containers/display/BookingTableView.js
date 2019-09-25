@@ -335,7 +335,7 @@ class BookingTableView extends Component {
 					auth.data.role.name,
 					Action.READ,
 					Resource.BOOKINGS,
-					{ target, accessor: auth.data }
+					{ target: booking, accessor: auth.data }
 				);
 				if (accessible) {
 					const vehicleData = getRelatedDataById(
