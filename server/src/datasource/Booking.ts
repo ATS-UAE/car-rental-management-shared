@@ -112,7 +112,7 @@ export default class Booking extends DataSource {
 		let role: Role = this.user.role.name;
 
 		let accessible = await RBAC.can(role, Operation.CREATE, Resource.BOOKINGS, {
-			accessor: this.user
+			accessor: this.user,
 			body: data
 		});
 		let replacementVehicle;
