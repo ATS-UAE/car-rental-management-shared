@@ -4,7 +4,6 @@ import { Grid, Button } from "@material-ui/core";
 import { api, apiErrorHandler } from "../../../utils/helpers";
 import { Resource, Action } from "../../../variables/enums";
 import DialogButton from "../../presentational/forms/DialogButton";
-import Can from "../layout/Can";
 
 export default function InviteGuestButtonDialog({ onSubmit }) {
 	let [formData, setFormData] = useState({});
@@ -52,29 +51,23 @@ export default function InviteGuestButtonDialog({ onSubmit }) {
 		</Grid>
 	);
 	return (
-		<Can
-			action={Action.READ}
-			resource={Resource.USERS}
-			yes={() => (
-				<DialogButton
-					open={open}
-					onClick={() => setOpen(true)}
-					onClose={() => setOpen(false)}
-					buttonText="Invite Customer"
-				>
-					<GuestInvite
-						value={formData}
-						title="Invite Customer"
-						onSubmit={() => {}}
-						values={formData}
-						onChange={setFormData}
-						errors={errors}
-						onError={setErrors}
-						footer={footer}
-						errorNotes={errorNotes}
-					/>
-				</DialogButton>
-			)}
-		/>
+		<DialogButton
+			open={open}
+			onClick={() => setOpen(true)}
+			onClose={() => setOpen(false)}
+			buttonText="Invite Customer"
+		>
+			<GuestInvite
+				value={formData}
+				title="Invite Customer"
+				onSubmit={() => {}}
+				values={formData}
+				onChange={setFormData}
+				errors={errors}
+				onError={setErrors}
+				footer={footer}
+				errorNotes={errorNotes}
+			/>
+		</DialogButton>
 	);
 }

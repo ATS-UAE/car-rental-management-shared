@@ -40,9 +40,15 @@ export const sendPasswordResetToken = ({
 	});
 };
 
-export const sendInvite = ({ email }: { email: string }): Promise<string> => {
+export const sendInvite = ({
+	email,
+	clientId
+}: {
+	email: string;
+	clientId: number;
+}): Promise<string> => {
 	const transporter = getTransport();
-	let token = jwt.sign({ email }, secretKey, { expiresIn: "7d" });
+	let token = jwt.sign({ email, clientId }, secretKey, { expiresIn: "7d" });
 	const compiled = compileTemplate(getTemplate("invite"), {
 		company: "LeasePlan",
 		contactEmail: "support@atsuae.net",

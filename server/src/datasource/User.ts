@@ -96,7 +96,8 @@ export default class User extends DataSource {
 	}
 
 	async create(data: any, options: { invited?: boolean } = {}): Promise<any> {
-		let role: Role = this.user.role.name;
+		let role: Role =
+			(this.user && this.user.role && this.user.role.name) || null;
 
 		let accessible =
 			options.invited ||
