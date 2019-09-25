@@ -20,7 +20,8 @@ const Users = ({
 	match,
 	history,
 	fetchCategories,
-	fetchClients
+	fetchClients,
+	auth
 }) => {
 	useEffect(() => {
 		fetchUsers();
@@ -85,7 +86,7 @@ const styles = theme => ({
 
 export default compose(
 	connect(
-		null,
+		({ auth }) => ({ auth }),
 		reduxActions
 	),
 	withStyles(styles)
