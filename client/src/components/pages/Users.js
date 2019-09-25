@@ -6,9 +6,9 @@ import classNames from "classnames";
 import { compose } from "recompose";
 import { connect } from "react-redux";
 import * as reduxActions from "../../actions";
-import { Resource, Role } from "../../variables/enums";
+import { Role as RoleEnum } from "../../variables/enums";
 import InviteGuestButtonDialog from "../containers/forms/InviteGuestButtonDialog";
-import Can from "../containers/layout/Can";
+import { permission, Role } from "../containers/layout/Role";
 import UserTableView from "../containers/display/UserTableView";
 import UserFormCreateDialog from "../containers/forms/users/UserFormCreateDialog";
 
@@ -44,8 +44,10 @@ const Users = ({
 				}}
 			/>
 			<div className={classes.actions}>
-				{auth.data.role.name !== Role.GUEST && <InviteGuestButtonDialog />}
-				{[Role.MASTER, Role.ADMIN].includes(auth.data.role.name) && (
+				<Role roles={permission.INVITE}>
+					<InviteGuestButtonDialog />
+				</Role>
+				<Role roles={permission.INVITE}>
 					<Button
 						color="primary"
 						variant="contained"
@@ -53,7 +55,7 @@ const Users = ({
 					>
 						New User
 					</Button>
-				)}
+				</Role>
 			</div>
 			<UserTableView location={location} match={match} history={history} />
 		</Paper>

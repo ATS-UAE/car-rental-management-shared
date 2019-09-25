@@ -3,19 +3,19 @@ import { connect } from "react-redux";
 import { Role as RoleEnum } from "../../../variables/enums";
 import { ReduxState } from "../../../typings";
 
+export { permission } from "../../../variables/permissions";
+
 export interface RoleProps {
-	roles?: RoleEnum[];
+	roles: RoleEnum[];
 }
 
 interface RoleStateProps {
 	role?: RoleEnum;
 }
 
-const Role: FC<RoleProps & RoleStateProps> = ({
-	roles = [],
-	children,
-	role
-}) => {
+type Props = RoleProps & RoleStateProps;
+
+const Component: FC<Props> = ({ roles, children, role }) => {
 	if (role && roles.includes(role)) {
 		return <>{children}</>;
 	}
@@ -26,4 +26,4 @@ const mapStateToProps = ({ auth }: ReduxState): RoleStateProps => ({
 	role: (auth && auth.data && auth.data.role.name) || undefined
 });
 
-export default connect(mapStateToProps)(Role);
+export const Role = connect(mapStateToProps)(Component);
