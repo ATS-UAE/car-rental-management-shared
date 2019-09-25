@@ -210,7 +210,7 @@ class UserTableView extends Component {
 					auth.data.role.name,
 					Action.READ,
 					Resource.USERS,
-					{ targetUser: user, user: auth.data, role: auth.data.role }
+					{ targetUser: user, accessor: auth.data }
 				);
 				if (accessible) {
 					const userRole = auth.data.role.name;
@@ -218,14 +218,16 @@ class UserTableView extends Component {
 						user.id === 1
 							? false
 							: await RBAC.can(userRole, Action.UPDATE, Resource.USERS, {
-									targetUser: user,
-									user: auth.data,
-									role: auth.data.role
+									target: user,
+									accessor: auth.data
 							  });
 					const canDelete =
 						user.id === 1
 							? false
-							: await RBAC.can(userRole, Action.DELETE, Resource.USERS);
+							: await RBAC.can(userRole, Action.DELETE, Resource.USERS, {
+									target: user,
+									accessor: auth.data
+							  });
 					const userSignUpDate = moment(user.createdAt, "X");
 
 					const data = {
@@ -283,9 +285,8 @@ class UserTableView extends Component {
 								Action.READ,
 								Resource.USERS,
 								{
-									user: auth.data,
-									targetUser: user.data,
-									role: auth.data.role
+									accessor: auth.data,
+									target: user.data
 								}
 							),
 							exclude: RBAC.getExcludedFields(
@@ -294,8 +295,7 @@ class UserTableView extends Component {
 								Resource.USERS,
 								{
 									user: auth.data,
-									targetUser: user.data,
-									role: auth.data.role
+									targetUser: user.data
 								}
 							)
 						};
@@ -308,9 +308,8 @@ class UserTableView extends Component {
 								Action.UPDATE,
 								Resource.USERS,
 								{
-									user: auth.data,
-									targetUser: user.data,
-									role: auth.data.role
+									accessor: auth.data,
+									target: user.data
 								}
 							),
 							exclude: RBAC.getExcludedFields(
@@ -318,9 +317,8 @@ class UserTableView extends Component {
 								Action.UPDATE,
 								Resource.USERS,
 								{
-									user: auth.data,
-									targetUser: user.data,
-									role: auth.data.role
+									accessor: auth.data,
+									target: user.data
 								}
 							)
 						};
@@ -331,9 +329,8 @@ class UserTableView extends Component {
 								Action.DELETE,
 								Resource.USERS,
 								{
-									user: auth.data,
-									targetUser: user.data,
-									role: auth.data.role
+									accessor: auth.data,
+									target: user.data
 								}
 							)
 						};

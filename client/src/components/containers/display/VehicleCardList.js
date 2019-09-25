@@ -39,7 +39,8 @@ function VehicleCardList({ vehicles, history, classes, auth, fetchVehicles }) {
 						access: await RBAC.can(
 							auth.data.role.name,
 							Action.READ,
-							Resource.VEHICLES
+							Resource.VEHICLES,
+							{ target: vehicle, accessor: auth.data }
 						),
 						exclude: RBAC.getExcludedFields(
 							auth.data.role.name,
@@ -52,7 +53,8 @@ function VehicleCardList({ vehicles, history, classes, auth, fetchVehicles }) {
 						access: await RBAC.can(
 							auth.data.role.name,
 							Action.UPDATE,
-							Resource.VEHICLES
+							Resource.VEHICLES,
+							{ target: vehicle, accessor: auth.data }
 						),
 						exclude: RBAC.getExcludedFields(
 							auth.data.role.name,
@@ -65,7 +67,8 @@ function VehicleCardList({ vehicles, history, classes, auth, fetchVehicles }) {
 						access: await RBAC.can(
 							auth.data.role.name,
 							Action.DELETE,
-							Resource.VEHICLES
+							Resource.VEHICLES,
+							{ target: vehicle, accessor: auth.data }
 						)
 					};
 

@@ -335,7 +335,7 @@ class BookingTableView extends Component {
 					auth.data.role.name,
 					Action.READ,
 					Resource.BOOKINGS,
-					{ booking, user: auth.data }
+					{ target, accessor: auth.data }
 				);
 				if (accessible) {
 					const vehicleData = getRelatedDataById(
@@ -416,7 +416,7 @@ class BookingTableView extends Component {
 								auth.data.role.name,
 								Action.READ,
 								Resource.BOOKINGS,
-								{ booking, user: auth.data }
+								{ target: booking, accessor: auth.data }
 							),
 							exclude: RBAC.getExcludedFields(
 								auth.data.role.name,
@@ -429,7 +429,8 @@ class BookingTableView extends Component {
 							access: await RBAC.can(
 								auth.data.role.name,
 								Action.UPDATE,
-								Resource.BOOKINGS
+								Resource.BOOKINGS,
+								{ accessor: auth.data, target: booking }
 							),
 							exclude: RBAC.getExcludedFields(
 								auth.data.role.name,
@@ -442,7 +443,8 @@ class BookingTableView extends Component {
 							access: await RBAC.can(
 								auth.data.role.name,
 								Action.DELETE,
-								Resource.BOOKINGS
+								Resource.BOOKINGS,
+								{ target: booking, accessor: auth.data }
 							)
 						};
 
@@ -450,7 +452,8 @@ class BookingTableView extends Component {
 							access: await RBAC.can(
 								auth.data.role.name,
 								Action.READ,
-								Resource.BOOKINGS
+								Resource.BOOKINGS,
+								{ target: booking, accessor: auth.data }
 							),
 							exclude: RBAC.getExcludedFields(
 								auth.data.role.name,
