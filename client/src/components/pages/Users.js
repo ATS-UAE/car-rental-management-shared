@@ -29,6 +29,7 @@ const Users = ({
 		fetchCategories();
 		fetchClients();
 	}, []);
+
 	return (
 		<Paper className={classNames(classes.paper, classes.root)}>
 			<Route
@@ -44,19 +45,15 @@ const Users = ({
 			/>
 			<div className={classes.actions}>
 				{auth.data.role.name !== Role.GUEST && <InviteGuestButtonDialog />}
-				<Can
-					action={"CREATE"}
-					resource={Resource.USERS}
-					yes={() => (
-						<Button
-							color="primary"
-							variant="contained"
-							onClick={() => history.push("/users/new")}
-						>
-							New User
-						</Button>
-					)}
-				/>
+				{[Role.MASTER, Role.ADMIN].includes(auth.data.role.name) && (
+					<Button
+						color="primary"
+						variant="contained"
+						onClick={() => history.push("/users/new")}
+					>
+						New User
+					</Button>
+				)}
 			</div>
 			<UserTableView location={location} match={match} history={history} />
 		</Paper>
