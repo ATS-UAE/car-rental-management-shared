@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import PropTypes from "prop-types";
 import moment from "moment";
-import { Typography, withWidth } from "@material-ui/core";
+import { Typography, withWidth, Grid } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import { compose } from "recompose";
 
@@ -36,7 +36,7 @@ function VehicleBookingRange({
 				</Typography>
 			)}
 			{includeDatePicker && (
-				<Fragment>
+				<Grid direction="column" container>
 					<DateTimePicker
 						value={dateRange.from}
 						label="Bookings From"
@@ -51,7 +51,7 @@ function VehicleBookingRange({
 							onDateChange({ ...dateRange, to: e.target.value });
 						}}
 					/>
-				</Fragment>
+				</Grid>
 			)}
 			{ticksMap && (
 				<div className={classes.graphContainer}>
@@ -90,9 +90,7 @@ function VehicleBookingRange({
 										key={vehicle.id}
 										onClick={() => onClick && onClick(vehicle)}
 									>
-										<Typography>{`${vehicle.brand} ${
-											vehicle.model
-										}`}</Typography>
+										<Typography>{`${vehicle.brand} ${vehicle.model}`}</Typography>
 										<BarRange values={values} />
 									</div>
 								);

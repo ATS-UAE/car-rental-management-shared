@@ -14,14 +14,9 @@ import {
 	api,
 	getBookingStatus,
 	getRelatedDataById
-} from "../../../utils";
-import {
-	resources,
-	actions,
-	roles,
-	bookingTypes
-} from "../../../variables/enums";
-import { RBAC } from "../../../config/rbac";
+} from "../../../utils/helpers";
+import { Resource, Action, Role, BookingType } from "../../../variables/enums";
+import RBAC from "../../../utils/rbac";
 import BookingFinalizeForm from "../forms/bookings/BookingFinalizeForm";
 import AddBox from "@material-ui/icons/AddBox";
 import ArrowUpward from "@material-ui/icons/ArrowUpward";
@@ -169,7 +164,7 @@ class BookingTableView extends Component {
 		const { bookingColumns } = this.state;
 		if (auth !== prevProps.auth) {
 			// Hide columns for guest.
-			if (auth && auth.data && auth.data.role.name === roles.GUEST) {
+			if (auth && auth.data && auth.data.role.name === Role.GUEST) {
 				let guestColumns = [...bookingColumns];
 				guestColumns.splice(1, 1);
 				this.setState({ bookingColumns: guestColumns });
@@ -194,11 +189,7 @@ class BookingTableView extends Component {
 		// Set actions for user
 		const { history, auth } = this.props;
 		let userRole = this.props.auth.data.role.name;
-		let canUpdate = await RBAC.can(
-			userRole,
-			actions.UPDATE,
-			resources.BOOKINGS
-		);
+		let canUpdate = await RBAC.can(userRole, Action.UPDATE, Resource.BOOKINGS);
 		const newActions = [
 			{
 				icon: Refresh,
@@ -216,7 +207,7 @@ class BookingTableView extends Component {
 				}
 			}
 		];
-		if (auth && auth.data && auth.data.role.name !== roles.GUEST) {
+		if (auth && auth.data && auth.data.role.name !== Role.GUEST) {
 			newActions.push(
 				({ booking }) => {
 					let expiredBooking = booking.from < moment().unix();
@@ -270,7 +261,7 @@ class BookingTableView extends Component {
 				},
 				({ booking }) => {
 					const visible =
-						!booking.approved && auth.data.role.name === roles.ADMIN;
+						!booking.approved && auth.data.role.name === Role.ADMIN;
 					return {
 						icon: Delete,
 						tooltip: "Delete",
@@ -342,9 +333,9 @@ class BookingTableView extends Component {
 			for (let booking of bookings.data) {
 				let accessible = await RBAC.can(
 					auth.data.role.name,
-					actions.READ,
-					resources.BOOKINGS,
-					{ booking, user: auth.data }
+					Action.READ,
+					Resource.BOOKINGS,
+					{ target: booking, accessor: auth.data }
 				);
 				if (accessible) {
 					const vehicleData = getRelatedDataById(
@@ -361,9 +352,7 @@ class BookingTableView extends Component {
 					newBookingData.push({
 						id: booking.id,
 						username: userData.username,
-						vehicle: `${vehicleData.brand} ${vehicleData.model} - ${
-							vehicleData.plateNumber
-						}`,
+						vehicle: `${vehicleData.brand} ${vehicleData.model} - ${vehicleData.plateNumber}`,
 						createdAt: bookingSent.toDate(),
 						createdAtYear: bookingSent.year(),
 						createdAtMonth: bookingSent.format("MMM"),
@@ -425,48 +414,51 @@ class BookingTableView extends Component {
 						const read = {
 							access: await RBAC.can(
 								auth.data.role.name,
-								actions.READ,
-								resources.BOOKINGS,
-								{ booking, user: auth.data }
+								Action.READ,
+								Resource.BOOKINGS,
+								{ target: booking, accessor: auth.data }
 							),
 							exclude: RBAC.getExcludedFields(
 								auth.data.role.name,
-								actions.UPDATE,
-								resources.BOOKINGS
+								Action.UPDATE,
+								Resource.BOOKINGS
 							)
 						};
 
 						const update = {
 							access: await RBAC.can(
 								auth.data.role.name,
-								actions.UPDATE,
-								resources.BOOKINGS
+								Action.UPDATE,
+								Resource.BOOKINGS,
+								{ accessor: auth.data, target: booking }
 							),
 							exclude: RBAC.getExcludedFields(
 								auth.data.role.name,
-								actions.UPDATE,
-								resources.BOOKINGS
+								Action.UPDATE,
+								Resource.BOOKINGS
 							)
 						};
 
 						const destroy = {
 							access: await RBAC.can(
 								auth.data.role.name,
-								actions.DELETE,
-								resources.BOOKINGS
+								Action.DELETE,
+								Resource.BOOKINGS,
+								{ target: booking, accessor: auth.data }
 							)
 						};
 
 						const create = {
 							access: await RBAC.can(
 								auth.data.role.name,
-								actions.READ,
-								resources.BOOKINGS
+								Action.READ,
+								Resource.BOOKINGS,
+								{ target: booking, accessor: auth.data }
 							),
 							exclude: RBAC.getExcludedFields(
 								auth.data.role.name,
-								actions.READ,
-								resources.BOOKINGS
+								Action.READ,
+								Resource.BOOKINGS
 							)
 						};
 
@@ -535,7 +527,7 @@ class BookingTableView extends Component {
 													values={{
 														...formData,
 														replaceVehicle:
-															bookingType === bookingTypes.REPLACEMENT
+															bookingType === BookingType.REPLACEMENT
 																? formData.replaceVehicle || {}
 																: null
 													}}
@@ -547,9 +539,9 @@ class BookingTableView extends Component {
 													exclude={read.exclude}
 													readOnly={update.exclude}
 													allowBefore={true}
-													available={bookingType !== bookingTypes.SERVICE}
-													inLocation={bookingType !== bookingTypes.SERVICE}
-													checkTimeSlot={bookingType === bookingTypes.SERVICE}
+													available={bookingType !== BookingType.SERVICE}
+													inLocation={bookingType !== BookingType.SERVICE}
+													checkTimeSlot={bookingType === BookingType.SERVICE}
 													onSubmit={() => {
 														fetchBookings().then(() => {
 															history.replace("/bookings");
@@ -560,7 +552,7 @@ class BookingTableView extends Component {
 													}}
 													showMap={formData.locationId !== null}
 													showReplacementVehicleForm={
-														bookingType === bookingTypes.REPLACEMENT
+														bookingType === BookingType.REPLACEMENT
 													}
 												/>
 											);

@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from "react";
+import React, { useState, Fragment, FC } from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router";
 import { compose } from "recompose";
@@ -15,9 +15,9 @@ import { Delete, Image } from "@material-ui/icons";
 import moment from "moment";
 
 import * as reduxActions from "../../../actions";
-import { actions, resources } from "../../../variables/enums";
+import { Action, Resource } from "../../../variables/enums";
 import Can from "../layout/Can";
-import { api } from "../../../utils";
+import api from "../../../utils/helpers/api";
 import ListView from "../../presentational/display/ListView";
 import AccidentFormCreateButtonDialog from "../forms/accidents/AccidentFormCreateButtonDialog";
 import FormPage from "../../pages/FormPage";
@@ -49,14 +49,14 @@ const styles = theme => ({
 	}
 });
 
-function AccidentListView({
+const AccidentListView = ({
 	accidents,
 	vehicles,
 	history,
 	classes,
 	auth,
 	fetchAccidents
-}) {
+}) => {
 	const [formData, setFormData] = useState({});
 
 	let accidentList = [];
@@ -66,8 +66,8 @@ function AccidentListView({
 				accidents.map(accident => (
 					<Can
 						key={accident.id}
-						action={actions.READ}
-						resource={resources.ACCIDENTS}
+						action={Action.READ}
+						resource={Resource.ACCIDENTS}
 						params={{ user: auth, accident }}
 						yes={readAccess => {
 							let vehicle = vehicles.find(
@@ -123,8 +123,8 @@ function AccidentListView({
 	const listHeader = (
 		<Grid container justify="space-between">
 			<Can
-				action={actions.CREATE}
-				resource={resources.ACCIDENTS}
+				action={Action.CREATE}
+				resource={Resource.ACCIDENTS}
 				yes={() => (
 					<AccidentFormCreateButtonDialog
 						classes={{ button: classes.actionButton }}
@@ -144,8 +144,8 @@ function AccidentListView({
 			}
 			header={
 				<Can
-					action={actions.DELETE}
-					resource={resources.ACCIDENTS}
+					action={Action.DELETE}
+					resource={Resource.ACCIDENTS}
 					yes={() =>
 						formData && formData.accident ? (
 							<IconButton
@@ -257,7 +257,7 @@ function AccidentListView({
 			}
 		/>
 	);
-}
+};
 
 export default compose(
 	withStyles(styles),

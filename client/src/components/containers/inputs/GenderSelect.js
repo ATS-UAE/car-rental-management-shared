@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-import SimpleSelect from "../../presentational/inputs/SimpleSelect";
+import Select from "../../presentational/inputs/Select";
 
 export default function GenderSelect({ required, value, onChange, fullWidth }) {
 	const [stateValue, setStateValue] = useState("");
 	return (
-		<SimpleSelect
+		<Select
 			value={value === undefined ? stateValue : value}
 			items={[{ value: "m", label: "Male" }, { value: "f", label: "Female" }]}
 			onChange={e => (onChange && onChange(e)) || setStateValue(e.target.value)}

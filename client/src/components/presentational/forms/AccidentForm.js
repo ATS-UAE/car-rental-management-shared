@@ -1,5 +1,5 @@
 import React from "react";
-import { validators, Validator } from "../../../utils";
+import { validators, Validator } from "../../../utils/helpers";
 import Form, { FIELDS } from "./Form";
 const { TEXT, SELECT, IMAGE } = FIELDS;
 

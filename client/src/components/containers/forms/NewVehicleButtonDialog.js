@@ -3,9 +3,9 @@ import { connect } from "react-redux";
 import { Grid, Button } from "@material-ui/core";
 import VehicleForm from "../../presentational/forms/VehicleForm";
 import * as reduxActions from "../../../actions";
-import { api } from "../../../utils";
+import { api, apiErrorHandler } from "../../../utils/helpers";
 import DialogButton from "../../presentational/forms/DialogButton";
-import { resources, actions } from "../../../variables/enums";
+import { Resource, Action } from "../../../variables/enums";
 import Can from "../layout/Can";
 
 function NewVehicleButtonDialog({
@@ -66,7 +66,7 @@ function NewVehicleButtonDialog({
 							onSubmit && onSubmit();
 						})
 						.catch(e => {
-							setErrorNotes([e]);
+							setErrorNotes([apiErrorHandler(e).message]);
 							setDisabledButton(false);
 						});
 				}}
@@ -77,8 +77,8 @@ function NewVehicleButtonDialog({
 	);
 	return (
 		<Can
-			action={actions.CREATE}
-			resource={resources.VEHICLES}
+			action={Action.CREATE}
+			resource={Resource.VEHICLES}
 			yes={() => (
 				<DialogButton
 					open={open}

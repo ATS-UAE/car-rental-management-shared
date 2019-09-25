@@ -6,25 +6,27 @@ import classNames from "classnames";
 import { compose } from "recompose";
 import { connect } from "react-redux";
 import * as reduxActions from "../../actions";
-import { resources, actions } from "../../variables/enums";
+import { Resource, Role } from "../../variables/enums";
 import InviteGuestButtonDialog from "../containers/forms/InviteGuestButtonDialog";
 import Can from "../containers/layout/Can";
 import UserTableView from "../containers/display/UserTableView";
 import UserFormCreateDialog from "../containers/forms/users/UserFormCreateDialog";
 
-function Users({
+const Users = ({
 	classes,
 	fetchUsers,
 	fetchCurrentUserDetails,
 	location,
 	match,
 	history,
-	fetchCategories
-}) {
+	fetchCategories,
+	fetchClients
+}) => {
 	useEffect(() => {
 		fetchUsers();
 		fetchCurrentUserDetails();
 		fetchCategories();
+		fetchClients();
 	}, []);
 	return (
 		<Paper className={classNames(classes.paper, classes.root)}>
@@ -40,10 +42,10 @@ function Users({
 				}}
 			/>
 			<div className={classes.actions}>
-				<InviteGuestButtonDialog />
+				{auth.data.role.name !== Role.Guest && <InviteGuestButtonDialog />}
 				<Can
-					action={actions.CREATE}
-					resource={resources.USERS}
+					action={"CREATE"}
+					resource={Resource.USERS}
 					yes={() => (
 						<Button
 							color="primary"
@@ -58,7 +60,7 @@ function Users({
 			<UserTableView location={location} match={match} history={history} />
 		</Paper>
 	);
-}
+};
 
 const styles = theme => ({
 	root: {

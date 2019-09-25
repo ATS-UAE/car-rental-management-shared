@@ -8,13 +8,13 @@ import * as actions from "../../actions";
 import VehicleFormCreateButtonDialog from "../containers/forms/vehicles/VehicleFormCreateButtonDialog";
 import VehicleCardList from "../containers/display/VehicleCardList";
 
-function Vehicles({
+const Vehicles = ({
 	classes,
 	fetchVehicles,
 	fetchLocations,
 	fetchUsers,
 	fetchCategories
-}) {
+}) => {
 	useEffect(() => {
 		fetchVehicles();
 		fetchLocations();
@@ -27,7 +27,7 @@ function Vehicles({
 			<VehicleCardList />
 		</Paper>
 	);
-}
+};
 const styles = theme => ({
 	root: {
 		padding: theme.spacing(3),

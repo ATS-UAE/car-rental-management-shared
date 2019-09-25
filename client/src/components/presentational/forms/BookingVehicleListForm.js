@@ -2,7 +2,7 @@ import React from "react";
 import { withStyles } from "@material-ui/core";
 import Form from "./Form";
 import CardList from "../display/CardList";
-import { validators } from "../../../utils";
+import { validators } from "../../../utils/helpers";
 
 function BookingVehicleListForm({
 	title,

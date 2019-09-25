@@ -7,8 +7,8 @@ import * as reduxActions from "../../../actions";
 import WorldMap from "../../presentational/display/WorldMap";
 import LocationMapMarker from "../../presentational/display/LocationMapMarker";
 import LocationForm from "../../presentational/forms/LocationForm";
-import { resources, actions } from "../../../variables/enums";
-import { api } from "../../../utils";
+import { Resource, Action } from "../../../variables/enums";
+import { api, apiErrorHandler } from "../../../utils/helpers";
 import Can from "../layout/Can";
 
 function LocationsView({ locations, fetchLocations, classes }) {
@@ -61,7 +61,7 @@ function LocationsView({ locations, fetchLocations, classes }) {
 									setFormData({});
 								})
 								.catch(e => {
-									setErrorNotes([e]);
+									setErrorNotes([apiErrorHandler(e).message]);
 									setDisabledButton(false);
 								});
 						}}
@@ -87,7 +87,7 @@ function LocationsView({ locations, fetchLocations, classes }) {
 									setFormData({});
 								})
 								.catch(e => {
-									setErrorNotes([e]);
+									setErrorNotes([apiErrorHandler(e).message]);
 									setDisabledButton(false);
 								});
 						}}
@@ -100,13 +100,13 @@ function LocationsView({ locations, fetchLocations, classes }) {
 	);
 	return (
 		<Can
-			resource={resources.LOCATIONS}
-			action={actions.READ}
+			resource={Resource.LOCATIONS}
+			action={Action.READ}
 			yes={() => (
 				<Fragment>
 					<Can
-						action={actions.UPDATE}
-						resource={resources.LOCATIONS}
+						action={Action.UPDATE}
+						resource={Resource.LOCATIONS}
 						yes={access => (
 							<Dialog
 								open={open}

@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import { connect } from "react-redux";
 import BookingForm from "./BookingForm";
 import * as reduxActions from "../../../../actions";
-import { api } from "../../../../utils";
-import { bookingTypes } from "../../../../variables/enums";
+import { api, apiErrorHandler } from "../../../../utils/helpers";
 
 function BookingFormUpdate({
 	fetchBookings,
@@ -46,7 +45,7 @@ function BookingFormUpdate({
 						onSubmit && onSubmit();
 					})
 					.catch(e => {
-						setErrorNotes([e]);
+						setErrorNotes([apiErrorHandler(e).message]);
 						setLoading(false);
 					});
 			}}

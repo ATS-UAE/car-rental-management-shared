@@ -2,8 +2,8 @@ import React, { useEffect } from "react";
 import { compose } from "recompose";
 import { connect } from "react-redux";
 import { withRouter } from "react-router";
-import { RBAC } from "../../../../config/rbac";
-import { resources, actions } from "../../../../variables/enums";
+import RBAC from "../../../../utils/rbac";
+import { Resource, Action } from "../../../../variables/enums";
 import * as reduxActions from "../../../../actions";
 import UserFormCreate from "./UserFormCreate";
 import Dialog from "../../../presentational/display/Dialog";
@@ -19,8 +19,8 @@ function Users({ auth, fetchUsers, fetchCurrentUserDetails, history }) {
 					const create = {
 						access: await RBAC.can(
 							auth.data.role.name,
-							actions.CREATE,
-							resources.USERS
+							Action.CREATE,
+							Resource.USERS
 						)
 					};
 

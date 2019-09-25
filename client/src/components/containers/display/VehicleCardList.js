@@ -15,9 +15,9 @@ import { DialogChildren } from "../../presentational/forms/ConfirmDialog";
 import BookingFormCreateMaintenance from "../forms/bookings/BookingFormCreateMaintenance";
 import VehicleFormUpdate from "../forms/vehicles/VehicleFormUpdate";
 import * as reduxActions from "../../../actions";
-import { actions, resources, roles } from "../../../variables/enums";
-import { api } from "../../../utils";
-import { RBAC } from "../../../config/rbac";
+import { Action, Resource, Role } from "../../../variables/enums";
+import { api } from "../../../utils/helpers";
+import RBAC from "../../../utils/rbac";
 import CardList from "../../presentational/display/CardList";
 import Dialog from "../../presentational/display/Dialog";
 import Can from "../layout/Can";
@@ -26,6 +26,7 @@ import VehicleBookingRange from "./VehicleBookingRange";
 function VehicleCardList({ vehicles, history, classes, auth, fetchVehicles }) {
 	const [formData, setFormData] = useState(null);
 	const [isLoading, setLoading] = useState(false);
+	console.log(vehicles);
 	const renderDialog = ({ match, children }) => (
 		<Dialog
 			onMount={async () => {
@@ -37,34 +38,37 @@ function VehicleCardList({ vehicles, history, classes, auth, fetchVehicles }) {
 					const read = {
 						access: await RBAC.can(
 							auth.data.role.name,
-							actions.READ,
-							resources.VEHICLES
+							Action.READ,
+							Resource.VEHICLES,
+							{ target: vehicle, accessor: auth.data }
 						),
 						exclude: RBAC.getExcludedFields(
 							auth.data.role.name,
-							actions.UPDATE,
-							resources.VEHICLES
+							Action.UPDATE,
+							Resource.VEHICLES
 						)
 					};
 
 					const update = {
 						access: await RBAC.can(
 							auth.data.role.name,
-							actions.UPDATE,
-							resources.VEHICLES
+							Action.UPDATE,
+							Resource.VEHICLES,
+							{ target: vehicle, accessor: auth.data }
 						),
 						exclude: RBAC.getExcludedFields(
 							auth.data.role.name,
-							actions.UPDATE,
-							resources.VEHICLES
+							Action.UPDATE,
+							Resource.VEHICLES
 						)
 					};
 
 					const destroy = {
 						access: await RBAC.can(
 							auth.data.role.name,
-							actions.DELETE,
-							resources.VEHICLES
+							Action.DELETE,
+							Resource.VEHICLES,
+							{ target: vehicle, accessor: auth.data }
 						)
 					};
 
@@ -269,13 +273,13 @@ function VehicleCardList({ vehicles, history, classes, auth, fetchVehicles }) {
 						},
 						controls: (
 							<Can
-								action={actions.READ}
-								resource={resources.VEHICLES}
+								action={Action.READ}
+								resource={Resource.VEHICLES}
 								yes={readAccess => (
 									<Fragment>
 										<Can
-											action={actions.UPDATE}
-											resource={resources.VEHICLES}
+											action={Action.UPDATE}
+											resource={Resource.VEHICLES}
 											yes={updateAccess => {
 												return (
 													<Fragment>
@@ -321,8 +325,8 @@ function VehicleCardList({ vehicles, history, classes, auth, fetchVehicles }) {
 											}}
 										/>
 										<Can
-											action={actions.DELETE}
-											resource={resources.VEHICLES}
+											action={Action.DELETE}
+											resource={Resource.VEHICLES}
 											yes={() => {
 												const Icon = vehicle.defleeted ? CheckCircle : Block;
 												return (
@@ -349,7 +353,7 @@ function VehicleCardList({ vehicles, history, classes, auth, fetchVehicles }) {
 					};
 
 					if (auth && auth.data) {
-						if (auth.data.role.name === roles.GUEST) {
+						if (auth.data.role.name === Role.GUEST) {
 							let inCategory = false;
 
 							if (!auth.data.categories.length) {

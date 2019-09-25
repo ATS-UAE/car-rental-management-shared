@@ -9,7 +9,7 @@ import {
 } from "@material-ui/core";
 import { Search } from "@material-ui/icons";
 import { debounce } from "debounce";
-import { search } from "../../../utils";
+import { search } from "../../../utils/helpers";
 import Card from "./Card";
 
 class CardList extends Component {

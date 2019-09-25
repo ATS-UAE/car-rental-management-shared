@@ -1,6 +1,6 @@
 import React from "react";
 import Form, { FIELDS } from "./Form";
-import { Validator, validators } from "../../../utils";
+import { Validator, validators } from "../../../utils/helpers";
 const { SELECT, PASSWORD, TEXT } = FIELDS;
 
 function GuestSignUp({
@@ -89,10 +89,7 @@ function GuestSignUp({
 			props: {
 				label: "Gender",
 				fullWidth: true,
-				items: [
-					{ value: "m", label: "Male" },
-					{ value: "f", label: "Female" }
-				],
+				items: [{ value: "m", label: "Male" }, { value: "f", label: "Female" }],
 				required: true
 			}
 		}

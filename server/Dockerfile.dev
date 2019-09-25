@@ -1,7 +1,7 @@
 FROM node:alpine
 WORKDIR /app
-RUN npm install -g nodemon
 COPY ./package.json ./
 RUN npm install
 COPY . .
-CMD ["npm", "run", "dev-start"]
+EXPOSE 5000
+CMD ["npm", "run", "dev:start"]

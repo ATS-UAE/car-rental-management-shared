@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { connect } from "react-redux";
 import UserForm from "./UserForm";
 import * as reduxActions from "../../../../actions";
-import { api } from "../../../../utils";
+import { api, apiErrorHandler } from "../../../../utils/helpers";
 
 function UserFormCreate({ fetchUsers, exclude, onSubmit }) {
 	let [errorNotes, setErrorNotes] = useState([]);
@@ -32,7 +32,7 @@ function UserFormCreate({ fetchUsers, exclude, onSubmit }) {
 						onSubmit && onSubmit();
 					})
 					.catch(e => {
-						setErrorNotes([e]);
+						setErrorNotes([apiErrorHandler(e).message]);
 						setLoading(false);
 					});
 			}}

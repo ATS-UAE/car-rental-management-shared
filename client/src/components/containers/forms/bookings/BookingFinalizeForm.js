@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { Button } from "@material-ui/core";
 import * as reduxActions from "../../../../actions";
 import BookingFinalizeForm from "../../../presentational/forms/BookingFinalizeForm";
-import { toTitleWords, api } from "../../../../utils";
+import { toTitleWords, api } from "../../../../utils/helpers";
 
 function BookingFinalizeFormContainer({
 	fetchUsers,

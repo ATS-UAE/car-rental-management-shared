@@ -1,7 +1,7 @@
 import React from "react";
 import moment from "moment";
 import Form, { FIELDS } from "./Form";
-import { validators, Validator } from "../../../utils";
+import { validators, Validator } from "../../../utils/helpers";
 const { DATE_TIME_PICKER } = FIELDS;
 
 function BookingTimeRangeForm({

@@ -28,24 +28,153 @@
 
 - **REACT_APP_CAR_BOOKING_API_DOMAIN**
 - **REACT_APP_CAR_BOOKING_CLIENT_DOMAIN**
+- **CHOKIDAR_USEPOLLING** _true/false if you want to enable CRA hot update._
 
-## Roles
+## Resources
 
-### Master
+- Users
+- Vehicles
+- Bookings
+- Clients
+- Accidents
+- Locations
+- Categories
 
-- Can access every resource.
+## Role Permissions
 
-### Admin
+### Guest Permissions
 
-- Can access only resource within its client.
+- CREATE
+  - Bookings
+    - Own Client
+    - Self
+  - Accidents
+    - Own Client
+    - Self
+- READ
+  - Own Bookings
+    - Own Client
+    - Self
+  - Vehicles
+    - Own Client
+  - Locations
+    - Own Client
+  - Categories
+    - Own Client
+- UPDATE
+  - Bookings
+    - Own Client
+    - Self
+    - If not approved
+- DELETE
+  - Bookings
+    - Own Client
+    - Self
+    - If not approved
 
-### Key Manager
+### Key Manager Permissions
 
-- Can access only resource within its client.
+- CREATE
+  - Users
+    - By invite only
+    - Own Client
+- READ
+  - Users
+    - Own Client
+  - Vehicles
+    - Own Client
+  - Accidents
+    - Own Client
+  - Locations
+    - Own Client
+  - Categories
+    - Own Client
+- UPDATE
+  - Vehicles
+    - Own Client
+    - Excludes (Categories, Object ID, Plate Number, VIN, GPS mapping)
+    - Defleet
+  - Bookings
+    - Own Client
+    - Approve/deny
+    - Change time if not finalized
+  - Accidents
+    - Own Client
+    - Mark as read
+    - Mark as deleted
+- DELETE
+  - Bookings
+    - If not approved
 
-### Guests
+#### Admin Permissions
 
-- Can access only resource within its client.
+- CREATE
+  - Users
+    - Own Client
+    - Except Master account
+  - Categories
+    - Own Client
+- READ
+  - Users
+    - Own Client
+  - Vehicles
+    - Own Client
+  - Accidents
+    - Own Client
+  - Locations
+    - Own Client
+  - Categories
+    - Own Client
+- UPDATE
+  - Users
+    - Own Client
+  - Vehicles
+    - Own Client
+    - Excludes (Categories, Object ID, Plate Number, VIN, GPS mapping)
+  - Accidents
+    - Own Client
+    - Mark as read
+    - Mark as deleted
+  - Categories
+    - Own Client
+- DELETE
+  - Categories
+    - Own Client
+  - Bookings
+    - If not approved
+
+#### Master Permissions
+
+- CREATE
+  - Users
+  - Vehicles
+  - Clients
+  - Locations
+  - Categories
+- READ
+  - Users
+  - Vehicles
+  - Bookings
+  - Clients
+  - Accidents
+  - Locations
+  - Categories
+- UPDATE
+  - Users
+  - Vehicles
+  - Bookings
+  - Clients
+  - Accidents
+  - Locations
+  - Categories
+- DELETE
+  - Users
+  - Vehicles
+  - Bookings
+    - If not approved
+  - Accidents
+  - Locations
+  - Categories
 
 ## Multi Client
 
@@ -65,11 +194,11 @@ Vehicles, users, locations, bookings, and accidents are divided into multiple cl
 ### Vehicles
 
 1. Only a **MASTER** account can create, update vehicles.
-2. After a vehicle has been created, the vehicle must be transfered to a selected client. Only one client can have one vehicle.
+2. After a vehicle has been created, the vehicle must be transferred to a selected client. Only one client can have one vehicle.
 3. A vehicle will only be available to a client if the **Location** the vehicle is in is also available to the client.
 
 ### Users
 
 1. A **MASTER** account can create all types of user roles.
-2. If a **MASTER** account creates a user, it must be transfered to a client before it can be used.
+2. If a **MASTER** account creates a user, it must be transferred to a client before it can be used.
 3. An **ADMIN** account can create KEY_MANAGER, GUESTS, and ADMIN accounts. Created users will automatically put under the client of the creator account.

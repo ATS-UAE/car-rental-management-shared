@@ -1,7 +1,7 @@
 import React from "react";
 
 import Form, { FIELDS } from "./Form";
-import { validators } from "../../../utils";
+import { validators } from "../../../utils/helpers";
 const { SELECT, DATE_TIME_PICKER, TEXT } = FIELDS;
 
 function BookingFinalizeForm({

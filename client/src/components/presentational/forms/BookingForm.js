@@ -5,7 +5,7 @@ import { Grid } from "@material-ui/core";
 import LocationMapMarker from "../display/LocationMapMarker";
 import WorldMap from "../display/WorldMap";
 import Form, { FIELDS } from "./Form";
-import { validators, Validator } from "../../../utils";
+import { validators, Validator } from "../../../utils/helpers";
 const { SELECT, DATE_TIME_PICKER } = FIELDS;
 
 function BookingForm({

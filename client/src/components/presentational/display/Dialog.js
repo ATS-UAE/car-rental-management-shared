@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Dialog as MuiDialog, withStyles } from "@material-ui/core";
 import classNames from "classnames";
 import Loading from "../layout/Loading";
-import { cancelablePromise } from "../../../utils";
+import { cancelablePromise } from "../../../utils/helpers";
 function Dialog({ onMount, children, onClose, open, classes }) {
 	const [loading, setLoading] = useState(true);
 	const [onMountData, setOnMountData] = useState(null);

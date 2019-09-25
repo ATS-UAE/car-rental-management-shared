@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { connect } from "react-redux";
 import UserForm from "./UserForm";
 import * as reduxActions from "../../../../actions";
-import { api } from "../../../../utils";
+import { api, apiErrorHandler } from "../../../../utils/helpers";
 
 function UserFormUpdate({
 	fetchUsers,
@@ -48,7 +48,7 @@ function UserFormUpdate({
 						onSubmit && onSubmit();
 					})
 					.catch(e => {
-						setErrorNotes([e]);
+						setErrorNotes([apiErrorHandler(e).message]);
 						setLoading(false);
 					});
 			}}

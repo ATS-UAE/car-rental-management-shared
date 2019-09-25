@@ -3,8 +3,8 @@ import { connect } from "react-redux";
 import moment from "moment";
 import BookingForm from "./BookingForm";
 import * as reduxActions from "../../../../actions";
-import { api } from "../../../../utils";
-import { bookingTypes } from "../../../../variables/enums";
+import { api, apiErrorHandler } from "../../../../utils/helpers";
+import { BookingType } from "../../../../variables/enums";
 
 function BookingFromCreate({
 	fetchBookings,
@@ -29,7 +29,7 @@ function BookingFromCreate({
 	useEffect(() => {
 		if (enums && enums.data && auth && auth.data) {
 			const replacementType = enums.data.bookingTypes.find(
-				type => type.name === bookingTypes.SERVICE
+				type => type.name === BookingType.SERVICE
 			);
 			setValues(prev => ({
 				...prev,
@@ -71,7 +71,7 @@ function BookingFromCreate({
 						onSubmit && onSubmit();
 					})
 					.catch(e => {
-						setErrorNotes([e]);
+						setErrorNotes([apiErrorHandler(e).message]);
 						setLoading(false);
 					});
 			}}

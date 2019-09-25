@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { Typography, Tooltip } from "@material-ui/core";
-import { Slider as MaterialSlider } from "@material-ui/lab";
+import { Slider as MaterialSlider } from "@material-ui/core";
 import { IconButton } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import { KeyboardArrowLeft, KeyboardArrowRight } from "@material-ui/icons";
@@ -28,9 +28,9 @@ function Slider({
 		mouseDownId1 = setTimeout(() => {
 			mouseDownId2 = setInterval(() => {
 				if (addMinus === "add") {
-					onChange({ target: { value: (holdValue += step) } });
+					onChange({ target: { value: holdValue += step } });
 				} else {
-					onChange({ target: { value: (holdValue -= step) } });
+					onChange({ target: { value: holdValue -= step } });
 				}
 			}, 100);
 			setMouseDownId([mouseDownId1, mouseDownId2]);

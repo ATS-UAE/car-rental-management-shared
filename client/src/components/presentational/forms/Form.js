@@ -7,8 +7,7 @@ import Select from "../inputs/SimpleSelect";
 import ErrorChip from "../display/ErrorChip";
 import Slider from "../inputs/Slider";
 import DateTimePicker from "../inputs/DateTimePicker";
-import { Validator } from "../../../utils";
-import { elementTypePropTypeChecker } from "../../../utils/propTypes";
+import { Validator } from "../../../utils/helpers";
 import ImageInput from "../inputs/ImageInput";
 import MultiSelect from "../inputs/MultiSelect";
 
@@ -144,7 +143,6 @@ function Form({
 Form.propTypes = {
 	fields: PropTypes.arrayOf(
 		PropTypes.shape({
-			type: elementTypePropTypeChecker.isRequired,
 			props: PropTypes.object,
 			name: PropTypes.string.isRequired,
 			id: PropTypes.string.isRequired

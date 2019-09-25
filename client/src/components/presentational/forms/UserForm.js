@@ -1,6 +1,6 @@
 import React from "react";
 import Form, { FIELDS } from "./Form";
-import { validators, Validator } from "../../../utils";
+import { validators, Validator } from "../../../utils/helpers";
 const { SELECT, PASSWORD, TEXT, IMAGE, MULTI } = FIELDS;
 
 function UserForm({

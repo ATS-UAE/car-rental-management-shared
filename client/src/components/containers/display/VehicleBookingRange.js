@@ -15,6 +15,7 @@ function VehicleBookingRangeContainer({ vehicles, vehicleList }) {
 	if (vehicles && vehicles.data) {
 		$vehicleList = vehicleList === undefined ? vehicles.data : vehicleList;
 	}
+	console.log($vehicleList);
 
 	return (
 		<VehicleBookingRange

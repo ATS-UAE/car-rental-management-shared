@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { compose } from "recompose";
 import { connect } from "react-redux";
-import { Paper, Tabs, Tab } from "@material-ui/core";
-import { withStyles } from "@material-ui/core/styles";
-
+import { Paper, Tabs, Tab, withStyles } from "@material-ui/core";
 import * as actions from "../../actions";
-import { roles } from "../../variables/enums";
+import { Role } from "../../variables/enums";
 import PasswordChangeButtonDialog from "../containers/forms/PasswordChangeButtonDialog";
 import CategoryTableView from "../containers/display/CategoryTableView";
 
-function Settings({
+const Settings = ({
 	classes,
 	fetchCategories,
 	fetchCurrentUserDetails,
@@ -18,7 +16,7 @@ function Settings({
 	match,
 	history,
 	auth
-}) {
+}) => {
 	useEffect(() => {
 		fetchCategories();
 		fetchCurrentUserDetails();
@@ -33,7 +31,7 @@ function Settings({
 			case 0:
 				return <PasswordChangeButtonDialog />;
 			case 1:
-				if (auth && auth.data && auth.data.role.name === roles.ADMIN) {
+				if (auth && auth && auth.role.name === Role.ADMIN) {
 					return (
 						<CategoryTableView
 							location={location}
@@ -63,7 +61,7 @@ function Settings({
 			<div>{getTabContent(value)}</div>
 		</Paper>
 	);
-}
+};
 
 const styles = theme => ({
 	root: {
@@ -79,7 +77,10 @@ const styles = theme => ({
 	}
 });
 
-const mapStateToProps = ({ auth, categories }) => ({ auth, categories });
+const mapStateToProps = ({ auth, categories }) => ({
+	auth,
+	categories
+});
 
 export default compose(
 	connect(

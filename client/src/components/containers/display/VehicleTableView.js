@@ -4,8 +4,8 @@ import { Grid, Button } from "@material-ui/core";
 import * as reduxActions from "../../../actions";
 import TableView from "../../presentational/forms/TableView";
 import VehicleForm from "../../presentational/forms/VehicleForm";
-import { api } from "../../../utils";
-import { resources, actions } from "../../../variables/enums";
+import { api, apiErrorHandler } from "../../../utils/helpers";
+import { Resource, Action } from "../../../variables/enums";
 import Can from "../layout/Can";
 
 function VehicleTableView({
@@ -93,8 +93,8 @@ function VehicleTableView({
 				}}
 			>
 				<Can
-					action={actions.UPDATE}
-					resource={resources.VEHICLES}
+					action={Action.UPDATE}
+					resource={Resource.VEHICLES}
 					yes={() => {
 						const footer = (
 							<Grid item>
@@ -116,7 +116,7 @@ function VehicleTableView({
 												onSubmit && onSubmit();
 											})
 											.catch(e => {
-												setErrorNotes([e]);
+												setErrorNotes([apiErrorHandler(e).message]);
 												setDisabledButton(false);
 											});
 									}}

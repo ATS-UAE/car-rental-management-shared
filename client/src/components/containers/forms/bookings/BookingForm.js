@@ -9,7 +9,7 @@ import {
 	toTitleWords,
 	hasActiveBooking,
 	isBookingTimeSlotTaken
-} from "../../../../utils";
+} from "../../../../utils/helpers";
 
 import VehicleBookingRange from "../../../presentational/display/VehicleBookingRange";
 

@@ -4,12 +4,12 @@ import { connect } from "react-redux";
 import { compose } from "redux";
 import Loading from "../presentational/layout/Loading";
 
-function LoginRequiredPage({ auth, children }) {
+const LoginRequiredPage = ({ auth, children }) => {
 	if (auth === null) {
 		return <Loading />;
 	}
 	return auth === false ? <Redirect to="/login" /> : children;
-}
+};
 
 const mapStateToProps = ({ auth }) => ({
 	auth

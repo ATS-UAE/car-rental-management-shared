@@ -8,9 +8,9 @@ import { DialogChildren } from "../../presentational/forms/ConfirmDialog";
 import UserForm from "../forms/users/UserForm";
 import UserFormUpdate from "../forms/users/UserFormUpdate";
 import * as reduxActions from "../../../actions";
-import { resources, actions, roles } from "../../../variables/enums";
-import { RBAC } from "../../../config/rbac";
-import { toTitleWords, api } from "../../../utils";
+import { Resource, Action, Role } from "../../../variables/enums";
+import RBAC from "../../../utils/rbac";
+import { toTitleWords, api } from "../../../utils/helpers";
 
 import MaterialTable from "material-table";
 import AddBox from "@material-ui/icons/AddBox";
@@ -53,54 +53,64 @@ const tableIcons = {
 	ViewColumn: ViewColumn
 };
 class UserTableView extends Component {
-	state = {
-		userData: [],
-		userActions: [],
-		loadingRows: [],
-		isLoading: false,
-		isTableLoading: false,
-		formData: null,
-		userColumns: [
-			{
-				title: "ID",
-				type: "numeric",
-				field: "id"
-			},
-			{
-				title: "Username",
-				field: "username"
-			},
-			{
-				title: "First Name",
-				field: "firstName"
-			},
-			{
-				title: "Last Name",
-				field: "lastName"
-			},
-			{
-				title: "Email",
-				field: "email"
-			},
-			{
-				title: "Mobile Number",
-				field: "mobileNumber"
-			},
-			{
-				title: "Role",
-				field: "role"
-			},
-			{
-				title: "Sign Up Date",
-				type: "datetime",
-				field: "createdAt",
-				hidden: true
-			}
-		]
-	};
+	constructor(props) {
+		super(props);
+		this.state = {
+			userData: [],
+			userActions: [],
+			loadingRows: [],
+			isLoading: false,
+			isTableLoading: false,
+			formData: null,
+			userColumns: [
+				{
+					title: "ID",
+					type: "numeric",
+					field: "id"
+				},
+				{
+					title: "Username",
+					field: "username"
+				},
+				{
+					title: "First Name",
+					field: "firstName"
+				},
+				{
+					title: "Last Name",
+					field: "lastName"
+				},
+				{
+					title: "Email",
+					field: "email"
+				},
+				{
+					title: "Mobile Number",
+					field: "mobileNumber"
+				},
+				{
+					title: "Role",
+					field: "role"
+				},
+				{
+					title: "Sign Up Date",
+					type: "datetime",
+					field: "createdAt",
+					hidden: true
+				}
+			]
+		};
+
+		if (props.auth.data.role.name === Role.MASTER) {
+			this.state.userColumns.push({
+				title: "Client",
+				field: "client"
+			});
+		}
+	}
 
 	componentDidUpdate(prevProps, prevState) {
-		const { auth, users } = this.props;
+		const { auth, users, clients } = this.props;
 		const { loadingRows } = this.state;
 		if (
 			auth !== prevProps.auth ||
@@ -113,6 +123,7 @@ class UserTableView extends Component {
 		if (
 			auth !== prevProps.auth ||
 			users !== prevProps.users ||
+			clients !== prevProps.clients ||
 			loadingRows !== prevState.loadingRows
 		) {
 			this.reduceUserData();
@@ -189,33 +200,37 @@ class UserTableView extends Component {
 	};
 
 	reduceUserData = async () => {
-		const { auth, users } = this.props;
+		const { auth, users, clients } = this.props;
 
 		if (auth && auth.data && users && users.data) {
 			let newUserData = [];
+
 			for (let user of users.data) {
 				let accessible = await RBAC.can(
 					auth.data.role.name,
-					actions.READ,
-					resources.USERS,
-					{ targetUser: user, user: auth.data, role: auth.data.role }
+					Action.READ,
+					Resource.USERS,
+					{ targetUser: user, accessor: auth.data }
 				);
 				if (accessible) {
 					const userRole = auth.data.role.name;
 					const canUpdate =
 						user.id === 1
 							? false
-							: await RBAC.can(userRole, actions.UPDATE, resources.USERS, {
-									targetUser: user,
-									user: auth.data,
-									role: auth.data.role
+							: await RBAC.can(userRole, Action.UPDATE, Resource.USERS, {
+									target: user,
+									accessor: auth.data
 							  });
 					const canDelete =
 						user.id === 1
 							? false
-							: await RBAC.can(userRole, actions.DELETE, resources.USERS);
+							: await RBAC.can(userRole, Action.DELETE, Resource.USERS, {
+									target: user,
+									accessor: auth.data
+							  });
 					const userSignUpDate = moment(user.createdAt, "X");
-					newUserData.push({
+
+					const data = {
 						id: user.id,
 						username: user.username,
 						firstName: user.firstName,
@@ -227,7 +242,18 @@ class UserTableView extends Component {
 						user,
 						canDelete,
 						canUpdate
-					});
+					};
+
+					if (auth.data.role.name === Role.MASTER && clients && clients.data) {
+						const clientName = clients.data.find(
+							client => client.id === user.clientId
+						);
+						data["client"] =
+							(clientName && clientName.name) || user.role.name === Role.MASTER
+								? toTitleWords(Role.MASTER)
+								: "Unassigned";
+					}
+					newUserData.push(data);
 				}
 				this.setState({ userData: newUserData });
 			}
@@ -256,47 +282,43 @@ class UserTableView extends Component {
 						const read = {
 							access: await RBAC.can(
 								auth.data.role.name,
-								actions.READ,
-								resources.USERS,
+								Action.READ,
+								Resource.USERS,
 								{
-									user: auth.data,
-									targetUser: user.data,
-									role: auth.data.role
+									accessor: auth.data,
+									target: user.data
 								}
 							),
 							exclude: RBAC.getExcludedFields(
 								auth.data.role.name,
-								actions.READ,
-								resources.USERS,
+								Action.READ,
+								Resource.USERS,
 								{
 									user: auth.data,
-									targetUser: user.data,
-									role: auth.data.role
+									targetUser: user.data
 								}
 							)
 						};
-						if (user.data.role.name !== roles.GUEST)
+						if (user.data.role.name !== Role.GUEST)
 							read.exclude.push("categories");
 
 						const update = {
 							access: await RBAC.can(
 								auth.data.role.name,
-								actions.UPDATE,
-								resources.USERS,
+								Action.UPDATE,
+								Resource.USERS,
 								{
-									user: auth.data,
-									targetUser: user.data,
-									role: auth.data.role
+									accessor: auth.data,
+									target: user.data
 								}
 							),
 							exclude: RBAC.getExcludedFields(
 								auth.data.role.name,
-								actions.UPDATE,
-								resources.USERS,
+								Action.UPDATE,
+								Resource.USERS,
 								{
-									user: auth.data,
-									targetUser: user.data,
-									role: auth.data.role
+									accessor: auth.data,
+									target: user.data
 								}
 							)
 						};
@@ -304,12 +326,11 @@ class UserTableView extends Component {
 						const destroy = {
 							access: await RBAC.can(
 								auth.data.role.name,
-								actions.DELETE,
-								resources.USERS,
+								Action.DELETE,
+								Resource.USERS,
 								{
-									user: auth.data,
-									targetUser: user.data,
-									role: auth.data.role
+									accessor: auth.data,
+									target: user.data
 								}
 							)
 						};
@@ -499,10 +520,11 @@ class UserTableView extends Component {
 	}
 }
 
-const mapStateToProps = ({ enums, auth, users }) => ({
+const mapStateToProps = ({ enums, auth, users, clients }) => ({
 	users,
 	enums,
-	auth
+	auth,
+	clients
 });
 
 export default compose(

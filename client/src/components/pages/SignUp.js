@@ -1,11 +1,10 @@
 import React from "react";
 import { compose } from "recompose";
 import { withRouter } from "react-router";
-import { Paper } from "@material-ui/core";
-import { withStyles } from "@material-ui/core/styles";
+import { Paper, createStyles, Theme, withStyles } from "@material-ui/core";
 import UserFormGuestSignUp from "../containers/forms/users/UserFormGuestSignUp";
 
-function SignUp({ classes, history }) {
+const SignUp = ({ classes, history }) => {
 	return (
 		<div className={classes.root}>
 			<Paper className={classes.signUpWrapper}>
@@ -16,7 +15,7 @@ function SignUp({ classes, history }) {
 			</Paper>
 		</div>
 	);
-}
+};
 
 const styles = theme => ({
 	root: {

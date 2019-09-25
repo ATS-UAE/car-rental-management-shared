@@ -13,8 +13,6 @@ import {
 	Typography
 } from "@material-ui/core";
 
-import { runIfExistFunction } from "../../../utils";
-
 const styles = theme => ({
 	list: {
 		width: 250,
@@ -78,7 +76,10 @@ function TemporaryDrawer({
 									<ListItem
 										button
 										key={index}
-										onClick={() => listItem.onClick && listItem.onClick()}
+										onClick={() => {
+											onClick && onClick();
+											listItem.onClick && listItem.onClick();
+										}}
 									>
 										<ListItemIcon>{listItem.icon}</ListItemIcon>
 										<ListItemText className={classes.text}>
@@ -102,7 +103,10 @@ function TemporaryDrawer({
 									<ListItem
 										button
 										key={index}
-										onClick={() => listItem.onClick && listItem.onClick()}
+										onClick={() => {
+											onClick && onClick();
+											listItem.onClick && listItem.onClick();
+										}}
 									>
 										<ListItemIcon>{listItem.icon}</ListItemIcon>
 										<ListItemText>{listItem.text}</ListItemText>
@@ -119,12 +123,7 @@ function TemporaryDrawer({
 
 	return (
 		<Drawer open={isOpen} onClose={() => onClose && onClose()}>
-			<div
-				onClick={runIfExistFunction(onClick)}
-				onKeyDown={runIfExistFunction(onClick)}
-			>
-				{sideList}
-			</div>
+			{sideList}
 		</Drawer>
 	);
 }

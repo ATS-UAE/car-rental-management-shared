@@ -1,6 +1,6 @@
 import React from "react";
 import Form, { FIELDS } from "./Form";
-import { Validator, validators } from "../../../utils";
+import { Validator, validators } from "../../../utils/helpers";
 const { PASSWORD } = FIELDS;
 
 function PasswordChange({

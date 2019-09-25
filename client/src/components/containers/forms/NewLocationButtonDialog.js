@@ -3,8 +3,8 @@ import { connect } from "react-redux";
 import { Grid, Button } from "@material-ui/core";
 import LocationForm from "../../presentational/forms/LocationForm";
 import * as reduxActions from "../../../actions";
-import { api } from "../../../utils";
-import { resources, actions } from "../../../variables/enums";
+import { api, apiErrorHandler } from "../../../utils/helpers";
+import { Resource, Action } from "../../../variables/enums";
 import DialogButton from "../../presentational/forms/DialogButton";
 import Can from "../layout/Can";
 function NewLocationButtonDialog({ onSubmit, fetchLocations, locations }) {
@@ -56,7 +56,7 @@ function NewLocationButtonDialog({ onSubmit, fetchLocations, locations }) {
 							onSubmit && onSubmit();
 						})
 						.catch(e => {
-							setErrorNotes([e]);
+							setErrorNotes([apiErrorHandler(e).message]);
 							setDisabledButton(false);
 						});
 				}}
@@ -67,8 +67,8 @@ function NewLocationButtonDialog({ onSubmit, fetchLocations, locations }) {
 	);
 	return (
 		<Can
-			resource={resources.LOCATIONS}
-			action={actions.CREATE}
+			resource={Resource.LOCATIONS}
+			action={Action.CREATE}
 			yes={access => (
 				<DialogButton
 					open={open}

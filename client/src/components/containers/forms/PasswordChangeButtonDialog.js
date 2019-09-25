@@ -3,7 +3,7 @@ import { Button, Grid } from "@material-ui/core";
 
 import PasswordChange from "../../presentational/forms/PasswordChange";
 import DialogButton from "../../presentational/forms/DialogButton";
-import { api } from "../../../utils";
+import { api, apiErrorHandler } from "../../../utils/helpers";
 
 export default function PasswordChangeButtonDialog() {
 	let [open, setOpen] = useState(false);
@@ -38,7 +38,7 @@ export default function PasswordChangeButtonDialog() {
 							setValues({});
 						})
 						.catch(e => {
-							setErrorNotes([e]);
+							setErrorNotes([apiErrorHandler(e).message]);
 							setDisabledButton(false);
 						});
 				}}

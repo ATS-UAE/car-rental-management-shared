@@ -8,7 +8,7 @@ import AppBarWithDrawer from "../../presentational/layout/AppBarWithDrawer";
 import * as actions from "../../../actions";
 import { Typography } from "@material-ui/core";
 import { pages } from "../../../variables";
-import { toTitleWords } from "../../../utils";
+import { toTitleWords } from "../../../utils/helpers";
 
 function AppBarWithDrawerContainer({
 	auth,
@@ -45,13 +45,13 @@ function AppBarWithDrawerContainer({
 						optionsList.push({
 							path: page.path,
 							icon: <page.sidebar.icon />,
-							text: <Typography>{page.title}</Typography>,
+							text: <Typography>{page.sidebar.title}</Typography>,
 							onClick: () => history.push(page.path)
 						});
 					} else {
 						pageList.push({
 							icon: <page.sidebar.icon />,
-							text: <Typography>{page.title}</Typography>,
+							text: <Typography>{page.sidebar.title}</Typography>,
 							onClick: () => history.push(page.path)
 						});
 					}
@@ -72,6 +72,7 @@ function AppBarWithDrawerContainer({
 		});
 		endList.push(optionsList);
 	}
+
 	return (
 		<Fragment>
 			<AppBarWithDrawer

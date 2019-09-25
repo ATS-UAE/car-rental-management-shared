@@ -8,8 +8,8 @@ import { Edit, Visibility } from "@material-ui/icons";
 import FormPage from "../../pages/FormPage";
 import VehicleFormUpdate from "../forms/bookings/BookingFormUpdate";
 import * as reduxActions from "../../../actions";
-import { actions, resources } from "../../../variables/enums";
-import { api } from "../../../utils";
+import { Action, Resource } from "../../../variables/enums";
+import { api } from "../../../utils/helpers";
 import CardList from "../../presentational/display/CardList";
 import Can from "../layout/Can";
 
@@ -72,12 +72,12 @@ function BookingCardList({ bookings, history }) {
 						imgSrc: vehicleImageSrc || "/static/images/car-no-image-avl.jpg",
 						controls: (
 							<Can
-								action={actions.READ}
-								resource={resources.VEHICLES}
+								action={Action.READ}
+								resource={Resource.VEHICLES}
 								yes={readAccess => (
 									<Can
-										action={actions.UPDATE}
-										resource={resources.VEHICLES}
+										action={Action.UPDATE}
+										resource={Resource.VEHICLES}
 										yes={updateAccess => (
 											<IconButton
 												onClick={() =>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
-import SimpleSelect from "../../presentational/inputs/SimpleSelect";
+import Select from "../../presentational/inputs/Select";
 import * as actions from "../../../actions";
 
 function RoleSelect({
@@ -19,7 +19,7 @@ function RoleSelect({
 		? enums.data.roles.map(role => ({ value: role.id, label: role.name }))
 		: [{ value: "", label: "Loading..." }];
 	return (
-		<SimpleSelect
+		<Select
 			label="Role"
 			id="role"
 			onChange={e => {

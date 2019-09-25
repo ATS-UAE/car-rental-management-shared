@@ -14,8 +14,8 @@ import {
 } from "@material-ui/core";
 
 import * as reduxActions from "../../../../actions";
-import { api, hasActiveBooking, toTitleWords } from "../../../../utils";
-import { bookingTypes, roles } from "../../../../variables/enums";
+import { api, hasActiveBooking, toTitleWords, apiErrorHandler } from "../../../../utils/helpers";
+import { BookingType, Role } from "../../../../variables/enums";
 import CardList from "../../../presentational/display/CardList";
 import LocationMapSelectForm from "../../../presentational/forms/LocationMapSelectForm";
 import BookingForm from "../../../presentational/forms/BookingForm";
@@ -87,7 +87,7 @@ function BookingFormCreateStepper({
 			let bookingType = bookingTypeList.find(
 				type => type.id === values[0].bookingTypeId
 			);
-			if (bookingType.name === bookingTypes.REPLACEMENT) {
+			if (bookingType.name === BookingType.REPLACEMENT) {
 				newSteps[1].disabled = false;
 			} else {
 				newSteps[1].disabled = true;
@@ -106,7 +106,7 @@ function BookingFormCreateStepper({
 					!vehicle.defleeted &&
 					vehicle.locationId === values[2].locationId
 				) {
-					if (auth.data.role.name === roles.GUEST) {
+					if (auth.data.role.name === Role.GUEST) {
 						let inCategory = false;
 						if (!auth.data.categories.length) {
 							inCategory = true;
@@ -246,13 +246,13 @@ function BookingFormCreateStepper({
 							cards={bookingTypeList.reduce((acc, type) => {
 								let iconName;
 								switch (type.name) {
-									case bookingTypes.PRIVATE:
+									case BookingType.PRIVATE:
 										iconName = "Map";
 										break;
-									case bookingTypes.BUSINESS:
+									case BookingType.BUSINESS:
 										iconName = "Work";
 										break;
-									case bookingTypes.REPLACEMENT:
+									case BookingType.REPLACEMENT:
 										iconName = "Repeat";
 										break;
 									default:
@@ -271,7 +271,7 @@ function BookingFormCreateStepper({
 										iconName,
 										selected: values[step].bookingTypeId === type.id,
 										onClick: () => {
-											if (type.name === bookingTypes.REPLACEMENT) {
+											if (type.name === BookingType.REPLACEMENT) {
 												const newSteps = [...steps];
 												newSteps[1].disabled = false;
 												setSteps(newSteps);
@@ -469,7 +469,7 @@ function BookingFormCreateStepper({
 									history.push("/bookings");
 								})
 								.catch(e => {
-									setErrorNotes([e]);
+									setErrorNotes([apiErrorHandler(e).message]);
 									fetchBookings();
 									fetchVehicles();
 									setLoading(false);

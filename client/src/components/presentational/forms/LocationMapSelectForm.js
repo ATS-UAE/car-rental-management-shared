@@ -3,7 +3,7 @@ import { withStyles } from "@material-ui/core";
 import Form from "./Form";
 import WorldMap from "../display/WorldMap";
 import LocationMapMarker from "../display/LocationMapMarker";
-import { validators } from "../../../utils";
+import { validators } from "../../../utils/helpers";
 
 function LocationMapSelectForm({
 	classes,

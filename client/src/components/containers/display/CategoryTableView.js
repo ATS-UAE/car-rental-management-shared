@@ -3,7 +3,7 @@ import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { compose } from "recompose";
 import * as reduxActions from "../../../actions";
-import { api } from "../../../utils";
+import { api } from "../../../utils/helpers";
 
 import MaterialTable from "material-table";
 import AddBox from "@material-ui/icons/AddBox";

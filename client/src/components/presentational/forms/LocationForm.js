@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core/styles";
 import WorldMap from "../display/WorldMap";
 import LocationMapMarker from "../display/LocationMapMarker";
 import Form, { FIELDS } from "./Form";
-import { validators } from "../../../utils";
+import { validators } from "../../../utils/helpers";
 
 const { TEXT } = FIELDS;
 

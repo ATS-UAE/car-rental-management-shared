@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import moment from "moment";
 import BookingForm from "./BookingForm";
 import * as reduxActions from "../../../../actions";
-import { api } from "../../../../utils";
+import { api, apiErrorHandler } from "../../../utils/helpers";
 
 function BookingFromCreate({ fetchBookings, exclude, onSubmit, ticksMap }) {
 	let [errorNotes, setErrorNotes] = useState([]);
@@ -42,7 +42,7 @@ function BookingFromCreate({ fetchBookings, exclude, onSubmit, ticksMap }) {
 						onSubmit && onSubmit();
 					})
 					.catch(e => {
-						setErrorNotes([e]);
+						setErrorNotes([apiErrorHandler(e).message]);
 						setLoading(false);
 					});
 			}}

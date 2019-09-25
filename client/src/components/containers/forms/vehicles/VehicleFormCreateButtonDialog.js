@@ -4,7 +4,7 @@ import { Button } from "@material-ui/core";
 import VehicleFormCreate from "./VehicleFormCreate";
 import FormPage from "../../../pages/FormPage";
 import Can from "../../layout/Can";
-import { resources, actions } from "../../../../variables/enums";
+import { Resource, Action } from "../../../../variables/enums";
 
 function VehicleFormCreateButtonDialog({ history }) {
 	return (
@@ -18,8 +18,8 @@ function VehicleFormCreateButtonDialog({ history }) {
 				)}
 			/>
 			<Can
-				action={actions.CREATE}
-				resource={resources.VEHICLES}
+				action={Action.CREATE}
+				resource={Resource.VEHICLES}
 				yes={() => (
 					<Button
 						variant="contained"

@@ -1,6 +1,6 @@
 import React from "react";
 import Form, { FIELDS } from "./Form";
-import { validators } from "../../../utils";
+import { validators } from "../../../utils/helpers";
 const { TEXT } = FIELDS;
 
 function ForgotPassword({

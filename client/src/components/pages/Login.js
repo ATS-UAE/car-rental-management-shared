@@ -1,6 +1,7 @@
 import React from "react";
 import { withStyles } from "@material-ui/core/styles";
-import { withRouter, Route, Link } from "react-router-dom";
+import { withRouter, Route, Link, RouteComponentProps } from "react-router-dom";
+import { History } from "history";
 import { connect } from "react-redux";
 import { compose } from "redux";
 import { Paper, Dialog, Link as MuiLink } from "@material-ui/core";
@@ -8,7 +9,7 @@ import LoginContainer from "../containers/forms/Login";
 import * as actions from "../../actions";
 import ForgotPassword from "../containers/forms/ForgotPassword";
 
-function Login({ classes, history, fetchEnums, fetchCurrentUserDetails }) {
+const Login = ({ classes, history, fetchEnums, fetchCurrentUserDetails }) => {
 	return (
 		<Paper className={classes.root}>
 			<LoginContainer
@@ -43,7 +44,7 @@ function Login({ classes, history, fetchEnums, fetchCurrentUserDetails }) {
 			/>
 		</Paper>
 	);
-}
+};
 
 const styles = theme => ({
 	root: {

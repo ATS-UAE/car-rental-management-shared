@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import AccidentForm from "./AccidentForm";
 import * as reduxActions from "../../../../actions";
-import { api } from "../../../../utils";
+import { api, apiErrorHandler } from "../../../utils/helpers";
 
 function AccidentFormCreate({ fetchAccidents, exclude, onSubmit, auth }) {
 	const [errorNotes, setErrorNotes] = useState([]);
@@ -39,7 +39,7 @@ function AccidentFormCreate({ fetchAccidents, exclude, onSubmit, auth }) {
 						onSubmit && onSubmit();
 					})
 					.catch(e => {
-						setErrorNotes([e]);
+						setErrorNotes([apiErrorHandler(e).message]);
 						setLoading(false);
 					});
 			}}
