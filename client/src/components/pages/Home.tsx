@@ -127,17 +127,53 @@ const Home: FC<IPageHome & typeof actions & WithStyles<typeof styles>> = ({
 
 		let data: any =
 			vehicles &&
+			bookings &&
+			bookings.data &&
 			vehicles.data &&
 			vehicles.data.reduce(
-				(acc, vehicle) => {
+				(
+					acc: [
+						{
+							Booked: number;
+						},
+						{
+							Available: number;
+						}
+					],
+					vehicle
+				): [
+					{
+						Booked: number;
+					},
+					{
+						Available: number;
+					}
+				] => {
+					if (
+						bookings &&
+						bookings.data &&
+						bookings.data.find(
+							booking =>
+								booking &&
+								booking.vehicleId &&
+								booking.vehicleId === vehicle.id &&
+								booking.to < currentTime.unix() &&
+								booking.finalized === true
+						)
+					) {
+						acc[1].Available++;
+					} else {
+						acc[0].Booked++;
+					}
+
 					return acc;
 				},
 				[
 					{
-						Booked: 5
+						Booked: 0
 					},
 					{
-						Available: 9
+						Available: 0
 					}
 				]
 			);

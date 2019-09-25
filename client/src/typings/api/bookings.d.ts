@@ -3,4 +3,6 @@ export interface Booking {
 	from: number;
 	to: number;
 	approved: boolean;
+	vehicleId: number;
+	finalized: boolean;
 }

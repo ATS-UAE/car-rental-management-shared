@@ -6,7 +6,7 @@ import classNames from "classnames";
 import { compose } from "recompose";
 import { connect } from "react-redux";
 import * as reduxActions from "../../actions";
-import { Resource, Action } from "../../variables/enums";
+import { Resource, Role } from "../../variables/enums";
 import InviteGuestButtonDialog from "../containers/forms/InviteGuestButtonDialog";
 import Can from "../containers/layout/Can";
 import UserTableView from "../containers/display/UserTableView";
@@ -42,11 +42,7 @@ const Users = ({
 				}}
 			/>
 			<div className={classes.actions}>
-				<Can
-					action={"INVITE"}
-					resource={Resource.USERS}
-					yes={() => <InviteGuestButtonDialog />}
-				/>
+				{auth.data.role.name !== Role.Guest && <InviteGuestButtonDialog />}
 				<Can
 					action={"CREATE"}
 					resource={Resource.USERS}
