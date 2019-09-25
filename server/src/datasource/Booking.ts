@@ -61,7 +61,8 @@ export default class Booking extends DataSource {
 
 		let accessible = await RBAC.can(role, Operation.UPDATE, Resource.BOOKINGS, {
 			accessor: this.user,
-			target: foundBooking
+			target: foundBooking,
+			body: data
 		});
 
 		if (!accessible) {
@@ -112,6 +113,7 @@ export default class Booking extends DataSource {
 
 		let accessible = await RBAC.can(role, Operation.CREATE, Resource.BOOKINGS, {
 			accessor: this.user
+			body: data
 		});
 		let replacementVehicle;
 		try {

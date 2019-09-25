@@ -67,7 +67,8 @@ export default class Location extends DataSource {
 			Resource.LOCATIONS,
 			{
 				accessor: this.user,
-				target: foundLocation
+				target: foundLocation,
+				body: data
 			}
 		);
 
@@ -107,7 +108,8 @@ export default class Location extends DataSource {
 			Operation.CREATE,
 			Resource.LOCATIONS,
 			{
-				accessor: this.user
+				accessor: this.user,
+				body: data
 			}
 		);
 		if (!accessible) {

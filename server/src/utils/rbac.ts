@@ -3,187 +3,574 @@ import * as enums from "../variables/enums";
 
 const { READ, UPDATE, DELETE, CREATE } = enums.Operation;
 const accessControl = new RBAC("Car Booking");
-const generalRole = new Role("GENERAL");
 const masterRole = new Role(enums.Role.MASTER);
 const adminRole = new Role(enums.Role.ADMIN);
 const keyManagerRole = new Role(enums.Role.KEY_MANAGER);
 const guestRole = new Role(enums.Role.GUEST);
 
-const vehicleResource = new Resource(enums.Resource.VEHICLES);
-const locationsResource = new Resource(enums.Resource.LOCATIONS);
-const bookingsResource = new Resource(enums.Resource.BOOKINGS);
-const usersResource = new Resource(enums.Resource.USERS);
-const enumsResource = new Resource(enums.Resource.ENUMS);
-const accidentsResource = new Resource(enums.Resource.ACCIDENTS);
-const clientsResource = new Resource(enums.Resource.CLIENTS);
-
-/////////////////////////
-// GENERAL ROLE CONFIG //
-/////////////////////////
-// All roles will extend this role.
-// Users permission.
-generalRole.addPermission(
-	new Action(
-		READ,
-		usersResource,
-		({ targetUser, user }) => targetUser.id === user.id,
-		["password", "passwordConfirm"]
-	)
-);
-
-// Vehicle permissions.
-generalRole.addPermission(
-	new Action(READ, vehicleResource, null, ["objectId"])
-);
-generalRole.addPermission(new Action(READ, locationsResource));
-// Booking permissions.
-// generalRole.addPermission(
-// 	new Action(UPDATE, bookingsResource, () => {
-// 		// Bookings that are not yet finalized / ongoing / approved.
-// 	})
-// );
-
-// generalRole.addPermission(
-// 	new Action(DELETE, bookingsResource, () => {
-// 		// Bookings that are not yet finalized / paid / ongoing / approved.
-// 	})
-// );
-generalRole.addPermission(
-	new Action(
-		READ,
-		bookingsResource,
-		({ booking, user }) => booking.userId === user.id,
-		["userId"]
-	)
-);
-
-// Users permission.
-generalRole.addPermission(
-	new Action(
-		UPDATE,
-		usersResource,
-		({ user, targetUser }) => user.id === targetUser.id,
-		["roleId"]
-	)
-);
-
-// Enums permission.
-generalRole.addPermission(new Action(READ, enumsResource));
-
-// Accidents permissions.
-generalRole.addPermission(
-	new Action(
-		READ,
-		accidentsResource,
-		({ accident, user }) => accident.userId === user.id
-	)
-);
-generalRole.addPermission(
-	new Action(UPDATE, accidentsResource, ({ accident, user, body }) => true)
-);
+const vehicles = new Resource(enums.Resource.VEHICLES);
+const locations = new Resource(enums.Resource.LOCATIONS);
+const bookings = new Resource(enums.Resource.BOOKINGS);
+const users = new Resource(enums.Resource.USERS);
+const accidents = new Resource(enums.Resource.ACCIDENTS);
+const categories = new Resource(enums.Resource.CATEGORIES);
+const clients = new Resource(enums.Resource.CLIENTS);
 
 ////////////////////////
 // GUESTS ROLE CONFIG //
 ////////////////////////
-guestRole.extend(generalRole);
-// Bookings permissions.
-// Only guests can create bookings.
+
+////////////
+// CREATE //
+////////////
+
 guestRole.addPermission(
-	new Action(CREATE, bookingsResource, null, ["userId", "paid"])
+	new Action(
+		CREATE,
+		bookings,
+		({ accessor, body }: any) => {
+			try {
+				if (accessor.id !== undefined && accessor.id === body.userId) {
+					return true;
+				}
+				return false;
+			} catch (e) {
+				console.error(e);
+				return false;
+			}
+		},
+		["userId", "paid", "clientId"]
+	)
 );
 
-// Accidents permissions.
 guestRole.addPermission(
-	new Action(CREATE, accidentsResource, null, ["userId", "bookingId"])
+	new Action(
+		CREATE,
+		accidents,
+		({ accessor, body }: any) => {
+			try {
+				if (accessor.id !== undefined && accessor.id === body.userId) {
+					return true;
+				}
+				return false;
+			} catch (e) {
+				console.error(e);
+				return false;
+			}
+		},
+		["userId", "bookingId", "clientId"]
+	)
+);
+
+////////////
+//  READ  //
+////////////
+
+guestRole.addPermission(
+	new Action(
+		READ,
+		bookings,
+		({ accessor, target }: any) => {
+			try {
+				if (accessor.id && accessor.id === target.userId) {
+					return true;
+				}
+				return false;
+			} catch (e) {
+				console.error(e);
+				return false;
+			}
+		},
+		["clientId"]
+	)
+);
+guestRole.addPermission(
+	new Action(
+		READ,
+		vehicles,
+		({ accessor, target }: any) => {
+			try {
+				if (accessor.clientId && accessor.clientId === target.clientId) {
+					return true;
+				}
+				return false;
+			} catch (e) {
+				console.error(e);
+				return false;
+			}
+		},
+		["clientId"]
+	)
+);
+guestRole.addPermission(
+	new Action(
+		READ,
+		locations,
+		({ accessor, target }: any) => {
+			try {
+				if (accessor.clientId && accessor.clientId === target.clientId) {
+					return true;
+				}
+				return false;
+			} catch (e) {
+				console.error(e);
+				return false;
+			}
+		},
+		["clientId"]
+	)
+);
+guestRole.addPermission(
+	new Action(
+		READ,
+		categories,
+		({ accessor, target }: any) => {
+			try {
+				if (accessor.clientId && accessor.clientId === target.clientId) {
+					return true;
+				}
+				return false;
+			} catch (e) {
+				console.error(e);
+				return false;
+			}
+		},
+		["clientId"]
+	)
+);
+
+////////////
+// UPDATE //
+////////////
+
+guestRole.addPermission(
+	new Action(UPDATE, bookings, ({ accessor, target }: any) => {
+		try {
+			if (accessor.id === target.userId && target.approved === false) {
+				return true;
+			}
+			return false;
+		} catch (e) {
+			console.error(e);
+			return false;
+		}
+	})
+);
+
+////////////
+// DELETE //
+////////////
+
+guestRole.addPermission(
+	new Action(DELETE, bookings, ({ accessor, target }: any) => {
+		try {
+			if (accessor.id === target.userId && target.approved === false) {
+				return true;
+			}
+			return false;
+		} catch (e) {
+			console.error(e);
+			return false;
+		}
+	})
 );
 
 /////////////////////////////
 // KEY_MANAGER ROLE CONFIG //
 /////////////////////////////
-keyManagerRole.extend(generalRole);
-// Vehicle Permissions. Extended from guest.
 
-keyManagerRole.addPermission(new Action(UPDATE, vehicleResource));
-// Locations permissions. Extended from guest.
-keyManagerRole.addPermission(new Action(CREATE, locationsResource));
-keyManagerRole.addPermission(new Action(UPDATE, locationsResource));
-keyManagerRole.addPermission(new Action(DELETE, locationsResource));
+////////////
+//  READ  //
+////////////
 
-// Booking permissions. Extended from guest.
-keyManagerRole.addPermission(new Action(READ, bookingsResource));
 keyManagerRole.addPermission(
-	new Action(UPDATE, bookingsResource, null, ["userId"])
+	new Action(READ, users, ({ accessor, target }: any) => {
+		try {
+			if (accessor.clientId && accessor.clientId === target.clientId) {
+				return true;
+			}
+			return false;
+		} catch (e) {
+			console.error(e);
+			return false;
+		}
+	})
 );
 
-// Users permission
 keyManagerRole.addPermission(
-	new Action(READ, usersResource, null, ["password", "passwordConfirm"])
+	new Action(READ, vehicles, ({ accessor, target }: any) => {
+		try {
+			if (accessor.clientId && accessor.clientId === target.clientId) {
+				return true;
+			}
+			return false;
+		} catch (e) {
+			console.error(e);
+			return false;
+		}
+	})
 );
 
-// Accidents permission
-keyManagerRole.addPermission(new Action(READ, accidentsResource));
+keyManagerRole.addPermission(
+	new Action(READ, accidents, ({ accessor, target }: any) => {
+		try {
+			if (accessor.clientId && accessor.clientId === target.clientId) {
+				return true;
+			}
+			return false;
+		} catch (e) {
+			console.error(e);
+			return false;
+		}
+	})
+);
+
+keyManagerRole.addPermission(
+	new Action(READ, locations, ({ accessor, target }: any) => {
+		try {
+			if (
+				accessor.clientId &&
+				target.clients.find(client => accessor.clientId === client.id)
+			) {
+				return true;
+			}
+			return false;
+		} catch (e) {
+			console.error(e);
+			return false;
+		}
+	})
+);
+
+keyManagerRole.addPermission(
+	new Action(READ, categories, ({ accessor, target }: any) => {
+		try {
+			if (accessor.clientId && accessor.clientId === target.clientId) {
+				return true;
+			}
+			return false;
+		} catch (e) {
+			console.error(e);
+			return false;
+		}
+	})
+);
+
+////////////
+// UPDATE //
+////////////
+
+keyManagerRole.addPermission(
+	new Action(
+		UPDATE,
+		vehicles,
+		({ accessor, target }: any) => {
+			try {
+				if (accessor.clientId && accessor.clientId === target.clientId) {
+					return true;
+				}
+				return false;
+			} catch (e) {
+				console.error(e);
+				return false;
+			}
+		},
+		["categories", "objectId", "plateNumber", "vin", "wialonUnitId"]
+	)
+);
+
+keyManagerRole.addPermission(
+	new Action(UPDATE, bookings, ({ accessor, target }: any) => {
+		try {
+			if (accessor.clientId && accessor.clientId === target.clientId) {
+				return true;
+			}
+			return false;
+		} catch (e) {
+			console.error(e);
+			return false;
+		}
+	})
+);
+
+keyManagerRole.addPermission(
+	new Action(UPDATE, accidents, ({ accessor, target }: any) => {
+		try {
+			if (accessor.clientId && accessor.clientId === target.clientId) {
+				return true;
+			}
+			return false;
+		} catch (e) {
+			console.error(e);
+			return false;
+		}
+	})
+);
+
+////////////
+// DELETE //
+////////////
+
+keyManagerRole.addPermission(
+	new Action(DELETE, accidents, ({ accessor, target }: any) => {
+		try {
+			if (
+				accessor.clientId &&
+				accessor.clientId === target.clientId &&
+				target.approved === false
+			) {
+				return true;
+			}
+			return false;
+		} catch (e) {
+			console.error(e);
+			return false;
+		}
+	})
+);
 
 ///////////////////////
 // ADMIN ROLE CONFIG //
 ///////////////////////
-adminRole.extend(keyManagerRole);
-// Vehicle Permissions.
-adminRole.addPermission(new Action(CREATE, vehicleResource));
-adminRole.addPermission(new Action(READ, vehicleResource));
-adminRole.addPermission(new Action(UPDATE, vehicleResource));
-adminRole.addPermission(new Action(DELETE, vehicleResource));
 
-// Booking permissions.
-adminRole.addPermission(new Action(DELETE, bookingsResource));
-adminRole.addPermission(new Action(CREATE, bookingsResource));
+////////////
+// CREATE //
+////////////
 
-// User permissions.
-adminRole.addPermission(new Action(CREATE, usersResource));
-adminRole.addPermission(new Action(UPDATE, usersResource, null, ["roleId"]));
-adminRole.addPermission(new Action(DELETE, usersResource));
+adminRole.addPermission(
+	new Action(CREATE, users, ({ accessor, target }: any) => {
+		try {
+			if (accessor.clientId && accessor.clientId === target.clientId) {
+				return true;
+			}
+			return false;
+		} catch (e) {
+			console.error(e);
+			return false;
+		}
+	})
+);
 
-// Accidents Permissions
-adminRole.addPermission(new Action(DELETE, accidentsResource));
+adminRole.addPermission(
+	new Action(CREATE, categories, ({ accessor, target }: any) => {
+		try {
+			if (accessor.clientId && accessor.clientId === target.clientId) {
+				return true;
+			}
+			return false;
+		} catch (e) {
+			console.error(e);
+			return false;
+		}
+	})
+);
+
+////////////
+//  READ  //
+////////////
+
+adminRole.addPermission(
+	new Action(READ, users, ({ accessor, target }: any) => {
+		try {
+			if (accessor.clientId && accessor.clientId === target.clientId) {
+				return true;
+			}
+			return false;
+		} catch (e) {
+			console.error(e);
+			return false;
+		}
+	})
+);
+
+adminRole.addPermission(
+	new Action(READ, vehicles, ({ accessor, target }: any) => {
+		try {
+			if (accessor.clientId && accessor.clientId === target.clientId) {
+				return true;
+			}
+			return false;
+		} catch (e) {
+			console.error(e);
+			return false;
+		}
+	})
+);
+
+adminRole.addPermission(
+	new Action(READ, accidents, ({ accessor, target }: any) => {
+		try {
+			if (accessor.clientId && accessor.clientId === target.clientId) {
+				return true;
+			}
+			return false;
+		} catch (e) {
+			console.error(e);
+			return false;
+		}
+	})
+);
+
+adminRole.addPermission(
+	new Action(READ, categories, ({ accessor, target }: any) => {
+		try {
+			if (accessor.clientId && accessor.clientId === target.clientId) {
+				return true;
+			}
+			return false;
+		} catch (e) {
+			console.error(e);
+			return false;
+		}
+	})
+);
+
+////////////
+// UPDATE //
+////////////
+
+adminRole.addPermission(
+	new Action(UPDATE, users, ({ accessor, target }: any) => {
+		try {
+			if (accessor.clientId && accessor.clientId === target.clientId) {
+				return true;
+			}
+			return false;
+		} catch (e) {
+			console.error(e);
+			return false;
+		}
+	})
+);
+
+adminRole.addPermission(
+	new Action(
+		UPDATE,
+		vehicles,
+		({ accessor, target }: any) => {
+			try {
+				if (accessor.clientId && accessor.clientId === target.clientId) {
+					return true;
+				}
+				return false;
+			} catch (e) {
+				console.error(e);
+				return false;
+			}
+		},
+		["categories", "objectId", "plateNumber", "vin", "wialonUnitId"]
+	)
+);
+
+adminRole.addPermission(
+	new Action(UPDATE, accidents, ({ accessor, target }: any) => {
+		try {
+			if (accessor.clientId && accessor.clientId === target.clientId) {
+				return true;
+			}
+			return false;
+		} catch (e) {
+			console.error(e);
+			return false;
+		}
+	})
+);
+
+adminRole.addPermission(
+	new Action(UPDATE, categories, ({ accessor, target }: any) => {
+		try {
+			if (accessor.clientId && accessor.clientId === target.clientId) {
+				return true;
+			}
+			return false;
+		} catch (e) {
+			console.error(e);
+			return false;
+		}
+	})
+);
+
+////////////
+//  DELETE  //
+////////////
+
+adminRole.addPermission(
+	new Action(DELETE, categories, ({ accessor, target }: any) => {
+		try {
+			if (accessor.clientId && accessor.clientId === target.clientId) {
+				return true;
+			}
+			return false;
+		} catch (e) {
+			console.error(e);
+			return false;
+		}
+	})
+);
+
+adminRole.addPermission(
+	new Action(DELETE, bookings, ({ accessor, target }: any) => {
+		try {
+			if (
+				accessor.clientId &&
+				accessor.clientId === target.clientId &&
+				target.approved === false
+			) {
+				return true;
+			}
+			return false;
+		} catch (e) {
+			console.error(e);
+			return false;
+		}
+	})
+);
 
 ////////////////////////
 // MASTER ROLE CONFIG //
 ////////////////////////
 
-// User permissions
-masterRole.addPermission(new Action(CREATE, usersResource));
-masterRole.addPermission(new Action(READ, usersResource));
-masterRole.addPermission(new Action(UPDATE, usersResource));
-masterRole.addPermission(new Action(DELETE, usersResource));
+masterRole.addPermission(new Action(CREATE, users));
+masterRole.addPermission(new Action(CREATE, vehicles));
+masterRole.addPermission(new Action(CREATE, clients));
+masterRole.addPermission(new Action(CREATE, locations));
+masterRole.addPermission(new Action(CREATE, categories));
 
-// Vehicle permissions
-masterRole.addPermission(new Action(CREATE, vehicleResource));
-masterRole.addPermission(new Action(READ, vehicleResource));
-masterRole.addPermission(new Action(UPDATE, vehicleResource));
-masterRole.addPermission(new Action(DELETE, vehicleResource));
+masterRole.addPermission(new Action(READ, users));
+masterRole.addPermission(new Action(READ, vehicles));
+masterRole.addPermission(new Action(READ, bookings));
+masterRole.addPermission(new Action(READ, clients));
+masterRole.addPermission(new Action(READ, accidents));
+masterRole.addPermission(new Action(READ, locations));
+masterRole.addPermission(new Action(READ, categories));
 
-// Location permissions
-masterRole.addPermission(new Action(CREATE, locationsResource));
-masterRole.addPermission(new Action(READ, locationsResource));
-masterRole.addPermission(new Action(UPDATE, locationsResource));
-masterRole.addPermission(new Action(DELETE, locationsResource));
+masterRole.addPermission(new Action(UPDATE, users));
+masterRole.addPermission(new Action(UPDATE, vehicles));
+masterRole.addPermission(new Action(UPDATE, bookings));
+masterRole.addPermission(new Action(UPDATE, clients));
+masterRole.addPermission(new Action(UPDATE, accidents));
+masterRole.addPermission(new Action(UPDATE, locations));
+masterRole.addPermission(new Action(UPDATE, categories));
 
-// Booking permissions
-masterRole.addPermission(new Action(CREATE, bookingsResource));
-masterRole.addPermission(new Action(READ, bookingsResource));
-masterRole.addPermission(new Action(UPDATE, bookingsResource));
-masterRole.addPermission(new Action(DELETE, bookingsResource));
-
-// Accident permission
-masterRole.addPermission(new Action(CREATE, accidentsResource));
-masterRole.addPermission(new Action(READ, accidentsResource));
-masterRole.addPermission(new Action(UPDATE, accidentsResource));
-masterRole.addPermission(new Action(DELETE, accidentsResource));
-
-// Client permissions
-masterRole.addPermission(new Action(CREATE, clientsResource));
-masterRole.addPermission(new Action(READ, clientsResource));
-masterRole.addPermission(new Action(UPDATE, clientsResource));
-masterRole.addPermission(new Action(DELETE, clientsResource));
+masterRole.addPermission(new Action(DELETE, users));
+masterRole.addPermission(new Action(DELETE, vehicles));
+masterRole.addPermission(
+	new Action(DELETE, bookings, ({ accessor, target }: any) => {
+		try {
+			if (target.approved === false) {
+				return true;
+			}
+			return false;
+		} catch (e) {
+			console.error(e);
+			return false;
+		}
+	})
+);
+masterRole.addPermission(new Action(DELETE, clients));
+masterRole.addPermission(new Action(DELETE, accidents));
+masterRole.addPermission(new Action(DELETE, locations));
+masterRole.addPermission(new Action(DELETE, categories));
 
 accessControl.addRole(masterRole);
 accessControl.addRole(adminRole);
@@ -200,11 +587,11 @@ export const roles = {
 };
 
 export const resources = {
-	bookings: bookingsResource,
-	vehicles: vehicleResource,
-	locations: locationsResource,
-	users: usersResource,
-	enums: enumsResource,
-	accidents: accidentsResource,
-	clients: clientsResource
+	bookings,
+	vehicles,
+	locations,
+	users,
+	accidents,
+	categories,
+	clients
 };

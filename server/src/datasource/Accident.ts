@@ -70,7 +70,8 @@ export default class Accident extends DataSource {
 			Resource.ACCIDENTS,
 			{
 				accessor: this.user,
-				target: foundAccident
+				target: foundAccident,
+				body: data
 			}
 		);
 
@@ -118,7 +119,8 @@ export default class Accident extends DataSource {
 			Operation.CREATE,
 			Resource.ACCIDENTS,
 			{
-				accessor: this.user
+				accessor: this.user,
+				body: data
 			}
 		);
 		const accidentVehicle = await this.getVehicle(data.vehicleId);

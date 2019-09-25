@@ -66,7 +66,8 @@ export default class User extends DataSource {
 		}
 		let accessible = await RBAC.can(role, Operation.UPDATE, Resource.USERS, {
 			accessor: this.user,
-			target: foundUser
+			target: foundUser,
+			body: data
 		});
 		if (!accessible) {
 			throw new InvalidPermissionException();
@@ -100,7 +101,8 @@ export default class User extends DataSource {
 		let accessible =
 			options.invited ||
 			(await RBAC.can(role, Operation.CREATE, Resource.USERS, {
-				accessor: this.user
+				accessor: this.user,
+				body: data
 			}));
 		if (!accessible) {
 			throw new InvalidPermissionException();

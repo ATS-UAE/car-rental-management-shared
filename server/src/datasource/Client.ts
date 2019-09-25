@@ -101,7 +101,8 @@ export default class Client extends DataSource {
 		let role: Role = this.user.role.name;
 
 		let accessible = await RBAC.can(role, Operation.CREATE, Resource.CLIENTS, {
-			accessor: this.user
+			accessor: this.user,
+			body: data
 		});
 		if (!accessible) {
 			throw new InvalidPermissionException();

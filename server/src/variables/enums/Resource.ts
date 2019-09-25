@@ -6,7 +6,8 @@ enum Resource {
 	ENUMS = "ENUMS",
 	INVITES = "INVITES",
 	ACCIDENTS = "ACCIDENTS",
-	CLIENTS = "CLIENTS"
+	CLIENTS = "CLIENTS",
+	CATEGORIES = "CATEGORIES"
 }
 
 export default Resource;

@@ -58,7 +58,8 @@ export default class Vehicle extends DataSource {
 
 		let accessible = await RBAC.can(role, Operation.UPDATE, Resource.VEHICLES, {
 			accessor: this.user,
-			target: foundVehicle
+			target: foundVehicle,
+			body: data
 		});
 
 		if (!accessible) {
@@ -88,7 +89,8 @@ export default class Vehicle extends DataSource {
 		let role: Role = this.user.role.name;
 
 		let accessible = await RBAC.can(role, Operation.CREATE, Resource.VEHICLES, {
-			accessor: this.user
+			accessor: this.user,
+			body: data
 		});
 		if (!accessible) {
 			throw new InvalidPermissionException();
