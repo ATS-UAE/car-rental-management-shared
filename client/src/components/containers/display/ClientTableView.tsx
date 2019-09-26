@@ -214,7 +214,13 @@ class ClientTableView extends Component<Props, ClientTableViewState> {
 							icon: () => <Refresh />,
 							tooltip: "Refresh",
 							isFreeAction: true,
-							onClick: (event, data) => this.props.fetchClients()
+							onClick: (event, data) =>
+								Promise.all([
+									this.props.fetchClients(),
+									this.props.fetchUsers(),
+									this.props.fetchVehicles(),
+									this.props.fetchLocations()
+								])
 						},
 						{
 							icon: () => <DirectionsCar />,
@@ -255,6 +261,6 @@ export default compose<Props & typeof reduxActions, {}>(
 	withRouter,
 	connect(
 		mapStateToProps,
-		() => reduxActions
+		reduxActions
 	)
 )(ClientTableView);
