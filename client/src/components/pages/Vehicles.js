@@ -4,6 +4,7 @@ import { compose } from "recompose";
 import { Paper } from "@material-ui/core";
 import { withStyles } from "@material-ui/core";
 
+import { Role, permission } from "../containers/layout/Role";
 import * as actions from "../../actions";
 import VehicleFormCreateButtonDialog from "../containers/forms/vehicles/VehicleFormCreateButtonDialog";
 import VehicleCardList from "../containers/display/VehicleCardList";
@@ -23,7 +24,9 @@ const Vehicles = ({
 	}, []);
 	return (
 		<Paper className={classes.root}>
-			<VehicleFormCreateButtonDialog />
+			<Role roles={pemission.CREATE_VEHICLE}>
+				<VehicleFormCreateButtonDialog />
+			</Role>
 			<VehicleCardList />
 		</Paper>
 	);

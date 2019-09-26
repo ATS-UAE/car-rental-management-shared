@@ -1,10 +1,8 @@
-import React, { Fragment } from "react";
+import React, { Fragment, FC } from "react";
 import { withRouter } from "react-router";
 import { Button } from "@material-ui/core";
 import VehicleFormCreate from "./VehicleFormCreate";
 import FormPage from "../../../pages/FormPage";
-import Can from "../../layout/Can";
-import { Resource, Action } from "../../../../variables/enums";
 
 function VehicleFormCreateButtonDialog({ history }) {
 	return (
@@ -17,18 +15,9 @@ function VehicleFormCreateButtonDialog({ history }) {
 					<VehicleFormCreate onSubmit={() => history.push("/vehicles")} />
 				)}
 			/>
-			<Can
-				action={Action.CREATE}
-				resource={Resource.VEHICLES}
-				yes={() => (
-					<Button
-						variant="contained"
-						onClick={() => history.push("/vehicles/new")}
-					>
-						New Vehicle
-					</Button>
-				)}
-			/>
+			<Button variant="contained" onClick={() => history.push("/vehicles/new")}>
+				New Vehicle
+			</Button>
 		</Fragment>
 	);
 }

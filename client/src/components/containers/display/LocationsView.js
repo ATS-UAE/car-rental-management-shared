@@ -7,9 +7,8 @@ import * as reduxActions from "../../../actions";
 import WorldMap from "../../presentational/display/WorldMap";
 import LocationMapMarker from "../../presentational/display/LocationMapMarker";
 import LocationForm from "../../presentational/forms/LocationForm";
-import { Resource, Action } from "../../../variables/enums";
 import { api, apiErrorHandler } from "../../../utils/helpers";
-import Can from "../layout/Can";
+import { Role, permission } from "../layout/Role";
 
 function LocationsView({ locations, fetchLocations, classes }) {
 	useEffect(() => {
@@ -99,70 +98,60 @@ function LocationsView({ locations, fetchLocations, classes }) {
 		</Fragment>
 	);
 	return (
-		<Can
-			resource={Resource.LOCATIONS}
-			action={Action.READ}
-			yes={() => (
-				<Fragment>
-					<Can
-						action={Action.UPDATE}
-						resource={Resource.LOCATIONS}
-						yes={access => (
-							<Dialog
-								open={open}
-								onClose={() => {
-									setOpen(false);
-								}}
-								PaperProps={{ className: classes.updateForm }}
-							>
-								<LocationForm
-									footer={footer}
-									values={formData}
-									onChange={setFormData}
-									onError={setErrors}
-									errors={errors}
-									errorNotes={errorNotes}
-									buttonLabel="Update"
-									title="Update Location"
-									locationValue={
-										formData && formData.lat && formData.lng
-											? { lat: formData.lat, lng: formData.lng }
-											: undefined
-									}
-									existingLocations={existingLocations}
-									onMapClick={v => setFormData({ ...formData, ...v })}
-									exclude={access.excludedFields}
-								/>
-							</Dialog>
-						)}
+		<Fragment>
+			<Role roles={permission.UPDATE_LOCATIONS}>
+				<Dialog
+					open={open}
+					onClose={() => {
+						setOpen(false);
+					}}
+					PaperProps={{ className: classes.updateForm }}
+				>
+					<LocationForm
+						footer={footer}
+						values={formData}
+						onChange={setFormData}
+						onError={setErrors}
+						errors={errors}
+						errorNotes={errorNotes}
+						buttonLabel="Update"
+						title="Update Location"
+						locationValue={
+							formData && formData.lat && formData.lng
+								? { lat: formData.lat, lng: formData.lng }
+								: undefined
+						}
+						existingLocations={existingLocations}
+						onMapClick={v => setFormData({ ...formData, ...v })}
+						exclude={access.excludedFields}
 					/>
-					<WorldMap mapContainerProps={{ className: classes.map }}>
-						{locations &&
-							locations.data &&
-							locations.data.map(
-								({ id, lat, lng, name, address, locationImageSrc }) => (
-									<LocationMapMarker
-										position={{ lat: lat, lng: lng }}
-										label={name}
-										src={locationImageSrc}
-										key={lat + lng + name}
-										onClick={() => {
-											setOpen(true);
-											setFormData({
-												id,
-												name,
-												address,
-												lat,
-												lng
-											});
-										}}
-									/>
-								)
-							)}
-					</WorldMap>
-				</Fragment>
-			)}
-		/>
+				</Dialog>
+			</Role>
+			<WorldMap mapContainerProps={{ className: classes.map }}>
+				{locations &&
+					locations.data &&
+					locations.data.map(
+						({ id, lat, lng, name, address, locationImageSrc }) => (
+							<LocationMapMarker
+								position={{ lat: lat, lng: lng }}
+								label={name}
+								src={locationImageSrc}
+								key={lat + lng + name}
+								onClick={() => {
+									setOpen(true);
+									setFormData({
+										id,
+										name,
+										address,
+										lat,
+										lng
+									});
+								}}
+							/>
+						)
+					)}
+			</WorldMap>
+		</Fragment>
 	);
 }
 

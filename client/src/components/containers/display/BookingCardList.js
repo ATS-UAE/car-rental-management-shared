@@ -13,7 +13,7 @@ import { api } from "../../../utils/helpers";
 import CardList from "../../presentational/display/CardList";
 import Can from "../layout/Can";
 
-function BookingCardList({ bookings, history }) {
+function BookingCardList({ bookings, history, auth }) {
 	const [formData, setFormData] = useState({});
 
 	return (
@@ -74,10 +74,12 @@ function BookingCardList({ bookings, history }) {
 							<Can
 								action={Action.READ}
 								resource={Resource.VEHICLES}
+								params={{ accessor: auth.data, target: vehicle }}
 								yes={readAccess => (
 									<Can
 										action={Action.UPDATE}
 										resource={Resource.VEHICLES}
+										params={{ accessor: auth.data, target: vehicle }}
 										yes={updateAccess => (
 											<IconButton
 												onClick={() =>
@@ -118,12 +120,12 @@ function BookingCardList({ bookings, history }) {
 	);
 }
 
-const mapStateToProps = ({ bookings }) => {
+const mapStateToProps = ({ bookings, auth }) => {
 	let bookingData = [];
 	if (bookings && bookings.success === true && bookings.data) {
 		bookingData = bookings.data;
 	}
-	return { bookings: bookingData };
+	return { bookings: bookingData, auth };
 };
 
 export default compose(

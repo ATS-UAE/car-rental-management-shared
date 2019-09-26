@@ -275,11 +275,13 @@ function VehicleCardList({ vehicles, history, classes, auth, fetchVehicles }) {
 							<Can
 								action={Action.READ}
 								resource={Resource.VEHICLES}
+								params={{ accessor: auth.data, target: vehicle }}
 								yes={readAccess => (
 									<Fragment>
 										<Can
 											action={Action.UPDATE}
 											resource={Resource.VEHICLES}
+											params={{ accessor: auth.data, target: vehicle }}
 											yes={updateAccess => {
 												return (
 													<Fragment>
@@ -327,6 +329,7 @@ function VehicleCardList({ vehicles, history, classes, auth, fetchVehicles }) {
 										<Can
 											action={Action.DELETE}
 											resource={Resource.VEHICLES}
+											params={{ accessor: auth.data, target: vehicle }}
 											yes={() => {
 												const Icon = vehicle.defleeted ? CheckCircle : Block;
 												return (

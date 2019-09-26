@@ -16,6 +16,7 @@ import moment from "moment";
 
 import * as reduxActions from "../../../actions";
 import { Action, Resource } from "../../../variables/enums";
+import { Role, permission } from "../layout/Role";
 import Can from "../layout/Can";
 import api from "../../../utils/helpers/api";
 import ListView from "../../presentational/display/ListView";
@@ -68,7 +69,7 @@ const AccidentListView = ({
 						key={accident.id}
 						action={Action.READ}
 						resource={Resource.ACCIDENTS}
-						params={{ user: auth, accident }}
+						params={{ accessor: auth, target: accident }}
 						yes={readAccess => {
 							let vehicle = vehicles.find(
 								vehicle => vehicle.id === accident.vehicleId
@@ -122,15 +123,11 @@ const AccidentListView = ({
 
 	const listHeader = (
 		<Grid container justify="space-between">
-			<Can
-				action={Action.CREATE}
-				resource={Resource.ACCIDENTS}
-				yes={() => (
-					<AccidentFormCreateButtonDialog
-						classes={{ button: classes.actionButton }}
-					/>
-				)}
-			/>
+			<Role roles={pemission.REPORT_ACCIDENTS}>
+				<AccidentFormCreateButtonDialog
+					classes={{ button: classes.actionButton }}
+				/>
+			</Role>
 		</Grid>
 	);
 
@@ -143,27 +140,23 @@ const AccidentListView = ({
 				</Fragment>
 			}
 			header={
-				<Can
-					action={Action.DELETE}
-					resource={Resource.ACCIDENTS}
-					yes={() =>
-						formData && formData.accident ? (
-							<IconButton
-								aria-label="Delete"
-								className={classes.deleteButton}
-								onClick={() =>
-									api.deleteAccident(formData.accident.id).then(() => {
-										fetchAccidents();
-										setFormData({});
-										history.push("/accidents");
-									})
-								}
-							>
-								<Delete />
-							</IconButton>
-						) : null
-					}
-				/>
+				formData && formData.accident ? (
+					<IconButton
+						aria-label="Delete"
+						className={classes.deleteButton}
+						onClick={() =>
+							api
+								.updateAccident({ id: formData.accident.id, deleted: true })
+								.then(() => {
+									fetchAccidents();
+									setFormData({});
+									history.push("/accidents");
+								})
+						}
+					>
+						<Delete />
+					</IconButton>
+				) : null
 			}
 			body={
 				<FormPage

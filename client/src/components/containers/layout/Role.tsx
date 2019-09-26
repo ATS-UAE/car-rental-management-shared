@@ -6,7 +6,8 @@ import { ReduxState } from "../../../typings";
 export { permission } from "../../../variables/permissions";
 
 export interface RoleProps {
-	roles: RoleEnum[];
+	roles?: RoleEnum[];
+	excludes: RoleEnum[];
 }
 
 interface RoleStateProps {
@@ -15,8 +16,11 @@ interface RoleStateProps {
 
 type Props = RoleProps & RoleStateProps;
 
-const Component: FC<Props> = ({ roles, children, role }) => {
-	if (role && roles.includes(role)) {
+const Component: FC<Props> = ({ roles, children, role, excludes }) => {
+	if (
+		role &&
+		((roles && roles.includes(role)) || (excludes && !excludes.includes(role)))
+	) {
 		return <>{children}</>;
 	}
 	return null;
