@@ -3,7 +3,9 @@ import { connect } from "react-redux";
 import api from "../../../../utils/helpers/api";
 import { ReduxState } from "../../../../typings/redux";
 import { UserResponse } from "../../../../typings/api";
-import TransferList from "../../../presentational/display/TransferList";
+import TransferList, {
+	TransferListProps
+} from "../../../presentational/display/TransferList";
 import { Role } from "../../../../variables/enums";
 import { toTitleWords } from "../../../../utils/helpers";
 
@@ -19,6 +21,7 @@ interface Props extends UserTransferListFormProps {
 const UserTransferListForm: FC<Props> = ({ users, clientId, onSubmit }) => {
 	const [items, setItems] = useState<UserResponse[]>([]);
 	const [right, setRight] = useState<UserResponse[]>([]);
+	const [loading, setLoading] = useState<boolean>(false);
 
 	useEffect(() => {
 		if (users && users.data) {
@@ -41,13 +44,18 @@ const UserTransferListForm: FC<Props> = ({ users, clientId, onSubmit }) => {
 	return (
 		<TransferList<UserResponse>
 			onSubmit={(e, data) => {
+				setLoading(true);
 				api
 					.updateClient({
 						id: clientId,
 						users: data.map(value => value.id)
 					})
-					.then(() => onSubmit && onSubmit());
+					.then(() => {
+						setLoading(false);
+						onSubmit && onSubmit();
+					});
 			}}
+			loading={loading}
 			items={items}
 			right={right}
 			onChange={right => setRight(right)}

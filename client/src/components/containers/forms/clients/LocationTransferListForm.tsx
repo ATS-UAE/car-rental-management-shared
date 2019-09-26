@@ -8,7 +8,9 @@ import {
 	ClientResponse,
 	WithServerResponse
 } from "../../../../typings/api";
-import TransferList from "../../../presentational/display/TransferList";
+import TransferList, {
+	TransferListProps
+} from "../../../presentational/display/TransferList";
 import Loading from "../../../presentational/layout/Loading";
 interface LocationTransferListFormProps {
 	clientId: number;
@@ -31,6 +33,7 @@ const LocationTransferListForm: FC<Props> = ({
 }) => {
 	const [items, setItems] = useState<LocationResponse[]>([]);
 	const [right, setRight] = useState<LocationResponse[]>([]);
+	const [loading, setLoading] = useState<boolean>(false);
 	const [clientData, setClientData] = useState<WithServerResponse<
 		ClientResponse
 	> | null>(null);
@@ -69,14 +72,19 @@ const LocationTransferListForm: FC<Props> = ({
 		(clientData && (
 			<TransferList<LocationResponse>
 				onSubmit={(e, data) => {
+					setLoading(true);
 					api
 						.updateClient({
 							id: clientId,
 							locations: data.map(value => value.id)
 						})
 						.then(fetchLocations)
-						.then(() => onSubmit && onSubmit());
+						.then(() => {
+							setLoading(false);
+							onSubmit && onSubmit();
+						});
 				}}
+				loading={loading}
 				items={items}
 				right={right}
 				onChange={right => setRight(right)}

@@ -143,6 +143,10 @@ class ClientTableView extends Component<Props, ClientTableViewState> {
 									content: (this.state.clientSelected && (
 										<UserTransferListForm
 											clientId={this.state.clientSelected.id}
+											onSubmit={() => {
+												this.props.fetchUsers();
+												this.props.history.replace("/clients");
+											}}
 										/>
 									)) || <Redirect to="/clients" />
 								})
@@ -155,6 +159,10 @@ class ClientTableView extends Component<Props, ClientTableViewState> {
 									content: (this.state.clientSelected && (
 										<VehicleTransferListForm
 											clientId={this.state.clientSelected.id}
+											onSubmit={() => {
+												this.props.fetchVehicles();
+												this.props.history.replace("/clients");
+											}}
 										/>
 									)) || <Redirect to="/clients" />
 								})
@@ -167,6 +175,10 @@ class ClientTableView extends Component<Props, ClientTableViewState> {
 									content: (this.state.clientSelected && (
 										<LocationTransferListForm
 											clientId={this.state.clientSelected.id}
+											onSubmit={() => {
+												this.props.fetchLocations();
+												this.props.history.replace("/clients");
+											}}
 										/>
 									)) || <Redirect to="/clients" />
 								})
@@ -243,6 +255,6 @@ export default compose<Props & typeof reduxActions, {}>(
 	withRouter,
 	connect(
 		mapStateToProps,
-		reduxActions
+		() => reduxActions
 	)
 )(ClientTableView);

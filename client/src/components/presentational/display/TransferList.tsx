@@ -16,7 +16,7 @@ import {
 	WithStyles
 } from "@material-ui/core";
 
-interface TransferListProps<T> {
+export interface TransferListProps<T = any> {
 	items: T[];
 	comparator: (a: T, b: T) => boolean;
 	right: T[];
@@ -32,6 +32,7 @@ interface TransferListProps<T> {
 		data: T[]
 	) => void;
 	onChange: (right: T[]) => void;
+	loading?: boolean;
 }
 
 interface TransferListState<T> {
@@ -247,6 +248,7 @@ class TransferList<T extends HasId> extends Component<
 					color="primary"
 					variant="contained"
 					size="large"
+					disabled={this.props.loading}
 					onClick={e => onSubmit(e, right)}
 				>
 					Done

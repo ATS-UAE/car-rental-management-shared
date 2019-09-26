@@ -3,7 +3,9 @@ import { connect } from "react-redux";
 import api from "../../../../utils/helpers/api";
 import { ReduxState } from "../../../../typings/redux";
 import { VehicleResponse } from "../../../../typings/api";
-import TransferList from "../../../presentational/display/TransferList";
+import TransferList, {
+	TransferListProps
+} from "../../../presentational/display/TransferList";
 
 interface VehicleTransformListFormProps {
 	clientId: number;
@@ -21,6 +23,7 @@ const VehicleTransferListForm: FC<Props> = ({
 }) => {
 	const [items, setItems] = useState<VehicleResponse[]>([]);
 	const [right, setRight] = useState<VehicleResponse[]>([]);
+	const [loading, setLoading] = useState<boolean>(false);
 
 	useEffect(() => {
 		if (vehicles && vehicles.data) {
@@ -42,13 +45,18 @@ const VehicleTransferListForm: FC<Props> = ({
 	return (
 		<TransferList<VehicleResponse>
 			onSubmit={(e, data) => {
+				setLoading(true);
 				api
 					.updateClient({
 						id: clientId,
 						vehicles: data.map(value => value.id)
 					})
-					.then(() => onSubmit && onSubmit());
+					.then(() => {
+						setLoading(false);
+						onSubmit && onSubmit();
+					});
 			}}
+			loading={loading}
 			items={items}
 			right={right}
 			onChange={right => setRight(right)}
