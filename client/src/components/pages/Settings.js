@@ -3,7 +3,6 @@ import { compose } from "recompose";
 import { connect } from "react-redux";
 import { Paper, Tabs, Tab, withStyles } from "@material-ui/core";
 import * as actions from "../../actions";
-import { Role } from "../../variables/enums";
 import PasswordChangeButtonDialog from "../containers/forms/PasswordChangeButtonDialog";
 import CategoryTableView from "../containers/display/CategoryTableView";
 import { Role, permission } from "../containers/layout/Role";
