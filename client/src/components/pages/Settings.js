@@ -6,7 +6,7 @@ import * as actions from "../../actions";
 import { Role } from "../../variables/enums";
 import PasswordChangeButtonDialog from "../containers/forms/PasswordChangeButtonDialog";
 import CategoryTableView from "../containers/display/CategoryTableView";
-
+import { Role, permission } from "../containers/layout/Role";
 const Settings = ({
 	classes,
 	fetchCategories,
@@ -14,8 +14,7 @@ const Settings = ({
 	fetchVehicles,
 	location,
 	match,
-	history,
-	auth
+	history
 }) => {
 	useEffect(() => {
 		fetchCategories();
@@ -31,15 +30,13 @@ const Settings = ({
 			case 0:
 				return <PasswordChangeButtonDialog />;
 			case 1:
-				if (auth && auth && auth.role.name === Role.ADMIN) {
-					return (
-						<CategoryTableView
-							location={location}
-							match={match}
-							history={history}
-						/>
-					);
-				} else return null;
+				<Role roles={permission.CREATE_CATEGORIES}>
+					<CategoryTableView
+						location={location}
+						match={match}
+						history={history}
+					/>
+				</Role>;
 			default:
 				return null;
 		}
@@ -77,8 +74,7 @@ const styles = theme => ({
 	}
 });
 
-const mapStateToProps = ({ auth, categories }) => ({
-	auth,
+const mapStateToProps = ({ categories }) => ({
 	categories
 });
 

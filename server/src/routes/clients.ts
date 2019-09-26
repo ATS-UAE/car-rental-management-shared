@@ -25,7 +25,10 @@ router.post("/", async ({ user, body }, res: Response) => {
 	const ClientDataSource = new Client(db, user);
 
 	try {
-		const createdClient = await ClientDataSource.create(body);
+		const createdClient = await ClientDataSource.create({
+			...body,
+			clientId: user.clientId
+		});
 		response.setData(createdClient);
 		response.handleSuccess("Client has been created", res);
 	} catch (e) {
