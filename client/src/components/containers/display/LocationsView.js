@@ -123,7 +123,6 @@ function LocationsView({ locations, fetchLocations, classes }) {
 						}
 						existingLocations={existingLocations}
 						onMapClick={v => setFormData({ ...formData, ...v })}
-						exclude={access.excludedFields}
 					/>
 				</Dialog>
 			</Role>

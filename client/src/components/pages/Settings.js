@@ -6,6 +6,7 @@ import * as actions from "../../actions";
 import PasswordChangeButtonDialog from "../containers/forms/PasswordChangeButtonDialog";
 import CategoryTableView from "../containers/display/CategoryTableView";
 import { Role, permission } from "../containers/layout/Role";
+
 const Settings = ({
 	classes,
 	fetchCategories,
@@ -29,13 +30,15 @@ const Settings = ({
 			case 0:
 				return <PasswordChangeButtonDialog />;
 			case 1:
-				<Role roles={permission.CREATE_CATEGORIES}>
-					<CategoryTableView
-						location={location}
-						match={match}
-						history={history}
-					/>
-				</Role>;
+				return (
+					<Role roles={permission.CREATE_CATEGORIES}>
+						<CategoryTableView
+							location={location}
+							match={match}
+							history={history}
+						/>
+					</Role>
+				);
 			default:
 				return null;
 		}

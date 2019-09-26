@@ -24,7 +24,7 @@ const Vehicles = ({
 	}, []);
 	return (
 		<Paper className={classes.root}>
-			<Role roles={pemission.CREATE_VEHICLE}>
+			<Role roles={permission.CREATE_VEHICLE}>
 				<VehicleFormCreateButtonDialog />
 			</Role>
 			<VehicleCardList />
