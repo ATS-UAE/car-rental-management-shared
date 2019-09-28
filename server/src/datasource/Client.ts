@@ -3,7 +3,7 @@ import _ from "lodash";
 import DataSource from "./DataSource";
 import database from "../models";
 import { Role, Operation, Resource } from "../variables/enums";
-import userAccessor from "./types/userAccessor";
+import userAccessor from "./types/UserAccessor";
 import RBAC from "../utils/rbac";
 import {
 	InvalidPermissionException,

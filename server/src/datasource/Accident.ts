@@ -1,13 +1,13 @@
 import DataSource from "./DataSource";
 import { Role, Operation, Resource } from "../variables/enums";
-import userAccessor from "./types/userAccessor";
+import userAccessor from "./types/UserAccessor";
 import RBAC from "../utils/rbac";
 import {
 	InvalidPermissionException,
 	ResourceNotFoundException,
 	InvalidInputException
 } from "../utils/exceptions";
-import { toMySQLDate, pickFields } from "../utils/helpers";
+import { pickFields } from "../utils/helpers";
 export default class Accident extends DataSource {
 	user: userAccessor;
 

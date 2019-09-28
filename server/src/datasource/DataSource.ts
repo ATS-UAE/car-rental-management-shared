@@ -1,4 +1,4 @@
-import userAccessor from "./types/userAccessor";
+import userAccessor from "./types/UserAccessor";
 import RBAC from "../utils/rbac";
 import { Operation, Resource } from "../variables/enums";
 

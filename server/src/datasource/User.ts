@@ -1,6 +1,6 @@
 import DataSource from "./DataSource";
 import { Operation, Resource, Role } from "../variables/enums";
-import userAccessor from "./types/userAccessor";
+import userAccessor from "./types/UserAccessor";
 import RBAC from "../utils/rbac";
 import {
 	InvalidPermissionException,
