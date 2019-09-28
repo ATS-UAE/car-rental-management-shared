@@ -9,5 +9,7 @@ var Resource;
     Resource["ENUMS"] = "ENUMS";
     Resource["INVITES"] = "INVITES";
     Resource["ACCIDENTS"] = "ACCIDENTS";
+    Resource["CLIENTS"] = "CLIENTS";
+    Resource["CATEGORIES"] = "CATEGORIES";
 })(Resource || (Resource = {}));
 exports.default = Resource;

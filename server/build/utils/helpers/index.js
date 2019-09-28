@@ -6,10 +6,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const moment_timezone_1 = __importDefault(require("moment-timezone"));
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
+const lodash_1 = __importDefault(require("lodash"));
 const enums_1 = require("../../variables/enums");
 const url_1 = require("url");
 var ResponseBuilder_1 = require("./ResponseBuilder");
 exports.ResponseBuilder = ResponseBuilder_1.default;
+exports.pickAndMerge = (obj1, obj2, fields = []) => {
+    return Object.assign({}, obj1, lodash_1.default.pick(obj2, fields));
+};
 exports.pickFields = (target, fields) => {
     const result = {};
     for (let key in target) {

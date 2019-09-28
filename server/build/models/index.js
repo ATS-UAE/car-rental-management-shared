@@ -6,8 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const sequelize_1 = require("sequelize");
-const config_1 = __importDefault(require("../config"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
+const config_1 = __importDefault(require("../config"));
 const helpers_1 = require("../utils/helpers");
 const enums_1 = require("../variables/enums");
 class DB {
@@ -27,15 +27,14 @@ class DB {
         const db = {};
         const modelPath = path_1.default.join(__dirname);
         const basename = path_1.default.basename(__filename);
+        const fileTypes = /\.(js|ts)/;
         fs_1.default.readdirSync(modelPath)
             .filter(file => file.indexOf(".") !== 0 &&
             file !== basename &&
-            file.slice(-3) === ".js")
+            fileTypes.test(file.slice(-3)))
             .forEach(file => {
-            const model = sequelize.import(modelPath + file);
+            const model = sequelize.import(path_1.default.resolve(modelPath, file));
             db[model.name] = model;
-            console.log(model.name);
-            console.log(db[model.name]);
         });
         Object.keys(db).forEach(modelName => {
             if (db[modelName].associate) {
@@ -45,7 +44,7 @@ class DB {
         db.sequelize = sequelize;
         sequelize
             .authenticate()
-            .then(() => this.init(db, { sync: { options: {} } }))
+            .then(() => this.init(db, {}))
             .then(() => console.log("Connection has been established successfully."))
             .catch(err => {
             console.error("Unable to connect to the database\n", err);
@@ -65,8 +64,8 @@ class DB {
             await Promise.all(Object.values(enums_1.BookingType).map(name => db.BookingType.create({ name })));
         }
         if (users.length === 0) {
-            let adminRole = await db.Role.findOne({
-                where: { name: enums_1.Role.ADMIN }
+            let masterRole = await db.Role.findOne({
+                where: { name: enums_1.Role.MASTER }
             });
             // Create root user...
             let rootPassword = await bcryptjs_1.default.hash(config_1.default.database.password, 10);
@@ -77,7 +76,7 @@ class DB {
                 lastName: "Amparo",
                 gender: "m",
                 email: "ramil@atsuae.net",
-                roleId: adminRole.dataValues.id,
+                roleId: masterRole.dataValues.id,
                 mobileNumber: "+971562341841",
                 approved: true
             });

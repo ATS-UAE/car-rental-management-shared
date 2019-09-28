@@ -5,7 +5,7 @@ WORKDIR /app
 COPY package.json ./
 
 # Install dependencies. This creates node_modules folder
-RUN npm install
+RUN npm install --no-package-lock
 
 # Copy source code.
 COPY . .

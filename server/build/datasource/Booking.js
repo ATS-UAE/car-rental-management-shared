@@ -53,7 +53,8 @@ class Booking extends DataSource_1.default {
         let foundBooking = await this.get(id);
         let accessible = await rbac_1.default.can(role, enums_1.Operation.UPDATE, enums_1.Resource.BOOKINGS, {
             accessor: this.user,
-            target: foundBooking
+            target: foundBooking,
+            body: data
         });
         if (!accessible) {
             throw new exceptions_1.InvalidPermissionException();
@@ -91,7 +92,8 @@ class Booking extends DataSource_1.default {
     async create(data) {
         let role = this.user.role.name;
         let accessible = await rbac_1.default.can(role, enums_1.Operation.CREATE, enums_1.Resource.BOOKINGS, {
-            accessor: this.user
+            accessor: this.user,
+            body: data
         });
         let replacementVehicle;
         try {

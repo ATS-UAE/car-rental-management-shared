@@ -2,7 +2,7 @@ FROM node:8.16.0-alpine AS builder
 WORKDIR /var/www/car-booking-v2
 COPY ./package.json ./
 COPY ./package-lock.json ./
-RUN npm install
+RUN npm install --no-package-lock
 COPY ./ ./
 RUN npm run build
 

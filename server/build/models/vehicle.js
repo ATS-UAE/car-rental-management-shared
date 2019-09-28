@@ -1,4 +1,6 @@
-module.exports = (sequelize, DataTypes) => {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = (sequelize, DataTypes) => {
     let Vehicle = sequelize.define("Vehicle", {
         objectId: {
             type: DataTypes.STRING,
@@ -33,6 +35,18 @@ module.exports = (sequelize, DataTypes) => {
         vehicleImageSrc: { type: DataTypes.STRING }
     });
     Vehicle.associate = models => {
+        models.Vehicle.belongsTo(models.Client, {
+            as: "client",
+            foreignKey: {
+                name: "clientId",
+                allowNull: false,
+                validate: {
+                    notNull: {
+                        msg: "Please specify which client this vehicle belongs to."
+                    }
+                }
+            }
+        });
         models.Vehicle.belongsTo(models.Location, {
             as: "location",
             foreignKey: "locationId"

@@ -29,9 +29,9 @@ exports.sendPasswordResetToken = ({ email, url }) => {
         html: `<h1>Hello</h1><a href="${url}?token=${token}">Click here to reset password!</a>`
     });
 };
-exports.sendInvite = ({ email }) => {
+exports.sendInvite = ({ email, clientId }) => {
     const transporter = getTransport();
-    let token = jsonwebtoken_1.default.sign({ email }, secretKey, { expiresIn: "7d" });
+    let token = jsonwebtoken_1.default.sign({ email, clientId }, secretKey, { expiresIn: "7d" });
     const compiled = compileTemplate(getTemplate("invite"), {
         company: "LeasePlan",
         contactEmail: "support@atsuae.net",

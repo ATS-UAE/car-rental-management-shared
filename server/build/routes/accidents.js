@@ -20,7 +20,7 @@ router.get("/", async ({ user }, res) => {
     try {
         const accidents = await AccidentDataSource.getAll();
         response.setData(accidents);
-        response.handleSuccess(res, `Found ${accidents.length} accidents.`);
+        response.handleSuccess(`Found ${accidents.length} accidents.`, res);
     }
     catch (e) {
         response.handleError(e, res);
@@ -47,7 +47,7 @@ router.post("/", multerUpload_1.default("carbooking/media/accidents").fields([
         const createdAccident = await AccidentDataSource.create(Object.assign({}, body, { accidentImageSrc,
             accidentVideoSrc }));
         response.setData(createdAccident);
-        response.handleSuccess(res, "Accident has been created.");
+        response.handleSuccess("Accident has been created.", res);
     }
     catch (e) {
         response.handleError(e, res);
@@ -61,7 +61,7 @@ router.get("/:id", async ({ user, params }, res) => {
     try {
         const foundAccident = await AccidentDataSource.get(params.id);
         response.setData(foundAccident.get({ plain: true }));
-        response.handleSuccess(res, `Found accident with ID ${params.id}`);
+        response.handleSuccess(`Found accident with ID ${params.id}`, res);
     }
     catch (e) {
         response.handleError(e, res);
@@ -100,7 +100,7 @@ router.patch("/:id", multerUpload_1.default("carbooking/media/accidents").fields
                 field: "accidentVideoSrc"
             });
         response.setData(updatedAccident);
-        response.handleSuccess(res, `Accident with ID ${params.id} has been updated.`);
+        response.handleSuccess(`Accident with ID ${params.id} has been updated.`, res);
     }
     catch (e) {
         response.handleError(e, res);
@@ -113,7 +113,7 @@ router.delete("/:id", async ({ user, params }, res, next) => {
     const AccidentDataSource = new datasource_1.Accident(models_1.default, user);
     try {
         await AccidentDataSource.delete(params.id);
-        response.handleSuccess(res, `Accident with ID ${params.id} has been deleted.`);
+        response.handleSuccess(`Accident with ID ${params.id} has been deleted.`, res);
     }
     catch (e) {
         response.handleError(e, res);

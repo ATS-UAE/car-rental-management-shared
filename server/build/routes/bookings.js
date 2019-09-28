@@ -16,7 +16,7 @@ router.get("/", async ({ user }, res) => {
     const BookingDataSource = new datasource_1.Booking(models_1.default, user);
     try {
         const foundBookings = await BookingDataSource.getAll();
-        response.handleSuccess(res, `Found ${foundBookings.length} bookings.`);
+        response.handleSuccess(`Found ${foundBookings.length} bookings.`, res);
         response.setData(foundBookings);
     }
     catch (e) {
@@ -30,7 +30,7 @@ router.post("/", async ({ user, body }, res) => {
     try {
         const createdBooking = await BookingDataSource.create(body);
         response.setData(createdBooking.get({ plain: true }));
-        response.handleSuccess(res, "Booking has been created.");
+        response.handleSuccess("Booking has been created.", res);
     }
     catch (e) {
         response.handleError(e, res);
@@ -43,7 +43,7 @@ router.get("/:id", async ({ user, params }, res) => {
     try {
         const foundBooking = await BookingDataSource.get(params.id);
         response.setData(foundBooking.get({ plain: true }));
-        response.handleSuccess(res, `Booking with ID of ${params.id} found.`);
+        response.handleSuccess(`Booking with ID of ${params.id} found.`, res);
     }
     catch (e) {
         response.handleError(e, res);
@@ -88,7 +88,7 @@ router.patch("/:id", async ({ user, params, body }, res) => {
             });
         }
         response.setData(updatedBooking.get({ plain: true }));
-        response.handleSuccess(res, "Booking has been created");
+        response.handleSuccess("Booking has been created", res);
     }
     catch (e) {
         response.handleError(e, res);
@@ -101,7 +101,7 @@ router.delete("/:id", async ({ user, params }, res) => {
     try {
         const deletedBooking = await BookingDataSource.delete(params.id);
         response.setData(deletedBooking.get({ plain: true }));
-        response.handleSuccess(res, `Booking with ID ${params.id} has been deleted.`);
+        response.handleSuccess(`Booking with ID ${params.id} has been deleted.`, res);
     }
     catch (e) {
         response.handleError(e, res);

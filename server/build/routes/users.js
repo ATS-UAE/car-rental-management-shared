@@ -24,7 +24,7 @@ router.get("/", requireLogin_1.default, async ({ user }, res) => {
     try {
         const users = await UserDataSource.getAll();
         response.setData(users);
-        response.handleSuccess(res, `Found ${users.length} users.`);
+        response.handleSuccess(`Found ${users.length} users.`, res);
     }
     catch (e) {
         response.handleError(e, res);
@@ -37,17 +37,19 @@ router.post("/", multerUpload_1.default("carbooking/media/users/profile").single
     const UserDataSource = new datasource_1.User(models_1.default, user);
     let inviteTokenUsed = false;
     let email = body.email;
+    let clientId = (user && user.clientId) || null;
     // Consume invite token
     if (body.inviteToken) {
         const inviteToken = jsonwebtoken_1.default.verify(body.inviteToken, config_1.default.secretKey);
         if (inviteToken) {
             inviteTokenUsed = true;
             email = inviteToken.email;
+            clientId = inviteToken.clientId;
         }
     }
     try {
         let hashedPassword = await bcryptjs_1.default.hash(body.password, 10);
-        let createdUser = await UserDataSource.create(Object.assign({}, body, { userImageSrc: fileLocation, email, password: hashedPassword }), {
+        let createdUser = await UserDataSource.create(Object.assign({}, body, { userImageSrc: fileLocation, email, password: hashedPassword, clientId: clientId }), {
             invited: inviteTokenUsed
         });
         response.setData({

@@ -41,11 +41,11 @@ class ResponseBuilder {
             res.status(500);
         }
         this.setMessage(e.message);
-        if (e.fields && e.fields.length > 0) {
+        if (e.fields && e.fields.length) {
             e.fields.forEach((error) => this.appendError(error));
         }
     }
-    handleSuccess(res, message) {
+    handleSuccess(message, res) {
         this.setMessage(message);
         this.setCode(200);
         this.setSuccess(true);

@@ -1,11 +1,11 @@
-import React, { useEffect } from "react";
+import React, { useEffect, FC } from "react";
 import { Route } from "react-router-dom";
 import { withRouter } from "react-router";
 import { Dialog } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 import { compose } from "recompose";
 
-function FormPage({
+const FormPage: FC<any> = ({
 	render,
 	history,
 	dialogProps,
@@ -17,7 +17,7 @@ function FormPage({
 	check,
 	popUp,
 	onChange
-}) {
+}) => {
 	if (check === undefined || check({ path, location }) === true)
 		return (
 			<Route
@@ -42,7 +42,7 @@ function FormPage({
 			/>
 		);
 	else return null;
-}
+};
 
 function DialogComponent({
 	render,

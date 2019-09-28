@@ -21,7 +21,7 @@ router.get("/", async ({ user }, res) => {
     try {
         const locations = await LocationDataSource.getAll();
         response.setData(locations);
-        response.handleSuccess(res, `Found ${locations.length} locations. `);
+        response.handleSuccess(`Found ${locations.length} locations. `, res);
     }
     catch (e) {
         response.handleError(e, res);
@@ -34,10 +34,10 @@ router.post("/", multerUpload_1.default("carbooking/media/locations").single("lo
     try {
         const createdLocation = await LocationDataSource.create(body);
         response.setData(createdLocation);
-        response.handleSuccess(res, "Location has been created.");
+        response.handleSuccess("Location has been created.", res);
     }
     catch (e) {
-        response.handleError(res, e);
+        response.handleError(e, res);
     }
     res.json(response);
 }, deleteFileOnError_1.default);
@@ -47,7 +47,7 @@ router.get("/:id", async ({ user, params }, res) => {
     try {
         let foundLocation = await LocationDataSource.get(params.id);
         response.setData(foundLocation.get({ plain: true }));
-        response.handleSuccess(res, `Found location with ID of ${foundLocation.id}`);
+        response.handleSuccess(`Found location with ID of ${foundLocation.id}`, res);
     }
     catch (e) {
         response.handleError(e, res);
@@ -69,7 +69,7 @@ router.patch("/:id", multerUpload_1.default("carbooking/media/locations").single
                 field: "locationImageSrc"
             });
         response.setData(updatedLocation.get({ plain: true }));
-        response.handleSuccess(res, `Location with ID ${params.id} updated.`);
+        response.handleSuccess(`Location with ID ${params.id} updated.`, res);
     }
     catch (e) {
         response.handleError(e, res);
@@ -82,7 +82,7 @@ router.delete("/:id", async ({ user, params }, res) => {
     try {
         let deletedLocation = await LocationDataSource.delete(params.id);
         response.setData(deletedLocation.get({ plain: true }));
-        response.handleSuccess(res, `Location with ID ${params.id} has been deleted.`);
+        response.handleSuccess(`Location with ID ${params.id} has been deleted.`, res);
     }
     catch (e) {
         response.handleError(e, res);

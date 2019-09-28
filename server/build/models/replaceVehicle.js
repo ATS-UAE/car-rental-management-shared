@@ -1,4 +1,6 @@
-module.exports = (sequelize, DataTypes) => {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = (sequelize, DataTypes) => {
     let Vehicle = sequelize.define("ReplaceVehicle", {
         brand: {
             type: DataTypes.STRING

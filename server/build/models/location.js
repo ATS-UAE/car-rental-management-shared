@@ -1,4 +1,6 @@
-module.exports = (sequelize, DataTypes) => {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = (sequelize, DataTypes) => {
     let Location = sequelize.define("Location", {
         name: {
             type: DataTypes.STRING,
@@ -30,5 +32,12 @@ module.exports = (sequelize, DataTypes) => {
         },
         locationImageSrc: { type: DataTypes.STRING }
     });
+    Location.associate = models => {
+        models.Location.belongsToMany(models.Client, {
+            as: "clients",
+            foreignKey: "locationId",
+            through: "ClientLocations"
+        });
+    };
     return Location;
 };

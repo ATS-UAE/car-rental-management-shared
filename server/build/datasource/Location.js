@@ -49,7 +49,8 @@ class Location extends DataSource_1.default {
         let foundLocation = await this.get(id);
         let accessible = await rbac_1.default.can(role, enums_1.Operation.UPDATE, enums_1.Resource.LOCATIONS, {
             accessor: this.user,
-            target: foundLocation
+            target: foundLocation,
+            body: data
         });
         if (!accessible) {
             throw new exceptions_1.InvalidPermissionException();
@@ -73,7 +74,8 @@ class Location extends DataSource_1.default {
     async create(data) {
         let role = this.user.role.name;
         let accessible = await rbac_1.default.can(role, enums_1.Operation.CREATE, enums_1.Resource.LOCATIONS, {
-            accessor: this.user
+            accessor: this.user,
+            body: data
         });
         if (!accessible) {
             throw new exceptions_1.InvalidPermissionException();

@@ -54,7 +54,8 @@ class User extends DataSource_1.default {
         }
         let accessible = await rbac_1.default.can(role, enums_1.Operation.UPDATE, enums_1.Resource.USERS, {
             accessor: this.user,
-            target: foundUser
+            target: foundUser,
+            body: data
         });
         if (!accessible) {
             throw new exceptions_1.InvalidPermissionException();
@@ -79,10 +80,11 @@ class User extends DataSource_1.default {
         return foundUser;
     }
     async create(data, options = {}) {
-        let role = this.user.role.name;
+        let role = (this.user && this.user.role && this.user.role.name) || null;
         let accessible = options.invited ||
             (await rbac_1.default.can(role, enums_1.Operation.CREATE, enums_1.Resource.USERS, {
-                accessor: this.user
+                accessor: this.user,
+                body: data
             }));
         if (!accessible) {
             throw new exceptions_1.InvalidPermissionException();

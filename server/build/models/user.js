@@ -1,5 +1,6 @@
-const { toUnix } = require("../utils");
-module.exports = (sequelize, { STRING, DATE, BOOLEAN }) => {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = (sequelize, { STRING, DATE, BOOLEAN }) => {
     let User = sequelize.define("User", {
         username: {
             type: STRING,
@@ -46,9 +47,6 @@ module.exports = (sequelize, { STRING, DATE, BOOLEAN }) => {
                 notNull: { msg: "Mobile number is required" }
             }
         },
-        clientNo: {
-            type: STRING
-        },
         contractNo: {
             type: STRING
         },
@@ -64,23 +62,30 @@ module.exports = (sequelize, { STRING, DATE, BOOLEAN }) => {
     }, {
         validate: {
             checkUsername() {
-                if (this.username.length < 4) {
+                if (this.username && this.username.length < 4) {
                     throw new Error("Username length must be at least 4 characters.");
                 }
             },
             checkPasswordLength() {
-                if (this.password.length < 8) {
+                if (this.password && this.password.length < 8) {
                     throw new Error("Password length must be at least 8 characters.");
-                }
-            },
-            checkUserParent() {
-                if (!this.parentCompanyId && this.userTypeId > 2) {
-                    throw new Error("User must have a parent company!");
                 }
             }
         }
     });
     User.associate = models => {
+        models.User.belongsTo(models.Client, {
+            foreignKey: {
+                name: "clientId",
+                allowNull: false,
+                validate: {
+                    notNull: {
+                        msg: "Please specify which client this user belongs to."
+                    }
+                }
+            },
+            as: "client"
+        });
         models.User.belongsTo(models.Role, {
             foreignKey: {
                 name: "roleId",

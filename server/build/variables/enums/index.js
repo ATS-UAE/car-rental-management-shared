@@ -2,8 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var Operation_1 = require("./Operation");
 exports.Operation = Operation_1.default;
-var UserType_1 = require("./UserType");
-exports.UserType = UserType_1.default;
 var Resource_1 = require("./Resource");
 exports.Resource = Resource_1.default;
 var Role_1 = require("./Role");

@@ -14,29 +14,35 @@ const path_1 = __importDefault(require("path"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const express_session_1 = __importDefault(require("express-session"));
 const helpers_1 = require("./utils/helpers");
+const enums_1 = require("./variables/enums");
 const config_1 = __importDefault(require("./config"));
 const models_1 = __importDefault(require("./models"));
 const auth_1 = __importDefault(require("./routes/auth"));
 const users_1 = __importDefault(require("./routes/users"));
-const enums_1 = __importDefault(require("./routes/enums"));
+const enums_2 = __importDefault(require("./routes/enums"));
 const invites_1 = __importDefault(require("./routes/invites"));
 const vehicles_1 = __importDefault(require("./routes/vehicles"));
 const bookings_1 = __importDefault(require("./routes/bookings"));
 const locations_1 = __importDefault(require("./routes/locations"));
 const accidents_1 = __importDefault(require("./routes/accidents"));
 const categories_1 = __importDefault(require("./routes/categories"));
+const clients_1 = __importDefault(require("./routes/clients"));
 const app = express_1.default();
 // PASSPORT CONFIGURATIONS
 passport_1.default.use(new passport_local_1.Strategy(async (username, password, cb) => {
     try {
         let existingUser = await models_1.default.User.findOne({
+            include: [{ model: models_1.default.Role, as: "role" }],
             where: { username }
         });
         if (existingUser) {
-            existingUser = existingUser.get({ plain: true });
             let valid = await bcryptjs_1.default.compare(password, existingUser.password);
             if (!valid || existingUser.blocked) {
                 return cb(null, false);
+            }
+            else if (existingUser.role.name !== enums_1.Role.MASTER &&
+                existingUser.clientId === null) {
+                throw new Error("Your account does not belong to a client. Please contact customer support.");
             }
             else {
                 return cb(null, existingUser);
@@ -79,13 +85,14 @@ app.use(passport_1.default.session());
 // Express routes
 app.use("/api/carbooking/auth", auth_1.default);
 app.use("/api/carbooking/users", users_1.default);
-app.use("/api/carbooking/enums", enums_1.default);
+app.use("/api/carbooking/enums", enums_2.default);
 app.use("/api/carbooking/invites", invites_1.default);
 app.use("/api/carbooking/vehicles", vehicles_1.default);
 app.use("/api/carbooking/bookings", bookings_1.default);
 app.use("/api/carbooking/locations", locations_1.default);
 app.use("/api/carbooking/accidents", accidents_1.default);
 app.use("/api/carbooking/categories", categories_1.default);
+app.use("/api/carbooking/clients", clients_1.default);
 app.use("/static", express_1.default.static(helpers_1.getStaticFilesPath()));
 app.use("/static", express_1.default.static(path_1.default.join(__dirname, "public")));
 app.listen(config_1.default.serverPort, () => {

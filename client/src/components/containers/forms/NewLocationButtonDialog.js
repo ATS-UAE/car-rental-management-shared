@@ -7,7 +7,7 @@ import { api, apiErrorHandler } from "../../../utils/helpers";
 import { Resource, Action } from "../../../variables/enums";
 import DialogButton from "../../presentational/forms/DialogButton";
 import Can from "../layout/Can";
-function NewLocationButtonDialog({ onSubmit, fetchLocations, locations }) {
+function NewLocationButtonDialog({ fetchLocations, locations }) {
 	useEffect(() => {
 		fetchLocations();
 	}, []);
@@ -53,7 +53,6 @@ function NewLocationButtonDialog({ onSubmit, fetchLocations, locations }) {
 							setOpen(false);
 							setDisabledButton(false);
 							setNewLocation({});
-							onSubmit && onSubmit();
 						})
 						.catch(e => {
 							setErrorNotes([apiErrorHandler(e).message]);

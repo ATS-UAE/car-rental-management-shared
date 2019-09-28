@@ -247,9 +247,6 @@ function VehicleCardList({ vehicles, history, classes, auth, fetchVehicles }) {
 				/>
 			</Switch>
 			<CardList
-				details={cards => (
-					<VehicleBookingRange vehicleList={cards.map(card => card.vehicle)} />
-				)}
 				cards={vehicles.reduce((acc, vehicle) => {
 					const {
 						id,

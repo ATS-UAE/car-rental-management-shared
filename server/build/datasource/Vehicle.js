@@ -49,7 +49,8 @@ class Vehicle extends DataSource_1.default {
         let foundVehicle = await this.get(id);
         let accessible = await rbac_1.default.can(role, enums_1.Operation.UPDATE, enums_1.Resource.VEHICLES, {
             accessor: this.user,
-            target: foundVehicle
+            target: foundVehicle,
+            body: data
         });
         if (!accessible) {
             throw new exceptions_1.InvalidPermissionException();
@@ -73,7 +74,8 @@ class Vehicle extends DataSource_1.default {
     async create(data) {
         let role = this.user.role.name;
         let accessible = await rbac_1.default.can(role, enums_1.Operation.CREATE, enums_1.Resource.VEHICLES, {
-            accessor: this.user
+            accessor: this.user,
+            body: data
         });
         if (!accessible) {
             throw new exceptions_1.InvalidPermissionException();

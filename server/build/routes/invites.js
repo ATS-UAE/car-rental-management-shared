@@ -14,7 +14,7 @@ router.use(requireLogin_1.default);
 router.use(disallowGuests_1.default);
 //TODO: check if email already exists in DB.
 // Send an invite to an email
-router.post("/", async ({ body }, res) => {
+router.post("/", async ({ body, user }, res) => {
     let response = new helpers_1.ResponseBuilder();
     // Check if email is provided.
     if (body.email) {
@@ -24,8 +24,8 @@ router.post("/", async ({ body }, res) => {
                 where: { email: body.email }
             });
             if (!existingEmail) {
-                await mail_1.sendInvite({ email: body.email });
-                response.handleSuccess(res, `Invite has been sent to ${body.email}`);
+                await mail_1.sendInvite({ email: body.email, clientId: user.clientId });
+                response.handleSuccess(`Invite has been sent to ${body.email}`, res);
             }
             else {
                 throw new Error("Email is already registered.");

@@ -21,7 +21,7 @@ router.get("/", async ({ user }, res) => {
     try {
         let vehicles = await VehicleDataSource.getAll();
         response.setData(vehicles);
-        response.handleSuccess(res, `Found ${vehicles.length} vehicles.`);
+        response.handleSuccess(`Found ${vehicles.length} vehicles.`, res);
     }
     catch (e) {
         response.handleError(e, res);
@@ -43,7 +43,7 @@ router.post("/", multerUpload_1.default("carbooking/media/vehicles").single("veh
             await createdVehicle.setCategories(categories);
         }
         response.setData(Object.assign({}, createdVehicle.get({ plain: true }), { categories: await createdVehicle.getCategories().map(c => c.id) }));
-        response.handleSuccess(res, "Vehicle has been created.");
+        response.handleSuccess("Vehicle has been created.", res);
     }
     catch (e) {
         response.handleError(e, res);
@@ -57,7 +57,7 @@ router.get("/:id", async ({ user, params }, res) => {
     try {
         let foundVehicle = await VehicleDataSource.get(params.id);
         response.setData(Object.assign({}, foundVehicle.get({ plain: true }), { categories: (await foundVehicle.getCategories()).map(c => c.id) }));
-        response.handleSuccess(res, `Vehicle with ID ${params.id} found.`);
+        response.handleSuccess(`Vehicle with ID ${params.id} found.`, res);
     }
     catch (e) {
         response.handleError(e, res);
@@ -86,7 +86,7 @@ router.patch("/:id", multerUpload_1.default("carbooking/media/vehicles").single(
             await updatedVehicle.setCategories(categories);
         }
         response.setData(Object.assign({}, updatedVehicle.get({ plain: true }), { categories: (await updatedVehicle.getCategories()).map(c => c.id) }));
-        response.handleSuccess(res, `Vehicle with ID ${params.id} updated.`);
+        response.handleSuccess(`Vehicle with ID ${params.id} updated.`, res);
     }
     catch (e) {
         response.handleError(e, res);
@@ -105,7 +105,7 @@ router.delete("/:id", disallowGuests_1.default, async ({ user, params }, res, ne
             field: "vehicleImageSrc"
         });
         response.setData(deletedVehicle.get({ plain: true }));
-        response.handleSuccess(res, `Vehicle with ID ${params.id} has been deleted.`);
+        response.handleSuccess(`Vehicle with ID ${params.id} has been deleted.`, res);
     }
     catch (e) {
         response.handleError(e, res);
