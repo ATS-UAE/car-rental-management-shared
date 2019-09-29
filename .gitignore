@@ -1,7 +1,7 @@
 docker-compose.dev.yml
 car-rental-management.env
-/server/build
-/client/build
-/static
+/server/build/*
+/client/build/*
+/static/*
 todo.txt
 buildscript.sh
