@@ -1,4 +1,4 @@
-FROM node:10-alpine AS builder
+FROM node:10.16.3-alpine AS builder
 WORKDIR /var/www/car-booking-v2
 COPY ./package.json ./
 COPY ./package-lock.json ./
