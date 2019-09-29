@@ -1,9 +1,9 @@
 import { Role } from "../../variables/enums";
 
-type userAccessor = {
+type UserAccessor = {
 	id: number;
 	role: { name: Role; id?: number };
 	[key: string]: any;
 };
 
-export default userAccessor;
+export default UserAccessor;

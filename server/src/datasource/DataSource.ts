@@ -1,11 +1,11 @@
-import userAccessor from "./types/UserAccessor";
+import UserAccessor from "./types/UserAccessor";
 import RBAC from "../utils/rbac";
 import { Operation, Resource } from "../variables/enums";
 
 export default abstract class DataSource {
 	constructor(
 		protected db: any,
-		protected user?: userAccessor,
+		protected user?: UserAccessor,
 		protected resource?: Resource
 	) {}
 

@@ -1,6 +1,6 @@
 import DataSource from "./DataSource";
 import { Role, Operation, Resource } from "../variables/enums";
-import userAccessor from "./types/UserAccessor";
+import UserAccessor from "./types/UserAccessor";
 import RBAC from "../utils/rbac";
 import {
 	InvalidPermissionException,
@@ -8,9 +8,9 @@ import {
 } from "../utils/exceptions";
 
 export default class Location extends DataSource {
-	user: userAccessor;
+	user: UserAccessor;
 
-	constructor(db: any, userAccessor: userAccessor) {
+	constructor(db: any, userAccessor: UserAccessor) {
 		super(db);
 		this.user = userAccessor;
 	}
