@@ -89,17 +89,17 @@ class DB {
 			let masterRole = await db.Role.findOne({
 				where: { name: Role.MASTER }
 			});
+
 			// Create root user...
 			let rootPassword = await bcrypt.hash(config.database.password, 10);
 			await db.User.create({
 				username: "root",
 				password: rootPassword,
-				firstName: "Ramil",
-				lastName: "Amparo",
-				gender: "m",
-				email: "ramil@atsuae.net",
+				firstName: "Root",
+				lastName: "Account",
+				email: "support@atsuae.net",
 				roleId: masterRole.dataValues.id,
-				mobileNumber: "+971562341841",
+				mobileNumber: "",
 				approved: true
 			});
 		}
