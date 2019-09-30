@@ -2,14 +2,12 @@ version: "3"
 services:
   nginx:
     restart: always
-    image: ramilamparo/car-rental-management-network
     build:
       context: ./nginx
     ports:
       - "${PORT}:80"
   api:
     restart: always
-    image: ramilamparo/car-rental-management-server
     build:
       context: ./server
     volumes:
@@ -18,7 +16,6 @@ services:
       - /var/www/static:/var/www/static
   client:
     restart: always
-    image: ramilamparo/car-rental-management-client
     build:
       context: ./client
     volumes:
