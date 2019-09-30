@@ -26,9 +26,5 @@ services:
     volumes:
       - /app/node_modules
       - ./client:/app
-    environment:
-      - REACT_APP_CAR_BOOKING_API_DOMAIN=http://api.atsuae.net
-      - REACT_APP_CAR_BOOKING_CLIENT_DOMAIN=http://leaseplan-rentals.atsuae.net
-      - CHOKIDAR_USEPOLLING=true
     env_file:
       - car-rental-management.env

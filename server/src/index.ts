@@ -25,7 +25,7 @@ import categoryRoutes from "./routes/categories";
 import clientRoutes from "./routes/clients";
 
 const app = express();
-console.log(process.env)
+console.log(process.env);
 // PASSPORT CONFIGURATIONS
 passport.use(
 	new Strategy(async (username, password, cb) => {
