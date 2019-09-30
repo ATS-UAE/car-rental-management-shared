@@ -15,7 +15,7 @@ import { Accident } from "../datasource";
 const router = express.Router();
 router.use(requireLogin);
 
-router.get("/", async ({ user }, res) => {
+router.get("/", async ({ user }: any, res) => {
 	const response = new ResponseBuilder();
 	const AccidentDataSource = new Accident(db, user);
 
@@ -78,7 +78,7 @@ router.post(
 	deleteFileOnError
 );
 
-router.get("/:id", async ({ user, params }, res) => {
+router.get("/:id", async ({ user, params }: any, res) => {
 	const response = new ResponseBuilder();
 	const AccidentDataSource = new Accident(db, user);
 
@@ -158,7 +158,7 @@ router.patch(
 	deleteReplacedFiles
 );
 
-router.delete("/:id", async ({ user, params }, res, next) => {
+router.delete("/:id", async ({ user, params }: any, res, next) => {
 	const response = new ResponseBuilder();
 	const AccidentDataSource = new Accident(db, user);
 	try {

@@ -1,9 +1,10 @@
+/* tslint:disable */
 import passport from "passport";
 import express from "express";
 import moment from "moment";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { check, oneOf, validationResult } from "express-validator/check";
+import { check, oneOf, validationResult } from "express-validator";
 
 import { ResponseBuilder } from "../utils/helpers";
 import { sendPasswordResetToken } from "../utils/mail";
@@ -22,10 +23,9 @@ router.get("/me", requireLogin, function(req, res) {
 	response.setCode(200);
 	res.json(response);
 });
-
-router.patch("/me", async function({ user, body }, res) {
+router.patch("/me", async function({ user, body }: any, res) {
 	let response = new ResponseBuilder();
-	let me = await db.User.findByPk(user.id);
+	let me = await db.User.findByPk((user as any).id);
 	if (me) {
 		if (body.password && body.passwordOld) {
 			let samePassword = await bcrypt.compare(body.password, me.password);

@@ -22,7 +22,7 @@ import {
 
 const router = express.Router();
 
-router.get("/", requireLogin, async ({ user }, res) => {
+router.get("/", requireLogin, async ({ user }: any, res) => {
 	const response = new ResponseBuilder();
 	const UserDataSource = new User(db, user);
 
@@ -105,7 +105,7 @@ router.post(
 	deleteFileOnError
 );
 
-router.get("/:id", requireLogin, async ({ user, params }, res) => {
+router.get("/:id", requireLogin, async ({ user, params }: any, res) => {
 	const response = new ResponseBuilder();
 	const UserDataSource = new User(db, user);
 
@@ -194,7 +194,7 @@ router.delete(
 	"/:id",
 	requireLogin,
 	disallowGuests,
-	async ({ user, params }, res, next) => {
+	async ({ user, params }: any, res, next) => {
 		let response = new ResponseBuilder();
 
 		const UserDataSource = new User(db, user);

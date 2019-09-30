@@ -5,7 +5,7 @@ import db from "../models";
 
 const router = express.Router();
 
-router.get("/", async ({ user }, res) => {
+router.get("/", async ({ user }: any, res) => {
 	const response = new ResponseBuilder();
 	const ClientDataSource = new Client(db, user);
 
@@ -20,7 +20,7 @@ router.get("/", async ({ user }, res) => {
 	res.json(response);
 });
 
-router.post("/", async ({ user, body }, res: Response) => {
+router.post("/", async ({ user, body }: any, res: Response) => {
 	const response = new ResponseBuilder();
 	const ClientDataSource = new Client(db, user);
 
@@ -38,7 +38,7 @@ router.post("/", async ({ user, body }, res: Response) => {
 	res.json(response);
 });
 
-router.get("/:id", async ({ user, params }, res) => {
+router.get("/:id", async ({ user, params }: any, res) => {
 	const response = new ResponseBuilder();
 	const ClientDataSource = new Client(db, user);
 
@@ -56,7 +56,7 @@ router.get("/:id", async ({ user, params }, res) => {
 	res.json(response);
 });
 
-router.patch("/:id", async ({ user, params, body }, res) => {
+router.patch("/:id", async ({ user, params, body }: any, res) => {
 	const response = new ResponseBuilder();
 	const ClientDataSource = new Client(db, user);
 
@@ -78,7 +78,7 @@ router.patch("/:id", async ({ user, params, body }, res) => {
 	res.json(response);
 });
 
-router.delete("/:id", async ({ user, params }, res) => {
+router.delete("/:id", async ({ user, params }: any, res) => {
 	const response = new ResponseBuilder();
 	const ClientDataSource = new Client(db, user);
 

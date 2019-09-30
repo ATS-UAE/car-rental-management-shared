@@ -8,7 +8,7 @@ import { Booking } from "../datasource";
 const router = express.Router();
 router.use(requireLogin);
 
-router.get("/", async ({ user }, res) => {
+router.get("/", async ({ user }: any, res) => {
 	const response = new ResponseBuilder();
 	const BookingDataSource = new Booking(db, user);
 	try {
@@ -22,7 +22,7 @@ router.get("/", async ({ user }, res) => {
 	res.json(response);
 });
 
-router.post("/", async ({ user, body }, res) => {
+router.post("/", async ({ user, body }: any, res) => {
 	const response = new ResponseBuilder();
 	const BookingDataSource = new Booking(db, user);
 
@@ -37,7 +37,7 @@ router.post("/", async ({ user, body }, res) => {
 	res.json(response);
 });
 
-router.get("/:id", async ({ user, params }, res) => {
+router.get("/:id", async ({ user, params }: any, res) => {
 	let response = new ResponseBuilder();
 	const BookingDataSource = new Booking(db, user);
 
@@ -52,7 +52,7 @@ router.get("/:id", async ({ user, params }, res) => {
 	res.json(response);
 });
 
-router.patch("/:id", async ({ user, params, body }, res) => {
+router.patch("/:id", async ({ user, params, body }: any, res) => {
 	const response = new ResponseBuilder();
 	const BookingDataSource = new Booking(db, user);
 
@@ -102,7 +102,7 @@ router.patch("/:id", async ({ user, params, body }, res) => {
 	res.json(response);
 });
 
-router.delete("/:id", async ({ user, params }, res) => {
+router.delete("/:id", async ({ user, params }: any, res) => {
 	const response = new ResponseBuilder();
 	const BookingDataSource = new Booking(db, user);
 	try {

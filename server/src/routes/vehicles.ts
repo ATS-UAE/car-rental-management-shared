@@ -16,7 +16,7 @@ import { Vehicle } from "../datasource";
 const router = express.Router();
 router.use(requireLogin);
 
-router.get("/", async ({ user }, res) => {
+router.get("/", async ({ user }: any, res) => {
 	const response = new ResponseBuilder();
 	const VehicleDataSource = new Vehicle(db, user);
 
@@ -71,7 +71,7 @@ router.post(
 	deleteFileOnError
 );
 
-router.get("/:id", async ({ user, params }, res) => {
+router.get("/:id", async ({ user, params }: any, res) => {
 	let response = new ResponseBuilder();
 	const VehicleDataSource = new Vehicle(db, user);
 
@@ -142,7 +142,7 @@ router.patch(
 router.delete(
 	"/:id",
 	disallowGuests,
-	async ({ user, params }, res, next) => {
+	async ({ user, params }: any, res, next) => {
 		let response = new ResponseBuilder();
 
 		const VehicleDataSource = new Vehicle(db, user);

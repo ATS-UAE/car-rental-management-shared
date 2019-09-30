@@ -12,7 +12,7 @@ router.use(disallowGuests);
 
 //TODO: check if email already exists in DB.
 // Send an invite to an email
-router.post("/", async ({ body, user }, res) => {
+router.post("/", async ({ body, user }: any, res) => {
 	let response = new ResponseBuilder();
 
 	// Check if email is provided.
