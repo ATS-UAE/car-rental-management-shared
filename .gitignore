@@ -4,12 +4,11 @@ docker-compose.dev.yml
 car-rental-management.env
 todo.txt
 buildscript.sh
-
+/**/*.env
 
 # Server directory
 /server/node_modules
 /server/src/config/development.js
-/server/.env
 /server/sqliteDB
 /server/todo.txt
 /server/src/config/config.json
@@ -17,7 +16,6 @@ buildscript.sh
 
 # Client directory
 /client/build/**
-/client/.env
 # dependencies
 /client/node_modules
 /client/.pnp
