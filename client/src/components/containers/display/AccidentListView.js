@@ -1,4 +1,4 @@
-import React, { useState, Fragment, FC } from "react";
+import React, { useState, Fragment } from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router";
 import { compose } from "recompose";
@@ -123,7 +123,7 @@ const AccidentListView = ({
 
 	const listHeader = (
 		<Grid container justify="space-between">
-			<Role roles={pemission.REPORT_ACCIDENTS}>
+			<Role roles={permission.REPORT_ACCIDENTS}>
 				<AccidentFormCreateButtonDialog
 					classes={{ button: classes.actionButton }}
 				/>
