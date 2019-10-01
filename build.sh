@@ -2,5 +2,5 @@
 cp .env server/
 cp .env client/
 
-PORT=48620 docker-compose -f docker-compose.yml down
-PORT=48620 docker-compose -f ./docker-compose.yml up -d -V --force-recreate
+PORT=48620 docker-compose down
+PORT=48620 docker-compose up -d -V --force-recreate --build
