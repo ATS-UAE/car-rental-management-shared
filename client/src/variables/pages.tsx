@@ -144,7 +144,9 @@ const pages: IPage[] = [
 		path: "/accidents",
 		component: props => (
 			<DynamicImport
-				load={async () => (await import("../components/pages/Clients")).default}
+				load={async () =>
+					(await import("../components/pages/Accidents")).default
+				}
 			>
 				{Component => (Component ? <Component {...props} /> : <Loading />)}
 			</DynamicImport>

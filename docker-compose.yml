@@ -11,13 +11,8 @@ services:
     build:
       context: ./server
     volumes:
-      - /app/node_modules
-      - ./server:/app
       - /var/www/static:/var/www/static
   client:
     restart: always
     build:
       context: ./client
-    volumes:
-      - /app/node_modules
-      - ./client:/app
