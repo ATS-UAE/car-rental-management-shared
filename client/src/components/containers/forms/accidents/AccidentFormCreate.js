@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import AccidentForm from "./AccidentForm";
 import * as reduxActions from "../../../../actions";
-import { api, apiErrorHandler } from "../../../utils/helpers";
+import { api, apiErrorHandler } from "../../../../utils/helpers";
 
 function AccidentFormCreate({ fetchAccidents, exclude, onSubmit, auth }) {
 	const [errorNotes, setErrorNotes] = useState([]);
