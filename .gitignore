@@ -6,6 +6,8 @@ todo.txt
 buildscript.sh
 /**/*.env
 **/node_modules
+.env.prod
+.env.dev
 
 # Server directory
 /server/node_modules
