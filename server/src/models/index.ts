@@ -6,7 +6,7 @@ import bcrypt from "bcryptjs";
 import config from "../config";
 import { convertSequelizeDatesToUnix } from "../utils/helpers";
 import { Role, BookingType } from "../variables/enums";
-
+console.log("Hello theres");
 class DB {
 	[key: string]: any;
 	constructor() {
@@ -48,7 +48,6 @@ class DB {
 				const model = sequelize.import(path.resolve(modelPath, file));
 				db[model.name] = model;
 			});
-
 		Object.keys(db).forEach(modelName => {
 			if (db[modelName].associate) {
 				db[modelName].associate(db);
@@ -57,7 +56,7 @@ class DB {
 		db.sequelize = sequelize;
 		sequelize
 			.authenticate()
-			.then(() => this.init(db, {}))
+			.then(() => this.init(db, { sync: {} }))
 			.then(() => console.log("Connection has been established successfully."))
 			.catch(err => {
 				console.error("Unable to connect to the database\n", err);
