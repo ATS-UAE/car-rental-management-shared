@@ -6,7 +6,7 @@ import bcrypt from "bcryptjs";
 import config from "../config";
 import { convertSequelizeDatesToUnix } from "../utils/helpers";
 import { Role, BookingType } from "../variables/enums";
-console.log("Hello theres");
+
 class DB {
 	[key: string]: any;
 	constructor() {
