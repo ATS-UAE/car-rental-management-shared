@@ -16,6 +16,8 @@ buildscript.sh
 /server/todo.txt
 /server/src/config/config.json
 /server/build
+/server/sequelize/config.json
+/server/sequelize/build
 
 # Client directory
 /client/build/**
