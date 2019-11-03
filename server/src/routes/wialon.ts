@@ -6,7 +6,7 @@ import { ResponseBuilder } from "../utils/helpers";
 
 const router = express.Router();
 
-router.get("/wialon/units", async (req, res) => {
+router.get("/units", async (req, res) => {
 	const response = new ResponseBuilder();
 
 	try {

@@ -23,6 +23,7 @@ import locationRoutes from "./routes/locations";
 import accidentRoutes from "./routes/accidents";
 import categoryRoutes from "./routes/categories";
 import clientRoutes from "./routes/clients";
+import wialonRoutes from "./routes/wialon";
 
 const app = express();
 // PASSPORT CONFIGURATIONS
@@ -106,6 +107,7 @@ app.use("/api/carbooking/locations", locationRoutes);
 app.use("/api/carbooking/accidents", accidentRoutes);
 app.use("/api/carbooking/categories", categoryRoutes);
 app.use("/api/carbooking/clients", clientRoutes);
+app.use("/api/carbooking/wialon", wialonRoutes);
 
 app.use("/static", express.static(getStaticFilesPath()));
 app.use("/static", express.static(path.join(__dirname, "public")));
