@@ -30,6 +30,7 @@
 		"moment-timezone": "^0.5.26",
 		"multer": "^1.4.2",
 		"mysql2": "^1.7.0",
+		"node-wialon": "^0.11.1",
 		"nodemailer": "^6.3.0",
 		"passport": "^0.4.0",
 		"passport-local": "^1.0.0",
@@ -46,10 +47,13 @@
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"start": "node build/index",
 		"build": "tsc -p ./tsconfig.json",
+		"clean": "rm -rf ./build",
 		"dev:start": "nodemon -L --config nodemon.json",
 		"build:sequelize": "tsc -p ./sequelize --listEmittedFiles --outDir ./sequelize/build --rootDir ./sequelize",
 		"dev:db:migrate": "npm run build:sequelize && npx sequelize-cli db:migrate --env development --config ./sequelize/config.json --migrations-path ./sequelize/build/migrations",
-		"prod:db:migrate": "npm run build:sequelize && npx sequelize-cli db:migrate --env production --config ./sequelize/config.json --migrations-path ./sequelize/build/migrations"
+		"dev:db:migrate:undo": "npm run build:sequelize && npx sequelize-cli db:migrate:undo --env development --config ./sequelize/config.json --migrations-path ./sequelize/build/migrations",
+		"prod:db:migrate": "npm run build:sequelize && npx sequelize-cli db:migrate --env production --config ./sequelize/config.json --migrations-path ./sequelize/build/migrations",
+		"prod:db:migrate:undo": "npm run build:sequelize && npx sequelize-cli db:migrate --env production --config ./sequelize/config.json --migrations-path ./sequelize/build/migrations"
 	},
 	"author": "",
 	"license": "ISC"

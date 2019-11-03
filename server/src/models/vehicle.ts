@@ -30,14 +30,23 @@ export default (sequelize, DataTypes) => {
 		},
 		defleeted: { type: DataTypes.BOOLEAN, defaultValue: false },
 		parkingLocation: { type: DataTypes.STRING },
-		vehicleImageSrc: { type: DataTypes.STRING }
+		vehicleImageSrc: { type: DataTypes.STRING },
+		bookingChargeCount: {
+			type: DataTypes.INTEGER,
+			defaultValue: 0,
+			allowNull: false
+		},
+		bookingCharge: {
+			type: DataTypes.INTEGER,
+			defaultValue: 0,
+			allowNull: false
+		}
 	});
 	Vehicle.associate = models => {
 		models.Vehicle.belongsTo(models.BookingChargeUnit, {
 			as: "bookingChargeUnit",
 			foreignKey: {
-				name: "bookingChargeUnitId",
-				allowNull: false
+				name: "bookingChargeUnitId"
 			}
 		});
 		models.Vehicle.belongsTo(models.Client, {

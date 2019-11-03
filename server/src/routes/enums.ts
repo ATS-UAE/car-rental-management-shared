@@ -11,6 +11,7 @@ router.get("/", async (req, res) => {
 
 	let roles = await db.Role.findAll();
 	let bookingTypes = await db.BookingType.findAll();
+	let bookingChargeUnits = await db.BookingChargeUnit.findAll();
 
 	roles = roles.map(({ id, name }) => ({
 		id,
@@ -22,7 +23,17 @@ router.get("/", async (req, res) => {
 		name
 	}));
 
-	response.setData({ roles, bookingTypes, permissions: RBAC.toObject() });
+	bookingChargeUnits = bookingChargeUnits.map(({ id, unit }) => ({
+		id,
+		unit
+	}));
+
+	response.setData({
+		roles,
+		bookingTypes,
+		bookingChargeUnits,
+		permissions: RBAC.toObject()
+	});
 	response.setSuccess(true);
 	response.setCode(200);
 	response.setMessage("Successfully found data.");

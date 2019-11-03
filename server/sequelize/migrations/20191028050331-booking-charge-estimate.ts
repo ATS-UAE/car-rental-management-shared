@@ -1,38 +1,51 @@
 import { QueryInterface } from "sequelize";
 
 module.exports = {
-	up: function(queryInterface: QueryInterface, Sequelize) {
-		// logic for transforming into the new state
-		return Promise.all([
-			queryInterface.addColumn("Vehicles", "bookingChargeTime", {
+	up: async function(queryInterface: QueryInterface, Sequelize) {
+		await queryInterface.createTable("BookingChargeUnits", {
+			id: {
 				type: Sequelize.INTEGER,
-				defaultValue: 0,
+				autoIncrement: true,
+				allowNull: false,
+				primaryKey: true
+			},
+			unit: {
+				type: Sequelize.STRING,
+				allowNull: false,
+				validate: {
+					notNull: { msg: "Unit is required" }
+				}
+			},
+			createdAt: {
+				type: Sequelize.DATE,
 				allowNull: false
-			}),
-			queryInterface.addColumn("Vehicles", "bookingChargeDistance", {
-				type: Sequelize.FLOAT,
-				defaultValue: 0,
-				allowNull: false
-			}),
-			queryInterface.addColumn("Vehicles", "bookingCharge", {
-				type: Sequelize.FLOAT,
-				defaultValue: 0,
-				allowNull: false
-			}),
-			queryInterface.addColumn("Vehicles", "bookingChargeByTime", {
-				type: Sequelize.BOOLEAN,
-				defaultValue: true,
-				allowNull: false
-			})
-		]);
+			},
+			updatedAt: { type: Sequelize.DATE, allowNull: false }
+		});
+		await queryInterface.addColumn("Vehicles", "bookingChargeUnitId", {
+			type: Sequelize.INTEGER,
+			references: {
+				model: "BookingChargeUnits",
+				key: "id"
+			}
+		});
+		await queryInterface.addColumn("Vehicles", "bookingChargeCount", {
+			type: Sequelize.INTEGER,
+			defaultValue: 0,
+			allowNull: false
+		});
+		await queryInterface.addColumn("Vehicles", "bookingCharge", {
+			type: Sequelize.FLOAT,
+			defaultValue: 0,
+			allowNull: false
+		});
 	},
-	down: function(queryInterface: QueryInterface, Sequelize) {
-		// logic for transforming into the new state
-		return Promise.all([
-			queryInterface.removeColumn("Vehicles", "bookingChargeTime"),
-			queryInterface.removeColumn("Vehicles", "bookingChargeDistance"),
-			queryInterface.removeColumn("Vehicles", "bookingCharge"),
-			queryInterface.removeColumn("Vehicles", "bookingChargeByTime")
-		]);
+	down: async function(queryInterface: QueryInterface, Sequelize) {
+		await queryInterface.removeColumn("Vehicles", "bookingChargeUnitId");
+		await queryInterface.dropTable("BookingChargeUnits", {
+			force: true
+		});
+		await queryInterface.removeColumn("Vehicles", "bookingChargeCount");
+		await queryInterface.removeColumn("Vehicles", "bookingCharge");
 	}
 };

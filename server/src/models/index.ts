@@ -5,7 +5,7 @@ import bcrypt from "bcryptjs";
 
 import config from "../config";
 import { convertSequelizeDatesToUnix } from "../utils/helpers";
-import { Role, BookingType } from "../variables/enums";
+import { Role, BookingType, BookingChargeUnit } from "../variables/enums";
 
 class DB {
 	[key: string]: any;
@@ -75,6 +75,8 @@ class DB {
 
 		let roles = await db.Role.findAll();
 
+		const bookingChargeUnits = await db.BookingChargeUnit.findAll();
+
 		if (roles.length === 0) {
 			await Promise.all(
 				Object.values(Role).map(name => db.Role.create({ name }))
@@ -101,6 +103,15 @@ class DB {
 				mobileNumber: "",
 				approved: true
 			});
+		}
+
+		// Create booking charge units.
+		for (const unit of Object.values(BookingChargeUnit)) {
+			if (!bookingChargeUnits.find(existing => existing.unit === unit)) {
+				await db.BookingChargeUnit.create({
+					unit: unit
+				});
+			}
 		}
 	}
 }
