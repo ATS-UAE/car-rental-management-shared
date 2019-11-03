@@ -69,6 +69,7 @@ function BookingVehicleListForm({
 								);
 							}
 						}
+						return data;
 					}
 				)
 			}

@@ -12,6 +12,7 @@ import {
 	Paper,
 	Typography
 } from "@material-ui/core";
+import SimpleSelect from "../../../presentational/inputs/SimpleSelect";
 
 import * as reduxActions from "../../../../actions";
 import {
@@ -338,33 +339,58 @@ function BookingFormCreateStepper({
 							"objectId",
 							"parkingLocation",
 							"locationId",
-							"categories"
+							"categories",
+							"wialonUnitId",
+							"bookingChargeUnitId",
+							"bookingChargeCount",
+							"bookingCharge"
 						]}
 						showFooter={false}
 					/>
 				);
 			case 2:
 				return (
-					<LocationMapSelectForm
-						errors={errors[step]}
-						errorNotes={errorNotes}
-						values={values[step]}
-						locations={locations && locations.data}
-						onMarkerClick={locationId => {
-							let newValues = [...values];
-							newValues[step] = {
-								...newValues[step],
-								locationId
-							};
-							setValues(newValues);
-							resetNextSteps(step);
-						}}
-						onError={e => {
-							let newErrors = [...errors];
-							newErrors[step] = { ...newErrors[step], ...e };
-							setErrors([...newErrors]);
-						}}
-					/>
+					<>
+						<SimpleSelect
+							items={
+								(locations &&
+									locations.data.map(location => ({
+										value: location.id,
+										label: location.name
+									}))) || [{ value: "", label: "Loading..." }]
+							}
+							value={values[step].locationId}
+							onChange={e => {
+								let newValues = [...values];
+								newValues[step] = {
+									...newValues[step],
+									locationId: e.target.value
+								};
+								setValues(newValues);
+								resetNextSteps(step);
+							}}
+						/>
+						<LocationMapSelectForm
+							errors={errors[step]}
+							errorNotes={errorNotes}
+							values={values[step]}
+							locations={locations && locations.data}
+							onMarkerClick={locationId => {
+								let newValues = [...values];
+								newValues[step] = {
+									...newValues[step],
+									locationId
+								};
+								setValues(newValues);
+								resetNextSteps(step);
+							}}
+							onError={e => {
+								let newErrors = [...errors];
+								newErrors[step] = { ...newErrors[step], ...e };
+								setErrors([...newErrors]);
+							}}
+						/>
+					</>
 				);
 
 			case 3:

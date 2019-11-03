@@ -108,7 +108,10 @@ guestRole.addPermission(
 		locations,
 		({ accessor, target }: any) => {
 			try {
-				if (accessor.clientId && accessor.clientId === target.clientId) {
+				if (
+					accessor.clientId &&
+					target.clients.find(client => client.id === accessor.clientId)
+				) {
 					return true;
 				}
 				return false;
@@ -230,7 +233,7 @@ keyManagerRole.addPermission(
 		try {
 			if (
 				accessor.clientId &&
-				target.clients.find(client => accessor.clientId === client.id)
+				target.clients.find(client => client.id === accessor.clientId)
 			) {
 				return true;
 			}

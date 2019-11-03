@@ -10,16 +10,16 @@ function VehicleForm({
 	errorNotes,
 	onChangeEvent,
 	values,
-	locationList,
+	locationList = [{ label: "No list found...", value: "" }],
 	footer,
 	onError,
 	errors,
 	readOnly,
 	hints,
-	categoryList,
-	bookingChargeUnitList,
+	categoryList = [{ label: "No list found...", value: "" }],
+	bookingChargeUnitList = [{ label: "No list found...", value: "" }],
 	wrapper,
-	wialonUnitList
+	wialonUnitList = [{ label: "No list found...", value: "" }]
 }) {
 	const unit = bookingChargeUnitList.find(
 		item => item.value === values.bookingChargeUnitId
