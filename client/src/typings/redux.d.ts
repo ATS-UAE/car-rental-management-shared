@@ -9,7 +9,8 @@ import {
 	WithServerResponse,
 	Enums,
 	Accident,
-	LocationResponse
+	LocationResponse,
+	Unit
 } from "./api";
 import { Nullable } from "./utils";
 
@@ -28,4 +29,5 @@ export type ReduxState = Nullable<{
 	clients: WithServerResponse<ClientResponse[]>;
 	enums: WithServerResponse<Enums>;
 	locations: WithServerResponse<LocationResponse[]>;
+	units: WithServerResponse<Unit[]>;
 }>;

@@ -2,6 +2,7 @@ import { AxiosError } from "axios";
 import moment from "moment";
 import BookingStatus from "../../variables/enums/BookingStatus";
 import { Booking } from "../../typings/api";
+import { BookingChargeUnit } from "../../variables/enums";
 export { default as CancellablePromise } from "./CancellablePromise";
 export { default as api } from "./api";
 

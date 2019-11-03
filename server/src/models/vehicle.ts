@@ -40,6 +40,9 @@ export default (sequelize, DataTypes) => {
 			type: DataTypes.INTEGER,
 			defaultValue: 0,
 			allowNull: false
+		},
+		wialonUnitId: {
+			type: DataTypes.INTEGER
 		}
 	});
 	Vehicle.associate = models => {

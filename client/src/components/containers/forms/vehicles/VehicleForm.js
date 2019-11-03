@@ -15,7 +15,9 @@ function VehicleFormContainer({
 	errorNotes,
 	locations,
 	showFooter,
-	categories
+	categories,
+	enums,
+	wialonUnits
 }) {
 	let [errors, setErrors] = useState({});
 	let [disableButton, setDisabledButton] = useState(false);
@@ -38,6 +40,20 @@ function VehicleFormContainer({
 		}
 	];
 
+	let wialonUnitList = [
+		{
+			value: "",
+			label: "Loading"
+		}
+	];
+	let bookingChargeUnitList =
+		enums && enums.data
+			? enums.data.bookingChargeUnits.map(item => ({
+					value: item.id,
+					label: item.unit
+			  }))
+			: [{ value: "", label: "Loading..." }];
+
 	if (locations && locations.data) {
 		let $locationList = locations.data.map(({ id, name }) => ({
 			value: id,
@@ -52,6 +68,13 @@ function VehicleFormContainer({
 		categoryList = categories.data.map(({ id, name }) => ({
 			value: id,
 			label: name
+		}));
+	}
+
+	if (wialonUnits && wialonUnits.data) {
+		wialonUnitList = wialonUnits.data.map(({ id, nm }) => ({
+			value: id,
+			label: nm
 		}));
 	}
 
@@ -87,13 +110,23 @@ function VehicleFormContainer({
 			hints={hints}
 			readOnly={readOnly}
 			categoryList={categoryList}
+			wialonUnitList={wialonUnitList}
+			bookingChargeUnitList={bookingChargeUnitList}
 		/>
 	);
 }
-const mapStateToProps = ({ vehicles, locations, categories }) => ({
+const mapStateToProps = ({
 	vehicles,
 	locations,
-	categories
+	categories,
+	enums,
+	wialonUnits
+}) => ({
+	vehicles,
+	locations,
+	categories,
+	wialonUnits,
+	enums
 });
 
 export default connect(mapStateToProps)(VehicleFormContainer);

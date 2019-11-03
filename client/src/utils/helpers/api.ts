@@ -10,7 +10,8 @@ import {
 	Accident,
 	Category,
 	ClientResponse,
-	ClientRequest
+	ClientRequest,
+	Unit
 } from "../../typings/api";
 import { PartialExcept } from "../../typings";
 
@@ -214,7 +215,10 @@ const api = {
 			category
 		),
 	deleteClient: (id: number) =>
-		executeFromAPI<ClientResponse>("delete", `/api/carbooking/clients/${id}`)
+		executeFromAPI<ClientResponse>("delete", `/api/carbooking/clients/${id}`),
+
+	fetchWialonUnits: () =>
+		executeFromAPI<Unit[]>("get", "/api/carbooking/wialon/units")
 };
 
 export class Sync<T> {

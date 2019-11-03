@@ -1,7 +1,5 @@
 import express from "express";
 import { Wialon } from "node-wialon";
-import RBAC from "../utils/rbac";
-import db from "../models";
 import { ResponseBuilder } from "../utils/helpers";
 
 const router = express.Router();

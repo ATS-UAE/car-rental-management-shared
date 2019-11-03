@@ -9,6 +9,7 @@ import locations from "./locations";
 import accidents from "./accidents";
 import categories from "./categories";
 import clients from "./clients";
+import wialonUnits from "./wialonUnits";
 
 export default combineReducers({
 	auth,
@@ -19,5 +20,6 @@ export default combineReducers({
 	locations,
 	accidents,
 	categories,
-	clients
+	clients,
+	wialonUnits
 });

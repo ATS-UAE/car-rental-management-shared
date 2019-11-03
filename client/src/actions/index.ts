@@ -10,7 +10,8 @@ import {
 	Accident,
 	Booking,
 	WithServerResponse,
-	Category
+	Category,
+	Unit
 } from "../typings/api";
 import { ReduxState } from "../typings";
 
@@ -115,4 +116,12 @@ export const fetchClients = () => async (
 	let clients = await api.fetchClients();
 	dispatch({ type: Action.FETCH_CLIENTS, payload: clients });
 	return clients;
+};
+
+export const fetchWialonUnits = () => async (
+	dispatch: DispatchCallBack<ReduxState["units"]>
+): Promise<WithServerResponse<Unit[]>> => {
+	let units = await api.fetchWialonUnits();
+	dispatch({ type: Action.FETCH_WIALON_UNITS, payload: units });
+	return units;
 };

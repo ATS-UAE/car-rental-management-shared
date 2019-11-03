@@ -14,13 +14,15 @@ const Vehicles = ({
 	fetchVehicles,
 	fetchLocations,
 	fetchUsers,
-	fetchCategories
+	fetchCategories,
+	fetchWialonUnits
 }) => {
 	useEffect(() => {
 		fetchVehicles();
 		fetchLocations();
 		fetchUsers();
 		fetchCategories();
+		fetchWialonUnits();
 	}, []);
 	return (
 		<Paper className={classes.root}>

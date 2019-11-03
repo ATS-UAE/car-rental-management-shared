@@ -202,3 +202,7 @@ Vehicles, users, locations, bookings, and accidents are divided into multiple cl
 1. A **MASTER** account can create all types of user roles.
 2. If a **MASTER** account creates a user, it must be transferred to a client before it can be used.
 3. An **ADMIN** account can create KEY_MANAGER, GUESTS, and ADMIN accounts. Created users will automatically put under the client of the creator account.
+
+
+# Todo
+- Remove grouping the vehicle when booking.

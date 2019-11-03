@@ -17,7 +17,8 @@ function BookingVehicleListForm({
 	vehicles,
 	onClick,
 	classes,
-	formProps
+	formProps,
+	enums
 }) {
 	const fields = [
 		{
@@ -31,30 +32,45 @@ function BookingVehicleListForm({
 				className: classes.fullHeight
 			},
 			props: {
-				cards: vehicles
-					.reduce((accumulator, vehicle) => {
-						let exists = accumulator.find(
-							unique =>
-								vehicle.brand === unique.brand && vehicle.model === unique.model
-						);
-						if (!exists) {
-							accumulator.push(vehicle);
-						}
-						return accumulator;
-					}, [])
-					.map(({ id, brand, model, vehicleImageSrc }) => ({
+				cards: vehicles.map(
+					({
 						id,
-						title: `${brand} ${model}`,
-						imgSrc: vehicleImageSrc || "/static/images/car-no-image-avl.jpg",
-						props: {
-							classes: {
-								card: classes.card
-							},
-							selected: id === values.vehicleId,
-							onClick: () => onClick({ vehicleId: id }),
-							iconName: values.vehicleId === id ? "Done" : ""
+						brand,
+						model,
+						vehicleImageSrc,
+						plateNumber,
+						bookingChargeUnitId,
+						bookingCharge,
+						bookingChargeCount
+					}) => {
+						const data = {
+							id,
+							title: `${brand} ${model}`,
+							imgSrc: vehicleImageSrc || "/static/images/car-no-image-avl.jpg",
+							descriptions: [plateNumber],
+							props: {
+								classes: {
+									card: classes.card
+								},
+								selected: id === values.vehicleId,
+								onClick: () => onClick({ vehicleId: id }),
+								iconName: values.vehicleId === id ? "Done" : ""
+							}
+						};
+						if (bookingChargeUnitId && enums && enums.data) {
+							const unit = enums.data.bookingChargeUnits.find(
+								unit => unit.id === bookingChargeUnitId
+							);
+							if (unit) {
+								data.descriptions.push(
+									`Cost: ${bookingCharge} Dhs per${
+										bookingChargeCount === 1 ? " " : ` ${bookingChargeCount}`
+									} ${unit.unit}`
+								);
+							}
 						}
-					}))
+					}
+				)
 			}
 		}
 	];

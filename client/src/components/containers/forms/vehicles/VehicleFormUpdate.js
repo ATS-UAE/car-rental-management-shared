@@ -31,7 +31,13 @@ function VehicleFormUpdate({
 			onSubmit={() => {
 				setLoading(true);
 				api
-					.updateVehicle(values)
+					.updateVehicle({
+						...values,
+						bookingChargeUnitId:
+							values.bookingChargeUnitId === ""
+								? null
+								: values.bookingChargeUnitId
+					})
 					.then(() => {
 						fetchVehicles();
 						setLoading(false);

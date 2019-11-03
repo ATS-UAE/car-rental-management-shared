@@ -24,7 +24,13 @@ function VehicleFormCreate({ fetchVehicles, exclude, onSubmit }) {
 			onSubmit={() => {
 				setLoading(true);
 				api
-					.createVehicle(values)
+					.createVehicle({
+						...values,
+						bookingChargeUnitId:
+							values.bookingChargeUnitId === ""
+								? null
+								: values.bookingChargeUnitId
+					})
 					.then(() => {
 						fetchVehicles();
 						setValues({});

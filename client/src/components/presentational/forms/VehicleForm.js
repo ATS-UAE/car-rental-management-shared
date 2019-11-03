@@ -1,4 +1,5 @@
 import React from "react";
+import pluralize from "pluralize";
 import { validators } from "../../../utils/helpers";
 import Form, { FIELDS } from "./Form";
 const { TEXT, SELECT, IMAGE, MULTI } = FIELDS;
@@ -16,8 +17,14 @@ function VehicleForm({
 	readOnly,
 	hints,
 	categoryList,
-	wrapper
+	bookingChargeUnitList,
+	wrapper,
+	wialonUnitList
 }) {
+	const unit = bookingChargeUnitList.find(
+		item => item.value === values.bookingChargeUnitId
+	);
+
 	const fields = [
 		{
 			type: IMAGE,
@@ -104,12 +111,61 @@ function VehicleForm({
 			}
 		},
 		{
+			type: SELECT,
+			id: "wialon-unit-id",
+			name: "wialonUnitId",
+			props: {
+				label: "Wialon Unit",
+				fullWidth: true,
+				items: wialonUnitList
+			}
+		},
+		{
 			type: MULTI,
 			id: "categories",
 			name: "categories",
 			props: {
 				label: "Vehicle Categories",
 				items: categoryList
+			}
+		},
+		{
+			type: SELECT,
+			id: "booking-charge-unit",
+			name: "bookingChargeUnitId",
+			props: {
+				label: "Cost Type",
+				fullWidth: true,
+				items: bookingChargeUnitList,
+				haveNone: true
+			}
+		},
+		{
+			type: TEXT,
+			id: "booking-charge-value",
+			name: "bookingChargeCount",
+			props: {
+				disabled: !values.bookingChargeUnitId,
+				label: `Charge per ${(unit && unit.label) || ""} `,
+				type: "number"
+			}
+		},
+		{
+			type: TEXT,
+			id: "booking-charge",
+			name: "bookingCharge",
+			props: {
+				disabled: !values.bookingChargeUnitId,
+				label:
+					(values.bookingChargeUnitId &&
+						`Booking Charge per ${values.bookingChargeCount || 0} ${pluralize(
+							bookingChargeUnitList.find(
+								item => item.value === values.bookingChargeUnitId
+							).label,
+							values.bookingChargeCount
+						)}`) ||
+					"Booking Charge",
+				type: "number"
 			}
 		}
 	];

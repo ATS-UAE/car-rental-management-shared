@@ -39,7 +39,7 @@ export default function SimpleSelect({
 			{label && <InputLabel htmlFor={id}>{label}</InputLabel>}
 			<Select
 				{...SelectProps}
-				value={value === undefined ? "" : value}
+				value={value === undefined || value === null ? "" : value}
 				autoWidth
 				onChange={e => {
 					onChange && onChange(e);

@@ -1,4 +1,4 @@
-import React, { Component, useState, useEffect, Fragment } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import { withRouter } from "react-router";
 import { connect } from "react-redux";
 import moment from "moment";
@@ -14,8 +14,17 @@ import {
 } from "@material-ui/core";
 
 import * as reduxActions from "../../../../actions";
-import { api, hasActiveBooking, toTitleWords, apiErrorHandler } from "../../../../utils/helpers";
-import { BookingType, Role } from "../../../../variables/enums";
+import {
+	api,
+	hasActiveBooking,
+	toTitleWords,
+	apiErrorHandler
+} from "../../../../utils/helpers";
+import {
+	BookingType,
+	Role,
+	BookingChargeUnit
+} from "../../../../variables/enums";
 import CardList from "../../../presentational/display/CardList";
 import LocationMapSelectForm from "../../../presentational/forms/LocationMapSelectForm";
 import BookingForm from "../../../presentational/forms/BookingForm";
@@ -380,6 +389,7 @@ function BookingFormCreateStepper({
 							setValues(newValues);
 							resetNextSteps(step);
 						}}
+						enums={enums}
 					/>
 				) : (
 					<div className={classes.noVehicles}>

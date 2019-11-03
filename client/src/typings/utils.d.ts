@@ -4,3 +4,5 @@ export type Nullable<T> = {
 
 export type PartialExcept<T, K extends keyof T> = Partial<Omit<T, K>> &
 	Pick<T, K>;
+
+type FlattenIfArray<T> = T extends (infer R)[] ? R : never;

@@ -21,12 +21,18 @@ import RBAC from "../../../utils/rbac";
 import CardList from "../../presentational/display/CardList";
 import Dialog from "../../presentational/display/Dialog";
 import Can from "../layout/Can";
-import VehicleBookingRange from "./VehicleBookingRange";
 
-function VehicleCardList({ vehicles, history, classes, auth, fetchVehicles }) {
+function VehicleCardList({
+	vehicles,
+	history,
+	classes,
+	auth,
+	fetchVehicles,
+	enums
+}) {
 	const [formData, setFormData] = useState(null);
 	const [isLoading, setLoading] = useState(false);
-	console.log(vehicles);
+
 	const renderDialog = ({ match, children }) => (
 		<Dialog
 			onMount={async () => {
@@ -40,11 +46,11 @@ function VehicleCardList({ vehicles, history, classes, auth, fetchVehicles }) {
 							auth.data.role.name,
 							Action.READ,
 							Resource.VEHICLES,
-							{ target: vehicle, accessor: auth.data }
+							{ target: vehicle.data, accessor: auth.data }
 						),
 						exclude: RBAC.getExcludedFields(
 							auth.data.role.name,
-							Action.UPDATE,
+							Action.READ,
 							Resource.VEHICLES
 						)
 					};
@@ -54,7 +60,7 @@ function VehicleCardList({ vehicles, history, classes, auth, fetchVehicles }) {
 							auth.data.role.name,
 							Action.UPDATE,
 							Resource.VEHICLES,
-							{ target: vehicle, accessor: auth.data }
+							{ target: vehicle.data, accessor: auth.data }
 						),
 						exclude: RBAC.getExcludedFields(
 							auth.data.role.name,
@@ -68,7 +74,7 @@ function VehicleCardList({ vehicles, history, classes, auth, fetchVehicles }) {
 							auth.data.role.name,
 							Action.DELETE,
 							Resource.VEHICLES,
-							{ target: vehicle, accessor: auth.data }
+							{ target: vehicle.data, accessor: auth.data }
 						)
 					};
 
@@ -101,6 +107,7 @@ function VehicleCardList({ vehicles, history, classes, auth, fetchVehicles }) {
 						renderDialog({
 							match,
 							children: ({ vehicle, read }) => {
+								console.log(read);
 								if (!formData && vehicle && vehicle.data) {
 									setFormData(vehicle.data);
 								} else if (formData && read && read.access) {
@@ -254,9 +261,18 @@ function VehicleCardList({ vehicles, history, classes, auth, fetchVehicles }) {
 						model,
 						plateNumber,
 						vin,
-						vehicleImageSrc
+						vehicleImageSrc,
+						bookingCharge,
+						bookingChargeCount,
+						bookingChargeUnitId
 					} = vehicle;
-
+					const unit =
+						bookingChargeUnitId &&
+						enums &&
+						enums.data &&
+						enums.data.bookingChargeUnits.find(
+							({ id }) => id === bookingChargeUnitId
+						);
 					let data = {
 						id,
 						vehicle,
@@ -351,7 +367,13 @@ function VehicleCardList({ vehicles, history, classes, auth, fetchVehicles }) {
 							/>
 						)
 					};
-
+					if (bookingChargeUnitId) {
+						data.descriptions.push(
+							`Cost: ${bookingCharge} Dhs per${
+								bookingChargeCount === 1 ? " " : ` ${bookingChargeCount}`
+							} ${unit.unit}`
+						);
+					}
 					if (auth && auth.data) {
 						if (auth.data.role.name === Role.GUEST) {
 							let inCategory = false;
@@ -377,12 +399,12 @@ function VehicleCardList({ vehicles, history, classes, auth, fetchVehicles }) {
 	);
 }
 
-const mapStateToProps = ({ vehicles, auth }) => {
+const mapStateToProps = ({ vehicles, auth, enums }) => {
 	let vehicleData = [];
 	if (vehicles && vehicles.success === true && vehicles.data) {
 		vehicleData = vehicles.data;
 	}
-	return { vehicles: vehicleData, auth };
+	return { vehicles: vehicleData, auth, enums };
 };
 
 const styles = {
