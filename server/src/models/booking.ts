@@ -6,7 +6,19 @@ export default (sequelize, DataTypes) => {
 		to: { type: DataTypes.DATE, allowNull: false },
 		// null means pending, false means denied, true means approved.
 		approved: { type: DataTypes.BOOLEAN, defaultValue: null },
-		finished: { type: DataTypes.BOOLEAN, defaultValue: false }
+		finished: { type: DataTypes.BOOLEAN, defaultValue: false },
+		startMileage: {
+			type: DataTypes.FLOAT
+		},
+		endMileage: {
+			type: DataTypes.FLOAT
+		},
+		startFuel: {
+			type: DataTypes.FLOAT
+		},
+		endFuel: {
+			type: DataTypes.FLOAT
+		}
 	});
 	Booking.associate = models => {
 		models.Booking.belongsTo(models.User, {
