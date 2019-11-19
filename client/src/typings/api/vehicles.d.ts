@@ -5,6 +5,9 @@ export interface Vehicle {
 	categories: number[];
 	clientId: number;
 	brand: string;
+	chassis: string;
+	wialonUnitId: number | null;
+	defleeted: boolean;
 	model: string;
 	plateNumber: string;
 }

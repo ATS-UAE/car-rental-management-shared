@@ -212,6 +212,7 @@ class UserTableView extends Component {
 					Resource.USERS,
 					{ target: user, accessor: auth.data }
 				);
+
 				if (accessible) {
 					const userRole = auth.data.role.name;
 					const canUpdate =
@@ -255,6 +256,7 @@ class UserTableView extends Component {
 					}
 					newUserData.push(data);
 				}
+
 				this.setState({ userData: newUserData });
 			}
 		}
@@ -528,9 +530,6 @@ const mapStateToProps = ({ enums, auth, users, clients }) => ({
 });
 
 export default compose(
-	connect(
-		mapStateToProps,
-		reduxActions
-	),
+	connect(mapStateToProps, reduxActions),
 	withRouter
 )(UserTableView);

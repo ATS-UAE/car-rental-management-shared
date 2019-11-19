@@ -2,6 +2,8 @@ import React, { useState, useEffect, Fragment } from "react";
 import { connect } from "react-redux";
 import { Grid, Button } from "@material-ui/core";
 import VehicleForm from "../../../presentational/forms/VehicleForm";
+import * as actions from "../../../../actions";
+import api from "../../../../utils/helpers/api";
 
 function VehicleFormContainer({
 	onSubmit,
@@ -17,10 +19,14 @@ function VehicleFormContainer({
 	showFooter,
 	categories,
 	enums,
-	wialonUnits
+	wialonUnits,
+	fetchVehicles
 }) {
 	let [errors, setErrors] = useState({});
 	let [disableButton, setDisabledButton] = useState(false);
+	const [newIssueValue, setNewIssueValue] = useState("");
+	const [vehicleIssueMenuOpen, setVehicleIssueMenuOpen] = useState(false);
+	const [vehicleIssueMenuLoading, setVehicleIssueMenuLoading] = useState(false);
 
 	useEffect(() => {
 		let validForm = true;
@@ -112,6 +118,34 @@ function VehicleFormContainer({
 			categoryList={categoryList}
 			wialonUnitList={wialonUnitList}
 			bookingChargeUnitList={bookingChargeUnitList}
+			vehicleIssues={values.vehicleIssues}
+			vehicleIssueMenuValue={newIssueValue}
+			vehicleIssueMenuOpen={vehicleIssueMenuOpen}
+			vehicleIssueMenuLoading={vehicleIssueMenuLoading}
+			onVehicleIssueMenuOpen={() => {
+				setVehicleIssueMenuOpen(true);
+			}}
+			onVehicleIssueMenuChange={setNewIssueValue}
+			onVehicleIssueMenuAdd={async value => {
+				setVehicleIssueMenuLoading(true);
+				await api.createVehicleIssue({
+					vehicleId: values.id,
+					message: value
+				});
+				await fetchVehicles();
+				setVehicleIssueMenuLoading(false);
+				setVehicleIssueMenuOpen(false);
+			}}
+			onVehicleIssueMenuDelete={async issue => {
+				setVehicleIssueMenuLoading(true);
+				await api.deleteVehicleIssue(issue.id);
+				await fetchVehicles();
+				setVehicleIssueMenuLoading(false);
+				setVehicleIssueMenuOpen(false);
+			}}
+			onVehicleIssueMenuClose={() => {
+				setVehicleIssueMenuOpen(false);
+			}}
 		/>
 	);
 }
@@ -129,4 +163,4 @@ const mapStateToProps = ({
 	enums
 });
 
-export default connect(mapStateToProps)(VehicleFormContainer);
+export default connect(mapStateToProps, actions)(VehicleFormContainer);

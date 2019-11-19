@@ -1,5 +1,5 @@
 export default (sequelize, DataTypes) => {
-	let VehicleIssue = sequelize.define("VehicleIssues", {
+	let VehicleIssue = sequelize.define("VehicleIssue", {
 		message: {
 			type: DataTypes.STRING(256),
 			allowNull: false,

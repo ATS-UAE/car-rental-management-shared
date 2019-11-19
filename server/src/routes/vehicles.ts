@@ -1,4 +1,5 @@
 import express from "express";
+import { Wialon } from "node-wialon";
 
 import requireLogin from "../middlewares/requireLogin";
 import {
@@ -74,14 +75,33 @@ router.post(
 router.get("/:id", async ({ user, params }: any, res) => {
 	let response = new ResponseBuilder();
 	const VehicleDataSource = new Vehicle(db, user);
-
 	try {
-		let foundVehicle = await VehicleDataSource.get(params.id);
-
-		response.setData({
+		const foundVehicle = await VehicleDataSource.get(params.id);
+		const foundVehiclePlain = {
 			...foundVehicle.get({ plain: true }),
+			position: null,
+			mileage: null,
 			categories: (await foundVehicle.getCategories()).map(c => c.id)
-		});
+		};
+		if (foundVehicle.wialonUnitId) {
+			try {
+				let w = await Wialon.login({
+					token: process.env.WIALON_TOKEN
+				});
+				const unit = await w.Core.searchItem({
+					id: foundVehiclePlain.wialonUnitId,
+					flags: 1024 + 8192
+				});
+				const lng = unit.item.pos.x;
+				const lat = unit.item.pos.y;
+				const mileage = unit.item.cnm;
+				foundVehiclePlain.position = lat && lng ? { lat, lng } : null;
+				foundVehiclePlain.mileage = mileage || null;
+			} catch (e) {
+				console.error(e);
+			}
+		}
+		response.setData(foundVehiclePlain);
 		response.handleSuccess(`Vehicle with ID ${params.id} found.`, res);
 	} catch (e) {
 		response.handleError(e, res);

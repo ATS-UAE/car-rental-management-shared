@@ -11,11 +11,13 @@ import {
 	CheckCircle
 } from "@material-ui/icons";
 
+import { Role } from "../layout/Role";
+import { VehicleInfoCard } from "../../presentational";
 import { DialogChildren } from "../../presentational/forms/ConfirmDialog";
 import BookingFormCreateMaintenance from "../forms/bookings/BookingFormCreateMaintenance";
 import VehicleFormUpdate from "../forms/vehicles/VehicleFormUpdate";
 import * as reduxActions from "../../../actions";
-import { Action, Resource, Role } from "../../../variables/enums";
+import { Action, Resource, Role as RoleEnum } from "../../../variables/enums";
 import { api } from "../../../utils/helpers";
 import RBAC from "../../../utils/rbac";
 import CardList from "../../presentational/display/CardList";
@@ -107,26 +109,61 @@ function VehicleCardList({
 						renderDialog({
 							match,
 							children: ({ vehicle, read }) => {
-								console.log(read);
 								if (!formData && vehicle && vehicle.data) {
 									setFormData(vehicle.data);
 								} else if (formData && read && read.access) {
+									const {
+										brand,
+										model,
+										vin,
+										plateNumber,
+										parkingLocation,
+										vehicleImageSrc,
+										objectId,
+										position,
+										vehicleIssues,
+										mileage
+									} = vehicle.data;
+									const customFields = [];
+									if (objectId) {
+										customFields.push({ label: "Object ID", value: objectId });
+									}
 									return (
-										<VehicleFormUpdate
-											hints={""}
-											values={formData}
-											onChangeEvent={(data, name, event) =>
-												event.target.files
-													? setFormData({
-															...data,
-															[name]: event.target.files[0] || ""
-													  })
-													: setFormData(data)
-											}
-											readOnly={true}
-											exclude={read.exclude}
-											showFooter={false}
-										/>
+										<>
+											<Role roles={[RoleEnum.GUEST]}>
+												<VehicleInfoCard
+													brand={brand}
+													model={model}
+													position={position}
+													mileage={mileage}
+													vin={vin}
+													plateNumber={plateNumber}
+													parkingLocation={parkingLocation}
+													image={vehicleImageSrc || undefined}
+													customFields={customFields}
+													knownIssues={vehicleIssues.map(
+														issue => issue.message
+													)}
+												/>
+											</Role>
+											<Role excludes={[RoleEnum.GUEST]}>
+												<VehicleFormUpdate
+													hints={""}
+													values={formData}
+													onChangeEvent={(data, name, event) =>
+														event.target.files
+															? setFormData({
+																	...data,
+																	[name]: event.target.files[0] || ""
+															  })
+															: setFormData(data)
+													}
+													readOnly={true}
+													exclude={read.exclude}
+													showFooter={false}
+												/>
+											</Role>
+										</>
 									);
 								} else if (read && !read.access) {
 									history.replace("/vehicles");
@@ -416,8 +453,5 @@ const styles = {
 export default compose(
 	withStyles(styles),
 	withRouter,
-	connect(
-		mapStateToProps,
-		reduxActions
-	)
+	connect(mapStateToProps, reduxActions)
 )(VehicleCardList);

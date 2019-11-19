@@ -7,7 +7,8 @@ import {
 	Settings,
 	Home,
 	Warning,
-	People
+	People,
+	Assessment
 } from "@material-ui/icons";
 
 import Role from "./enums/Role";

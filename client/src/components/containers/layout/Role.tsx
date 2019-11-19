@@ -7,7 +7,7 @@ export { permission } from "../../../variables/permissions";
 
 export interface RoleProps {
 	roles?: RoleEnum[];
-	excludes: RoleEnum[];
+	excludes?: RoleEnum[];
 }
 
 interface RoleStateProps {

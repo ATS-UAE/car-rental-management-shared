@@ -1,5 +1,8 @@
 import React from "react";
 import pluralize from "pluralize";
+import { Grid } from "@material-ui/core";
+
+import { VehicleIssuesEditor, ButtonModal } from "../";
 import { validators } from "../../../utils/helpers";
 import Form, { FIELDS } from "./Form";
 const { TEXT, SELECT, IMAGE, MULTI } = FIELDS;
@@ -16,6 +19,15 @@ function VehicleForm({
 	errors,
 	readOnly,
 	hints,
+	vehicleIssues = [],
+	vehicleIssueMenuValue,
+	onVehicleIssueMenuChange,
+	vehicleIssueMenuOpen,
+	vehicleIssueMenuLoading,
+	onVehicleIssueMenuOpen,
+	onVehicleIssueMenuAdd,
+	onVehicleIssueMenuDelete,
+	onVehicleIssueMenuClose,
 	categoryList = [{ label: "No list found...", value: "" }],
 	bookingChargeUnitList = [{ label: "No list found...", value: "" }],
 	wrapper,
@@ -184,7 +196,28 @@ function VehicleForm({
 			hints={hints}
 			readOnly={readOnly}
 			wrapper={wrapper}
-		/>
+		>
+			<Grid item xs={12} sm={6}>
+				<ButtonModal
+					buttonProps={{
+						fullWidth: true,
+						children: "Vehicle Issues"
+					}}
+					onClick={onVehicleIssueMenuOpen}
+					onClose={onVehicleIssueMenuClose}
+					open={vehicleIssueMenuOpen}
+				>
+					<VehicleIssuesEditor
+						onChange={onVehicleIssueMenuChange}
+						loading={vehicleIssueMenuLoading}
+						values={vehicleIssues}
+						newValue={vehicleIssueMenuValue}
+						onAdd={onVehicleIssueMenuAdd}
+						onDelete={onVehicleIssueMenuDelete}
+					/>
+				</ButtonModal>
+			</Grid>
+		</Form>
 	);
 }
 

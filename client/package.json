@@ -28,7 +28,7 @@
 		"leaflet": "^1.5.1",
 		"material-table": "^1.51.0",
 		"moment": "^2.24.0",
-		"node-wialon": "^0.11.1",
+		"node-wialon": "^0.12.5",
 		"pluralize": "^8.0.0",
 		"react": "^16.10.1",
 		"react-dom": "^16.10.1",

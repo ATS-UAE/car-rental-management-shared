@@ -9,3 +9,4 @@ export * from "./clients";
 export * from "./enums";
 export * from "./locations";
 export * from "./units";
+export * from "./vehicleIssues";

@@ -11,7 +11,8 @@ import {
 	Category,
 	ClientResponse,
 	ClientRequest,
-	Unit
+	Unit,
+	VehicleIssue
 } from "../../typings/api";
 import { PartialExcept } from "../../typings";
 
@@ -218,7 +219,21 @@ const api = {
 		executeFromAPI<ClientResponse>("delete", `/api/carbooking/clients/${id}`),
 
 	fetchWialonUnits: () =>
-		executeFromAPI<Unit[]>("get", "/api/carbooking/wialon/units")
+		executeFromAPI<Unit[]>("get", "/api/carbooking/wialon/units"),
+
+	// vehicleIssues
+	fetchVehicleIssues: () =>
+		executeFromAPI<VehicleIssue[]>("get", "/api/carbooking/issues"),
+	createVehicleIssue: (category: Omit<VehicleIssue, "id">) =>
+		executeFromAPI<VehicleIssue>("post", "/api/carbooking/issues", category),
+	updateVehicleIssue: (category: PartialExcept<VehicleIssue, "id">) =>
+		executeFromAPI<VehicleIssue>(
+			"patch",
+			`/api/carbooking/issues/${category.id}`,
+			category
+		),
+	deleteVehicleIssue: (id: number) =>
+		executeFromAPI<VehicleIssue>("delete", `/api/carbooking/issues/${id}`)
 };
 
 export class Sync<T> {

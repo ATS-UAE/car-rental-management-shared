@@ -8,4 +8,8 @@ export interface User {
 	lastName: string;
 	clientId: number;
 	role: Role;
+	mobileNumber: string;
+	email: string;
+	createdAt: number;
+	updatedAt: number;
 }

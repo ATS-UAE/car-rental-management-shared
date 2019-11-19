@@ -72,6 +72,10 @@ export default (sequelize, DataTypes) => {
 			as: "bookings",
 			foreignKey: "vehicleId"
 		});
+		models.Vehicle.hasMany(models.VehicleIssue, {
+			as: "vehicleIssues",
+			foreignKey: "vehicleId"
+		});
 		models.Vehicle.belongsToMany(models.Category, {
 			as: "categories",
 			through: "VehicleCategories",

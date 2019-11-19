@@ -48,11 +48,8 @@ function VehicleFormUpdate({
 						setLoading(false);
 					});
 			}}
-		/>
+		></VehicleForm>
 	);
 }
 
-export default connect(
-	null,
-	reduxActions
-)(VehicleFormUpdate);
+export default connect(null, reduxActions)(VehicleFormUpdate);

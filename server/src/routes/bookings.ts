@@ -1,5 +1,4 @@
 import express from "express";
-
 import requireLogin from "../middlewares/requireLogin";
 import db from "../models";
 import { ResponseBuilder } from "../utils/helpers";
@@ -40,9 +39,8 @@ router.post("/", async ({ user, body }: any, res) => {
 router.get("/:id", async ({ user, params }: any, res) => {
 	let response = new ResponseBuilder();
 	const BookingDataSource = new Booking(db, user);
-
 	try {
-		const foundBooking = await BookingDataSource.get(params.id);
+		let foundBooking = await BookingDataSource.get(params.id);
 		response.setData(foundBooking.get({ plain: true }));
 		response.handleSuccess(`Booking with ID of ${params.id} found.`, res);
 	} catch (e) {
@@ -55,7 +53,6 @@ router.get("/:id", async ({ user, params }: any, res) => {
 router.patch("/:id", async ({ user, params, body }: any, res) => {
 	const response = new ResponseBuilder();
 	const BookingDataSource = new Booking(db, user);
-
 	try {
 		const bookingPreviousValue = await BookingDataSource.get(params.id);
 		const updatedBooking = await BookingDataSource.update(params.id, body);
@@ -94,6 +91,7 @@ router.patch("/:id", async ({ user, params, body }: any, res) => {
 				lng: location.lng
 			});
 		}
+
 		response.setData(updatedBooking.get({ plain: true }));
 		response.handleSuccess("Booking has been created", res);
 	} catch (e) {
