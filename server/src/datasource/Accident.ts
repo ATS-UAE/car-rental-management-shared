@@ -7,7 +7,7 @@ import {
 	ResourceNotFoundException,
 	InvalidInputException
 } from "../utils/exceptions";
-import { pickFields } from "../utils/helpers";
+import { exceptFields } from "../utils/helpers";
 export default class Accident extends DataSource {
 	user: UserAccessor;
 
@@ -137,7 +137,7 @@ export default class Accident extends DataSource {
 		});
 
 		return this.createAccident(
-			pickFields(
+			exceptFields(
 				data,
 				RBAC.getExcludedFields(role, Operation.CREATE, Resource.ACCIDENTS)
 			)

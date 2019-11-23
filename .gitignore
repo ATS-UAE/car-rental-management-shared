@@ -8,6 +8,7 @@ buildscript.sh
 **/node_modules
 .env.prod
 .env.dev
+todo.md
 
 # Server directory
 /server/node_modules

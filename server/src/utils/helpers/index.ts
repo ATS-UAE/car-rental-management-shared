@@ -28,7 +28,7 @@ export const pickFields = (target: object, fields: string[]): object => {
 	return result;
 };
 
-export const exceptFields = (fields: string[], target: object): object => {
+export const exceptFields = (target: object, fields: string[]): object => {
 	let result = {};
 
 	for (let key in target) {
