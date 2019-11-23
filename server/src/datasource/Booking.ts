@@ -6,7 +6,7 @@ import {
 	InvalidPermissionException,
 	ResourceNotFoundException
 } from "../utils/exceptions";
-import { toMySQLDate, pickFields } from "../utils/helpers";
+import { toMySQLDate, exceptFields } from "../utils/helpers";
 import { BookingType } from "../variables/enums";
 export default class Booking extends DataSource {
 	user: UserAccessor;
@@ -117,6 +117,10 @@ export default class Booking extends DataSource {
 		});
 		let replacementVehicle;
 		try {
+			if (!accessible) {
+				throw new InvalidPermissionException();
+			}
+
 			const bookingType = this.db.BookingType.findByPk(data.bookingTypeId);
 			if (bookingType.name === BookingType.REPLACEMENT) {
 				const { brand, model, plateNumber, vin } = data;
@@ -127,16 +131,16 @@ export default class Booking extends DataSource {
 					vin
 				});
 			}
-			if (!accessible) {
-				throw new InvalidPermissionException();
-			}
+
 			let exceptions = RBAC.getExcludedFields(
 				role,
 				Operation.CREATE,
 				Resource.BOOKINGS
 			);
+
 			let createdBooking = await this.createBooking({
-				...pickFields(data, exceptions),
+				userId: role === Role.GUEST ? this.user.id : data.userId,
+				...exceptFields(data, exceptions),
 				to: toMySQLDate(data.to),
 				from: toMySQLDate(data.from),
 				replaceVehicleId: (replacementVehicle && replacementVehicle.id) || null
