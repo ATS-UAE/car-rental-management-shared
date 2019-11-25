@@ -32,7 +32,7 @@ passport.use(
 	new Strategy(async (username, password, cb) => {
 		try {
 			let existingUser = await db.User.findOne({
-				include: [{ model: db.Role, as: "role" }],
+				include: [db.User.associations.role],
 				where: { username }
 			});
 
@@ -63,7 +63,7 @@ passport.serializeUser(function(user: { id: number }, cb) {
 	cb(null, user.id);
 });
 
-passport.deserializeUser(async (id, cb) => {
+passport.deserializeUser(async (id: number, cb) => {
 	try {
 		let user = await db.User.findByPk(id, {
 			include: [{ model: db.Role, as: "role" }]

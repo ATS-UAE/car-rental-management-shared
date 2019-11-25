@@ -1,9 +1,9 @@
 import { deleteFileFromUrl } from "../utils/helpers";
-import { Model } from "sequelize";
+import { ModelType } from "sequelize";
 
 type ReplaceFileURI = {
 	url: string;
-	model: Model<unknown, unknown>;
+	model: ModelType;
 	field: string;
 };
 

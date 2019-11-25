@@ -133,7 +133,7 @@ export const sendBookingConfirmation = async ({
 	parkingLocation: string;
 	lat: number;
 	lng: number;
-	address: number;
+	address: string;
 }): Promise<string> => {
 	const transporter = getTransport();
 
