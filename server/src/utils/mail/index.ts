@@ -10,7 +10,7 @@ import config from "../../config";
 import {
 	getStaticFilesPath,
 	makeDirectoryIfNotExist
-} from "../utils";
+} from "../../utils";
 
 const { mail, secretKey } = config;
 
