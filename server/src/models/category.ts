@@ -1,5 +1,15 @@
-import * as S from "sequelize";
-import { Client } from "./";
+import {
+	Table,
+	Column,
+	Model,
+	PrimaryKey,
+	AutoIncrement,
+	ForeignKey,
+	BelongsTo,
+	BelongsToMany,
+	CreatedAt
+} from "sequelize-typescript";
+import { Client, Vehicle, VehicleCategory } from "./";
 
 export interface CategoryAttributes {
 	id: number;
@@ -10,44 +20,32 @@ export interface CategoryAttributes {
 	readonly updatedAt: number;
 }
 
-export class Category extends S.Model implements CategoryAttributes {
+@Table
+export class Category extends Model<Category> implements CategoryAttributes {
+	@PrimaryKey
+	@AutoIncrement
+	@Column
 	public id: number;
+
+	@Column({ allowNull: false })
 	public name: string;
+
+	@ForeignKey(() => Client)
+	@Column({ allowNull: false })
 	public clientId: number;
 
+	@CreatedAt
 	public readonly createdAt: number;
+
+	@CreatedAt
 	public readonly updatedAt: number;
 
-	public readonly client?: Client;
+	@BelongsTo(() => Client)
+	public readonly client: Client;
 
-	public static associations: {
-		client: S.Association<Category, Client>;
-	};
-
-	static load = (sequelize: S.Sequelize) => {
-		Category.init(
-			{
-				name: { type: S.DataTypes.STRING, allowNull: false, unique: true }
-			},
-			{
-				sequelize,
-				validate: {
-					clientRequired() {
-						if (!this.clientId) {
-							throw new Error(
-								"Please specify which client this category belongs to."
-							);
-						}
-					}
-				}
-			}
-		);
-		Category.belongsTo(Client, {
-			foreignKey: {
-				name: "clientId",
-				allowNull: false
-			},
-			as: "client"
-		});
-	};
+	@BelongsToMany(
+		() => Vehicle,
+		() => VehicleCategory
+	)
+	public readonly vehicles: Vehicle[];
 }

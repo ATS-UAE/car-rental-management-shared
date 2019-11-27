@@ -1,5 +1,24 @@
-import * as S from "sequelize";
-import { Client, Role, Accident, AccidentUserStatus, Category } from "./";
+import {
+	Table,
+	Column,
+	Model,
+	PrimaryKey,
+	AutoIncrement,
+	ForeignKey,
+	BelongsTo,
+	CreatedAt,
+	DataType,
+	UpdatedAt,
+	BelongsToMany
+} from "sequelize-typescript";
+import {
+	Client,
+	Role,
+	Accident,
+	AccidentUserStatus,
+	Category,
+	UserVehicleCategory
+} from "./";
 
 export interface UserAttributes {
 	id: number;
@@ -24,208 +43,97 @@ export interface UserAttributes {
 	readonly updatedAt: number;
 }
 
-export class User extends S.Model implements UserAttributes {
+@Table
+export class User extends Model<User> implements UserAttributes {
+	@PrimaryKey
+	@AutoIncrement
+	@Column
 	public id: number;
+
+	@Column({
+		allowNull: false,
+		unique: { name: "email", msg: "Email address already in use." }
+	})
 	public username: string;
+
+	@Column({ allowNull: false })
 	public firstName: string;
+
+	@Column({ allowNull: false })
 	public lastName: string;
+
+	@Column({
+		allowNull: false,
+		unique: { name: "email", msg: "Email address already in use." }
+	})
 	public email: string;
+
+	@Column({ allowNull: false })
 	public password: string;
+
+	@Column({
+		allowNull: false,
+		unique: { name: "email", msg: "Email address already in use." }
+	})
 	public mobileNumber: string;
+
+	@Column
 	public contractNo: string | null;
+
+	@Column
 	public objectNo: string | null;
+
+	@Column
 	public lastLogin: string | null;
+
+	@Column
 	public userImageSrc: string | null;
+
+	@Column
 	public licenseImageSrc: string | null;
+
+	@Column({ allowNull: false, defaultValue: false })
 	public blocked: boolean;
+
+	@Column({ allowNull: false, defaultValue: false })
 	public emailConfirmed: boolean;
+
+	@ForeignKey(() => Client)
+	@Column
 	public clientId: number;
+
+	@ForeignKey(() => Role)
+	@Column
 	public roleId: number;
+
+	@ForeignKey(() => User)
+	@Column
 	public userCreatorId: number;
 
+	@CreatedAt
 	public readonly createdAt: number;
+
+	@UpdatedAt
 	public readonly updatedAt: number;
 
-	public getAccidentStatuses: S.BelongsToManyGetAssociationsMixin<
-		AccidentUserStatus
-	>;
-	public setAccidentStatuses: S.BelongsToManySetAssociationsMixin<
-		AccidentUserStatus,
-		number
-	>;
-	public addAccidentStatuses: S.BelongsToManyAddAssociationsMixin<
-		AccidentUserStatus,
-		number
-	>;
-	public addAccidentStatus: S.BelongsToManyAddAssociationMixin<
-		AccidentUserStatus,
-		number
-	>;
-	public createAccidentStatus: S.BelongsToManyCreateAssociationMixin<
-		AccidentUserStatus
-	>;
-	public removeAccidentStatus: S.BelongsToManyRemoveAssociationMixin<
-		AccidentUserStatus,
-		number
-	>;
-	public removeAccidentStatuses: S.BelongsToManyRemoveAssociationsMixin<
-		AccidentUserStatus,
-		number
-	>;
-	public hasAccidentStatus: S.BelongsToManyHasAssociationMixin<
-		AccidentUserStatus,
-		number
-	>;
-	public hasAccidentStatuses: S.BelongsToManyHasAssociationsMixin<
-		AccidentUserStatus,
-		number
-	>;
-	public countAccidentStatuses: S.BelongsToManyCountAssociationsMixin;
+	@BelongsTo(() => Client)
+	client: Client;
 
-	public getCategories: S.BelongsToManyGetAssociationsMixin<Category>;
-	public setCategories: S.BelongsToManySetAssociationsMixin<Category, number>;
-	public addCategories: S.BelongsToManyAddAssociationsMixin<Category, number>;
-	public addCategory: S.BelongsToManyAddAssociationMixin<Category, number>;
-	public createCategory: S.BelongsToManyCreateAssociationMixin<Category>;
-	public removeCategory: S.BelongsToManyRemoveAssociationMixin<
-		Category,
-		number
-	>;
-	public removeCategories: S.BelongsToManyRemoveAssociationsMixin<
-		Category,
-		number
-	>;
-	public hasCategory: S.BelongsToManyHasAssociationMixin<Category, number>;
-	public hasCategories: S.BelongsToManyHasAssociationsMixin<Category, number>;
-	public countCategories: S.BelongsToManyCountAssociationsMixin;
+	@BelongsTo(() => Role)
+	role: Role;
 
-	public readonly accidentStatuses?: AccidentUserStatus[];
-	public readonly categories?: Category[];
-	public readonly client?: Client;
-	public readonly role?: Role;
+	@BelongsTo(() => User, "userCreatorId")
+	userCreator: User;
 
-	public static associations: {
-		accidentStatuses: S.Association<User, AccidentUserStatus>;
-		categories: S.Association<User, Category>;
-		client: S.Association<User, Client>;
-		role: S.Association<User, Role>;
-	};
+	@BelongsToMany(
+		() => Accident,
+		() => AccidentUserStatus
+	)
+	accidentStatuses: AccidentUserStatus[];
 
-	static load = (sequelize: S.Sequelize) => {
-		User.init(
-			{
-				username: {
-					type: S.DataTypes.STRING,
-					unique: { name: "username", msg: "Username already in use!" },
-					allowNull: false,
-					validate: {
-						notNull: { msg: "Username is required" }
-					}
-				},
-				firstName: {
-					type: S.DataTypes.STRING,
-					allowNull: false,
-					validate: {
-						notNull: { msg: "First name is required" }
-					}
-				},
-				lastName: {
-					type: S.DataTypes.STRING,
-					allowNull: false,
-					validate: {
-						notNull: { msg: "Last name is required" }
-					}
-				},
-				email: {
-					type: S.DataTypes.STRING,
-					unique: { name: "email", msg: "Email address already in use!" },
-					allowNull: false,
-					validate: {
-						notNull: { msg: "Email address is required" }
-					}
-				},
-				password: {
-					type: S.DataTypes.STRING,
-					allowNull: false,
-					validate: {
-						notNull: { msg: "Password is required" }
-					}
-				},
-				mobileNumber: {
-					type: S.DataTypes.STRING,
-					unique: {
-						name: "mobileNumber",
-						msg: "Mobile number already in use!"
-					},
-					allowNull: false,
-					validate: {
-						notNull: { msg: "Mobile number is required" }
-					}
-				},
-				contractNo: {
-					type: S.DataTypes.STRING
-				},
-				objectNo: {
-					type: S.DataTypes.STRING
-				},
-				lastLogin: { type: S.DataTypes.DATE },
-				userImageSrc: { type: S.DataTypes.STRING },
-				licenseImageSrc: { type: S.DataTypes.STRING },
-				approved: { type: S.DataTypes.BOOLEAN, defaultValue: false },
-				blocked: { type: S.DataTypes.BOOLEAN, defaultValue: false },
-				emailConfirmed: { type: S.DataTypes.BOOLEAN, defaultValue: false }
-			},
-			{
-				sequelize,
-				validate: {
-					checkUsername() {
-						if (this.username && this.username.length < 4) {
-							throw new Error("Username length must be at least 4 characters.");
-						}
-					},
-					checkPasswordLength() {
-						if (this.password && this.password.length < 8) {
-							throw new Error("Password length must be at least 8 characters.");
-						}
-					},
-					requireRole() {
-						if (!this.roleId) {
-							throw new Error("Role is required");
-						}
-					}
-				}
-			}
-		);
-
-		User.belongsTo(Client, {
-			foreignKey: {
-				name: "clientId"
-			},
-			as: "client"
-		});
-		User.belongsTo(Role, {
-			foreignKey: {
-				name: "roleId",
-				allowNull: false
-			},
-			as: "role"
-		});
-		User.belongsTo(User, {
-			foreignKey: {
-				name: "userCreatorId"
-			},
-			as: "userCreator"
-		});
-		User.belongsToMany(Accident, {
-			through: AccidentUserStatus,
-			as: "accidentStatus",
-			foreignKey: "userId"
-		});
-		User.belongsToMany(Category, {
-			through: "UserVehicleCategories",
-			as: "categories",
-			foreignKey: "userId",
-			otherKey: "categoryId"
-		});
-	};
+	@BelongsToMany(
+		() => Category,
+		() => UserVehicleCategory
+	)
+	categories: Category[];
 }

@@ -1,4 +1,16 @@
-import * as S from "sequelize";
+import {
+	Table,
+	Column,
+	Model,
+	DataType,
+	PrimaryKey,
+	AutoIncrement,
+	BelongsToMany,
+	ForeignKey,
+	BelongsTo,
+	CreatedAt,
+	UpdatedAt
+} from "sequelize-typescript";
 import { User, Vehicle, Booking, AccidentUserStatus } from ".";
 
 export interface AccidentAttributes {
@@ -16,113 +28,65 @@ export interface AccidentAttributes {
 	readonly updatedAt: number;
 }
 
-export class Accident extends S.Model implements AccidentAttributes {
+@Table
+export class Accident extends Model<Accident> implements AccidentAttributes {
+	@PrimaryKey
+	@AutoIncrement
+	@Column
 	public id: number;
+
+	@Column({
+		type: DataType.STRING(500),
+		allowNull: false,
+		validate: {
+			notNull: { msg: "Message is required." }
+		}
+	})
 	public message: string;
+
+	@Column
 	public accidentImageSrc: string;
+
+	@Column
 	public accidentVideoSrc: string;
+
+	@Column
 	public lat: number;
+
+	@Column
 	public lng: number;
+
+	@ForeignKey(() => User)
+	@Column({ allowNull: false })
 	public userId: number;
+
+	@BelongsTo(() => User)
+	user: User;
+
+	@ForeignKey(() => Vehicle)
+	@Column({ allowNull: false })
 	public vehicleId: number;
+
+	@BelongsTo(() => Vehicle)
+	vehicle: Vehicle;
+
+	@ForeignKey(() => Booking)
+	@Column({ allowNull: false })
 	public bookingId: number;
 
+	@BelongsTo(() => Booking)
+	booking: Booking;
+
+	@CreatedAt
 	public readonly createdAt: number;
+
+	@UpdatedAt
 	public readonly updatedAt: number;
 
-	public getUserStatuses: S.BelongsToManyGetAssociationsMixin<User>;
-	public setUserStatuses: S.BelongsToManySetAssociationsMixin<User, number>;
-	public addUserStatuses: S.BelongsToManyAddAssociationsMixin<User, number>;
-	public addUserStatus: S.BelongsToManyAddAssociationMixin<User, number>;
-	public createUserStatus: S.BelongsToManyCreateAssociationMixin<User>;
-	public removeUserStatus: S.BelongsToManyRemoveAssociationMixin<User, number>;
-	public removeUserStatuses: S.BelongsToManyRemoveAssociationsMixin<
-		User,
-		number
-	>;
-	public hasUserStatus: S.BelongsToManyHasAssociationMixin<User, number>;
-	public hasUserStatuses: S.BelongsToManyHasAssociationsMixin<User, number>;
-	public countUserStatuses: S.BelongsToManyCountAssociationsMixin;
-
-	public readonly userStatuses?: AccidentUserStatus[];
-	public readonly vehicle?: Vehicle;
-	public readonly booking?: Booking;
-	public readonly user?: User;
-
-	public static associations: {
-		userStatuses: S.Association<Accident, User>;
-		vehicle: S.Association<Accident, Vehicle>;
-		booking: S.Association<Accident, Booking>;
-		user: S.Association<Accident, User>;
-	};
-
-	static load = (sequelize: S.Sequelize) => {
-		Accident.init(
-			{
-				message: {
-					type: S.DataTypes.STRING(500),
-					allowNull: false,
-					validate: {
-						notNull: { msg: "Message is required." }
-					}
-				},
-				accidentImageSrc: {
-					type: S.DataTypes.STRING
-				},
-				accidentVideoSrc: {
-					type: S.DataTypes.STRING
-				},
-				lat: {
-					type: S.DataTypes.FLOAT
-				},
-				lng: {
-					type: S.DataTypes.FLOAT
-				}
-			},
-			{
-				sequelize,
-				validate: {
-					userRequired() {
-						if (!this.userId) {
-							throw new Error("User is required.");
-						}
-					},
-					vehicleRequired() {
-						if (!this.vehicleId) {
-							throw new Error("Vehicle is required.");
-						}
-					},
-					bookingRequired() {
-						if (!this.bookingId) {
-							throw new Error("Booking is required.");
-						}
-					}
-				}
-			}
-		);
-
-		Accident.belongsTo(User, {
-			foreignKey: {
-				name: "userId",
-				allowNull: false
-			},
-			as: "user"
-		});
-
-		Accident.belongsTo(Vehicle, {
-			foreignKey: { name: "vehicleId", allowNull: false },
-			as: "vehicle"
-		});
-
-		Accident.belongsTo(Booking, {
-			foreignKey: { name: "bookingId", allowNull: false },
-			as: "booking"
-		});
-
-		Accident.belongsToMany(User, {
-			through: AccidentUserStatus,
-			as: "userStatus",
-			foreignKey: "accidentId"
-		});
-	};
+	@BelongsToMany(
+		() => User,
+		() => AccidentUserStatus,
+		"accidentId"
+	)
+	userStatuses: Array<AccidentUserStatus>;
 }

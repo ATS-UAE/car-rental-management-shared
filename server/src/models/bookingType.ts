@@ -1,4 +1,13 @@
-import * as S from "sequelize";
+import {
+	Table,
+	Column,
+	Model,
+	PrimaryKey,
+	AutoIncrement,
+	CreatedAt,
+	UpdatedAt,
+	HasMany
+} from "sequelize-typescript";
 import { Booking } from ".";
 
 export interface BookingTypeAttributes {
@@ -9,46 +18,23 @@ export interface BookingTypeAttributes {
 	readonly updatedAt: number;
 }
 
-export class BookingType extends S.Model implements BookingTypeAttributes {
+@Table
+export class BookingType extends Model<BookingType>
+	implements BookingTypeAttributes {
+	@PrimaryKey
+	@AutoIncrement
+	@Column
 	public id: number;
+
+	@Column({ allowNull: false })
 	public name: string;
 
+	@CreatedAt
 	public readonly createdAt: number;
+
+	@UpdatedAt
 	public readonly updatedAt: number;
 
-	public getBookings: S.HasManyGetAssociationsMixin<Booking>;
-	public setBookings: S.HasManySetAssociationsMixin<Booking, number>;
-	public addBookings: S.HasManyAddAssociationsMixin<Booking, number>;
-	public addBooking: S.HasManyAddAssociationMixin<Booking, number>;
-	public createBooking: S.HasManyCreateAssociationMixin<Booking>;
-	public removeBooking: S.HasManyRemoveAssociationMixin<Booking, number>;
-	public removeBookings: S.HasManyRemoveAssociationsMixin<Booking, number>;
-	public hasBooking: S.HasManyHasAssociationMixin<Booking, number>;
-	public hasBookings: S.HasManyHasAssociationsMixin<Booking, number>;
-	public countBookings: S.HasManyCountAssociationsMixin;
-
-	public readonly bookings?: Booking[];
-
-	public static associations: {
-		bookings: S.Association<BookingType, Booking>;
-	};
-
-	static load = (sequelize: S.Sequelize) => {
-		BookingType.init(
-			{
-				name: { type: S.DataTypes.STRING, unique: true, allowNull: false }
-			},
-			{
-				sequelize
-			}
-		);
-
-		BookingType.hasMany(Booking, {
-			as: "bookings",
-			foreignKey: {
-				name: "bookingTypeId",
-				allowNull: false
-			}
-		});
-	};
+	@HasMany(() => Booking)
+	public readonly bookings: Booking[];
 }

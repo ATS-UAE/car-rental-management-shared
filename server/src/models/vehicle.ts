@@ -1,16 +1,28 @@
-import * as S from "sequelize";
+import {
+	Table,
+	Column,
+	Model,
+	PrimaryKey,
+	AutoIncrement,
+	ForeignKey,
+	BelongsTo,
+	CreatedAt,
+	UpdatedAt,
+	HasMany,
+	BelongsToMany
+} from "sequelize-typescript";
 import {
 	BookingChargeUnit,
 	Client,
 	Location,
 	Booking,
 	VehicleIssue,
-	Category
+	Category,
+	VehicleCategory
 } from ".";
 
 export interface VehicleAttributes {
 	id: number;
-	objectId: string;
 	brand: string;
 	model: string;
 	plateNumber: string;
@@ -22,175 +34,86 @@ export interface VehicleAttributes {
 	bookingCharge: number;
 	wialonUnitId: number | null;
 	bookingChargeUnitId: number | null;
-	clientId: number;
+	clientId: number | null;
 	locationId: number | null;
 
 	readonly createdAt: number;
 	readonly updatedAt: number;
 }
 
-export class Vehicle extends S.Model implements VehicleAttributes {
+@Table
+export class Vehicle extends Model<Vehicle> implements VehicleAttributes {
+	@PrimaryKey
+	@AutoIncrement
+	@Column
 	public id: number;
-	public objectId: string;
+
+	@Column({ allowNull: false })
 	public brand: string;
+
+	@Column({ allowNull: false })
 	public model: string;
+
+	@Column({ allowNull: false })
 	public plateNumber: string;
+
+	@Column({ allowNull: false })
 	public vin: string;
+
+	@Column({ allowNull: false, defaultValue: false })
 	public defleeted: boolean;
+
+	@Column
 	public parkingLocation: string | null;
+
+	@Column
 	public vehicleImageSrc: string | null;
+
+	@Column({ allowNull: false, defaultValue: 0 })
 	public bookingChargeCount: number;
+
+	@Column({ allowNull: false, defaultValue: 0 })
 	public bookingCharge: number;
+
+	@Column
 	public wialonUnitId: number | null;
+
+	@ForeignKey(() => BookingChargeUnit)
+	@Column
 	public bookingChargeUnitId: number | null;
-	public clientId: number;
+
+	@ForeignKey(() => Client)
+	@Column
+	public clientId: number | null;
+
+	@ForeignKey(() => Location)
+	@Column
 	public locationId: number | null;
 
+	@CreatedAt
 	public readonly createdAt: number;
+
+	@UpdatedAt
 	public readonly updatedAt: number;
 
-	public getBookings: S.HasManyGetAssociationsMixin<Booking>;
-	public setBookings: S.HasManySetAssociationsMixin<Booking, number>;
-	public addBookings: S.HasManyAddAssociationsMixin<Booking, number>;
-	public addBooking: S.HasManyAddAssociationMixin<Booking, number>;
-	public createBooking: S.HasManyCreateAssociationMixin<Booking>;
-	public removeBooking: S.HasManyRemoveAssociationMixin<Booking, number>;
-	public removeBookings: S.HasManyRemoveAssociationsMixin<Booking, number>;
-	public hasBooking: S.HasManyHasAssociationMixin<Booking, number>;
-	public hasBookings: S.HasManyHasAssociationsMixin<Booking, number>;
-	public countBookings: S.HasManyCountAssociationsMixin;
+	@HasMany(() => Booking)
+	public readonly bookings: Booking[];
 
-	public getVehicleIssues: S.HasManyGetAssociationsMixin<VehicleIssue>;
-	public setVehicleIssues: S.HasManySetAssociationsMixin<VehicleIssue, number>;
-	public addVehicleIssues: S.HasManyAddAssociationMixin<VehicleIssue, number>;
-	public addVehicleIssue: S.HasManyAddAssociationMixin<VehicleIssue, number>;
-	public createVehicleIssue: S.HasManyCreateAssociationMixin<VehicleIssue>;
-	public removeVehicleIssue: S.HasManyRemoveAssociationMixin<
-		VehicleIssue,
-		number
-	>;
-	public removeVehicleIssues: S.HasManyRemoveAssociationsMixin<
-		VehicleIssue,
-		number
-	>;
-	public hasVehicleIssue: S.HasManyHasAssociationMixin<VehicleIssue, number>;
-	public hasVehicleIssues: S.HasManyHasAssociationsMixin<VehicleIssue, number>;
-	public countVehicleIssues: S.HasManyCountAssociationsMixin;
+	@HasMany(() => VehicleIssue)
+	public readonly vehicleIssues: VehicleIssue[];
 
-	public getCategories: S.BelongsToManyGetAssociationsMixin<Category>;
-	public setCategories: S.BelongsToManySetAssociationsMixin<Category, number>;
-	public addCategories: S.BelongsToManyAddAssociationsMixin<Category, number>;
-	public addCategory: S.BelongsToManyAddAssociationMixin<Category, number>;
-	public createCategory: S.BelongsToManyCreateAssociationMixin<Category>;
-	public removeCategory: S.BelongsToManyRemoveAssociationMixin<
-		Category,
-		number
-	>;
-	public removeCategories: S.BelongsToManyRemoveAssociationsMixin<
-		Category,
-		number
-	>;
-	public hasCategory: S.BelongsToManyHasAssociationMixin<Category, number>;
-	public hasCategories: S.BelongsToManyHasAssociationsMixin<Category, number>;
-	public countCategories: S.BelongsToManyCountAssociationsMixin;
+	@BelongsToMany(
+		() => Category,
+		() => VehicleCategory
+	)
+	public readonly categories: Category[];
 
-	public readonly bookings?: Booking[];
-	public readonly vehicleIssues?: VehicleIssue[];
-	public readonly categories?: Category[];
-	public readonly client?: Client;
-	public readonly bookingChargeUnit?: BookingChargeUnit;
-	public readonly location?: Location;
+	@BelongsTo(() => Client)
+	public readonly client: Client;
 
-	public static associations: {
-		bookings: S.Association<Vehicle, Booking>;
-		vehicleIssue: S.Association<Vehicle, VehicleIssue>;
-		categories: S.Association<Vehicle, Category>;
-		bookingChargeUnit: S.Association<Vehicle, BookingChargeUnit>;
-		location: S.Association<Vehicle, Location>;
-	};
+	@BelongsTo(() => BookingChargeUnit)
+	public readonly bookingChargeUnit: BookingChargeUnit;
 
-	static load = (sequelize: S.Sequelize) => {
-		Vehicle.init(
-			{
-				objectId: {
-					type: S.DataTypes.STRING,
-					allowNull: false,
-					unique: { name: "objectId", msg: "Object ID already in use!" }
-				},
-				brand: {
-					type: S.DataTypes.STRING,
-					allowNull: false,
-					validate: {
-						notNull: { msg: "Brand is required" }
-					}
-				},
-				model: {
-					type: S.DataTypes.STRING,
-					allowNull: false,
-					validate: {
-						notNull: { msg: "Model is required" }
-					}
-				},
-				plateNumber: {
-					type: S.DataTypes.STRING,
-					allowNull: false,
-					unique: { name: "plateNumber", msg: "Plate number already in use!" }
-				},
-				vin: {
-					type: S.DataTypes.STRING,
-					unique: { name: "vin", msg: "VIN already in use!" }
-				},
-				defleeted: { type: S.DataTypes.BOOLEAN, defaultValue: false },
-				parkingLocation: { type: S.DataTypes.STRING },
-				vehicleImageSrc: { type: S.DataTypes.STRING },
-				bookingChargeCount: {
-					type: S.DataTypes.INTEGER,
-					defaultValue: 0,
-					allowNull: false
-				},
-				bookingCharge: {
-					type: S.DataTypes.INTEGER,
-					defaultValue: 0,
-					allowNull: false
-				},
-				wialonUnitId: {
-					type: S.DataTypes.INTEGER
-				}
-			},
-			{
-				sequelize
-			}
-		);
-
-		Vehicle.belongsTo(BookingChargeUnit, {
-			as: "bookingChargeUnit",
-			foreignKey: {
-				name: "bookingChargeUnitId"
-			}
-		});
-		Vehicle.belongsTo(Client, {
-			as: "client",
-			foreignKey: {
-				name: "clientId"
-			}
-		});
-		Vehicle.belongsTo(Location, {
-			as: "location",
-			foreignKey: "locationId"
-		});
-		Vehicle.hasMany(Booking, {
-			as: "bookings",
-			foreignKey: "vehicleId"
-		});
-		Vehicle.hasMany(VehicleIssue, {
-			as: "vehicleIssues",
-			foreignKey: "vehicleId"
-		});
-		Vehicle.belongsToMany(Category, {
-			as: "categories",
-			through: "VehicleCategories",
-			foreignKey: "vehicleId",
-			otherKey: "categoryId"
-		});
-	};
+	@BelongsTo(() => Location)
+	public readonly location: Location;
 }

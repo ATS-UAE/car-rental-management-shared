@@ -1,61 +1,58 @@
-import * as S from "sequelize";
-import { Booking, User } from ".";
+import {
+	Table,
+	Column,
+	Model,
+	PrimaryKey,
+	AutoIncrement,
+	ForeignKey,
+	BelongsTo,
+	CreatedAt,
+	UpdatedAt
+} from "sequelize-typescript";
+import { Accident, User } from ".";
 
 export interface AccidentUserStatusAttributes {
 	id: number;
 	read: boolean;
 	deleted: boolean;
-	bookingId: number;
+	accidentId: number;
 	userId: number;
 
 	readonly createdAt: number;
 	readonly updatedAt: number;
 }
 
-export class AccidentUserStatus extends S.Model
+@Table
+export class AccidentUserStatus extends Model<AccidentUserStatus>
 	implements AccidentUserStatusAttributes {
+	@PrimaryKey
+	@AutoIncrement
+	@Column
 	public id: number;
+
+	@Column({ defaultValue: false, allowNull: false })
 	public read: boolean;
+
+	@Column({ defaultValue: false, allowNull: false })
 	public deleted: boolean;
-	public bookingId: number;
+
+	@ForeignKey(() => Accident)
+	@Column({ allowNull: false })
+	public accidentId: number;
+
+	@BelongsTo(() => Accident)
+	public accident: Accident;
+
+	@ForeignKey(() => User)
+	@Column({ allowNull: false })
 	public userId: number;
 
+	@BelongsTo(() => User)
+	public user: User;
+
+	@CreatedAt
 	public readonly createdAt: number;
+
+	@UpdatedAt
 	public readonly updatedAt: number;
-
-	public readonly user?: User;
-	public readonly booking?: Booking;
-
-	public static associations: {
-		user: S.Association<AccidentUserStatus, User>;
-		booking: S.Association<AccidentUserStatus, Booking>;
-	};
-
-	static load = (sequelize: S.Sequelize) => {
-		AccidentUserStatus.init(
-			{
-				read: {
-					type: S.DataTypes.BOOLEAN,
-					defaultValue: false
-				},
-				deleted: {
-					type: S.DataTypes.BOOLEAN,
-					defaultValue: false
-				}
-			},
-			{
-				sequelize
-			}
-		);
-
-		AccidentUserStatus.belongsTo(User, {
-			foreignKey: { name: "userId", allowNull: false },
-			as: "user"
-		});
-
-		AccidentUserStatus.belongsTo(Booking, {
-			foreignKey: { name: "bookingId", allowNull: false },
-			as: "booking"
-		});
-	};
 }

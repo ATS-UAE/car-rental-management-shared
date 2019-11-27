@@ -1,4 +1,16 @@
-import * as S from "sequelize";
+import {
+	Table,
+	Column,
+	Model,
+	PrimaryKey,
+	AutoIncrement,
+	ForeignKey,
+	BelongsTo,
+	CreatedAt,
+	UpdatedAt,
+	HasMany,
+	BelongsToMany
+} from "sequelize-typescript";
 import { Vehicle } from ".";
 
 export interface VehicleIssueAttributes {
@@ -10,46 +22,27 @@ export interface VehicleIssueAttributes {
 	readonly updatedAt: number;
 }
 
-export class VehicleIssue extends S.Model implements VehicleIssueAttributes {
+@Table
+export class VehicleIssue extends Model<VehicleIssue>
+	implements VehicleIssueAttributes {
+	@PrimaryKey
+	@AutoIncrement
+	@Column
 	public id: number;
+
+	@Column({ allowNull: false })
 	public name: string;
+
+	@ForeignKey(() => Vehicle)
+	@Column({ allowNull: false })
 	public vehicleId: number;
 
+	@CreatedAt
 	public readonly createdAt: number;
+
+	@UpdatedAt
 	public readonly updatedAt: number;
 
-	public readonly vehicle?: Vehicle;
-
-	public static associations: {
-		vehicle: S.Association<VehicleIssue, Vehicle>;
-	};
-
-	static load = (sequelize: S.Sequelize) => {
-		VehicleIssue.init(
-			{
-				message: {
-					type: S.DataTypes.STRING(256),
-					allowNull: false,
-					validate: {
-						notNull: { msg: "Message is required." }
-					}
-				}
-			},
-			{
-				sequelize,
-				validate: {
-					requireVehicle() {
-						if (!this.vehicleId) {
-							throw new Error("Vehicle is required.");
-						}
-					}
-				}
-			}
-		);
-
-		VehicleIssue.belongsTo(Vehicle, {
-			foreignKey: { name: "vehicleId", allowNull: false },
-			as: "vehicle"
-		});
-	};
+	@BelongsTo(() => Vehicle)
+	public readonly vehicle: Vehicle;
 }

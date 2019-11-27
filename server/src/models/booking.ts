@@ -1,4 +1,15 @@
-import * as S from "sequelize";
+import {
+	Table,
+	Column,
+	Model,
+	PrimaryKey,
+	AutoIncrement,
+	ForeignKey,
+	BelongsTo,
+	CreatedAt,
+	DataType,
+	UpdatedAt
+} from "sequelize-typescript";
 import { User, Vehicle, ReplaceVehicle, BookingType } from ".";
 
 export interface BookingAttributes {
@@ -22,109 +33,74 @@ export interface BookingAttributes {
 	readonly updatedAt: number;
 }
 
-export class Booking extends S.Model implements BookingAttributes {
+@Table
+export class Booking extends Model<Booking> implements BookingAttributes {
+	@PrimaryKey
+	@AutoIncrement
+	@Column
 	public id: number;
+
+	@Column({ defaultValue: false, allowNull: false })
 	public paid: boolean;
+
+	@Column({ defaultValue: null })
 	public amount: number | null;
+
+	@Column({ allowNull: false, type: DataType.DATE })
 	public from: number;
+
+	@Column({ allowNull: false, type: DataType.DATE })
 	public to: number;
+
+	@Column({ defaultValue: null })
 	public approved: boolean | null;
+
+	@Column({ defaultValue: false, allowNull: false })
 	public finished: boolean;
+
+	@Column(DataType.FLOAT)
 	public startMileage: number | null;
+
+	@Column(DataType.FLOAT)
 	public endMileage: number | null;
+
+	@Column(DataType.FLOAT)
 	public startFuel: number | null;
+
+	@Column(DataType.FLOAT)
 	public endFuel: number | null;
+
+	@ForeignKey(() => User)
+	@Column({ allowNull: false })
 	public userId: number;
+
+	@ForeignKey(() => Vehicle)
+	@Column({ allowNull: false })
 	public vehicleId: number;
+
+	@ForeignKey(() => BookingType)
+	@Column({ allowNull: false })
 	public bookingTypeId: number;
+
+	@ForeignKey(() => ReplaceVehicle)
+	@Column
 	public replaceVehicleId: number | null;
 
+	@CreatedAt
 	public readonly createdAt: number;
+
+	@UpdatedAt
 	public readonly updatedAt: number;
 
-	public readonly user?: User;
-	public readonly vehicle?: Vehicle;
-	public readonly bookingType?: BookingType;
-	public readonly replaceVehicle?: ReplaceVehicle;
+	@BelongsTo(() => User)
+	public readonly user: User;
 
-	public static associations: {
-		booking: S.Association<Booking, User>;
-		vehicle: S.Association<Booking, Vehicle>;
-		bookingType: S.Association<Booking, BookingType>;
-		replaceVehicle: S.Association<Booking, ReplaceVehicle>;
-	};
+	@BelongsTo(() => Vehicle)
+	public readonly vehicle: Vehicle;
 
-	static load = (sequelize: S.Sequelize) => {
-		Booking.init(
-			{
-				paid: { type: S.DataTypes.BOOLEAN, defaultValue: false },
-				amount: { type: S.DataTypes.FLOAT, defaultValue: null },
-				from: { type: S.DataTypes.DATE, allowNull: false },
-				to: { type: S.DataTypes.DATE, allowNull: false },
-				// null means pending, false means denied, true means approved.
-				approved: { type: S.DataTypes.BOOLEAN, defaultValue: null },
-				finished: { type: S.DataTypes.BOOLEAN, defaultValue: false },
-				startMileage: {
-					type: S.DataTypes.FLOAT
-				},
-				endMileage: {
-					type: S.DataTypes.FLOAT
-				},
-				startFuel: {
-					type: S.DataTypes.FLOAT
-				},
-				endFuel: {
-					type: S.DataTypes.FLOAT
-				}
-			},
-			{
-				sequelize,
-				validate: {
-					userRequired() {
-						if (!this.userId) {
-							throw new Error("User is required.");
-						}
-					},
-					vehicleRequired() {
-						if (!this.vehicleId) {
-							throw new Error("Vehicle is required.");
-						}
-					},
-					bookingTypeRequired() {
-						if (!this.bookingTypeId) {
-							throw new Error("Booking type is required.");
-						}
-					}
-				}
-			}
-		);
+	@BelongsTo(() => BookingType)
+	public readonly bookingType: BookingType;
 
-		Booking.belongsTo(User, {
-			foreignKey: {
-				name: "userId",
-				allowNull: false
-			},
-			as: "user"
-		});
-		Booking.belongsTo(Vehicle, {
-			foreignKey: {
-				name: "vehicleId",
-				allowNull: false
-			},
-			as: "vehicle"
-		});
-		Booking.belongsTo(BookingType, {
-			foreignKey: {
-				name: "bookingTypeId",
-				allowNull: false
-			},
-			as: "bookingType"
-		});
-		Booking.belongsTo(ReplaceVehicle, {
-			foreignKey: {
-				name: "replaceVehicleId"
-			},
-			as: "replaceVehicle"
-		});
-	};
+	@BelongsTo(() => ReplaceVehicle)
+	public readonly replaceVehicle: ReplaceVehicle;
 }

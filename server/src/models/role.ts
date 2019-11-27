@@ -1,4 +1,14 @@
-import * as S from "sequelize";
+import {
+	Table,
+	Column,
+	Model,
+	PrimaryKey,
+	AutoIncrement,
+	CreatedAt,
+	UpdatedAt,
+	HasOne,
+	HasMany
+} from "sequelize-typescript";
 import { User } from ".";
 
 export interface RoleAttributes {
@@ -9,43 +19,22 @@ export interface RoleAttributes {
 	readonly updatedAt: number;
 }
 
-export class Role extends S.Model implements RoleAttributes {
+@Table
+export class Role extends Model<Role> implements RoleAttributes {
+	@PrimaryKey
+	@AutoIncrement
+	@Column
 	public id: number;
+
+	@Column({ allowNull: false, unique: true })
 	public name: string;
 
+	@CreatedAt
 	public readonly createdAt: number;
+
+	@UpdatedAt
 	public readonly updatedAt: number;
 
-	public getUsers: S.HasManyGetAssociationsMixin<User>;
-	public setUsers: S.HasManySetAssociationsMixin<User, number>;
-	public addUsers: S.HasManyAddAssociationsMixin<User, number>;
-	public addUser: S.HasManyAddAssociationMixin<User, number>;
-	public createUser: S.HasManyCreateAssociationMixin<User>;
-	public removeUser: S.HasManyRemoveAssociationMixin<User, number>;
-	public removeUsers: S.HasManyRemoveAssociationsMixin<User, number>;
-	public hasUser: S.HasManyHasAssociationMixin<User, number>;
-	public hasUsers: S.HasManyHasAssociationsMixin<User, number>;
-	public countUsers: S.HasManyCountAssociationsMixin;
-
+	@HasMany(() => User)
 	public readonly users?: User[];
-
-	public static associations: {
-		users: S.Association<Role, User>;
-	};
-
-	static load = (sequelize: S.Sequelize) => {
-		Role.init(
-			{
-				name: { type: S.DataTypes.STRING, allowNull: false, unique: true }
-			},
-			{
-				sequelize
-			}
-		);
-
-		Role.hasMany(User, {
-			as: "users",
-			foreignKey: "roleId"
-		});
-	};
 }
