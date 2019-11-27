@@ -1,29 +1,30 @@
-import fs from "fs";
-import path from "path";
-import { Sequelize } from "sequelize";
+import { Sequelize } from "sequelize-typescript";
 import bcrypt from "bcryptjs";
 
 import config from "../config";
-import { convertSequelizeDatesToUnix } from "../utils/helpers";
 import {
 	Role as RoleEnum,
 	BookingType as BookingTypeEnum,
 	BookingChargeUnit as BookingChargeUnitEnum
 } from "../variables/enums";
+import { convertSequelizeDatesToUnix } from "../utils";
 
-export * from "./BookingChargeUnit";
+export * from "./Accident";
 export * from "./AccidentUserStatus";
-export * from "./User";
 export * from "./Booking";
+export * from "./BookingChargeUnit";
 export * from "./BookingType";
 export * from "./Category";
 export * from "./Client";
+export * from "./ClientLocation";
 export * from "./Location";
 export * from "./ReplaceVehicle";
 export * from "./Role";
+export * from "./User";
+export * from "./UserVehicleCategory";
 export * from "./Vehicle";
+export * from "./VehicleCategory";
 export * from "./VehicleIssue";
-export * from "./Accident";
 
 import { Accident } from "./Accident";
 import { AccidentUserStatus } from "./AccidentUserStatus";
@@ -32,11 +33,14 @@ import { BookingChargeUnit } from "./BookingChargeUnit";
 import { BookingType } from "./BookingType";
 import { Category } from "./Category";
 import { Client } from "./Client";
+import { ClientLocation } from "./ClientLocation";
 import { Location } from "./Location";
 import { ReplaceVehicle } from "./ReplaceVehicle";
 import { Role } from "./Role";
 import { User } from "./User";
+import { UserVehicleCategory } from "./UserVehicleCategory";
 import { Vehicle } from "./Vehicle";
+import { VehicleCategory } from "./VehicleCategory";
 import { VehicleIssue } from "./VehicleIssue";
 
 const sequelize = new Sequelize(
@@ -56,86 +60,72 @@ const sequelize = new Sequelize(
 				}
 			}
 		},
+		models: [
+			Accident,
+			AccidentUserStatus,
+			Booking,
+			BookingChargeUnit,
+			BookingType,
+			Category,
+			Client,
+			ClientLocation,
+			Location,
+			ReplaceVehicle,
+			Role,
+			User,
+			UserVehicleCategory,
+			Vehicle,
+			VehicleCategory,
+			VehicleIssue
+		],
 		...config.database.sequelize
 	}
 );
 
-Accident.load(sequelize);
-AccidentUserStatus.load(sequelize);
-Booking.load(sequelize);
-BookingChargeUnit.load(sequelize);
-BookingType.load(sequelize);
-Category.load(sequelize);
-Client.load(sequelize);
-Location.load(sequelize);
-ReplaceVehicle.load(sequelize);
-Role.load(sequelize);
-User.load(sequelize);
-Vehicle.load(sequelize);
-VehicleIssue.load(sequelize);
-
-const db = {
-	Accident,
-	AccidentUserStatus,
-	Booking,
-	BookingChargeUnit,
-	BookingType,
-	Category,
-	Client,
-	Location,
-	ReplaceVehicle,
-	Role,
-	User,
-	Vehicle,
-	VehicleIssue
-};
-
 sequelize
 	.authenticate()
-	.then(() => init(db, { sync: {} }))
+	.then(() => init(sequelize, { sync: {} }))
 	.then(() => console.log("Connection has been established successfully."))
 	.catch(err => {
 		console.error("Unable to connect to the database\n", err);
 	});
 
-const init = async (db: any, params: any) => {
+const init = async (sequelize: Sequelize, params: any) => {
 	if (params.sync) {
-		await db.sequelize.sync(params.sync.options);
+		await sequelize.sync(params.sync.options);
 	}
 
-	let users = await db.User.findAll({
-		include: [{ model: db.Role, as: "role" }]
+	let users = await User.findAll({
+		include: [{ model: Role, as: "role" }]
 	});
 
-	let roles = await db.Role.findAll();
+	let roles = await Role.findAll();
 
-	const bookingChargeUnits = await db.BookingChargeUnit.findAll();
+	const bookingChargeUnits = await BookingChargeUnit.findAll();
 
 	if (roles.length === 0) {
 		await Promise.all(
-			Object.values(RoleEnum).map(name => db.Role.create({ name }))
+			Object.values(RoleEnum).map(name => Role.create({ name }))
 		);
 		await Promise.all(
-			Object.values(BookingTypeEnum).map(name =>
-				db.BookingType.create({ name })
-			)
+			Object.values(BookingTypeEnum).map(name => BookingType.create({ name }))
 		);
 	}
 
 	if (users.length === 0) {
-		let masterRole = await db.Role.findOne({
+		let masterRole = await Role.findOne({
 			where: { name: RoleEnum.MASTER }
 		});
 
 		// Create root user...
 		let rootPassword = await bcrypt.hash(config.database.password, 10);
-		await db.User.create({
+		await User.create({
 			username: "root",
 			password: rootPassword,
 			firstName: "Root",
 			lastName: "Account",
 			email: "support@atsuae.net",
-			roleId: masterRole.dataValues.id,
+			roleId: masterRole.id,
 			mobileNumber: "",
 			approved: true
 		});
@@ -144,11 +134,28 @@ const init = async (db: any, params: any) => {
 	// Create booking charge units.
 	for (const unit of Object.values(BookingChargeUnitEnum)) {
 		if (!bookingChargeUnits.find(existing => existing.unit === unit)) {
-			await db.BookingChargeUnit.create({
+			await BookingChargeUnit.create({
 				unit: unit
 			});
 		}
 	}
 };
 
-export default db;
+export default {
+	Accident,
+	AccidentUserStatus,
+	Booking,
+	BookingChargeUnit,
+	BookingType,
+	Category,
+	Client,
+	ClientLocation,
+	Location,
+	ReplaceVehicle,
+	Role,
+	User,
+	UserVehicleCategory,
+	Vehicle,
+	VehicleCategory,
+	VehicleIssue
+};
