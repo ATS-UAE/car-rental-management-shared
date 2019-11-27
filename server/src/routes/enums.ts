@@ -2,7 +2,7 @@ import express from "express";
 
 import RBAC from "../utils/rbac";
 import db from "../models";
-import { ResponseBuilder } from "../utils/helpers";
+import { ResponseBuilder } from "../utils";
 
 const router = express.Router();
 

@@ -1,6 +1,6 @@
 import express from "express";
 import { Wialon } from "node-wialon";
-import { ResponseBuilder } from "../utils/helpers";
+import { ResponseBuilder } from "../utils";
 
 const router = express.Router();
 

@@ -1,5 +1,5 @@
 import express, { Response } from "express";
-import { ResponseBuilder } from "../utils/helpers";
+import { ResponseBuilder } from "../utils";
 import { Client } from "../datasource";
 import db from "../models";
 

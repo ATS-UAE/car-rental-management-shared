@@ -9,7 +9,7 @@ import {
 } from "../middlewares/deleteReplacedFiles";
 import upload from "../middlewares/multerUpload";
 import db from "../models";
-import { getFileURL, ResponseBuilder } from "../utils/helpers";
+import { getFileURL, ResponseBuilder } from "../utils";
 import { Location } from "../datasource";
 
 const router = express.Router();

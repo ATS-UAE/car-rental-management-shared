@@ -11,7 +11,7 @@ import parseBody from "../middlewares/parseBody";
 import upload from "../middlewares/multerUpload";
 import deleteFileOnError from "../middlewares/deleteFileOnError";
 import db from "../models";
-import { ResponseBuilder, getFileURL } from "../utils/helpers";
+import { ResponseBuilder, getFileURL } from "../utils";
 import { Vehicle } from "../datasource";
 
 const router = express.Router();
