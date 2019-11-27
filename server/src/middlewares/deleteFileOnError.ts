@@ -1,5 +1,5 @@
 import fs from "fs";
-import { deleteFileFromUrl } from "../utils/helpers";
+import { deleteFileFromUrl } from "../utils";
 
 type fileURI = { url: string; path: string };
 

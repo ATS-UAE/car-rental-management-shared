@@ -1,5 +1,5 @@
 import { Role } from "../variables/enums";
-import { ResponseBuilder } from "../utils/helpers";
+import { ResponseBuilder } from "../utils";
 
 export default (req, res, next) => {
 	if (req.user.role !== Role.GUEST) {
