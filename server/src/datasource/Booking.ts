@@ -6,7 +6,7 @@ import {
 	InvalidPermissionException,
 	ResourceNotFoundException
 } from "../utils/exceptions";
-import { toMySQLDate, exceptFields } from "../utils/helpers";
+import { toMySQLDate, exceptFields } from "../utils";
 import { BookingType } from "../variables/enums";
 export default class Booking extends DataSource {
 	user: UserAccessor;

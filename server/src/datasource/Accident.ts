@@ -7,7 +7,7 @@ import {
 	ResourceNotFoundException,
 	InvalidInputException
 } from "../utils/exceptions";
-import { exceptFields } from "../utils/helpers";
+import { exceptFields } from "../utils";
 export default class Accident extends DataSource {
 	user: UserAccessor;
 
