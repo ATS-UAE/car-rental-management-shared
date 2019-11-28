@@ -3,8 +3,8 @@
 	"tasks": [
 		{
 			"label": "Server",
-			"command": "tsc --noEmit server/",
-			"args": ["-p", "."],
+			"command": "tsc",
+			"args": ["--noEmit", "-p", "server", "-w"],
 			"type": "shell",
 			"presentation": {
 				"echo": true,
@@ -18,8 +18,8 @@
 		},
 		{
 			"label": "Client",
-			"command": "tsc --noEmit client/",
-			"args": ["-p", "."],
+			"command": "tsc",
+			"args": ["--noEmit", "-p", "client", "-w"],
 			"type": "shell",
 			"presentation": {
 				"echo": true,
