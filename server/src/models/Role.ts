@@ -1,7 +1,40 @@
-export default (sequelize, DataTypes) => {
-	let Role = sequelize.define("Role", {
-		name: { type: DataTypes.STRING, allowNull: false, unique: true }
-	});
+import {
+	Table,
+	Column,
+	Model,
+	PrimaryKey,
+	AutoIncrement,
+	CreatedAt,
+	UpdatedAt,
+	HasOne,
+	HasMany
+} from "sequelize-typescript";
+import { User } from ".";
 
-	return Role;
-};
+export interface RoleAttributes {
+	id: number;
+	name: string;
+
+	readonly createdAt: number;
+	readonly updatedAt: number;
+}
+
+@Table
+export class Role extends Model<Role> implements RoleAttributes {
+	@PrimaryKey
+	@AutoIncrement
+	@Column
+	public id: number;
+
+	@Column({ allowNull: false, unique: true })
+	public name: string;
+
+	@CreatedAt
+	public readonly createdAt: number;
+
+	@UpdatedAt
+	public readonly updatedAt: number;
+
+	@HasMany(() => User)
+	public readonly users?: User[];
+}

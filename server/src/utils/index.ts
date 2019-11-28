@@ -2,7 +2,7 @@ import moment from "moment-timezone";
 import path from "path";
 import fs from "fs";
 import _ from "lodash";
-import { BookingStatus } from "../../variables/enums";
+import { BookingStatus } from "../variables/enums";
 import { Moment } from "moment";
 import { URL } from "url";
 
@@ -28,7 +28,7 @@ export const pickFields = (target: object, fields: string[]): object => {
 	return result;
 };
 
-export const exceptFields = (fields: string[], target: object): object => {
+export const exceptFields = (target: object, fields: string[]): object => {
 	let result = {};
 
 	for (let key in target) {
@@ -36,6 +36,24 @@ export const exceptFields = (fields: string[], target: object): object => {
 	}
 
 	return result;
+};
+
+export const convertSequelizeDatesToUnix = (obj: any): void => {
+	if (obj instanceof Array) {
+		for (let value of obj) {
+			convertSequelizeDatesToUnix(value);
+		}
+	} else if (obj && typeof obj === "object") {
+		const values = obj.dataValues ? obj.dataValues : obj;
+
+		for (let key in values) {
+			if (values[key] instanceof Date) {
+				values[key] = moment(values[key]).unix();
+			} else if (typeof values[key] === "object") {
+				convertSequelizeDatesToUnix(values[key]);
+			}
+		}
+	}
 };
 
 export const sqlDateToMoment = (date: string): Moment =>
@@ -73,22 +91,28 @@ export const makeDirectoryIfNotExist = (filePath: string): Promise<string> => {
 export const deleteFileFromUrl = (fileUrl: string): Promise<void> =>
 	fs.promises.unlink(getPathFromURL(fileUrl));
 
-export const convertSequelizeDatesToUnix = (obj: any): void => {
-	if (obj instanceof Array) {
-		for (let value of obj) {
-			convertSequelizeDatesToUnix(value);
-		}
-	} else if (obj && typeof obj === "object") {
-		const values = obj.dataValues ? obj.dataValues : obj;
+type Converted<T> = {
+	[P in keyof T]: T[P] extends Date
+		? number
+		: T[P] extends Object
+		? Converted<T[P]>
+		: T[P];
+};
 
-		for (let key in values) {
-			if (values[key] instanceof Date) {
-				values[key] = moment(values[key]).unix();
-			} else if (typeof values[key] === "object") {
-				convertSequelizeDatesToUnix(values[key]);
-			}
+export const convertDatesToUnix = <T extends object>(
+	object: T
+): Converted<T> => {
+	const clone = <Converted<T>>_.cloneDeep(object);
+
+	for (const [key, value] of Object.entries(clone)) {
+		if (value instanceof Date) {
+			clone[key] = <number>moment(value).unix();
+		} else if (typeof value === "object") {
+			convertDatesToUnix(value);
 		}
 	}
+
+	return clone;
 };
 
 export const getBookingStatus = (booking: {

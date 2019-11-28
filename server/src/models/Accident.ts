@@ -1,57 +1,92 @@
-export default (sequelize, DataTypes) => {
-	let Accident = sequelize.define("Accident", {
-		message: {
-			type: DataTypes.STRING(500),
-			allowNull: false,
-			validate: {
-				notNull: { msg: "Message is required." }
-			}
-		},
-		accidentImageSrc: {
-			type: DataTypes.STRING
-		},
-		accidentVideoSrc: {
-			type: DataTypes.STRING
-		},
-		lat: {
-			type: DataTypes.FLOAT
-		},
-		lng: {
-			type: DataTypes.FLOAT
+import {
+	Table,
+	Column,
+	Model,
+	DataType,
+	PrimaryKey,
+	AutoIncrement,
+	BelongsToMany,
+	ForeignKey,
+	BelongsTo,
+	CreatedAt,
+	UpdatedAt
+} from "sequelize-typescript";
+import { User, Vehicle, Booking, AccidentUserStatus } from ".";
+
+export interface AccidentAttributes {
+	id: number;
+	message: string;
+	accidentImageSrc: string;
+	accidentVideoSrc: string;
+	lat: number;
+	lng: number;
+	userId: number;
+	vehicleId: number;
+	bookingId: number;
+
+	readonly createdAt: number;
+	readonly updatedAt: number;
+}
+
+@Table
+export class Accident extends Model<Accident> implements AccidentAttributes {
+	@PrimaryKey
+	@AutoIncrement
+	@Column
+	public id: number;
+
+	@Column({
+		type: DataType.STRING(500),
+		allowNull: false,
+		validate: {
+			notNull: { msg: "Message is required." }
 		}
-	});
-	Accident.associate = models => {
-		models.Accident.belongsTo(models.User, {
-			foreignKey: {
-				name: "userId"
-			},
-			as: "user",
-			allowNull: false,
-			validate: {
-				notNull: { msg: "User is required." }
-			}
-		});
-		models.Accident.belongsTo(models.Vehicle, {
-			foreignKey: { name: "vehicleId" },
-			as: "vehicle",
-			allowNull: false,
-			validate: {
-				notNull: { msg: "Vehicle is required." }
-			}
-		});
-		models.Accident.belongsTo(models.Booking, {
-			foreignKey: { name: "bookingId" },
-			as: "booking",
-			allowNull: false,
-			validate: {
-				notNull: { msg: "Booking is required." }
-			}
-		});
-		models.Accident.belongsToMany(models.User, {
-			through: models.AccidentUserStatus,
-			as: "userStatus",
-			foreignKey: "accidentId"
-		});
-	};
-	return Accident;
-};
+	})
+	public message: string;
+
+	@Column
+	public accidentImageSrc: string;
+
+	@Column
+	public accidentVideoSrc: string;
+
+	@Column
+	public lat: number;
+
+	@Column
+	public lng: number;
+
+	@ForeignKey(() => User)
+	@Column({ allowNull: false })
+	public userId: number;
+
+	@BelongsTo(() => User)
+	user: User;
+
+	@ForeignKey(() => Vehicle)
+	@Column({ allowNull: false })
+	public vehicleId: number;
+
+	@BelongsTo(() => Vehicle)
+	vehicle: Vehicle;
+
+	@ForeignKey(() => Booking)
+	@Column({ allowNull: false })
+	public bookingId: number;
+
+	@BelongsTo(() => Booking)
+	booking: Booking;
+
+	@CreatedAt
+	public readonly createdAt: number;
+
+	@UpdatedAt
+	public readonly updatedAt: number;
+
+	@BelongsToMany(
+		() => User,
+		() => AccidentUserStatus,
+		"accidentId"
+	)
+	userStatuses: Array<AccidentUserStatus>;
+}

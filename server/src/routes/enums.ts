@@ -2,7 +2,7 @@ import express from "express";
 
 import RBAC from "../utils/rbac";
 import db from "../models";
-import { ResponseBuilder } from "../utils/helpers";
+import { ResponseBuilder } from "../utils";
 
 const router = express.Router();
 
@@ -13,25 +13,19 @@ router.get("/", async (req, res) => {
 	let bookingTypes = await db.BookingType.findAll();
 	let bookingChargeUnits = await db.BookingChargeUnit.findAll();
 
-	roles = roles.map(({ id, name }) => ({
-		id,
-		name
-	}));
-
-	bookingTypes = bookingTypes.map(({ id, name }) => ({
-		id,
-		name
-	}));
-
-	bookingChargeUnits = bookingChargeUnits.map(({ id, unit }) => ({
-		id,
-		unit
-	}));
-
 	response.setData({
-		roles,
-		bookingTypes,
-		bookingChargeUnits,
+		roles: roles.map(({ id, name }) => ({
+			id,
+			name
+		})),
+		bookingTypes: bookingTypes.map(({ id, name }) => ({
+			id,
+			name
+		})),
+		bookingChargeUnits: bookingChargeUnits.map(({ id, unit }) => ({
+			id,
+			unit
+		})),
 		permissions: RBAC.toObject()
 	});
 	response.setSuccess(true);

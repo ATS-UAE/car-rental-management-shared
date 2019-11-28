@@ -10,7 +10,7 @@ import config from "../../config";
 import {
 	getStaticFilesPath,
 	makeDirectoryIfNotExist
-} from "../../utils/helpers";
+} from "../../utils";
 
 const { mail, secretKey } = config;
 
@@ -133,7 +133,7 @@ export const sendBookingConfirmation = async ({
 	parkingLocation: string;
 	lat: number;
 	lng: number;
-	address: number;
+	address: string;
 }): Promise<string> => {
 	const transporter = getTransport();
 

@@ -1,122 +1,139 @@
-export default (sequelize, { STRING, DATE, BOOLEAN }) => {
-	let User = sequelize.define(
-		"User",
-		{
-			username: {
-				type: STRING,
-				unique: { args: true, msg: "Username already in use!" },
-				allowNull: false,
-				validate: {
-					notNull: { msg: "Username is required" }
-				}
-			},
-			firstName: {
-				type: STRING,
-				allowNull: false,
-				validate: {
-					notNull: { msg: "First name is required" }
-				}
-			},
-			lastName: {
-				type: STRING,
-				allowNull: false,
-				validate: {
-					notNull: { msg: "Last name is required" }
-				}
-			},
-			email: {
-				type: STRING,
-				unique: { args: true, msg: "Email address already in use!" },
-				allowNull: false,
-				validate: {
-					notNull: { msg: "Email address is required" }
-				}
-			},
-			password: {
-				type: STRING,
-				allowNull: false,
-				validate: {
-					notNull: { msg: "Password is required" }
-				}
-			},
-			mobileNumber: {
-				type: STRING,
-				unique: { args: true, msg: "Mobile number already in use!" },
-				allowNull: false,
-				validate: {
-					notNull: { msg: "Mobile number is required" }
-				}
-			},
-			contractNo: {
-				type: STRING
-			},
-			objectNo: {
-				type: STRING
-			},
-			lastLogin: { type: DATE },
-			userImageSrc: { type: STRING },
-			licenseImageSrc: { type: STRING },
-			approved: { type: BOOLEAN, defaultValue: false },
-			blocked: { type: BOOLEAN, defaultValue: false },
-			emailConfirmed: { type: BOOLEAN, defaultValue: false }
-		},
-		{
-			validate: {
-				checkUsername() {
-					if (this.username && this.username.length < 4) {
-						throw new Error("Username length must be at least 4 characters.");
-					}
-				},
-				checkPasswordLength() {
-					if (this.password && this.password.length < 8) {
-						throw new Error("Password length must be at least 8 characters.");
-					}
-				}
-			}
-		}
-	);
+import {
+	Table,
+	Column,
+	Model,
+	PrimaryKey,
+	AutoIncrement,
+	ForeignKey,
+	BelongsTo,
+	CreatedAt,
+	DataType,
+	UpdatedAt,
+	BelongsToMany
+} from "sequelize-typescript";
+import {
+	Client,
+	Role,
+	Accident,
+	AccidentUserStatus,
+	Category,
+	UserVehicleCategory
+} from "./";
 
-	User.associate = models => {
-		models.User.belongsTo(models.Client, {
-			foreignKey: {
-				name: "clientId",
-				allowNull: false,
-				validate: {
-					notNull: {
-						msg: "Please specify which client this user belongs to."
-					}
-				}
-			},
-			as: "client"
-		});
-		models.User.belongsTo(models.Role, {
-			foreignKey: {
-				name: "roleId",
-				allowNull: false,
-				validate: {
-					notNull: { msg: "Role is required" }
-				}
-			},
-			as: "role"
-		});
-		models.User.belongsTo(models.User, {
-			foreignKey: {
-				name: "userCreatorId"
-			},
-			as: "userCreator"
-		});
-		models.User.belongsToMany(models.Accident, {
-			through: models.AccidentUserStatus,
-			as: "accidentStatus",
-			foreignKey: "userId"
-		});
-		models.User.belongsToMany(models.Category, {
-			through: "UserVehicleCategories",
-			as: "categories",
-			foreignKey: "userId",
-			otherKey: "categoryId"
-		});
-	};
+export interface UserAttributes {
+	id: number;
+	username: string;
+	firstName: string;
+	lastName: string;
+	email: string;
+	password: string;
+	mobileNumber: string;
+	contractNo: string | null;
+	objectNo: string | null;
+	lastLogin: string | null;
+	userImageSrc: string | null;
+	licenseImageSrc: string | null;
+	blocked: boolean;
+	emailConfirmed: boolean;
+	clientId: number;
+	roleId: number;
+	userCreatorId: number;
 
-	return User;
-};
+	readonly createdAt: number;
+	readonly updatedAt: number;
+}
+
+@Table
+export class User extends Model<User> implements UserAttributes {
+	@PrimaryKey
+	@AutoIncrement
+	@Column
+	public id: number;
+
+	@Column({
+		allowNull: false,
+		unique: { name: "email", msg: "Email address already in use." }
+	})
+	public username: string;
+
+	@Column({ allowNull: false })
+	public firstName: string;
+
+	@Column({ allowNull: false })
+	public lastName: string;
+
+	@Column({
+		allowNull: false,
+		unique: { name: "email", msg: "Email address already in use." }
+	})
+	public email: string;
+
+	@Column({ allowNull: false })
+	public password: string;
+
+	@Column({
+		allowNull: false,
+		unique: { name: "email", msg: "Email address already in use." }
+	})
+	public mobileNumber: string;
+
+	@Column
+	public contractNo: string | null;
+
+	@Column
+	public objectNo: string | null;
+
+	@Column
+	public lastLogin: string | null;
+
+	@Column
+	public userImageSrc: string | null;
+
+	@Column
+	public licenseImageSrc: string | null;
+
+	@Column({ allowNull: false, defaultValue: false })
+	public blocked: boolean;
+
+	@Column({ allowNull: false, defaultValue: false })
+	public emailConfirmed: boolean;
+
+	@ForeignKey(() => Client)
+	@Column
+	public clientId: number;
+
+	@ForeignKey(() => Role)
+	@Column
+	public roleId: number;
+
+	@ForeignKey(() => User)
+	@Column
+	public userCreatorId: number;
+
+	@CreatedAt
+	public readonly createdAt: number;
+
+	@UpdatedAt
+	public readonly updatedAt: number;
+
+	@BelongsTo(() => Client)
+	client: Client;
+
+	@BelongsTo(() => Role)
+	role: Role;
+
+	@BelongsTo(() => User, "userCreatorId")
+	userCreator: User;
+
+	@BelongsToMany(
+		() => Accident,
+		() => AccidentUserStatus
+	)
+	accidentStatuses: AccidentUserStatus[];
+
+	@BelongsToMany(
+		() => Category,
+		() => UserVehicleCategory
+	)
+	categories: Category[];
+}

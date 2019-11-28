@@ -1,62 +1,106 @@
-export default (sequelize, DataTypes) => {
-	let Booking = sequelize.define("Booking", {
-		paid: { type: DataTypes.BOOLEAN, defaultValue: false },
-		amount: { type: DataTypes.FLOAT, defaultValue: null },
-		from: { type: DataTypes.DATE, allowNull: false },
-		to: { type: DataTypes.DATE, allowNull: false },
-		// null means pending, false means denied, true means approved.
-		approved: { type: DataTypes.BOOLEAN, defaultValue: null },
-		finished: { type: DataTypes.BOOLEAN, defaultValue: false },
-		startMileage: {
-			type: DataTypes.FLOAT
-		},
-		endMileage: {
-			type: DataTypes.FLOAT
-		},
-		startFuel: {
-			type: DataTypes.FLOAT
-		},
-		endFuel: {
-			type: DataTypes.FLOAT
-		}
-	});
-	Booking.associate = models => {
-		models.Booking.belongsTo(models.User, {
-			foreignKey: {
-				name: "userId",
-				allowNull: false,
-				validate: {
-					notNull: { msg: "User is required." }
-				}
-			},
-			as: "user"
-		});
-		models.Booking.belongsTo(models.Vehicle, {
-			foreignKey: {
-				name: "vehicleId",
-				allowNull: false,
-				validate: {
-					notNull: { msg: "Vehicle is required." }
-				}
-			},
-			as: "vehicle"
-		});
-		models.Booking.belongsTo(models.BookingType, {
-			foreignKey: {
-				name: "bookingTypeId",
-				allowNull: false,
-				validate: {
-					notNull: { msg: "Booking type is required." }
-				}
-			},
-			as: "bookingType"
-		});
-		models.Booking.belongsTo(models.ReplaceVehicle, {
-			foreignKey: {
-				name: "replaceVehicleId"
-			},
-			as: "replaceVehicle"
-		});
-	};
-	return Booking;
-};
+import {
+	Table,
+	Column,
+	Model,
+	PrimaryKey,
+	AutoIncrement,
+	ForeignKey,
+	BelongsTo,
+	CreatedAt,
+	DataType,
+	UpdatedAt
+} from "sequelize-typescript";
+import { User, Vehicle, ReplaceVehicle, BookingType } from ".";
+
+export interface BookingAttributes {
+	id: number;
+	paid: boolean;
+	amount: number | null;
+	from: number;
+	to: number;
+	approved: boolean | null;
+	finished: boolean;
+	startMileage: number | null;
+	endMileage: number | null;
+	startFuel: number | null;
+	endFuel: number | null;
+	userId: number;
+	vehicleId: number;
+	bookingTypeId: number;
+	replaceVehicleId: number | null;
+
+	readonly createdAt: number;
+	readonly updatedAt: number;
+}
+
+@Table
+export class Booking extends Model<Booking> implements BookingAttributes {
+	@PrimaryKey
+	@AutoIncrement
+	@Column
+	public id: number;
+
+	@Column({ defaultValue: false, allowNull: false })
+	public paid: boolean;
+
+	@Column({ defaultValue: null })
+	public amount: number | null;
+
+	@Column({ allowNull: false, type: DataType.DATE })
+	public from: number;
+
+	@Column({ allowNull: false, type: DataType.DATE })
+	public to: number;
+
+	@Column({ defaultValue: null })
+	public approved: boolean | null;
+
+	@Column({ defaultValue: false, allowNull: false })
+	public finished: boolean;
+
+	@Column(DataType.FLOAT)
+	public startMileage: number | null;
+
+	@Column(DataType.FLOAT)
+	public endMileage: number | null;
+
+	@Column(DataType.FLOAT)
+	public startFuel: number | null;
+
+	@Column(DataType.FLOAT)
+	public endFuel: number | null;
+
+	@ForeignKey(() => User)
+	@Column({ allowNull: false })
+	public userId: number;
+
+	@ForeignKey(() => Vehicle)
+	@Column({ allowNull: false })
+	public vehicleId: number;
+
+	@ForeignKey(() => BookingType)
+	@Column({ allowNull: false })
+	public bookingTypeId: number;
+
+	@ForeignKey(() => ReplaceVehicle)
+	@Column
+	public replaceVehicleId: number | null;
+
+	@CreatedAt
+	public readonly createdAt: number;
+
+	@UpdatedAt
+	public readonly updatedAt: number;
+
+	@BelongsTo(() => User)
+	public readonly user: User;
+
+	@BelongsTo(() => Vehicle)
+	public readonly vehicle: Vehicle;
+
+	@BelongsTo(() => BookingType)
+	public readonly bookingType: BookingType;
+
+	@BelongsTo(() => ReplaceVehicle)
+	public readonly replaceVehicle: ReplaceVehicle;
+}

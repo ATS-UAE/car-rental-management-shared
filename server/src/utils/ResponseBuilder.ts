@@ -3,7 +3,7 @@ import {
 	InvalidPermissionException,
 	ResourceNotFoundException,
 	InvalidInputException
-} from "../exceptions";
+} from "./exceptions";
 export default class ResponseBuilder {
 	private code: number = 500;
 	private errors: string[] = [];

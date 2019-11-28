@@ -1,87 +1,119 @@
-export default (sequelize, DataTypes) => {
-	let Vehicle = sequelize.define("Vehicle", {
-		objectId: {
-			type: DataTypes.STRING,
-			allowNull: false,
-			unique: { args: true, msg: "Object ID already in use!" }
-		},
-		brand: {
-			type: DataTypes.STRING,
-			allowNull: false,
-			validate: {
-				notNull: { msg: "Brand is required" }
-			}
-		},
-		model: {
-			type: DataTypes.STRING,
-			allowNull: false,
-			validate: {
-				notNull: { msg: "Model is required" }
-			}
-		},
-		plateNumber: {
-			type: DataTypes.STRING,
-			allowNull: false,
-			unique: { args: true, msg: "Plate number already in use!" }
-		},
-		vin: {
-			type: DataTypes.STRING,
-			unique: { args: true, msg: "VIN already in use!" }
-		},
-		defleeted: { type: DataTypes.BOOLEAN, defaultValue: false },
-		parkingLocation: { type: DataTypes.STRING },
-		vehicleImageSrc: { type: DataTypes.STRING },
-		bookingChargeCount: {
-			type: DataTypes.INTEGER,
-			defaultValue: 0,
-			allowNull: false
-		},
-		bookingCharge: {
-			type: DataTypes.INTEGER,
-			defaultValue: 0,
-			allowNull: false
-		},
-		wialonUnitId: {
-			type: DataTypes.INTEGER
-		}
-	});
-	Vehicle.associate = models => {
-		models.Vehicle.belongsTo(models.BookingChargeUnit, {
-			as: "bookingChargeUnit",
-			foreignKey: {
-				name: "bookingChargeUnitId"
-			}
-		});
-		models.Vehicle.belongsTo(models.Client, {
-			as: "client",
-			foreignKey: {
-				name: "clientId",
-				allowNull: false,
-				validate: {
-					notNull: {
-						msg: "Please specify which client this vehicle belongs to."
-					}
-				}
-			}
-		});
-		models.Vehicle.belongsTo(models.Location, {
-			as: "location",
-			foreignKey: "locationId"
-		});
-		models.Vehicle.hasMany(models.Booking, {
-			as: "bookings",
-			foreignKey: "vehicleId"
-		});
-		models.Vehicle.hasMany(models.VehicleIssue, {
-			as: "vehicleIssues",
-			foreignKey: "vehicleId"
-		});
-		models.Vehicle.belongsToMany(models.Category, {
-			as: "categories",
-			through: "VehicleCategories",
-			foreignKey: "vehicleId",
-			otherKey: "categoryId"
-		});
-	};
-	return Vehicle;
-};
+import {
+	Table,
+	Column,
+	Model,
+	PrimaryKey,
+	AutoIncrement,
+	ForeignKey,
+	BelongsTo,
+	CreatedAt,
+	UpdatedAt,
+	HasMany,
+	BelongsToMany
+} from "sequelize-typescript";
+import {
+	BookingChargeUnit,
+	Client,
+	Location,
+	Booking,
+	VehicleIssue,
+	Category,
+	VehicleCategory
+} from ".";
+
+export interface VehicleAttributes {
+	id: number;
+	brand: string;
+	model: string;
+	plateNumber: string;
+	vin: string;
+	defleeted: boolean;
+	parkingLocation: string | null;
+	vehicleImageSrc: string | null;
+	bookingChargeCount: number;
+	bookingCharge: number;
+	wialonUnitId: number | null;
+	bookingChargeUnitId: number | null;
+	clientId: number | null;
+	locationId: number | null;
+
+	readonly createdAt: number;
+	readonly updatedAt: number;
+}
+
+@Table
+export class Vehicle extends Model<Vehicle> implements VehicleAttributes {
+	@PrimaryKey
+	@AutoIncrement
+	@Column
+	public id: number;
+
+	@Column({ allowNull: false })
+	public brand: string;
+
+	@Column({ allowNull: false })
+	public model: string;
+
+	@Column({ allowNull: false })
+	public plateNumber: string;
+
+	@Column({ allowNull: false })
+	public vin: string;
+
+	@Column({ allowNull: false, defaultValue: false })
+	public defleeted: boolean;
+
+	@Column
+	public parkingLocation: string | null;
+
+	@Column
+	public vehicleImageSrc: string | null;
+
+	@Column({ allowNull: false, defaultValue: 0 })
+	public bookingChargeCount: number;
+
+	@Column({ allowNull: false, defaultValue: 0 })
+	public bookingCharge: number;
+
+	@Column
+	public wialonUnitId: number | null;
+
+	@ForeignKey(() => BookingChargeUnit)
+	@Column
+	public bookingChargeUnitId: number | null;
+
+	@ForeignKey(() => Client)
+	@Column
+	public clientId: number | null;
+
+	@ForeignKey(() => Location)
+	@Column
+	public locationId: number | null;
+
+	@CreatedAt
+	public readonly createdAt: number;
+
+	@UpdatedAt
+	public readonly updatedAt: number;
+
+	@HasMany(() => Booking)
+	public readonly bookings: Booking[];
+
+	@HasMany(() => VehicleIssue)
+	public readonly vehicleIssues: VehicleIssue[];
+
+	@BelongsToMany(
+		() => Category,
+		() => VehicleCategory
+	)
+	public readonly categories: Category[];
+
+	@BelongsTo(() => Client)
+	public readonly client: Client;
+
+	@BelongsTo(() => BookingChargeUnit)
+	public readonly bookingChargeUnit: BookingChargeUnit;
+
+	@BelongsTo(() => Location)
+	public readonly location: Location;
+}

@@ -9,10 +9,10 @@ import path from "path";
 import bodyParser from "body-parser";
 import expressSession from "express-session";
 
-import { getStaticFilesPath } from "./utils/helpers";
-import { Role } from "./variables/enums";
+import { getStaticFilesPath } from "./utils";
+import { Role as RoleEnum } from "./variables/enums";
 import config from "./config";
-import db from "./models";
+import { User, Category, Role } from "./models";
 import authRoutes from "./routes/auth";
 import userRoutes from "./routes/users";
 import enumRoutes from "./routes/enums";
@@ -31,8 +31,8 @@ const app = express();
 passport.use(
 	new Strategy(async (username, password, cb) => {
 		try {
-			let existingUser = await db.User.findOne({
-				include: [{ model: db.Role, as: "role" }],
+			let existingUser = await User.findOne({
+				include: [Role],
 				where: { username }
 			});
 
@@ -42,7 +42,7 @@ passport.use(
 				if (!valid || existingUser.blocked) {
 					return cb(null, false);
 				} else if (
-					existingUser.role.name !== Role.MASTER &&
+					existingUser.role.name !== RoleEnum.MASTER &&
 					existingUser.clientId === null
 				) {
 					throw new Error(
@@ -63,15 +63,16 @@ passport.serializeUser(function(user: { id: number }, cb) {
 	cb(null, user.id);
 });
 
-passport.deserializeUser(async (id, cb) => {
+passport.deserializeUser(async (id: number, cb) => {
 	try {
-		let user = await db.User.findByPk(id, {
-			include: [{ model: db.Role, as: "role" }]
+		let user = await User.findByPk(id, {
+			include: [{ model: Role, as: "role" }]
 		});
+		const categories = await user.$get<Category>("categories");
 
 		cb(null, {
 			...user.get({ plain: true }),
-			categories: (await user.getCategories()).map(c => c.id)
+			categories: categories instanceof Array ? categories : []
 		});
 	} catch (e) {
 		cb(e);

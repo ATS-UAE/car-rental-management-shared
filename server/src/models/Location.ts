@@ -1,41 +1,62 @@
-export default (sequelize, DataTypes) => {
-	let Location = sequelize.define("Location", {
-		name: {
-			type: DataTypes.STRING,
-			allowNull: false,
-			validate: {
-				notNull: { msg: "Name is required" }
-			}
-		},
-		lat: {
-			type: DataTypes.DOUBLE,
-			allowNull: false,
-			validate: {
-				notNull: { msg: "Location is required" }
-			}
-		},
-		lng: {
-			type: DataTypes.DOUBLE,
-			allowNull: false,
-			validate: {
-				notNull: { msg: "Location is required" }
-			}
-		},
-		address: {
-			type: DataTypes.STRING,
-			allowNull: false,
-			validate: {
-				notNull: { msg: "Address required" }
-			}
-		},
-		locationImageSrc: { type: DataTypes.STRING }
-	});
-	Location.associate = models => {
-		models.Location.belongsToMany(models.Client, {
-			as: "clients",
-			foreignKey: "locationId",
-			through: "ClientLocations"
-		});
-	};
-	return Location;
-};
+import {
+	Table,
+	Column,
+	Model,
+	PrimaryKey,
+	AutoIncrement,
+	BelongsToMany,
+	CreatedAt,
+	UpdatedAt,
+	HasMany
+} from "sequelize-typescript";
+import { Vehicle, Client, ClientLocation } from ".";
+
+export interface LocationAttributes {
+	id: number;
+	name: string;
+	lat: number;
+	lng: number;
+	address: string;
+	locationImageSrc: string | null;
+
+	readonly createdAt: number;
+	readonly updatedAt: number;
+}
+
+@Table
+export class Location extends Model<Location> implements LocationAttributes {
+	@PrimaryKey
+	@AutoIncrement
+	@Column
+	public id: number;
+
+	@Column({ allowNull: false })
+	public name: string;
+
+	@Column({ allowNull: false })
+	public lat: number;
+
+	@Column({ allowNull: false })
+	public lng: number;
+
+	@Column({ allowNull: false })
+	public address: string;
+
+	@Column
+	public locationImageSrc: string | null;
+
+	@CreatedAt
+	public readonly createdAt: number;
+
+	@UpdatedAt
+	public readonly updatedAt: number;
+
+	@BelongsToMany(
+		() => Client,
+		() => ClientLocation
+	)
+	public readonly clients: Client[];
+
+	@HasMany(() => Vehicle)
+	public readonly vehicles?: Vehicle[];
+}

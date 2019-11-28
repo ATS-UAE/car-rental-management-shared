@@ -6,7 +6,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { check, oneOf, validationResult } from "express-validator";
 
-import { ResponseBuilder } from "../utils/helpers";
+import { ResponseBuilder } from "../utils";
 import { sendPasswordResetToken } from "../utils/mail";
 import db from "../models";
 import requireLogin from "../middlewares/requireLogin";

@@ -1,7 +1,7 @@
 import { Op } from "sequelize";
 import _ from "lodash";
 import DataSource from "./DataSource";
-import database from "../models";
+import { Vehicle } from "../models";
 import { Role, Operation, Resource } from "../variables/enums";
 import UserAccessor from "./types/UserAccessor";
 import RBAC from "../utils/rbac";
@@ -67,7 +67,7 @@ export default class Client extends DataSource {
 		}
 		if (data.locations && !excludedFields.includes("locations")) {
 			await foundClient.setLocations(data.locations);
-			await database.Vehicle.update(
+			await Vehicle.update(
 				{ clientId: null },
 				{
 					where: { clientId: id, locationId: { [Op.notIn]: data.locations } }

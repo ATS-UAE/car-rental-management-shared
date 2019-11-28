@@ -6,14 +6,14 @@ import {
 	AutoIncrement,
 	ForeignKey,
 	BelongsTo,
-	BelongsToMany,
-	CreatedAt
+	CreatedAt,
+	UpdatedAt
 } from "sequelize-typescript";
-import { Client, Vehicle, VehicleCategory } from "./";
+import { Client, Location } from ".";
 
-export interface CategoryAttributes {
+export interface ClientLocationAttributes {
 	id: number;
-	name: string;
+	locationId: number;
 	clientId: number;
 
 	readonly createdAt: number;
@@ -21,31 +21,30 @@ export interface CategoryAttributes {
 }
 
 @Table
-export class Category extends Model<Category> implements CategoryAttributes {
+export class ClientLocation extends Model<ClientLocation>
+	implements ClientLocationAttributes {
 	@PrimaryKey
 	@AutoIncrement
 	@Column
 	public id: number;
 
-	@Column({ allowNull: false })
-	public name: string;
-
 	@ForeignKey(() => Client)
 	@Column({ allowNull: false })
 	public clientId: number;
 
+	@BelongsTo(() => Client)
+	public client: Client;
+
+	@ForeignKey(() => Location)
+	@Column({ allowNull: false })
+	public locationId: number;
+
+	@BelongsTo(() => Location)
+	public location: Location;
+
 	@CreatedAt
 	public readonly createdAt: number;
 
-	@CreatedAt
+	@UpdatedAt
 	public readonly updatedAt: number;
-
-	@BelongsTo(() => Client)
-	public readonly client: Client;
-
-	@BelongsToMany(
-		() => Vehicle,
-		() => VehicleCategory
-	)
-	public readonly vehicles: Vehicle[];
 }

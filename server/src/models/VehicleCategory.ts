@@ -7,15 +7,13 @@ import {
 	ForeignKey,
 	BelongsTo,
 	CreatedAt,
-	UpdatedAt,
-	HasMany,
-	BelongsToMany
+	UpdatedAt
 } from "sequelize-typescript";
-import { Vehicle } from ".";
+import { Category, Vehicle } from ".";
 
-export interface VehicleIssueAttributes {
+export interface VehicleCategoryAttributes {
 	id: number;
-	name: string;
+	categoryId: number;
 	vehicleId: number;
 
 	readonly createdAt: number;
@@ -23,26 +21,30 @@ export interface VehicleIssueAttributes {
 }
 
 @Table
-export class VehicleIssue extends Model<VehicleIssue>
-	implements VehicleIssueAttributes {
+export class VehicleCategory extends Model<VehicleCategory>
+	implements VehicleCategoryAttributes {
 	@PrimaryKey
 	@AutoIncrement
 	@Column
 	public id: number;
 
+	@ForeignKey(() => Category)
 	@Column({ allowNull: false })
-	public name: string;
+	public categoryId: number;
+
+	@BelongsTo(() => Category)
+	public category: Category;
 
 	@ForeignKey(() => Vehicle)
 	@Column({ allowNull: false })
 	public vehicleId: number;
+
+	@BelongsTo(() => Vehicle)
+	public vehicle: Vehicle;
 
 	@CreatedAt
 	public readonly createdAt: number;
 
 	@UpdatedAt
 	public readonly updatedAt: number;
-
-	@BelongsTo(() => Vehicle)
-	public readonly vehicle: Vehicle;
 }

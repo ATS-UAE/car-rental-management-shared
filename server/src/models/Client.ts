@@ -1,40 +1,52 @@
-export default (sequelize, { STRING }) => {
-	let Client = sequelize.define("Client", {
-		name: {
-			type: STRING,
-			unique: { args: true, msg: "Client name already in use!" },
-			allowNull: false,
-			validate: {
-				notNull: { msg: "Client name is required" }
-			}
-		}
-	});
+import {
+	Table,
+	Column,
+	Model,
+	PrimaryKey,
+	AutoIncrement,
+	BelongsToMany,
+	CreatedAt,
+	UpdatedAt,
+	HasMany
+} from "sequelize-typescript";
+import { User, Vehicle, Category, Location, ClientLocation } from ".";
 
-	Client.associate = models => {
-		models.Client.hasMany(models.User, {
-			foreignKey: {
-				name: "clientId"
-			},
-			as: "users"
-		});
-		models.Client.hasMany(models.Vehicle, {
-			foreignKey: {
-				name: "clientId"
-			},
-			as: "vehicles"
-		});
-		models.Client.hasMany(models.Category, {
-			foreignKey: {
-				name: "clientId"
-			},
-			as: "categories"
-		});
-		models.Client.belongsToMany(models.Location, {
-			as: "locations",
-			foreignKey: "clientId",
-			through: "ClientLocations"
-		});
-	};
+export interface ClientAttributes {
+	id: number;
+	name: string;
 
-	return Client;
-};
+	readonly createdAt: number;
+	readonly updatedAt: number;
+}
+
+@Table
+export class Client extends Model<Client> implements ClientAttributes {
+	@PrimaryKey
+	@AutoIncrement
+	@Column
+	public id: number;
+
+	@Column({ allowNull: false })
+	public name: string;
+
+	@CreatedAt
+	public readonly createdAt: number;
+
+	@UpdatedAt
+	public readonly updatedAt: number;
+
+	@HasMany(() => User)
+	public readonly users: User[];
+
+	@HasMany(() => Vehicle)
+	public readonly vehicles: Vehicle[];
+
+	@HasMany(() => Category)
+	public readonly categories: Category[];
+
+	@BelongsToMany(
+		() => Location,
+		() => ClientLocation
+	)
+	public readonly locations: Location[];
+}

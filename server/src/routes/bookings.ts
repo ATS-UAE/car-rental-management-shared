@@ -1,9 +1,10 @@
 import express from "express";
 import requireLogin from "../middlewares/requireLogin";
 import db from "../models";
-import { ResponseBuilder } from "../utils/helpers";
+import { ResponseBuilder } from "../utils";
 import { sendInvoice, sendBookingConfirmation } from "../utils/mail";
 import { Booking } from "../datasource";
+import moment from "moment";
 const router = express.Router();
 router.use(requireLogin);
 
@@ -76,8 +77,9 @@ router.patch("/:id", async ({ user, params, body }: any, res) => {
 		}
 
 		if (body.approved === true && bookingPreviousValue.approved === null) {
-			const location =
-				(await db.Location.findByPk(bookingData.vehicle.locationId)) || {};
+			const location = await db.Location.findByPk(
+				bookingData.vehicle.locationId
+			);
 			sendBookingConfirmation({
 				email: bookingData.user.email,
 				customerName: bookingData.user.firstName,
@@ -85,10 +87,10 @@ router.patch("/:id", async ({ user, params, body }: any, res) => {
 				from: bookingData.from,
 				to: bookingData.to,
 				bookingId: bookingData.id,
-				address: location.address,
+				address: location && location.address,
 				parkingLocation: bookingData.vehicle.parkingLocation,
-				lat: location.lat,
-				lng: location.lng
+				lat: location && location.lat,
+				lng: location && location.lng
 			});
 		}
 

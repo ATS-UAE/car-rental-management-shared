@@ -491,7 +491,9 @@ function BookingFormCreateStepper({
 							setActiveStep(nextStep);
 						} else {
 							setLoading(true);
-							let bookingData = {};
+							let bookingData = {
+								userId: auth.data.id
+							};
 
 							for (const data of values) {
 								for (const key in data) {
