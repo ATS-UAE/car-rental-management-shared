@@ -7,10 +7,7 @@ import jwt from "jsonwebtoken";
 import moment from "moment";
 import StaticMaps from "staticmaps";
 import config from "../../config";
-import {
-	getStaticFilesPath,
-	makeDirectoryIfNotExist
-} from "../../utils";
+import { getStaticFilesPath, makeDirectoryIfNotExist } from "..";
 
 const { mail, secretKey } = config;
 
