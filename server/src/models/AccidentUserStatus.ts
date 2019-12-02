@@ -2,8 +2,6 @@ import {
 	Table,
 	Column,
 	Model,
-	PrimaryKey,
-	AutoIncrement,
 	ForeignKey,
 	BelongsTo,
 	CreatedAt,
@@ -12,7 +10,6 @@ import {
 import { Accident, User } from ".";
 
 export interface AccidentUserStatusAttributes {
-	id: number;
 	read: boolean;
 	deleted: boolean;
 	accidentId: number;
@@ -25,11 +22,6 @@ export interface AccidentUserStatusAttributes {
 @Table
 export class AccidentUserStatus extends Model<AccidentUserStatus>
 	implements AccidentUserStatusAttributes {
-	@PrimaryKey
-	@AutoIncrement
-	@Column
-	public id: number;
-
 	@Column({ defaultValue: false, allowNull: false })
 	public read: boolean;
 

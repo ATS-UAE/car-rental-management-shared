@@ -187,3 +187,5 @@ export const rangeOverlap = (
 ): boolean => {
 	return Math.max(x1, y1) <= Math.min(x2, y2);
 };
+
+export * from "./RoleUtils";

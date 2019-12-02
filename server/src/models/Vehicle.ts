@@ -18,7 +18,8 @@ import {
 	Booking,
 	VehicleIssue,
 	Category,
-	VehicleCategory
+	VehicleCategory,
+	Accident
 } from ".";
 
 export interface VehicleAttributes {
@@ -98,6 +99,9 @@ export class Vehicle extends Model<Vehicle> implements VehicleAttributes {
 
 	@HasMany(() => Booking)
 	public readonly bookings: Booking[];
+
+	@HasMany(() => Accident)
+	public readonly accidents: Accident[];
 
 	@HasMany(() => VehicleIssue)
 	public readonly vehicleIssues: VehicleIssue[];

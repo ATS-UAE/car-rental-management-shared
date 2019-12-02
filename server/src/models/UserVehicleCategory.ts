@@ -2,8 +2,6 @@ import {
 	Table,
 	Column,
 	Model,
-	PrimaryKey,
-	AutoIncrement,
 	ForeignKey,
 	BelongsTo,
 	CreatedAt,
@@ -12,7 +10,6 @@ import {
 import { User, Category } from ".";
 
 export interface UserVehicleCategoryAttributes {
-	id: number;
 	userId: number;
 	categoryId: number;
 
@@ -23,11 +20,6 @@ export interface UserVehicleCategoryAttributes {
 @Table
 export class UserVehicleCategory extends Model<UserVehicleCategory>
 	implements UserVehicleCategoryAttributes {
-	@PrimaryKey
-	@AutoIncrement
-	@Column
-	public id: number;
-
 	@ForeignKey(() => User)
 	@Column({ allowNull: false })
 	public userId: number;

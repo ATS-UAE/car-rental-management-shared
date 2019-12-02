@@ -7,3 +7,4 @@ export * from "./VehicleLocation";
 export * from "./MaterialTable";
 export * from "./VehicleIssuesEditor";
 export * from "./ButtonModal";
+export * from "./ReportArea";

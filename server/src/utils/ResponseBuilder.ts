@@ -4,13 +4,16 @@ import {
 	ResourceNotFoundException,
 	InvalidInputException
 } from "./exceptions";
-export default class ResponseBuilder {
-	private code: number = 500;
-	private errors: string[] = [];
-	private message: string = "Unknown server error.";
-	private success: boolean = false;
-	private data: any = null;
-	setData(data: any) {
+export default class ResponseBuilder<T = unknown> {
+	constructor(
+		private data: T = null,
+		private success = false,
+		private message = "Unknown server error.",
+		private errors: string[] = [],
+		private code = 500
+	) {}
+
+	setData(data: T) {
 		this.data = data;
 	}
 

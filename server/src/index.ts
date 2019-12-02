@@ -25,6 +25,7 @@ import categoryRoutes from "./routes/categories";
 import clientRoutes from "./routes/clients";
 import vehicelIssueRoutes from "./routes/vehicleIssues";
 import wialonRoutes from "./routes/wialon";
+import reportRoutes from "./routes/reports";
 
 const app = express();
 // PASSPORT CONFIGURATIONS
@@ -78,7 +79,6 @@ passport.deserializeUser(async (id: number, cb) => {
 		cb(e);
 	}
 });
-
 // EXPRESS CONFIGURATIONS
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -111,6 +111,7 @@ app.use("/api/carbooking/categories", categoryRoutes);
 app.use("/api/carbooking/clients", clientRoutes);
 app.use("/api/carbooking/issues", vehicelIssueRoutes);
 app.use("/api/carbooking/wialon", wialonRoutes);
+app.use("/api/carbooking/reports", reportRoutes);
 
 app.use("/static", express.static(getStaticFilesPath()));
 app.use("/static", express.static(path.join(__dirname, "public")));

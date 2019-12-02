@@ -1,10 +1,8 @@
-import React, { useEffect, FC } from "react";
-import { RouteComponentProps } from "react-router";
-import { connect } from "react-redux";
-import { Typography } from "@material-ui/core";
+import React, { FC } from "react";
+import { ReportArea } from "../containers";
 
 const Reports: FC<{}> = () => {
-	return <Typography>Work in progress...</Typography>;
+	return <ReportArea />;
 };
 
 export default Reports;

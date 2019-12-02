@@ -23,9 +23,9 @@ router.get("/me", requireLogin, function(req, res) {
 	response.setCode(200);
 	res.json(response);
 });
-router.patch("/me", async function({ user, body }: any, res) {
+router.patch("/me", async function({ user, body }, res) {
 	let response = new ResponseBuilder();
-	let me = await db.User.findByPk((user as any).id);
+	let me = await db.User.findByPk(user.id);
 	if (me) {
 		if (body.password && body.passwordOld) {
 			let samePassword = await bcrypt.compare(body.password, me.password);

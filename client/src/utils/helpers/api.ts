@@ -12,7 +12,8 @@ import {
 	ClientResponse,
 	ClientRequest,
 	Unit,
-	VehicleIssue
+	VehicleIssue,
+	UnitSummaryResponse
 } from "../../typings/api";
 import { PartialExcept } from "../../typings";
 
@@ -46,11 +47,11 @@ export const executeFromAPI = <Data>(
 		}
 		if (action !== "get" && action !== "delete") {
 			axios[action](`${API_URL}${url}`, formData, axiosConfig)
-				.then(data => resolve(data.data))
+				.then(data => resolve(data.data as WithServerResponse<Data>))
 				.catch(reject);
 		} else if (action === "get" || action === "delete") {
 			axios[action](`${API_URL}${url}`, axiosConfig)
-				.then(data => resolve(data.data))
+				.then(data => resolve(data.data as WithServerResponse<Data>))
 				.catch(reject);
 		} else {
 			reject(`Unknown action '${action}'`);
@@ -233,7 +234,14 @@ const api = {
 			category
 		),
 	deleteVehicleIssue: (id: number) =>
-		executeFromAPI<VehicleIssue>("delete", `/api/carbooking/issues/${id}`)
+		executeFromAPI<VehicleIssue>("delete", `/api/carbooking/issues/${id}`),
+
+	// reports
+	fetchUnitSummaryReport: () =>
+		executeFromAPI<UnitSummaryResponse[]>(
+			"get",
+			"/api/carbooking/reports/unit-summary"
+		)
 };
 
 export class Sync<T> {

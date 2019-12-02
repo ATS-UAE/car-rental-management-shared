@@ -10,3 +10,4 @@ export * from "./enums";
 export * from "./locations";
 export * from "./units";
 export * from "./vehicleIssues";
+export * from "./reports";

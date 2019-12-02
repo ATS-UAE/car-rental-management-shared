@@ -15,7 +15,7 @@ import { Vehicle } from ".";
 
 export interface VehicleIssueAttributes {
 	id: number;
-	name: string;
+	message: string;
 	vehicleId: number;
 
 	readonly createdAt: number;
@@ -31,7 +31,7 @@ export class VehicleIssue extends Model<VehicleIssue>
 	public id: number;
 
 	@Column({ allowNull: false })
-	public name: string;
+	public message: string;
 
 	@ForeignKey(() => Vehicle)
 	@Column({ allowNull: false })

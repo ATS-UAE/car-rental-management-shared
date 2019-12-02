@@ -2,8 +2,6 @@ import {
 	Table,
 	Column,
 	Model,
-	PrimaryKey,
-	AutoIncrement,
 	ForeignKey,
 	BelongsTo,
 	CreatedAt,
@@ -12,7 +10,6 @@ import {
 import { Client, Location } from ".";
 
 export interface ClientLocationAttributes {
-	id: number;
 	locationId: number;
 	clientId: number;
 
@@ -23,11 +20,6 @@ export interface ClientLocationAttributes {
 @Table
 export class ClientLocation extends Model<ClientLocation>
 	implements ClientLocationAttributes {
-	@PrimaryKey
-	@AutoIncrement
-	@Column
-	public id: number;
-
 	@ForeignKey(() => Client)
 	@Column({ allowNull: false })
 	public clientId: number;
