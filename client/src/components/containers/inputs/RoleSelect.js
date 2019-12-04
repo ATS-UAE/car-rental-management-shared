@@ -3,18 +3,9 @@ import { connect } from "react-redux";
 import Select from "../../presentational/inputs/Select";
 import * as actions from "../../../actions";
 import { Role } from "../../../variables/enums";
-function RoleSelect({
-	value,
-	enums,
-	fetchEnums,
-	required,
-	fullWidth,
-	onChange
-}) {
+function RoleSelect({ value, required, fullWidth, onChange }) {
 	const [stateValue, setStateValue] = useState("");
-	useEffect(() => {
-		fetchEnums();
-	}, []);
+
 	const items = Object.keys(Role).map(item => ({
 		value: item,
 		label: item
@@ -34,7 +25,5 @@ function RoleSelect({
 		/>
 	);
 }
-
-const mapStateToProps = ({ enums }) => ({ enums });
 
 export default connect(mapStateToProps, actions)(RoleSelect);

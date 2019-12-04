@@ -314,7 +314,7 @@ class BookingTableView extends Component {
 	};
 
 	reduceBookingData = async () => {
-		const { bookings, auth, vehicles, users, enums } = this.props;
+		const { bookings, auth, vehicles, users } = this.props;
 
 		if (
 			bookings &&
@@ -324,9 +324,7 @@ class BookingTableView extends Component {
 			vehicles &&
 			vehicles.data &&
 			users &&
-			users.data &&
-			enums &&
-			enums.data
+			users.data
 		) {
 			let newBookingData = [];
 			for (let booking of bookings.data) {
@@ -378,7 +376,6 @@ class BookingTableView extends Component {
 			fetchBookings,
 			fetchVehicles,
 			fetchLocations,
-			enums
 		} = this.props;
 		const {
 			formData,
@@ -506,8 +503,6 @@ class BookingTableView extends Component {
 										}
 
 										if (
-											enums &&
-											enums.data &&
 											auth &&
 											auth.data &&
 											formData &&
@@ -755,11 +750,10 @@ class BookingTableView extends Component {
 	}
 }
 
-const mapStateToProps = ({ bookings, vehicles, enums, auth, users }) => ({
+const mapStateToProps = ({ bookings, vehicles, auth, users }) => ({
 	users,
 	bookings,
 	vehicles,
-	enums,
 	auth
 });
 

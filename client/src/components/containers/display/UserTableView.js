@@ -523,9 +523,8 @@ class UserTableView extends Component {
 	}
 }
 
-const mapStateToProps = ({ enums, auth, users, clients }) => ({
+const mapStateToProps = ({ auth, users, clients }) => ({
 	users,
-	enums,
 	auth,
 	clients
 });

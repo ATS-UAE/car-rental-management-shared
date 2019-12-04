@@ -26,7 +26,6 @@ const Bookings: FC<typeof actions & IBookingsPage> = ({
 	classes,
 	auth,
 	fetchUsers,
-	fetchEnums,
 	fetchVehicles,
 	fetchLocations,
 	fetchBookings,
@@ -37,7 +36,6 @@ const Bookings: FC<typeof actions & IBookingsPage> = ({
 		const start = () => {
 			fetchBookings();
 			fetchUsers();
-			fetchEnums();
 			fetchVehicles();
 			fetchLocations();
 			fetchCurrentUserDetails();

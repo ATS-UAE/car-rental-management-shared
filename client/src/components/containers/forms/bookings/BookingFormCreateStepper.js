@@ -21,11 +21,7 @@ import {
 	toTitleWords,
 	apiErrorHandler
 } from "../../../../utils/helpers";
-import {
-	BookingType,
-	Role,
-	BookingChargeUnit
-} from "../../../../variables/enums";
+import { BookingType, Role } from "../../../../variables/enums";
 import CardList from "../../../presentational/display/CardList";
 import LocationMapSelectForm from "../../../presentational/forms/LocationMapSelectForm";
 import BookingForm from "../../../presentational/forms/BookingForm";
@@ -39,7 +35,6 @@ function BookingFormCreateStepper({
 	locations,
 	classes,
 	history,
-	enums,
 	auth
 }) {
 	const [errorNotes, setErrorNotes] = useState([]);
@@ -405,7 +400,6 @@ function BookingFormCreateStepper({
 							setValues(newValues);
 							resetNextSteps(step);
 						}}
-						enums={enums}
 					/>
 				) : (
 					<div className={classes.noVehicles}>
@@ -514,10 +508,9 @@ function BookingFormCreateStepper({
 	);
 }
 
-const mapStateToProps = ({ vehicles, locations, enums, auth }) => ({
+const mapStateToProps = ({ vehicles, locations, auth }) => ({
 	vehicles,
 	locations,
-	enums,
 	auth
 });
 

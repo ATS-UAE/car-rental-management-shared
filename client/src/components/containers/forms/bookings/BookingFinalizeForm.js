@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { Button } from "@material-ui/core";
+import { BookingType } from "../../../../variables/enums";
 import * as reduxActions from "../../../../actions";
 import BookingFinalizeForm from "../../../presentational/forms/BookingFinalizeForm";
-import { toTitleWords, api } from "../../../../utils/helpers";
+import { api } from "../../../../utils/helpers";
 
 function BookingFinalizeFormContainer({
 	fetchUsers,
-	fetchEnums,
 	fetchVehicles,
 	fetchLocations,
 	vehicles,
-	enums,
 	users,
 	values,
 	onChange,
@@ -30,7 +29,6 @@ function BookingFinalizeFormContainer({
 		setDisabledButton(!validForm);
 	}, [errors, values]);
 	useEffect(() => {
-		fetchEnums();
 		fetchVehicles();
 		fetchUsers();
 		fetchLocations();
@@ -51,21 +49,15 @@ function BookingFinalizeFormContainer({
 		</Button>
 	);
 
-	let bookingTypeList = [{ value: "", label: "Loading..." }];
+	let bookingTypeList = Object.values(BookingType).map(type => ({
+		value: type,
+		label: type
+	}));
 	let vehicleList = values.locationId
 		? [{ value: "", label: "No vehicles available." }]
 		: [{ value: "", label: "Please select a location." }];
 	let userList = [{ value: "", label: "Loading..." }];
 
-	if (enums && enums.data) {
-		let $bookingTypeList = enums.data.bookingTypes.map(item => ({
-			value: item.id,
-			label: toTitleWords(item.name)
-		}));
-		if ($bookingTypeList.length) {
-			bookingTypeList = $bookingTypeList;
-		}
-	}
 	if (vehicles && vehicles.data) {
 		let $vehicleList = vehicles.data.map(vehicle => ({
 			value: vehicle.id,
@@ -99,10 +91,9 @@ function BookingFinalizeFormContainer({
 	);
 }
 
-const mapStateToProps = ({ users, vehicles, enums }) => ({
+const mapStateToProps = ({ users, vehicles }) => ({
 	users,
-	vehicles,
-	enums
+	vehicles
 });
 
 export default connect(

@@ -2,7 +2,6 @@ import axios, { AxiosRequestConfig } from "axios";
 import {
 	Auth,
 	WithServerResponse,
-	Enums,
 	UserResponse,
 	VehicleResponse,
 	Booking,
@@ -69,9 +68,6 @@ const api = {
 		executeFromAPI<Auth>("get", "/api/carbooking/auth/me"),
 	updateMe: (data: Partial<Auth>) =>
 		executeFromAPI<Auth>("patch", "/api/carbooking/auth/me", data),
-
-	// enums
-	fetchEnums: () => executeFromAPI<Enums>("get", "/api/carbooking/enums"),
 
 	// users
 	fetchUsers: () =>

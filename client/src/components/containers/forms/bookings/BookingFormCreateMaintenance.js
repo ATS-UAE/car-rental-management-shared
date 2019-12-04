@@ -12,7 +12,6 @@ function BookingFromCreate({
 	onSubmit,
 	ticksMap,
 	vehicle,
-	enums,
 	auth,
 	children
 }) {
@@ -35,7 +34,7 @@ function BookingFromCreate({
 				userId: auth.data.id
 			}));
 		}
-	}, [enums, vehicle, auth]);
+	}, [vehicle, auth]);
 	return (
 		<BookingForm
 			children={children}
@@ -77,6 +76,6 @@ function BookingFromCreate({
 	);
 }
 
-const mapStateToProps = ({ enums, auth }) => ({ enums, auth });
+const mapStateToProps = ({ auth }) => ({ auth });
 
 export default connect(mapStateToProps, reduxActions)(BookingFromCreate);

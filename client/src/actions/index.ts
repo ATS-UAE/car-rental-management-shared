@@ -5,7 +5,6 @@ import {
 	VehicleResponse,
 	Auth,
 	UserResponse,
-	Enums,
 	LocationResponse,
 	Accident,
 	Booking,
@@ -60,14 +59,6 @@ export const fetchUsers = () => async (
 	let users = await api.fetchUsers();
 	dispatch({ type: Action.FETCH_USERS, payload: users });
 	return users;
-};
-
-export const fetchEnums = () => async (
-	dispatch: DispatchCallBack<ReduxState["enums"]>
-): Promise<WithServerResponse<Enums>> => {
-	let enums = await api.fetchEnums();
-	dispatch({ type: Action.FETCH_ENUMS, payload: enums });
-	return enums;
 };
 
 export const fetchVehicles = () => async (

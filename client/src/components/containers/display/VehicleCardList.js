@@ -430,12 +430,12 @@ function VehicleCardList({
 	);
 }
 
-const mapStateToProps = ({ vehicles, auth, enums }) => {
+const mapStateToProps = ({ vehicles, auth }) => {
 	let vehicleData = [];
 	if (vehicles && vehicles.success === true && vehicles.data) {
 		vehicleData = vehicles.data;
 	}
-	return { vehicles: vehicleData, auth, enums };
+	return { vehicles: vehicleData, auth };
 };
 
 const styles = {

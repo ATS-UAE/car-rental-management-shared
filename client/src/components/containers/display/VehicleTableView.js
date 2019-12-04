@@ -157,13 +157,9 @@ function VehicleTableView({
 	);
 }
 
-const mapStateToProps = ({ vehicles, locations, enums }) => ({
+const mapStateToProps = ({ vehicles, locations }) => ({
 	vehicles,
-	locations,
-	enums
+	locations
 });
 
-export default connect(
-	mapStateToProps,
-	reduxActions
-)(VehicleTableView);
+export default connect(mapStateToProps, reduxActions)(VehicleTableView);

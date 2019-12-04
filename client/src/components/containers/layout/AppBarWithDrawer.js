@@ -12,20 +12,17 @@ import { toTitleWords } from "../../../utils/helpers";
 
 function AppBarWithDrawerContainer({
 	auth,
-	enums,
 	history,
-	fetchEnums,
 	fetchCurrentUserDetails,
 	authLogout
 }) {
 	useEffect(() => {
-		fetchEnums();
 		fetchCurrentUserDetails();
 	}, []);
 	let menuList = [];
 	let endList = [];
 	let profile;
-	if (auth && enums) {
+	if (auth) {
 		let pageList = [];
 		let optionsList = [];
 		let role = auth.data.role;
@@ -88,10 +85,8 @@ function AppBarWithDrawerContainer({
 	);
 }
 
-const mapStateToProps = ({ auth, enums, permissionData }) => ({
-	auth,
-	enums,
-	permissionData
+const mapStateToProps = ({ auth }) => ({
+	auth
 });
 
 export default compose(

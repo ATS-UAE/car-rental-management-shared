@@ -7,7 +7,6 @@ import {
 	Category,
 	UserResponse,
 	WithServerResponse,
-	Enums,
 	Accident,
 	LocationResponse,
 	Unit
@@ -27,7 +26,6 @@ export type ReduxState = Nullable<{
 	accidents: WithServerResponse<Accident[]>;
 	auth: WithServerResponse<Auth> | false;
 	clients: WithServerResponse<ClientResponse[]>;
-	enums: WithServerResponse<Enums>;
 	locations: WithServerResponse<LocationResponse[]>;
 	units: WithServerResponse<Unit[]>;
 }>;

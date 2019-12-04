@@ -17,8 +17,7 @@ function BookingVehicleListForm({
 	vehicles,
 	onClick,
 	classes,
-	formProps,
-	enums
+	formProps
 }) {
 	const fields = [
 		{
@@ -57,7 +56,7 @@ function BookingVehicleListForm({
 								iconName: values.vehicleId === id ? "Done" : ""
 							}
 						};
-						if (bookingChargeUnit && enums && enums.data) {
+						if (bookingChargeUnit) {
 							data.descriptions.push(
 								`Cost: ${bookingCharge} Dhs per${
 									bookingChargeCount === 1 ? " " : ` ${bookingChargeCount}`
