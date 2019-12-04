@@ -34,7 +34,7 @@ function VehicleForm({
 	wialonUnitList = [{ label: "No list found...", value: "" }]
 }) {
 	const unit = bookingChargeUnitList.find(
-		item => item.value === values.bookingChargeUnitId
+		item => item.value === values.bookingChargeUnit
 	);
 
 	const fields = [
@@ -144,7 +144,7 @@ function VehicleForm({
 		{
 			type: SELECT,
 			id: "booking-charge-unit",
-			name: "bookingChargeUnitId",
+			name: "bookingChargeUnit",
 			props: {
 				label: "Cost Type",
 				fullWidth: true,
@@ -157,7 +157,7 @@ function VehicleForm({
 			id: "booking-charge-value",
 			name: "bookingChargeCount",
 			props: {
-				disabled: !values.bookingChargeUnitId,
+				disabled: !values.bookingChargeUnit,
 				label: `Charge per ${(unit && unit.label) || ""} `,
 				type: "number"
 			}
@@ -167,13 +167,11 @@ function VehicleForm({
 			id: "booking-charge",
 			name: "bookingCharge",
 			props: {
-				disabled: !values.bookingChargeUnitId,
+				disabled: !values.bookingChargeUnit,
 				label:
-					(values.bookingChargeUnitId &&
+					(values.bookingChargeUnit &&
 						`Booking Charge per ${values.bookingChargeCount || 0} ${pluralize(
-							bookingChargeUnitList.find(
-								item => item.value === values.bookingChargeUnitId
-							).label,
+							values.bookingChargeUnit,
 							values.bookingChargeCount
 						)}`) ||
 					"Booking Charge",

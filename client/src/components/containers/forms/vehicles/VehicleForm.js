@@ -4,6 +4,7 @@ import { Grid, Button } from "@material-ui/core";
 import VehicleForm from "../../../presentational/forms/VehicleForm";
 import * as actions from "../../../../actions";
 import api from "../../../../utils/helpers/api";
+import { BookingChargeUnit } from "../../../../variables/enums";
 
 function VehicleFormContainer({
 	onSubmit,
@@ -52,13 +53,10 @@ function VehicleFormContainer({
 			label: "Loading"
 		}
 	];
-	let bookingChargeUnitList =
-		enums && enums.data
-			? enums.data.bookingChargeUnits.map(item => ({
-					value: item.id,
-					label: item.unit
-			  }))
-			: [{ value: "", label: "Loading..." }];
+	let bookingChargeUnitList = Object.values(BookingChargeUnit).map(unit => ({
+		value: unit,
+		label: unit
+	}));
 
 	if (locations && locations.data) {
 		let $locationList = locations.data.map(({ id, name }) => ({

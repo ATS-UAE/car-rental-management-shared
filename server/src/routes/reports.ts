@@ -8,7 +8,6 @@ import {
 	Booking,
 	Accident,
 	VehicleIssue,
-	BookingChargeUnit,
 	Location,
 	Category
 } from "../models";
@@ -83,8 +82,7 @@ router.get("/unit-summary", async ({ user }, res) => {
 				model: VehicleIssue,
 				as: "vehicleIssues"
 			},
-			Location,
-			BookingChargeUnit
+			Location
 		]
 	});
 

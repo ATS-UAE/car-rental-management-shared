@@ -301,15 +301,9 @@ function VehicleCardList({
 						vehicleImageSrc,
 						bookingCharge,
 						bookingChargeCount,
-						bookingChargeUnitId
+						bookingChargeUnit
 					} = vehicle;
-					const unit =
-						bookingChargeUnitId &&
-						enums &&
-						enums.data &&
-						enums.data.bookingChargeUnits.find(
-							({ id }) => id === bookingChargeUnitId
-						);
+
 					let data = {
 						id,
 						vehicle,
@@ -404,11 +398,11 @@ function VehicleCardList({
 							/>
 						)
 					};
-					if (bookingChargeUnitId) {
+					if (bookingChargeUnit) {
 						data.descriptions.push(
 							`Cost: ${bookingCharge} Dhs per${
 								bookingChargeCount === 1 ? " " : ` ${bookingChargeCount}`
-							} ${unit.unit}`
+							} ${bookingChargeUnit}`
 						);
 					}
 					if (auth && auth.data) {

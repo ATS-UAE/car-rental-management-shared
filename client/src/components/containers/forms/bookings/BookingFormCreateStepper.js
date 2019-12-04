@@ -85,7 +85,6 @@ function BookingFormCreateStepper({
 
 	const [activeStep, setActiveStep] = useState(0);
 	const [availableVehicles, setAvailableVehicles] = useState([]);
-	const [bookingTypeList, setBookingTypeList] = useState([]);
 
 	useEffect(() => {
 		fetchVehicles();
@@ -93,18 +92,15 @@ function BookingFormCreateStepper({
 
 	useEffect(() => {
 		const newSteps = [...steps];
-		if (values[0].bookingTypeId) {
-			let bookingType = bookingTypeList.find(
-				type => type.id === values[0].bookingTypeId
-			);
-			if (bookingType.name === BookingType.REPLACEMENT) {
+		if (values[0].bookingType) {
+			if (values[0].bookingType === BookingType.REPLACEMENT) {
 				newSteps[1].disabled = false;
 			} else {
 				newSteps[1].disabled = true;
 			}
 		}
 		setSteps(newSteps);
-	}, [values, bookingTypeList]);
+	}, [values]);
 
 	useEffect(() => {
 		let availableVehicles = [];
@@ -139,19 +135,13 @@ function BookingFormCreateStepper({
 	}, [vehicles, values, steps, auth]);
 
 	useEffect(() => {
-		if (enums && enums.data) {
-			setBookingTypeList(enums.data.bookingTypes);
-		}
-	}, [enums]);
-
-	useEffect(() => {
 		let isButtonDisabled = false;
 		for (const error of Object.values(errors[activeStep])) {
 			if (error.length) {
 				isButtonDisabled = true;
 			}
 		}
-		if (values[0].bookingTypeId === undefined) {
+		if (values[0].bookingType === undefined) {
 			isButtonDisabled = true;
 		}
 		if (values[3].vehicleId === undefined && activeStep === 3) {
@@ -213,7 +203,7 @@ function BookingFormCreateStepper({
 						<BookingForm
 							errors={errors[step]}
 							allowBefore={false}
-							exclude={["userId", "vehicleId", "bookingTypeId"]}
+							exclude={["userId", "vehicleId", "bookingType"]}
 							fieldProps={{
 								from: {
 									GridProps: {
@@ -227,7 +217,7 @@ function BookingFormCreateStepper({
 										sm: 6
 									}
 								},
-								bookingTypeId: {
+								bookingType: {
 									GridProps: {
 										xs: 12,
 										sm: 12
@@ -253,9 +243,9 @@ function BookingFormCreateStepper({
 						<CardList
 							classes={{ root: classes.bookingListGridContainer }}
 							showAll
-							cards={bookingTypeList.reduce((acc, type) => {
+							cards={Object.keys(BookingType).reduce((acc, type) => {
 								let iconName;
-								switch (type.name) {
+								switch (type) {
 									case BookingType.PRIVATE:
 										iconName = "Map";
 										break;
@@ -275,13 +265,13 @@ function BookingFormCreateStepper({
 										md: 4,
 										lg: 4
 									},
-									title: toTitleWords(type.name),
-									id: type.id,
+									title: toTitleWords(type),
+									id: type,
 									props: {
 										iconName,
-										selected: values[step].bookingTypeId === type.id,
+										selected: values[step].bookingType === type,
 										onClick: () => {
-											if (type.name === BookingType.REPLACEMENT) {
+											if (type === BookingType.REPLACEMENT) {
 												const newSteps = [...steps];
 												newSteps[1].disabled = false;
 												setSteps(newSteps);
@@ -289,7 +279,7 @@ function BookingFormCreateStepper({
 											let newValues = [...values];
 											newValues[step] = {
 												...newValues[step],
-												bookingTypeId: type.id
+												bookingType: type
 											};
 											setValues(newValues);
 											resetNextSteps(step);
@@ -341,7 +331,7 @@ function BookingFormCreateStepper({
 							"locationId",
 							"categories",
 							"wialonUnitId",
-							"bookingChargeUnitId",
+							"bookingChargeUnit",
 							"bookingChargeCount",
 							"bookingCharge"
 						]}

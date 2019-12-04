@@ -10,12 +10,11 @@ import bodyParser from "body-parser";
 import expressSession from "express-session";
 
 import { getStaticFilesPath } from "./utils";
-import { Role as RoleEnum } from "./variables/enums";
+import { Role } from "./variables/enums";
 import config from "./config";
-import { User, Category, Role } from "./models";
+import { User, Category } from "./models";
 import authRoutes from "./routes/auth";
 import userRoutes from "./routes/users";
-import enumRoutes from "./routes/enums";
 import inviteRoutes from "./routes/invites";
 import vehicleRoutes from "./routes/vehicles";
 import bookingRoutes from "./routes/bookings";
@@ -33,7 +32,6 @@ passport.use(
 	new Strategy(async (username, password, cb) => {
 		try {
 			let existingUser = await User.findOne({
-				include: [Role],
 				where: { username }
 			});
 
@@ -43,7 +41,7 @@ passport.use(
 				if (!valid || existingUser.blocked) {
 					return cb(null, false);
 				} else if (
-					existingUser.role !== RoleEnum.MASTER &&
+					existingUser.role !== Role.MASTER &&
 					existingUser.clientId === null
 				) {
 					throw new Error(
@@ -66,9 +64,7 @@ passport.serializeUser(function(user: { id: number }, cb) {
 
 passport.deserializeUser(async (id: number, cb) => {
 	try {
-		let user = await User.findByPk(id, {
-			include: [{ model: Role, as: "role" }]
-		});
+		let user = await User.findByPk(id);
 		const categories = await user.$get<Category>("categories");
 
 		cb(null, {
@@ -101,7 +97,6 @@ app.use(passport.session());
 // Express routes
 app.use("/api/carbooking/auth", authRoutes);
 app.use("/api/carbooking/users", userRoutes);
-app.use("/api/carbooking/enums", enumRoutes);
 app.use("/api/carbooking/invites", inviteRoutes);
 app.use("/api/carbooking/vehicles", vehicleRoutes);
 app.use("/api/carbooking/bookings", bookingRoutes);

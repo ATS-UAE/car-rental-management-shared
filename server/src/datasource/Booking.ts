@@ -121,8 +121,7 @@ export default class Booking extends DataSource {
 				throw new InvalidPermissionException();
 			}
 
-			const bookingType = this.db.BookingType.findByPk(data.bookingTypeId);
-			if (bookingType.name === BookingType.REPLACEMENT) {
+			if (data.bookingType === BookingType.REPLACEMENT) {
 				const { brand, model, plateNumber, vin } = data;
 				replacementVehicle = await this.db.ReplaceVehicle.create({
 					brand,

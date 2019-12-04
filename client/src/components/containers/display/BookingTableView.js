@@ -260,8 +260,7 @@ class BookingTableView extends Component {
 					};
 				},
 				({ booking }) => {
-					const visible =
-						!booking.approved && auth.data.role === Role.ADMIN;
+					const visible = !booking.approved && auth.data.role === Role.ADMIN;
 					return {
 						icon: Delete,
 						tooltip: "Delete",
@@ -346,9 +345,7 @@ class BookingTableView extends Component {
 					const bookingSent = moment(booking.createdAt, "X");
 					const bookingStart = moment(booking.from, "X");
 					const bookingEnd = moment(booking.to, "X");
-					const bookingType = enums.data.bookingTypes.find(
-						type => type.id === booking.bookingTypeId
-					);
+					const bookingType = booking.bookingType;
 					newBookingData.push({
 						id: booking.id,
 						username: userData.username,
@@ -518,9 +515,7 @@ class BookingTableView extends Component {
 											update &&
 											update.access
 										) {
-											let bookingType = enums.data.bookingTypes.find(
-												t => t.id === formData.bookingTypeId
-											).name;
+											let bookingType = formData.bookingType;
 
 											return (
 												<BookingFormUpdate
@@ -770,8 +765,5 @@ const mapStateToProps = ({ bookings, vehicles, enums, auth, users }) => ({
 
 export default compose(
 	withRouter,
-	connect(
-		mapStateToProps,
-		reduxActions
-	)
+	connect(mapStateToProps, reduxActions)
 )(BookingTableView);

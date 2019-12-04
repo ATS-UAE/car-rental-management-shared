@@ -39,7 +39,7 @@ function BookingVehicleListForm({
 						model,
 						vehicleImageSrc,
 						plateNumber,
-						bookingChargeUnitId,
+						bookingChargeUnit,
 						bookingCharge,
 						bookingChargeCount
 					}) => {
@@ -57,17 +57,12 @@ function BookingVehicleListForm({
 								iconName: values.vehicleId === id ? "Done" : ""
 							}
 						};
-						if (bookingChargeUnitId && enums && enums.data) {
-							const unit = enums.data.bookingChargeUnits.find(
-								unit => unit.id === bookingChargeUnitId
+						if (bookingChargeUnit && enums && enums.data) {
+							data.descriptions.push(
+								`Cost: ${bookingCharge} Dhs per${
+									bookingChargeCount === 1 ? " " : ` ${bookingChargeCount}`
+								} ${bookingChargeUnit}`
 							);
-							if (unit) {
-								data.descriptions.push(
-									`Cost: ${bookingCharge} Dhs per${
-										bookingChargeCount === 1 ? " " : ` ${bookingChargeCount}`
-									} ${unit.unit}`
-								);
-							}
 						}
 						return data;
 					}

@@ -27,13 +27,10 @@ function BookingFromCreate({
 	});
 	let [loading, setLoading] = useState(false);
 	useEffect(() => {
-		if (enums && enums.data && auth && auth.data) {
-			const replacementType = enums.data.bookingTypes.find(
-				type => type.name === BookingType.SERVICE
-			);
+		if (auth && auth.data) {
 			setValues(prev => ({
 				...prev,
-				bookingTypeId: replacementType.id,
+				bookingType: BookingType.SERVICE,
 				vehicleId: vehicle.id,
 				userId: auth.data.id
 			}));
@@ -45,7 +42,7 @@ function BookingFromCreate({
 			showMap={false}
 			values={values}
 			exclude={[exclude]}
-			readOnly={["userId", "bookingTypeId", "vehicleId", "locationId"]}
+			readOnly={["userId", "bookingType", "vehicleId", "locationId"]}
 			errorNotes={errorNotes}
 			title="Book a vehicle for maintenance"
 			onChange={setValues}
@@ -82,7 +79,4 @@ function BookingFromCreate({
 
 const mapStateToProps = ({ enums, auth }) => ({ enums, auth });
 
-export default connect(
-	mapStateToProps,
-	reduxActions
-)(BookingFromCreate);
+export default connect(mapStateToProps, reduxActions)(BookingFromCreate);

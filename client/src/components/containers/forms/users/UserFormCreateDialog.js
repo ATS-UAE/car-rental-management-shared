@@ -18,7 +18,7 @@ function Users({ auth, fetchUsers, fetchCurrentUserDetails, history }) {
 				try {
 					const create = {
 						access: await RBAC.can(
-							auth.data.role.name,
+							auth.data.role,
 							Action.CREATE,
 							Resource.USERS
 						)

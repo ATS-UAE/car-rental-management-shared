@@ -99,7 +99,7 @@ guestRole.addPermission(
 				return false;
 			}
 		},
-		["clientId", "bookingChargeUnitId", "bookingChargeCount", "bookingCharge"]
+		["clientId", "bookingChargeUnit", "bookingChargeCount", "bookingCharge"]
 	)
 );
 guestRole.addPermission(
