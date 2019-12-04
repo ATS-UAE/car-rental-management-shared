@@ -9,10 +9,10 @@ import {
 	CreatedAt,
 	UpdatedAt,
 	HasMany,
-	BelongsToMany
+	BelongsToMany,
+	DataType
 } from "sequelize-typescript";
 import {
-	BookingChargeUnit,
 	Client,
 	Location,
 	Booking,
@@ -21,6 +21,7 @@ import {
 	VehicleCategory,
 	Accident
 } from ".";
+import { BookingChargeUnit } from "../variables/enums";
 
 export interface VehicleAttributes {
 	id: number;
@@ -34,7 +35,7 @@ export interface VehicleAttributes {
 	bookingChargeCount: number;
 	bookingCharge: number;
 	wialonUnitId: number | null;
-	bookingChargeUnitId: number | null;
+	bookingChargeUnit: BookingChargeUnit | null;
 	clientId: number | null;
 	locationId: number | null;
 
@@ -79,9 +80,8 @@ export class Vehicle extends Model<Vehicle> implements VehicleAttributes {
 	@Column
 	public wialonUnitId: number | null;
 
-	@ForeignKey(() => BookingChargeUnit)
-	@Column
-	public bookingChargeUnitId: number | null;
+	@Column({ type: DataType.STRING })
+	public bookingChargeUnit: BookingChargeUnit | null;
 
 	@ForeignKey(() => Client)
 	@Column
@@ -114,9 +114,6 @@ export class Vehicle extends Model<Vehicle> implements VehicleAttributes {
 
 	@BelongsTo(() => Client)
 	public readonly client: Client;
-
-	@BelongsTo(() => BookingChargeUnit)
-	public readonly bookingChargeUnit: BookingChargeUnit;
 
 	@BelongsTo(() => Location)
 	public readonly location: Location;

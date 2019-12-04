@@ -13,13 +13,12 @@ import {
 } from "sequelize-typescript";
 import {
 	Client,
-	Role,
 	Accident,
 	AccidentUserStatus,
 	Category,
 	UserVehicleCategory
 } from "./";
-
+import { Role } from "../variables/enums";
 export interface UserAttributes {
 	id: number;
 	username: string;
@@ -36,7 +35,7 @@ export interface UserAttributes {
 	blocked: boolean;
 	emailConfirmed: boolean;
 	clientId: number;
-	roleId: number;
+	role: Role;
 	userCreatorId: number;
 
 	readonly createdAt: number;
@@ -102,9 +101,8 @@ export class User extends Model<User> implements UserAttributes {
 	@Column
 	public clientId: number;
 
-	@ForeignKey(() => Role)
-	@Column
-	public roleId: number;
+	@Column({ type: DataType.STRING, allowNull: false })
+	public role: Role;
 
 	@ForeignKey(() => User)
 	@Column
@@ -118,9 +116,6 @@ export class User extends Model<User> implements UserAttributes {
 
 	@BelongsTo(() => Client)
 	client: Client;
-
-	@BelongsTo(() => Role)
-	role: Role;
 
 	@BelongsTo(() => User, "userCreatorId")
 	userCreator: User;

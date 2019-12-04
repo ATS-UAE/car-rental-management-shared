@@ -10,7 +10,8 @@ import {
 	DataType,
 	UpdatedAt
 } from "sequelize-typescript";
-import { User, Vehicle, ReplaceVehicle, BookingType } from ".";
+import { User, Vehicle, ReplaceVehicle } from ".";
+import { BookingType } from "../variables/enums";
 
 export interface BookingAttributes {
 	id: number;
@@ -26,7 +27,7 @@ export interface BookingAttributes {
 	endFuel: number | null;
 	userId: number;
 	vehicleId: number;
-	bookingTypeId: number;
+	bookingType: BookingType;
 	replaceVehicleId: number | null;
 
 	readonly createdAt: number;
@@ -78,9 +79,8 @@ export class Booking extends Model<Booking> implements BookingAttributes {
 	@Column({ allowNull: false })
 	public vehicleId: number;
 
-	@ForeignKey(() => BookingType)
-	@Column({ allowNull: false })
-	public bookingTypeId: number;
+	@Column({ allowNull: false, type: DataType.STRING })
+	public readonly bookingType: BookingType;
 
 	@ForeignKey(() => ReplaceVehicle)
 	@Column
@@ -97,9 +97,6 @@ export class Booking extends Model<Booking> implements BookingAttributes {
 
 	@BelongsTo(() => Vehicle)
 	public readonly vehicle: Vehicle;
-
-	@BelongsTo(() => BookingType)
-	public readonly bookingType: BookingType;
 
 	@BelongsTo(() => ReplaceVehicle)
 	public readonly replaceVehicle: ReplaceVehicle;
