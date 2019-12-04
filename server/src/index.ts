@@ -43,7 +43,7 @@ passport.use(
 				if (!valid || existingUser.blocked) {
 					return cb(null, false);
 				} else if (
-					existingUser.role.name !== RoleEnum.MASTER &&
+					existingUser.role !== RoleEnum.MASTER &&
 					existingUser.clientId === null
 				) {
 					throw new Error(

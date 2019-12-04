@@ -1,4 +1,4 @@
-import { Role } from "./roles";
+import { Role } from "../../variables/enums";
 export interface UserResponse extends User {}
 
 export interface User {

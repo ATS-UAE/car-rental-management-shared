@@ -12,8 +12,8 @@ export const requireRole = (role: Role | Role[]): Handler => (
 	if (
 		req.user &&
 		((role instanceof Array &&
-			role.findIndex(role => req.user.role.name === role) >= 0) ||
-			role === req.user.role.name)
+			role.findIndex(role => req.user.role === role) >= 0) ||
+			role === req.user.role)
 	) {
 		next();
 	} else {
@@ -31,7 +31,7 @@ export const requireHigherOrEqualRole = (role: Role): Handler => (
 	next
 ) => {
 	const response = new ResponseBuilder();
-	if (req.user && RoleUtils.isRoleBetter(role, req.user.role.name)) {
+	if (req.user && RoleUtils.isRoleBetter(role, req.user.role)) {
 		next();
 	} else {
 		response.setMessage("You are not authorized to access this resource.");

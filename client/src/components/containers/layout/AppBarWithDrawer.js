@@ -31,7 +31,7 @@ function AppBarWithDrawerContainer({
 		let role = auth.data.role;
 		profile = {
 			title: `${auth.data.firstName} ${auth.data.lastName}`,
-			subtitle: `${toTitleWords(auth.data.role.name)}`,
+			subtitle: `${toTitleWords(role)}`,
 			initials: `${auth.data.firstName[0]}${auth.data.lastName[0]}`,
 			imgSrc: auth.data.userImageSrc || null
 		};
@@ -39,7 +39,7 @@ function AppBarWithDrawerContainer({
 			if (page.sidebar !== undefined) {
 				if (
 					page.access === undefined ||
-					(page.access && page.access.includes(role.name))
+					(page.access && page.access.includes(role))
 				) {
 					if (page.sidebar.location === "bottom") {
 						optionsList.push({
@@ -95,9 +95,6 @@ const mapStateToProps = ({ auth, enums, permissionData }) => ({
 });
 
 export default compose(
-	connect(
-		mapStateToProps,
-		actions
-	),
+	connect(mapStateToProps, actions),
 	withRouter
 )(AppBarWithDrawerContainer);

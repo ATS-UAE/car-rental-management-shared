@@ -16,7 +16,7 @@ export default class Client extends DataSource {
 	}
 
 	get = async (id: number): Promise<any> => {
-		let role: Role = this.user.role.name;
+		let role: Role = this.user.role;
 		let foundClient = await this.getClient(id);
 		if (!foundClient) {
 			throw new ResourceNotFoundException(
@@ -34,7 +34,7 @@ export default class Client extends DataSource {
 	};
 
 	async getAll(): Promise<any> {
-		let role: Role = this.user.role.name;
+		let role: Role = this.user.role;
 		let foundClients = await this.getClients({
 			exclude: RBAC.getExcludedFields(role, Operation.READ, Resource.CLIENTS)
 		});
@@ -89,7 +89,7 @@ export default class Client extends DataSource {
 	};
 
 	async delete(id: number): Promise<any> {
-		let role: Role = this.user.role.name;
+		let role: Role = this.user.role;
 		let foundClient = await this.get(id);
 
 		let accessible = await RBAC.can(role, Operation.DELETE, Resource.CLIENTS, {
@@ -105,7 +105,7 @@ export default class Client extends DataSource {
 	}
 
 	async create(data: object) {
-		let role: Role = this.user.role.name;
+		let role: Role = this.user.role;
 
 		let accessible = await RBAC.can(role, Operation.CREATE, Resource.CLIENTS, {
 			accessor: this.user,

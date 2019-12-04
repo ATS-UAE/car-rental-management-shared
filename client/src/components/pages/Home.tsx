@@ -196,7 +196,7 @@ const Home: FC<IPageHome & typeof actions & WithStyles<typeof styles>> = ({
 				</Fragment>
 			);
 
-		if (auth && auth.data && auth.data.role.name !== Role.GUEST) {
+		if (auth && auth.data && auth.data.role !== Role.GUEST) {
 			let data: any =
 				accidents &&
 				accidents.data &&
@@ -277,9 +277,6 @@ export default compose<
 	IPageHome & typeof actions & WithStyles<typeof styles>,
 	{}
 >(
-	connect(
-		mapStateToProps,
-		actions
-	),
+	connect(mapStateToProps, actions),
 	withStyles(styles)
 )(Home);

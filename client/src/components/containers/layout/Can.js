@@ -24,7 +24,7 @@ function Can({
 	}, []);
 	useEffect(() => {
 		if (auth) {
-			let $role = role || auth.data.role.name;
+			let $role = role || auth.data.role;
 			RBAC.can($role, action, resource, params).then(access =>
 				setAccess({
 					access,
@@ -73,7 +73,4 @@ Can.defaultProps = {
 
 const mapStateToProps = ({ auth }) => ({ auth });
 
-export default connect(
-	mapStateToProps,
-	actions
-)(Can);
+export default connect(mapStateToProps, actions)(Can);

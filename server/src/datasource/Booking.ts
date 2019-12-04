@@ -17,7 +17,7 @@ export default class Booking extends DataSource {
 	}
 
 	async get(id: number): Promise<any> {
-		let role: Role = this.user.role.name;
+		let role: Role = this.user.role;
 		let foundBooking = await this.getBooking(id, {
 			exclude: RBAC.getExcludedFields(role, Operation.READ, Resource.BOOKINGS)
 		});
@@ -37,7 +37,7 @@ export default class Booking extends DataSource {
 	}
 
 	async getAll(): Promise<any> {
-		let role: Role = this.user.role.name;
+		let role: Role = this.user.role;
 		let foundBookings = await this.getBookings({
 			exclude: RBAC.getExcludedFields(role, Operation.READ, Resource.BOOKINGS)
 		});
@@ -56,7 +56,7 @@ export default class Booking extends DataSource {
 	}
 
 	async update(id: number, data: any): Promise<any> {
-		let role: Role = this.user.role.name;
+		let role: Role = this.user.role;
 		let foundBooking = await this.get(id);
 
 		let accessible = await RBAC.can(role, Operation.UPDATE, Resource.BOOKINGS, {
@@ -93,7 +93,7 @@ export default class Booking extends DataSource {
 	}
 
 	async delete(id: number): Promise<any> {
-		let role: Role = this.user.role.name;
+		let role: Role = this.user.role;
 		let foundBooking = await this.get(id);
 
 		let accessible = await RBAC.can(role, Operation.DELETE, Resource.BOOKINGS, {
@@ -109,7 +109,7 @@ export default class Booking extends DataSource {
 	}
 
 	async create(data: any) {
-		let role: Role = this.user.role.name;
+		let role: Role = this.user.role;
 
 		let accessible = await RBAC.can(role, Operation.CREATE, Resource.BOOKINGS, {
 			accessor: this.user,

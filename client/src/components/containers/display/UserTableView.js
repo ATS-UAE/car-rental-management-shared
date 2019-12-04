@@ -101,7 +101,7 @@ class UserTableView extends Component {
 			]
 		};
 
-		if (props.auth.data.role.name === Role.MASTER) {
+		if (props.auth.data.role === Role.MASTER) {
 			this.state.userColumns.push({
 				title: "Client",
 				field: "client"
@@ -207,14 +207,14 @@ class UserTableView extends Component {
 
 			for (let user of users.data) {
 				let accessible = await RBAC.can(
-					auth.data.role.name,
+					auth.data.role,
 					Action.READ,
 					Resource.USERS,
 					{ target: user, accessor: auth.data }
 				);
 
 				if (accessible) {
-					const userRole = auth.data.role.name;
+					const userRole = auth.data.role;
 					const canUpdate =
 						user.id === 1
 							? false
@@ -238,19 +238,19 @@ class UserTableView extends Component {
 						lastName: user.lastName,
 						email: user.email,
 						mobileNumber: user.mobileNumber,
-						role: toTitleWords(user.role.name),
+						role: toTitleWords(user.role),
 						createdAt: userSignUpDate.toDate(),
 						user,
 						canDelete,
 						canUpdate
 					};
 
-					if (auth.data.role.name === Role.MASTER && clients && clients.data) {
+					if (auth.data.role === Role.MASTER && clients && clients.data) {
 						const clientName = clients.data.find(
 							client => client.id === user.clientId
 						);
 						data["client"] =
-							(clientName && clientName.name) || user.role.name === Role.MASTER
+							(clientName && clientName.name) || user.role === Role.MASTER
 								? toTitleWords(Role.MASTER)
 								: "Unassigned";
 					}
@@ -283,7 +283,7 @@ class UserTableView extends Component {
 
 						const read = {
 							access: await RBAC.can(
-								auth.data.role.name,
+								auth.data.role,
 								Action.READ,
 								Resource.USERS,
 								{
@@ -292,7 +292,7 @@ class UserTableView extends Component {
 								}
 							),
 							exclude: RBAC.getExcludedFields(
-								auth.data.role.name,
+								auth.data.role,
 								Action.READ,
 								Resource.USERS,
 								{
@@ -301,12 +301,13 @@ class UserTableView extends Component {
 								}
 							)
 						};
-						if (user.data.role.name !== Role.GUEST)
+						if (user.data.role !== Role.GUEST) {
 							read.exclude.push("categories");
+						}
 
 						const update = {
 							access: await RBAC.can(
-								auth.data.role.name,
+								auth.data.role,
 								Action.UPDATE,
 								Resource.USERS,
 								{
@@ -315,7 +316,7 @@ class UserTableView extends Component {
 								}
 							),
 							exclude: RBAC.getExcludedFields(
-								auth.data.role.name,
+								auth.data.role,
 								Action.UPDATE,
 								Resource.USERS,
 								{
@@ -327,7 +328,7 @@ class UserTableView extends Component {
 
 						const destroy = {
 							access: await RBAC.can(
-								auth.data.role.name,
+								auth.data.role,
 								Action.DELETE,
 								Resource.USERS,
 								{

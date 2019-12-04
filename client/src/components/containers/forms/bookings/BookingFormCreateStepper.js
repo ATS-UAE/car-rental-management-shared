@@ -116,7 +116,7 @@ function BookingFormCreateStepper({
 					!vehicle.defleeted &&
 					vehicle.locationId === values[2].locationId
 				) {
-					if (auth.data.role.name === Role.GUEST) {
+					if (auth.data.role === Role.GUEST) {
 						let inCategory = false;
 						if (!auth.data.categories.length) {
 							inCategory = true;
@@ -584,8 +584,5 @@ const styles = theme => ({
 export default compose(
 	withRouter,
 	withStyles(styles),
-	connect(
-		mapStateToProps,
-		reduxActions
-	)
+	connect(mapStateToProps, reduxActions)
 )(BookingFormCreateStepper);

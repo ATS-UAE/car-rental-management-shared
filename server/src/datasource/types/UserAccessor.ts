@@ -1,9 +1,5 @@
-import { Role } from "../../variables/enums";
+import { UserAttributes } from "../../models";
 
-interface UserAccessor {
-	id: number;
-	role: { name: Role; id?: number };
-	[key: string]: any;
-}
+type UserAccessor = UserAttributes;
 
 export default UserAccessor;

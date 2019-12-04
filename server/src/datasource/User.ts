@@ -16,7 +16,7 @@ export default class User extends DataSource {
 	}
 
 	async get(id: number): Promise<any> {
-		let role: Role = this.user.role.name;
+		let role: Role = this.user.role;
 		let foundUser = await this.getUser(id, {
 			exclude: RBAC.getExcludedFields(role, Operation.READ, Resource.USERS)
 		});
@@ -38,7 +38,7 @@ export default class User extends DataSource {
 	}
 
 	async getAll(): Promise<any> {
-		let role: Role = this.user.role.name;
+		let role: Role = this.user.role;
 		let foundUsers = await this.getUsers({
 			exclude: RBAC.getExcludedFields(role, Operation.READ, Resource.USERS)
 		});
@@ -57,7 +57,7 @@ export default class User extends DataSource {
 	}
 
 	async update(id: number, data?: object, options?: object): Promise<any> {
-		let role: Role = this.user.role.name;
+		let role: Role = this.user.role;
 		let foundUser = await this.get(id);
 		if (!foundUser) {
 			throw new ResourceNotFoundException(
@@ -77,7 +77,7 @@ export default class User extends DataSource {
 	}
 
 	async delete(id: number): Promise<any> {
-		let role: Role = this.user.role.name;
+		let role: Role = this.user.role;
 		let foundUser = await this.get(id);
 		if (!foundUser) {
 			throw new ResourceNotFoundException(
@@ -96,8 +96,7 @@ export default class User extends DataSource {
 	}
 
 	async create(data: any, options: { invited?: boolean } = {}): Promise<any> {
-		let role: Role =
-			(this.user && this.user.role && this.user.role.name) || null;
+		let role: Role = (this.user && this.user.role && this.user.role) || null;
 
 		let accessible =
 			options.invited ||

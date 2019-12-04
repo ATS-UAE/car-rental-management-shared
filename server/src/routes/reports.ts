@@ -40,7 +40,7 @@ router.get("/unit-summary", async ({ user }, res) => {
 
 	let whereOptions: Filterable["where"] = { clientId: user.clientId };
 
-	if (user.role.name === Role.MASTER) {
+	if (user.role === Role.MASTER) {
 		whereOptions = {};
 	}
 
@@ -106,10 +106,10 @@ router.get("/unit-summary", async ({ user }, res) => {
 			issues: vehicle.vehicleIssues.length,
 			defleeted: vehicle.defleeted,
 			wialonUnit: Boolean(wialonUnit),
-			wialonUnitName: RoleUtils.isRoleBetter(Role.MASTER, user.role.name)
+			wialonUnitName: RoleUtils.isRoleBetter(Role.MASTER, user.role)
 				? (wialonUnit && wialonUnit.nm) || null
 				: undefined,
-			client: RoleUtils.isRoleBetter(Role.MASTER, user.role.name)
+			client: RoleUtils.isRoleBetter(Role.MASTER, user.role)
 				? vehicle.client && vehicle.client.name
 				: undefined
 		};

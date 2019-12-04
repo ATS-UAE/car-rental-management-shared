@@ -55,14 +55,14 @@ function UserFormContainer({
 	];
 	if (enums && enums.data && auth && auth.data) {
 		roleList = enums.data.roles.reduce((acc, role) => {
-			const userRole = auth.data.role.name;
+			const userRole = auth.data.role;
 
 			if (readOnly === false || userRole !== Role.MASTER) {
-				if (userRole === Role.ADMIN && role.name === Role.Master) {
+				if (userRole === Role.ADMIN && role === Role.Master) {
 					return acc;
 				} else if (
 					userRole === Role.KEY_MANAGER &&
-					(role.name === Role.admin || role.name === Role.Master)
+					(role === Role.admin || role === Role.Master)
 				) {
 					return acc;
 				}
@@ -70,7 +70,7 @@ function UserFormContainer({
 
 			acc.push({
 				value: role.id,
-				label: toTitleWords(role.name)
+				label: toTitleWords(role)
 			});
 
 			return acc;
@@ -137,7 +137,4 @@ const mapStateToProps = ({
 	categories
 });
 
-export default connect(
-	mapStateToProps,
-	reduxActions
-)(UserFormContainer);
+export default connect(mapStateToProps, reduxActions)(UserFormContainer);

@@ -57,7 +57,7 @@ const Bookings: FC<typeof actions & IBookingsPage> = ({
 						return (
 							<Fragment>
 								<div className={classes.items}>
-									{auth && auth.data && auth.data.role.name === Role.GUEST && (
+									{auth && auth.data && auth.data.role === Role.GUEST && (
 										<Button
 											variant="contained"
 											color="primary"
@@ -107,8 +107,5 @@ const mapStateToProps = ({ auth }: Pick<IBookingsPage, "auth">) => ({ auth });
 
 export default compose<typeof actions & IBookingsPage, {}>(
 	withStyles(styles),
-	connect(
-		mapStateToProps,
-		actions
-	)
+	connect(mapStateToProps, actions)
 )(Bookings);

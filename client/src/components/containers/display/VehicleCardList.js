@@ -45,13 +45,13 @@ function VehicleCardList({
 
 					const read = {
 						access: await RBAC.can(
-							auth.data.role.name,
+							auth.data.role,
 							Action.READ,
 							Resource.VEHICLES,
 							{ target: vehicle.data, accessor: auth.data }
 						),
 						exclude: RBAC.getExcludedFields(
-							auth.data.role.name,
+							auth.data.role,
 							Action.READ,
 							Resource.VEHICLES
 						)
@@ -59,13 +59,13 @@ function VehicleCardList({
 
 					const update = {
 						access: await RBAC.can(
-							auth.data.role.name,
+							auth.data.role,
 							Action.UPDATE,
 							Resource.VEHICLES,
 							{ target: vehicle.data, accessor: auth.data }
 						),
 						exclude: RBAC.getExcludedFields(
-							auth.data.role.name,
+							auth.data.role,
 							Action.UPDATE,
 							Resource.VEHICLES
 						)
@@ -73,7 +73,7 @@ function VehicleCardList({
 
 					const destroy = {
 						access: await RBAC.can(
-							auth.data.role.name,
+							auth.data.role,
 							Action.DELETE,
 							Resource.VEHICLES,
 							{ target: vehicle.data, accessor: auth.data }
@@ -412,7 +412,7 @@ function VehicleCardList({
 						);
 					}
 					if (auth && auth.data) {
-						if (auth.data.role.name === Role.GUEST) {
+						if (auth.data.role === Role.GUEST) {
 							let inCategory = false;
 
 							if (!auth.data.categories.length) {

@@ -17,7 +17,7 @@ export default class Accident extends DataSource {
 	}
 
 	async get(id: number): Promise<any> {
-		let role: Role = this.user.role.name;
+		let role: Role = this.user.role;
 		let foundAccident = await this.getAccident(id, {
 			exclude: RBAC.getExcludedFields(role, Operation.READ, Resource.ACCIDENTS)
 		});
@@ -37,7 +37,7 @@ export default class Accident extends DataSource {
 	}
 
 	async getAll(): Promise<any> {
-		let role: Role = this.user.role.name;
+		let role: Role = this.user.role;
 		let foundAccidents = await this.getAccidents({
 			exclude: RBAC.getExcludedFields(role, Operation.READ, Resource.ACCIDENTS)
 		});
@@ -61,7 +61,7 @@ export default class Accident extends DataSource {
 	}
 
 	async update(id: number, data: any): Promise<[any, any]> {
-		let role: Role = this.user.role.name;
+		let role: Role = this.user.role;
 		let foundAccident = await this.get(id);
 
 		let accessible = await RBAC.can(
@@ -91,7 +91,7 @@ export default class Accident extends DataSource {
 	}
 
 	async delete(id: number): Promise<any> {
-		let role: Role = this.user.role.name;
+		let role: Role = this.user.role;
 		let foundAccident = await this.get(id);
 
 		let accessible = await RBAC.can(
@@ -112,7 +112,7 @@ export default class Accident extends DataSource {
 	}
 
 	async create(data: any) {
-		let role: Role = this.user.role.name;
+		let role: Role = this.user.role;
 
 		let accessible = await RBAC.can(
 			role,

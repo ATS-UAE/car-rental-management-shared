@@ -52,7 +52,7 @@ export const ReportAreaContainer: FC<ReportAreaStateProps> = ({ auth }) => {
 						auth &&
 						auth.data &&
 						report &&
-						(await report.getColumnData(auth.data.role.name));
+						(await report.getColumnData(auth.data.role));
 					data && setData(data);
 					columns && setColumns(columns);
 				} catch (e) {
