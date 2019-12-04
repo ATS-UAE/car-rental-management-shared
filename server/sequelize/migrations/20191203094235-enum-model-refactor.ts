@@ -25,7 +25,10 @@ enum BookingChargeUnit {
 }
 
 module.exports = {
-	up: async function(queryInterface: QueryInterface, Sequelize) {
+	up: async function(
+		queryInterface: QueryInterface,
+		Sequelize: typeof DataTypes
+	) {
 		// Booking Types
 		await queryInterface.addColumn("Bookings", "bookingType", {
 			allowNull: false,
@@ -150,7 +153,7 @@ module.exports = {
 		await queryInterface.removeColumn("Vehicles", "bookingChargeUnitId");
 		await queryInterface.dropTable("BookingChargeUnits");
 	},
-	down: async function(queryInterface: QueryInterface, Sequelize) {
+	down: async function(queryInterface: QueryInterface, Sequelize: typeof DataTypes) {
 		// Booking Types
 		// Create Booking Types table
 		await queryInterface.createTable("BookingTypes", {
