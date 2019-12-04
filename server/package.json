@@ -55,10 +55,10 @@
 		"clean": "rm -rf ./build",
 		"dev:start": "nodemon -L --config nodemon.json",
 		"build:sequelize": "tsc -p ./sequelize --listEmittedFiles --outDir ./sequelize/build --rootDir ./sequelize",
-		"dev:db:migrate": "npm run build:sequelize && npx sequelize-cli db:migrate --env development --config ./sequelize/config.json --migrations-path ./sequelize/build/migrations",
-		"dev:db:migrate:undo": "npm run build:sequelize && npx sequelize-cli db:migrate:undo --env development --config ./sequelize/config.json --migrations-path ./sequelize/build/migrations",
-		"prod:db:migrate": "npm run build:sequelize && npx sequelize-cli db:migrate --env production --config ./sequelize/config.json --migrations-path ./sequelize/build/migrations",
-		"prod:db:migrate:undo": "npm run build:sequelize && npx sequelize-cli db:migrate --env production --config ./sequelize/config.json --migrations-path ./sequelize/build/migrations"
+		"dev:db:migrate": "npm run build:sequelize && npx sequelize-cli db:migrate --env development --config ./sequelize/config.json --migrations-path ./sequelize/build/migrations --debug",
+		"dev:db:migrate:undo": "npm run build:sequelize && npx sequelize-cli db:migrate:undo --env development --config ./sequelize/config.json --migrations-path ./sequelize/build/migrations --debug",
+		"prod:db:migrate": "npm run build:sequelize && npx sequelize-cli db:migrate --env production --config ./sequelize/config.json --migrations-path ./sequelize/build/migrations --debug",
+		"prod:db:migrate:undo": "npm run build:sequelize && npx sequelize-cli db:migrate --env production --config ./sequelize/config.json --migrations-path ./sequelize/build/migrations --debug"
 	},
 	"author": "",
 	"license": "ISC"
