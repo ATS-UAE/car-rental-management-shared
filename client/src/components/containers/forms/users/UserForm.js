@@ -66,7 +66,7 @@ function UserFormContainer({
 			}
 
 			acc.push({
-				value: role.id,
+				value: role,
 				label: toTitleWords(role)
 			});
 

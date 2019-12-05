@@ -10,7 +10,7 @@ import {
 	hasActiveBooking,
 	isBookingTimeSlotTaken
 } from "../../../../utils/helpers";
-import { BookingType } from "../../../variables/enums";
+import { BookingType } from "../../../../variables/enums";
 import VehicleBookingRange from "../../../presentational/display/VehicleBookingRange";
 
 function BookingFormContainer({
@@ -56,11 +56,6 @@ function BookingFormContainer({
 		? [{ value: "", label: "No vehicles available." }]
 		: [{ value: "", label: "Please select a location." }];
 	let userList = [{ value: "", label: "Loading..." }];
-
-	let $bookingTypeList = enums.data.bookingTypes.map(item => ({
-		value: item.id,
-		label: toTitleWords(item.name)
-	}));
 
 	if (users && users.data) {
 		let $userList = users.data.map(user => ({

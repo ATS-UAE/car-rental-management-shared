@@ -19,7 +19,13 @@ export default class Accident extends DataSource {
 	async get(id: number): Promise<any> {
 		let role: Role = this.user.role;
 		let foundAccident = await this.getAccident(id, {
-			exclude: RBAC.getExcludedFields(role, Operation.READ, Resource.ACCIDENTS)
+			attributes: {
+				exclude: RBAC.getExcludedFields(
+					role,
+					Operation.READ,
+					Resource.ACCIDENTS
+				)
+			}
 		});
 		if (!foundAccident) {
 			throw new ResourceNotFoundException(
@@ -39,7 +45,13 @@ export default class Accident extends DataSource {
 	async getAll(): Promise<any> {
 		let role: Role = this.user.role;
 		let foundAccidents = await this.getAccidents({
-			exclude: RBAC.getExcludedFields(role, Operation.READ, Resource.ACCIDENTS)
+			attributes: {
+				exclude: RBAC.getExcludedFields(
+					role,
+					Operation.READ,
+					Resource.ACCIDENTS
+				)
+			}
 		});
 		let bookings = [];
 		for (let booking of foundAccidents) {

@@ -246,11 +246,11 @@ class UserTableView extends Component {
 					};
 
 					if (auth.data.role === Role.MASTER && clients && clients.data) {
-						const clientName = clients.data.find(
+						const client = clients.data.find(
 							client => client.id === user.clientId
 						);
 						data["client"] =
-							(clientName && clientName.name) || user.role === Role.MASTER
+							(client && client.name) || user.role === Role.MASTER
 								? toTitleWords(Role.MASTER)
 								: "Unassigned";
 					}
@@ -356,7 +356,7 @@ class UserTableView extends Component {
 				children={children}
 			/>
 		);
-
+		console.log(userData);
 		return (
 			<Fragment>
 				<Switch>

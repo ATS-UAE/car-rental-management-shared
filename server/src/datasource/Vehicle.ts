@@ -17,7 +17,11 @@ export default class Vehicle extends DataSource {
 
 	async get(id: number): Promise<any> {
 		let role: Role = this.user.role;
-		let foundVehicle = await this.getVehicle(id);
+		let foundVehicle = await this.getVehicle(id, {
+			attributes: {
+				exclude: RBAC.getExcludedFields(role, Operation.READ, Resource.VEHICLES)
+			}
+		});
 		if (!foundVehicle) {
 			throw new ResourceNotFoundException(
 				`User with ID of ${id} is not found.`
@@ -36,7 +40,9 @@ export default class Vehicle extends DataSource {
 	async getAll(): Promise<any> {
 		let role: Role = this.user.role;
 		let foundVehicles = await this.getVehicles({
-			exclude: RBAC.getExcludedFields(role, Operation.READ, Resource.VEHICLES)
+			attributes: {
+				exclude: RBAC.getExcludedFields(role, Operation.READ, Resource.VEHICLES)
+			}
 		});
 		let vehicles = [];
 		for (let vehicle of foundVehicles) {

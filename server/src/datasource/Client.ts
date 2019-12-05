@@ -17,7 +17,11 @@ export default class Client extends DataSource {
 
 	get = async (id: number): Promise<any> => {
 		let role: Role = this.user.role;
-		let foundClient = await this.getClient(id);
+		let foundClient = await this.getClient(id, {
+			attributes: {
+				exclude: RBAC.getExcludedFields(role, Operation.READ, Resource.CLIENTS)
+			}
+		});
 		if (!foundClient) {
 			throw new ResourceNotFoundException(
 				`Client with ID of ${id} is not found.`
@@ -36,7 +40,9 @@ export default class Client extends DataSource {
 	async getAll(): Promise<any> {
 		let role: Role = this.user.role;
 		let foundClients = await this.getClients({
-			exclude: RBAC.getExcludedFields(role, Operation.READ, Resource.CLIENTS)
+			attributes: {
+				exclude: RBAC.getExcludedFields(role, Operation.READ, Resource.CLIENTS)
+			}
 		});
 		let vehicles = [];
 		for (let vehicle of foundClients) {

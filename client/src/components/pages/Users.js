@@ -6,7 +6,6 @@ import classNames from "classnames";
 import { compose } from "recompose";
 import { connect } from "react-redux";
 import * as reduxActions from "../../actions";
-import { Role as RoleEnum } from "../../variables/enums";
 import InviteGuestButtonDialog from "../containers/forms/InviteGuestButtonDialog";
 import { permission, Role } from "../containers/layout/Role";
 import UserTableView from "../containers/display/UserTableView";
@@ -20,8 +19,7 @@ const Users = ({
 	match,
 	history,
 	fetchCategories,
-	fetchClients,
-	auth
+	fetchClients
 }) => {
 	useEffect(() => {
 		fetchUsers();
@@ -84,9 +82,6 @@ const styles = theme => ({
 });
 
 export default compose(
-	connect(
-		({ auth }) => ({ auth }),
-		reduxActions
-	),
+	connect(({ auth }) => ({ auth }), reduxActions),
 	withStyles(styles)
 )(Users);

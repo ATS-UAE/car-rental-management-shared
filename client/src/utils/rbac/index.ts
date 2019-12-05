@@ -1,4 +1,5 @@
 import RBAC, { Role, Resource, Action } from "../../rbac";
+import * as enums from "../../variables/enums";
 
 const { READ, UPDATE, DELETE, CREATE } = enums.Action;
 const accessControl = new RBAC("Car Booking");

@@ -161,7 +161,7 @@ router.patch(
 				await foundUser.setCategories(categories);
 			}
 			let updatedUser = await UserDataSource.update(foundUser.id, {
-				...foundUser,
+				...body,
 				userImageSrc: fileLocation || foundUser.userImageSrc
 			});
 

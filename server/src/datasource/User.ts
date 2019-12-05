@@ -18,7 +18,12 @@ export default class User extends DataSource {
 	async get(id: number): Promise<any> {
 		let role: Role = this.user.role;
 		let foundUser = await this.getUser(id, {
-			exclude: RBAC.getExcludedFields(role, Operation.READ, Resource.USERS)
+			attributes: {
+				exclude: [
+					...RBAC.getExcludedFields(role, Operation.READ, Resource.USERS),
+					"password"
+				]
+			}
 		});
 		if (!foundUser) {
 			throw new ResourceNotFoundException(
@@ -40,7 +45,12 @@ export default class User extends DataSource {
 	async getAll(): Promise<any> {
 		let role: Role = this.user.role;
 		let foundUsers = await this.getUsers({
-			exclude: RBAC.getExcludedFields(role, Operation.READ, Resource.USERS)
+			attributes: {
+				exclude: [
+					...RBAC.getExcludedFields(role, Operation.READ, Resource.USERS),
+					"password"
+				]
+			}
 		});
 		let users = [];
 		for (let user of foundUsers) {
@@ -72,6 +82,7 @@ export default class User extends DataSource {
 		if (!accessible) {
 			throw new InvalidPermissionException();
 		}
+		console.log(data);
 		await foundUser.update(data, options);
 		return this.get(id);
 	}

@@ -19,7 +19,9 @@ export default class Booking extends DataSource {
 	async get(id: number): Promise<any> {
 		let role: Role = this.user.role;
 		let foundBooking = await this.getBooking(id, {
-			exclude: RBAC.getExcludedFields(role, Operation.READ, Resource.BOOKINGS)
+			attributes: {
+				exclude: RBAC.getExcludedFields(role, Operation.READ, Resource.USERS)
+			}
 		});
 		if (!foundBooking) {
 			throw new ResourceNotFoundException(
@@ -39,7 +41,9 @@ export default class Booking extends DataSource {
 	async getAll(): Promise<any> {
 		let role: Role = this.user.role;
 		let foundBookings = await this.getBookings({
-			exclude: RBAC.getExcludedFields(role, Operation.READ, Resource.BOOKINGS)
+			attributes: {
+				exclude: RBAC.getExcludedFields(role, Operation.READ, Resource.USERS)
+			}
 		});
 		let bookings = [];
 		for (let booking of foundBookings) {
