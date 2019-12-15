@@ -256,9 +256,8 @@ class UserTableView extends Component {
 					}
 					newUserData.push(data);
 				}
-
-				this.setState({ userData: newUserData });
 			}
+			this.setState({ userData: newUserData });
 		}
 	};
 
