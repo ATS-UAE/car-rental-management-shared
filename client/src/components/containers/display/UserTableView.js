@@ -355,7 +355,7 @@ class UserTableView extends Component {
 				children={children}
 			/>
 		);
-		console.log(userData);
+
 		return (
 			<Fragment>
 				<Switch>
