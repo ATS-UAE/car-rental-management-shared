@@ -12,7 +12,7 @@ import { Booking } from ".";
 
 export interface ReplaceVehicleAttributes {
 	id: number;
-	name: string;
+	plateNumber: string;
 	brand: string;
 	model: string;
 	vin: string;
@@ -30,7 +30,7 @@ export class ReplaceVehicle extends Model<ReplaceVehicle>
 	public id: number;
 
 	@Column
-	public name: string;
+	public plateNumber: string;
 
 	@Column
 	public brand: string;
