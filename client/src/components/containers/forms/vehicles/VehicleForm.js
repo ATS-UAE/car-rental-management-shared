@@ -4,6 +4,7 @@ import { Grid, Button } from "@material-ui/core";
 import VehicleForm from "../../../presentational/forms/VehicleForm";
 import * as actions from "../../../../actions";
 import api from "../../../../utils/helpers/api";
+import { BookingChargeUnit } from "../../../../variables/enums";
 
 function VehicleFormContainer({
 	onSubmit,
@@ -18,7 +19,6 @@ function VehicleFormContainer({
 	locations,
 	showFooter,
 	categories,
-	enums,
 	wialonUnits,
 	fetchVehicles
 }) {
@@ -52,13 +52,10 @@ function VehicleFormContainer({
 			label: "Loading"
 		}
 	];
-	let bookingChargeUnitList =
-		enums && enums.data
-			? enums.data.bookingChargeUnits.map(item => ({
-					value: item.id,
-					label: item.unit
-			  }))
-			: [{ value: "", label: "Loading..." }];
+	let bookingChargeUnitList = Object.values(BookingChargeUnit).map(unit => ({
+		value: unit,
+		label: unit
+	}));
 
 	if (locations && locations.data) {
 		let $locationList = locations.data.map(({ id, name }) => ({
@@ -149,18 +146,11 @@ function VehicleFormContainer({
 		/>
 	);
 }
-const mapStateToProps = ({
+const mapStateToProps = ({ vehicles, locations, categories, wialonUnits }) => ({
 	vehicles,
 	locations,
 	categories,
-	enums,
 	wialonUnits
-}) => ({
-	vehicles,
-	locations,
-	categories,
-	wialonUnits,
-	enums
 });
 
 export default connect(mapStateToProps, actions)(VehicleFormContainer);

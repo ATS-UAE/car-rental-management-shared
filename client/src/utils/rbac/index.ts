@@ -99,7 +99,7 @@ guestRole.addPermission(
 				return false;
 			}
 		},
-		["clientId", "bookingChargeUnitId", "bookingChargeCount", "bookingCharge"]
+		["clientId", "bookingChargeUnit", "bookingChargeCount", "bookingCharge"]
 	)
 );
 guestRole.addPermission(
@@ -602,7 +602,6 @@ export const resources = {
 	vehicles: vehicles,
 	locations: locations,
 	users: users,
-	enums: enums,
 	accidents: accidents,
 	clients: clients
 };

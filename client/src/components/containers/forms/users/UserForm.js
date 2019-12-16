@@ -8,8 +8,6 @@ import { toTitleWords } from "../../../../utils/helpers";
 import { Role } from "../../../../variables/enums";
 
 function UserFormContainer({
-	enums,
-	fetchEnums,
 	onSubmit,
 	values,
 	readOnly,
@@ -38,7 +36,6 @@ function UserFormContainer({
 		setDisabledButton(!validForm);
 	}, [errors, values]);
 	useEffect(() => {
-		fetchEnums();
 		fetchCurrentUserDetails();
 	}, []);
 	let roleList = [
@@ -53,24 +50,24 @@ function UserFormContainer({
 			label: "Loading"
 		}
 	];
-	if (enums && enums.data && auth && auth.data) {
-		roleList = enums.data.roles.reduce((acc, role) => {
-			const userRole = auth.data.role.name;
+	if (auth && auth.data) {
+		roleList = Object.values(Role).reduce((acc, role) => {
+			const userRole = auth.data.role;
 
 			if (readOnly === false || userRole !== Role.MASTER) {
-				if (userRole === Role.ADMIN && role.name === Role.Master) {
+				if (userRole === Role.ADMIN && role === Role.Master) {
 					return acc;
 				} else if (
 					userRole === Role.KEY_MANAGER &&
-					(role.name === Role.admin || role.name === Role.Master)
+					(role === Role.ADMIN || role === Role.Master)
 				) {
 					return acc;
 				}
 			}
 
 			acc.push({
-				value: role.id,
-				label: toTitleWords(role.name)
+				value: role,
+				label: toTitleWords(role)
 			});
 
 			return acc;
@@ -121,23 +118,12 @@ function UserFormContainer({
 		/>
 	);
 }
-const mapStateToProps = ({
+const mapStateToProps = ({ users, vehicles, locations, auth, categories }) => ({
 	users,
-	enums,
-	vehicles,
-	locations,
-	auth,
-	categories
-}) => ({
-	users,
-	enums,
 	vehicles,
 	locations,
 	auth,
 	categories
 });
 
-export default connect(
-	mapStateToProps,
-	reduxActions
-)(UserFormContainer);
+export default connect(mapStateToProps, reduxActions)(UserFormContainer);

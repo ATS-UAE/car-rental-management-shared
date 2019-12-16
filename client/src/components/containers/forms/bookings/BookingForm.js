@@ -10,11 +10,10 @@ import {
 	hasActiveBooking,
 	isBookingTimeSlotTaken
 } from "../../../../utils/helpers";
-
+import { BookingType } from "../../../../variables/enums";
 import VehicleBookingRange from "../../../presentational/display/VehicleBookingRange";
 
 function BookingFormContainer({
-	enums,
 	locations,
 	vehicles,
 	onSubmit,
@@ -49,21 +48,15 @@ function BookingFormContainer({
 		setDisabledButton(!validForm);
 	}, [errors, values]);
 
-	let bookingTypeList = [{ value: "", label: "Loading..." }];
+	let bookingTypeList = Object.values(BookingType).map(type => ({
+		value: type,
+		label: type
+	}));
 	let vehicleList = values.locationId
 		? [{ value: "", label: "No vehicles available." }]
 		: [{ value: "", label: "Please select a location." }];
 	let userList = [{ value: "", label: "Loading..." }];
 
-	if (enums && enums.data) {
-		let $bookingTypeList = enums.data.bookingTypes.map(item => ({
-			value: item.id,
-			label: toTitleWords(item.name)
-		}));
-		if ($bookingTypeList.length) {
-			bookingTypeList = $bookingTypeList;
-		}
-	}
 	if (users && users.data) {
 		let $userList = users.data.map(user => ({
 			value: user.id,
@@ -203,14 +196,10 @@ BookingFormContainer.defaultProps = {
 	showDefleeted: false
 };
 
-const mapStateToProps = ({ users, enums, vehicles, locations }) => ({
+const mapStateToProps = ({ users, vehicles, locations }) => ({
 	users,
-	enums,
 	vehicles,
 	locations
 });
 
-export default connect(
-	mapStateToProps,
-	reduxActions
-)(BookingFormContainer);
+export default connect(mapStateToProps, reduxActions)(BookingFormContainer);

@@ -45,13 +45,13 @@ function VehicleCardList({
 
 					const read = {
 						access: await RBAC.can(
-							auth.data.role.name,
+							auth.data.role,
 							Action.READ,
 							Resource.VEHICLES,
 							{ target: vehicle.data, accessor: auth.data }
 						),
 						exclude: RBAC.getExcludedFields(
-							auth.data.role.name,
+							auth.data.role,
 							Action.READ,
 							Resource.VEHICLES
 						)
@@ -59,13 +59,13 @@ function VehicleCardList({
 
 					const update = {
 						access: await RBAC.can(
-							auth.data.role.name,
+							auth.data.role,
 							Action.UPDATE,
 							Resource.VEHICLES,
 							{ target: vehicle.data, accessor: auth.data }
 						),
 						exclude: RBAC.getExcludedFields(
-							auth.data.role.name,
+							auth.data.role,
 							Action.UPDATE,
 							Resource.VEHICLES
 						)
@@ -73,7 +73,7 @@ function VehicleCardList({
 
 					const destroy = {
 						access: await RBAC.can(
-							auth.data.role.name,
+							auth.data.role,
 							Action.DELETE,
 							Resource.VEHICLES,
 							{ target: vehicle.data, accessor: auth.data }
@@ -301,15 +301,9 @@ function VehicleCardList({
 						vehicleImageSrc,
 						bookingCharge,
 						bookingChargeCount,
-						bookingChargeUnitId
+						bookingChargeUnit
 					} = vehicle;
-					const unit =
-						bookingChargeUnitId &&
-						enums &&
-						enums.data &&
-						enums.data.bookingChargeUnits.find(
-							({ id }) => id === bookingChargeUnitId
-						);
+
 					let data = {
 						id,
 						vehicle,
@@ -404,15 +398,15 @@ function VehicleCardList({
 							/>
 						)
 					};
-					if (bookingChargeUnitId) {
+					if (bookingChargeUnit) {
 						data.descriptions.push(
 							`Cost: ${bookingCharge} Dhs per${
 								bookingChargeCount === 1 ? " " : ` ${bookingChargeCount}`
-							} ${unit.unit}`
+							} ${bookingChargeUnit}`
 						);
 					}
 					if (auth && auth.data) {
-						if (auth.data.role.name === Role.GUEST) {
+						if (auth.data.role === Role.GUEST) {
 							let inCategory = false;
 
 							if (!auth.data.categories.length) {
@@ -436,12 +430,12 @@ function VehicleCardList({
 	);
 }
 
-const mapStateToProps = ({ vehicles, auth, enums }) => {
+const mapStateToProps = ({ vehicles, auth }) => {
 	let vehicleData = [];
 	if (vehicles && vehicles.success === true && vehicles.data) {
 		vehicleData = vehicles.data;
 	}
-	return { vehicles: vehicleData, auth, enums };
+	return { vehicles: vehicleData, auth };
 };
 
 const styles = {

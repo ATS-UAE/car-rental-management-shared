@@ -6,18 +6,13 @@ import AppBarWithDrawer from "../containers/layout/AppBarWithDrawer";
 import * as actions from "../../actions";
 
 const All: FC<typeof actions & RouteComponentProps> = ({
-	fetchEnums,
 	fetchCurrentUserDetails,
 	location
 }) => {
 	useEffect(() => {
-		fetchEnums();
 		fetchCurrentUserDetails();
 	}, []);
 	return <AppBarWithDrawer />;
 };
 
-export default connect<typeof actions>(
-	null,
-	actions
-)(All);
+export default connect<typeof actions>(null, actions)(All);

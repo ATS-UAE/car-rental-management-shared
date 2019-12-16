@@ -31,7 +31,7 @@ const UserTransferListForm: FC<Props> = ({ users, clientId, onSubmit }) => {
 			for (const user of users.data) {
 				if (clientId === user.clientId) {
 					right.push(user);
-				} else if (user.clientId === null && user.role.name !== Role.MASTER) {
+				} else if (user.clientId === null && user.role !== Role.MASTER) {
 					left.push(user);
 				}
 			}
@@ -63,7 +63,7 @@ const UserTransferListForm: FC<Props> = ({ users, clientId, onSubmit }) => {
 			listMapper={item => ({
 				id: item.id,
 				primaryLabel: `${item.firstName} ${item.lastName}`,
-				secondaryLabel: `${item.username} ${toTitleWords(item.role.name)}`
+				secondaryLabel: `${item.username} ${toTitleWords(item.role)}`
 			})}
 		/>
 	);

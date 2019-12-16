@@ -181,6 +181,25 @@ const pages: IPage[] = [
 		wrapPaper: true
 	},
 	{
+		id: "Reports",
+		path: "/reports",
+		component: props => (
+			<DynamicImport
+				load={async () => (await import("../components/pages/Reports")).default}
+			>
+				{Component => (Component ? <Component {...props} /> : <Loading />)}
+			</DynamicImport>
+		),
+		requireLogin: true,
+		access: [Role.MASTER, Role.ADMIN, Role.KEY_MANAGER],
+		sidebar: {
+			title: "Reports",
+			icon: People,
+			location: "top"
+		},
+		wrapPaper: true
+	},
+	{
 		id: "Settings",
 		path: "/settings",
 		component: props => (

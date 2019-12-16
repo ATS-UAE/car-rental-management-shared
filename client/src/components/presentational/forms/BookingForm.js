@@ -79,8 +79,8 @@ function BookingForm({
 		},
 		{
 			type: SELECT,
-			id: "booking-type-id",
-			name: "bookingTypeId",
+			id: "booking-type",
+			name: "bookingType",
 			validators: [validators.requiredField],
 			props: {
 				label: "Booking Type",

@@ -1,6 +1,6 @@
 import path from "path";
 import multer from "multer";
-import { getStaticFilesPath, makeDirectoryIfNotExist } from "../utils/helpers";
+import { getStaticFilesPath, makeDirectoryIfNotExist } from "../utils";
 
 const upload = (uploadPath, options?) => {
 	return multer({

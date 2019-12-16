@@ -12,7 +12,7 @@ import disallowGuests from "../middlewares/disallowGuests";
 import parseBody from "../middlewares/parseBody";
 import upload from "../middlewares/multerUpload";
 import db from "../models";
-import { ResponseBuilder, getFileURL } from "../utils/helpers";
+import { ResponseBuilder, getFileURL } from "../utils";
 import config from "../config";
 import { User } from "../datasource";
 import {
@@ -161,7 +161,7 @@ router.patch(
 				await foundUser.setCategories(categories);
 			}
 			let updatedUser = await UserDataSource.update(foundUser.id, {
-				...foundUser,
+				...body,
 				userImageSrc: fileLocation || foundUser.userImageSrc
 			});
 

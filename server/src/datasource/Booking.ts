@@ -6,7 +6,7 @@ import {
 	InvalidPermissionException,
 	ResourceNotFoundException
 } from "../utils/exceptions";
-import { toMySQLDate, exceptFields } from "../utils/helpers";
+import { toMySQLDate, exceptFields } from "../utils";
 import { BookingType } from "../variables/enums";
 export default class Booking extends DataSource {
 	user: UserAccessor;
@@ -17,9 +17,11 @@ export default class Booking extends DataSource {
 	}
 
 	async get(id: number): Promise<any> {
-		let role: Role = this.user.role.name;
+		let role: Role = this.user.role;
 		let foundBooking = await this.getBooking(id, {
-			exclude: RBAC.getExcludedFields(role, Operation.READ, Resource.BOOKINGS)
+			attributes: {
+				exclude: RBAC.getExcludedFields(role, Operation.READ, Resource.USERS)
+			}
 		});
 		if (!foundBooking) {
 			throw new ResourceNotFoundException(
@@ -37,9 +39,11 @@ export default class Booking extends DataSource {
 	}
 
 	async getAll(): Promise<any> {
-		let role: Role = this.user.role.name;
+		let role: Role = this.user.role;
 		let foundBookings = await this.getBookings({
-			exclude: RBAC.getExcludedFields(role, Operation.READ, Resource.BOOKINGS)
+			attributes: {
+				exclude: RBAC.getExcludedFields(role, Operation.READ, Resource.USERS)
+			}
 		});
 		let bookings = [];
 		for (let booking of foundBookings) {
@@ -56,7 +60,7 @@ export default class Booking extends DataSource {
 	}
 
 	async update(id: number, data: any): Promise<any> {
-		let role: Role = this.user.role.name;
+		let role: Role = this.user.role;
 		let foundBooking = await this.get(id);
 
 		let accessible = await RBAC.can(role, Operation.UPDATE, Resource.BOOKINGS, {
@@ -93,7 +97,7 @@ export default class Booking extends DataSource {
 	}
 
 	async delete(id: number): Promise<any> {
-		let role: Role = this.user.role.name;
+		let role: Role = this.user.role;
 		let foundBooking = await this.get(id);
 
 		let accessible = await RBAC.can(role, Operation.DELETE, Resource.BOOKINGS, {
@@ -109,7 +113,7 @@ export default class Booking extends DataSource {
 	}
 
 	async create(data: any) {
-		let role: Role = this.user.role.name;
+		let role: Role = this.user.role;
 
 		let accessible = await RBAC.can(role, Operation.CREATE, Resource.BOOKINGS, {
 			accessor: this.user,
@@ -121,8 +125,7 @@ export default class Booking extends DataSource {
 				throw new InvalidPermissionException();
 			}
 
-			const bookingType = this.db.BookingType.findByPk(data.bookingTypeId);
-			if (bookingType.name === BookingType.REPLACEMENT) {
+			if (data.bookingType === BookingType.REPLACEMENT) {
 				const { brand, model, plateNumber, vin } = data;
 				replacementVehicle = await this.db.ReplaceVehicle.create({
 					brand,

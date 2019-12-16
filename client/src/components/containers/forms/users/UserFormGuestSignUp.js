@@ -23,7 +23,7 @@ function UserFormGuestSignUp({ onSubmit, classes }) {
 			}
 			onError={setErrors}
 			errors={errors}
-			exclude={["roleId", "email", "categories"]}
+			exclude={["role", "email", "categories"]}
 			showFooter={true}
 			onSubmit={() => {
 				setLoading(true);
@@ -41,6 +41,4 @@ function UserFormGuestSignUp({ onSubmit, classes }) {
 	);
 }
 
-const mapStateToProps = ({ enums }) => ({ enums });
-
-export default connect(mapStateToProps)(UserFormGuestSignUp);
+export default UserFormGuestSignUp;

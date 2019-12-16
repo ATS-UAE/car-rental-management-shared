@@ -26,10 +26,8 @@ function VehicleFormCreate({ fetchVehicles, exclude, onSubmit }) {
 				api
 					.createVehicle({
 						...values,
-						bookingChargeUnitId:
-							values.bookingChargeUnitId === ""
-								? null
-								: values.bookingChargeUnitId
+						bookingChargeUnit:
+							values.bookingChargeUnit === "" ? null : values.bookingChargeUnit
 					})
 					.then(() => {
 						fetchVehicles();
@@ -46,7 +44,4 @@ function VehicleFormCreate({ fetchVehicles, exclude, onSubmit }) {
 	);
 }
 
-export default connect(
-	null,
-	reduxActions
-)(VehicleFormCreate);
+export default connect(null, reduxActions)(VehicleFormCreate);

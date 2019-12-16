@@ -114,8 +114,8 @@ function UserForm({
 		},
 		{
 			type: SELECT,
-			id: "role-id",
-			name: "roleId",
+			id: "role",
+			name: "role",
 			validators: [validators.requiredField],
 			props: {
 				label: "Role",

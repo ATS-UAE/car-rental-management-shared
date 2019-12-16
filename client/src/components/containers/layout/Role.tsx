@@ -27,7 +27,7 @@ const Component: FC<Props> = ({ roles, children, role, excludes }) => {
 };
 
 const mapStateToProps = ({ auth }: ReduxState): RoleStateProps => ({
-	role: (auth && auth.data && auth.data.role.name) || undefined
+	role: (auth && auth.data && auth.data.role) || undefined
 });
 
 export const Role = connect(mapStateToProps)(Component);

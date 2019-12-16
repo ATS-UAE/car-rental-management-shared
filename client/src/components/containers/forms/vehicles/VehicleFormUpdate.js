@@ -33,10 +33,8 @@ function VehicleFormUpdate({
 				api
 					.updateVehicle({
 						...values,
-						bookingChargeUnitId:
-							values.bookingChargeUnitId === ""
-								? null
-								: values.bookingChargeUnitId
+						bookingChargeUnit:
+							values.bookingChargeUnit === "" ? null : values.bookingChargeUnit
 					})
 					.then(() => {
 						fetchVehicles();

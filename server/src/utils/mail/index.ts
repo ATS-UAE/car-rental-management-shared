@@ -7,10 +7,7 @@ import jwt from "jsonwebtoken";
 import moment from "moment";
 import StaticMaps from "staticmaps";
 import config from "../../config";
-import {
-	getStaticFilesPath,
-	makeDirectoryIfNotExist
-} from "../../utils/helpers";
+import { getStaticFilesPath, makeDirectoryIfNotExist } from "..";
 
 const { mail, secretKey } = config;
 
@@ -133,7 +130,7 @@ export const sendBookingConfirmation = async ({
 	parkingLocation: string;
 	lat: number;
 	lng: number;
-	address: number;
+	address: string;
 }): Promise<string> => {
 	const transporter = getTransport();
 

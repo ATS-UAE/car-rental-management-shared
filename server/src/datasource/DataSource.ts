@@ -15,15 +15,9 @@ export default abstract class DataSource {
 	): Promise<{ access: boolean; excludedFields: string[] }> => {
 		if (this.user && this.resource) {
 			return {
-
-				access: await RBAC.can(
-					this.user.role.name,
-					action,
-					this.resource,
-					params
-				),
+				access: await RBAC.can(this.user.role, action, this.resource, params),
 				excludedFields: RBAC.getExcludedFields(
-					this.user.role.name,
+					this.user.role,
 					action,
 					this.resource
 				)

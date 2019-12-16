@@ -1,6 +1,6 @@
 import express from "express";
 
-import { ResponseBuilder } from "../utils/helpers";
+import { ResponseBuilder } from "../utils";
 import { sendInvite } from "../utils/mail";
 import requireLogin from "../middlewares/requireLogin";
 import disallowGuests from "../middlewares/disallowGuests";

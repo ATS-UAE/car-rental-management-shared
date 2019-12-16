@@ -9,12 +9,11 @@ import LoginContainer from "../containers/forms/Login";
 import * as actions from "../../actions";
 import ForgotPassword from "../containers/forms/ForgotPassword";
 
-const Login = ({ classes, history, fetchEnums, fetchCurrentUserDetails }) => {
+const Login = ({ classes, history, fetchCurrentUserDetails }) => {
 	return (
 		<Paper className={classes.root}>
 			<LoginContainer
 				onLogin={async () => {
-					await fetchEnums();
 					await fetchCurrentUserDetails();
 					history.push("/");
 				}}
@@ -66,10 +65,7 @@ const styles = theme => ({
 });
 
 export default compose(
-	connect(
-		null,
-		actions
-	),
+	connect(null, actions),
 	withRouter,
 	withStyles(styles)
 )(Login);

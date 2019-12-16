@@ -1,7 +1,7 @@
 import express from "express";
 
 import db from "../models";
-import { ResponseBuilder } from "../utils/helpers/";
+import { ResponseBuilder } from "../utils/";
 import requireLogin from "../middlewares/requireLogin";
 
 const router = express.Router();

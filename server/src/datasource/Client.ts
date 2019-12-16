@@ -1,7 +1,7 @@
 import { Op } from "sequelize";
 import _ from "lodash";
 import DataSource from "./DataSource";
-import database from "../models";
+import { Vehicle } from "../models";
 import { Role, Operation, Resource } from "../variables/enums";
 import UserAccessor from "./types/UserAccessor";
 import RBAC from "../utils/rbac";
@@ -16,8 +16,12 @@ export default class Client extends DataSource {
 	}
 
 	get = async (id: number): Promise<any> => {
-		let role: Role = this.user.role.name;
-		let foundClient = await this.getClient(id);
+		let role: Role = this.user.role;
+		let foundClient = await this.getClient(id, {
+			attributes: {
+				exclude: RBAC.getExcludedFields(role, Operation.READ, Resource.CLIENTS)
+			}
+		});
 		if (!foundClient) {
 			throw new ResourceNotFoundException(
 				`Client with ID of ${id} is not found.`
@@ -34,9 +38,11 @@ export default class Client extends DataSource {
 	};
 
 	async getAll(): Promise<any> {
-		let role: Role = this.user.role.name;
+		let role: Role = this.user.role;
 		let foundClients = await this.getClients({
-			exclude: RBAC.getExcludedFields(role, Operation.READ, Resource.CLIENTS)
+			attributes: {
+				exclude: RBAC.getExcludedFields(role, Operation.READ, Resource.CLIENTS)
+			}
 		});
 		let vehicles = [];
 		for (let vehicle of foundClients) {
@@ -67,7 +73,7 @@ export default class Client extends DataSource {
 		}
 		if (data.locations && !excludedFields.includes("locations")) {
 			await foundClient.setLocations(data.locations);
-			await database.Vehicle.update(
+			await Vehicle.update(
 				{ clientId: null },
 				{
 					where: { clientId: id, locationId: { [Op.notIn]: data.locations } }
@@ -89,7 +95,7 @@ export default class Client extends DataSource {
 	};
 
 	async delete(id: number): Promise<any> {
-		let role: Role = this.user.role.name;
+		let role: Role = this.user.role;
 		let foundClient = await this.get(id);
 
 		let accessible = await RBAC.can(role, Operation.DELETE, Resource.CLIENTS, {
@@ -105,7 +111,7 @@ export default class Client extends DataSource {
 	}
 
 	async create(data: object) {
-		let role: Role = this.user.role.name;
+		let role: Role = this.user.role;
 
 		let accessible = await RBAC.can(role, Operation.CREATE, Resource.CLIENTS, {
 			accessor: this.user,

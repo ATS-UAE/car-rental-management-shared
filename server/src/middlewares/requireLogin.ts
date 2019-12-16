@@ -1,4 +1,4 @@
-import { ResponseBuilder } from "../utils/helpers";
+import { ResponseBuilder } from "../utils";
 
 export default function(req, res, next) {
 	if (!req.user) {

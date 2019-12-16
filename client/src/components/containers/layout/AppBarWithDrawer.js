@@ -12,26 +12,23 @@ import { toTitleWords } from "../../../utils/helpers";
 
 function AppBarWithDrawerContainer({
 	auth,
-	enums,
 	history,
-	fetchEnums,
 	fetchCurrentUserDetails,
 	authLogout
 }) {
 	useEffect(() => {
-		fetchEnums();
 		fetchCurrentUserDetails();
 	}, []);
 	let menuList = [];
 	let endList = [];
 	let profile;
-	if (auth && enums) {
+	if (auth) {
 		let pageList = [];
 		let optionsList = [];
 		let role = auth.data.role;
 		profile = {
 			title: `${auth.data.firstName} ${auth.data.lastName}`,
-			subtitle: `${toTitleWords(auth.data.role.name)}`,
+			subtitle: `${toTitleWords(role)}`,
 			initials: `${auth.data.firstName[0]}${auth.data.lastName[0]}`,
 			imgSrc: auth.data.userImageSrc || null
 		};
@@ -39,7 +36,7 @@ function AppBarWithDrawerContainer({
 			if (page.sidebar !== undefined) {
 				if (
 					page.access === undefined ||
-					(page.access && page.access.includes(role.name))
+					(page.access && page.access.includes(role))
 				) {
 					if (page.sidebar.location === "bottom") {
 						optionsList.push({
@@ -88,16 +85,11 @@ function AppBarWithDrawerContainer({
 	);
 }
 
-const mapStateToProps = ({ auth, enums, permissionData }) => ({
-	auth,
-	enums,
-	permissionData
+const mapStateToProps = ({ auth }) => ({
+	auth
 });
 
 export default compose(
-	connect(
-		mapStateToProps,
-		actions
-	),
+	connect(mapStateToProps, actions),
 	withRouter
 )(AppBarWithDrawerContainer);

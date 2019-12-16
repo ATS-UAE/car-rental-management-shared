@@ -16,8 +16,12 @@ export default class Vehicle extends DataSource {
 	}
 
 	async get(id: number): Promise<any> {
-		let role: Role = this.user.role.name;
-		let foundVehicle = await this.getVehicle(id);
+		let role: Role = this.user.role;
+		let foundVehicle = await this.getVehicle(id, {
+			attributes: {
+				exclude: RBAC.getExcludedFields(role, Operation.READ, Resource.VEHICLES)
+			}
+		});
 		if (!foundVehicle) {
 			throw new ResourceNotFoundException(
 				`User with ID of ${id} is not found.`
@@ -34,9 +38,11 @@ export default class Vehicle extends DataSource {
 	}
 
 	async getAll(): Promise<any> {
-		let role: Role = this.user.role.name;
+		let role: Role = this.user.role;
 		let foundVehicles = await this.getVehicles({
-			exclude: RBAC.getExcludedFields(role, Operation.READ, Resource.VEHICLES)
+			attributes: {
+				exclude: RBAC.getExcludedFields(role, Operation.READ, Resource.VEHICLES)
+			}
 		});
 		let vehicles = [];
 		for (let vehicle of foundVehicles) {
@@ -53,7 +59,7 @@ export default class Vehicle extends DataSource {
 	}
 
 	async update(id: number, data?: object): Promise<any> {
-		let role: Role = this.user.role.name;
+		let role: Role = this.user.role;
 		let foundVehicle = await this.get(id);
 
 		let accessible = await RBAC.can(role, Operation.UPDATE, Resource.VEHICLES, {
@@ -70,7 +76,7 @@ export default class Vehicle extends DataSource {
 	}
 
 	async delete(id: number): Promise<any> {
-		let role: Role = this.user.role.name;
+		let role: Role = this.user.role;
 		let foundVehicle = await this.get(id);
 
 		let accessible = await RBAC.can(role, Operation.DELETE, Resource.VEHICLES, {
@@ -86,7 +92,7 @@ export default class Vehicle extends DataSource {
 	}
 
 	async create(data: object) {
-		let role: Role = this.user.role.name;
+		let role: Role = this.user.role;
 
 		let accessible = await RBAC.can(role, Operation.CREATE, Resource.VEHICLES, {
 			accessor: this.user,

@@ -1,26 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import Select from "../../presentational/inputs/Select";
+import { Role } from "../../../variables/enums";
 import * as actions from "../../../actions";
 
-function RoleSelect({
-	value,
-	enums,
-	fetchEnums,
-	required,
-	fullWidth,
-	onChange
-}) {
+function RoleSelect({ value, required, fullWidth, onChange }) {
 	const [stateValue, setStateValue] = useState("");
-	useEffect(() => {
-		fetchEnums();
-	}, []);
-	const items = enums
-		? enums.data.bookingTypes.map(role => ({
-				value: role.id,
-				label: role.name
-		  }))
-		: [{ value: "", label: "Loading..." }];
+
+	const items = Object.keys(Role).map(item => ({
+		value: item,
+		label: item
+	}));
+
 	return (
 		<Select
 			label="Role"
@@ -37,9 +28,4 @@ function RoleSelect({
 	);
 }
 
-const mapStateToProps = ({ enums }) => ({ enums });
-
-export default connect(
-	mapStateToProps,
-	actions
-)(RoleSelect);
+export default connect(mapStateToProps, actions)(RoleSelect);
