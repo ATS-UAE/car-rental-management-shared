@@ -24,8 +24,8 @@ export interface AccidentAttributes {
 	vehicleId: number;
 	bookingId: number;
 
-	readonly createdAt: number;
-	readonly updatedAt: number;
+	readonly createdAt: Date;
+	readonly updatedAt: Date;
 }
 
 @Table
@@ -78,10 +78,10 @@ export class Accident extends Model<Accident> implements AccidentAttributes {
 	booking: Booking;
 
 	@CreatedAt
-	public readonly createdAt: number;
+	public readonly createdAt: Date;
 
 	@UpdatedAt
-	public readonly updatedAt: number;
+	public readonly updatedAt: Date;
 
 	@BelongsToMany(
 		() => User,

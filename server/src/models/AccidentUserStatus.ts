@@ -15,8 +15,8 @@ export interface AccidentUserStatusAttributes {
 	accidentId: number;
 	userId: number;
 
-	readonly createdAt: number;
-	readonly updatedAt: number;
+	readonly createdAt: Date;
+	readonly updatedAt: Date;
 }
 
 @Table
@@ -43,8 +43,8 @@ export class AccidentUserStatus extends Model<AccidentUserStatus>
 	public user: User;
 
 	@CreatedAt
-	public readonly createdAt: number;
+	public readonly createdAt: Date;
 
 	@UpdatedAt
-	public readonly updatedAt: number;
+	public readonly updatedAt: Date;
 }

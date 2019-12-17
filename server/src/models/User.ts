@@ -41,8 +41,8 @@ export interface UserAttributes {
 	role: Role;
 	userCreatorId: number;
 
-	readonly createdAt: number;
-	readonly updatedAt: number;
+	readonly createdAt: Date;
+	readonly updatedAt: Date;
 }
 
 @Table
@@ -112,10 +112,10 @@ export class User extends Model<User> implements UserAttributes {
 	public userCreatorId: number;
 
 	@CreatedAt
-	public readonly createdAt: number;
+	public readonly createdAt: Date;
 
 	@UpdatedAt
-	public readonly updatedAt: number;
+	public readonly updatedAt: Date;
 
 	@BelongsTo(() => Client)
 	client: Client;

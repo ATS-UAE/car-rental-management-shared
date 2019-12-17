@@ -18,8 +18,8 @@ export interface VehicleIssueAttributes {
 	message: string;
 	vehicleId: number;
 
-	readonly createdAt: number;
-	readonly updatedAt: number;
+	readonly createdAt: Date;
+	readonly updatedAt: Date;
 }
 
 @Table
@@ -38,10 +38,10 @@ export class VehicleIssue extends Model<VehicleIssue>
 	public vehicleId: number;
 
 	@CreatedAt
-	public readonly createdAt: number;
+	public readonly createdAt: Date;
 
 	@UpdatedAt
-	public readonly updatedAt: number;
+	public readonly updatedAt: Date;
 
 	@BelongsTo(() => Vehicle)
 	public readonly vehicle: Vehicle;

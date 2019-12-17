@@ -15,8 +15,8 @@ export interface ClientAttributes {
 	id: number;
 	name: string;
 
-	readonly createdAt: number;
-	readonly updatedAt: number;
+	readonly createdAt: Date;
+	readonly updatedAt: Date;
 }
 
 @Table
@@ -30,10 +30,10 @@ export class Client extends Model<Client> implements ClientAttributes {
 	public name: string;
 
 	@CreatedAt
-	public readonly createdAt: number;
+	public readonly createdAt: Date;
 
 	@UpdatedAt
-	public readonly updatedAt: number;
+	public readonly updatedAt: Date;
 
 	@HasMany(() => User)
 	public readonly users: User[];

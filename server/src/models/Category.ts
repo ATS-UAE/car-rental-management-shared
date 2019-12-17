@@ -16,8 +16,8 @@ export interface CategoryAttributes {
 	name: string;
 	clientId: number;
 
-	readonly createdAt: number;
-	readonly updatedAt: number;
+	readonly createdAt: Date;
+	readonly updatedAt: Date;
 }
 
 @Table
@@ -35,10 +35,10 @@ export class Category extends Model<Category> implements CategoryAttributes {
 	public clientId: number;
 
 	@CreatedAt
-	public readonly createdAt: number;
+	public readonly createdAt: Date;
 
 	@CreatedAt
-	public readonly updatedAt: number;
+	public readonly updatedAt: Date;
 
 	@BelongsTo(() => Client)
 	public readonly client: Client;

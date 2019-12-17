@@ -13,8 +13,8 @@ export interface UserVehicleCategoryAttributes {
 	userId: number;
 	categoryId: number;
 
-	readonly createdAt: number;
-	readonly updatedAt: number;
+	readonly createdAt: Date;
+	readonly updatedAt: Date;
 }
 
 @Table
@@ -35,8 +35,8 @@ export class UserVehicleCategory extends Model<UserVehicleCategory>
 	public category: Category;
 
 	@CreatedAt
-	public readonly createdAt: number;
+	public readonly createdAt: Date;
 
 	@UpdatedAt
-	public readonly updatedAt: number;
+	public readonly updatedAt: Date;
 }

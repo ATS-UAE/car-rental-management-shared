@@ -17,8 +17,8 @@ export interface BookingAttributes {
 	id: number;
 	paid: boolean;
 	amount: number | null;
-	from: number;
-	to: number;
+	from: Date;
+	to: Date;
 	approved: boolean | null;
 	finished: boolean;
 	startMileage: number | null;
@@ -48,10 +48,10 @@ export class Booking extends Model<Booking> implements BookingAttributes {
 	public amount: number | null;
 
 	@Column({ allowNull: false, type: DataType.DATE })
-	public from: number;
+	public from: Date;
 
 	@Column({ allowNull: false, type: DataType.DATE })
-	public to: number;
+	public to: Date;
 
 	@Column({ defaultValue: null })
 	public approved: boolean | null;

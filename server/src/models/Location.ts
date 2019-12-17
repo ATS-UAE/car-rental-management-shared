@@ -19,8 +19,8 @@ export interface LocationAttributes {
 	address: string;
 	locationImageSrc: string | null;
 
-	readonly createdAt: number;
-	readonly updatedAt: number;
+	readonly createdAt: Date;
+	readonly updatedAt: Date;
 }
 
 @Table
@@ -46,10 +46,10 @@ export class Location extends Model<Location> implements LocationAttributes {
 	public locationImageSrc: string | null;
 
 	@CreatedAt
-	public readonly createdAt: number;
+	public readonly createdAt: Date;
 
 	@UpdatedAt
-	public readonly updatedAt: number;
+	public readonly updatedAt: Date;
 
 	@BelongsToMany(
 		() => Client,

@@ -39,8 +39,8 @@ export interface VehicleAttributes {
 	clientId: number | null;
 	locationId: number | null;
 
-	readonly createdAt: number;
-	readonly updatedAt: number;
+	readonly createdAt: Date;
+	readonly updatedAt: Date;
 }
 
 @Table
@@ -92,10 +92,10 @@ export class Vehicle extends Model<Vehicle> implements VehicleAttributes {
 	public locationId: number | null;
 
 	@CreatedAt
-	public readonly createdAt: number;
+	public readonly createdAt: Date;
 
 	@UpdatedAt
-	public readonly updatedAt: number;
+	public readonly updatedAt: Date;
 
 	@HasMany(() => Booking)
 	public readonly bookings: Booking[];

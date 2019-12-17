@@ -17,8 +17,8 @@ export interface ReplaceVehicleAttributes {
 	model: string;
 	vin: string;
 
-	readonly createdAt: number;
-	readonly updatedAt: number;
+	readonly createdAt: Date;
+	readonly updatedAt: Date;
 }
 
 @Table
@@ -42,10 +42,10 @@ export class ReplaceVehicle extends Model<ReplaceVehicle>
 	public vin: string;
 
 	@CreatedAt
-	public readonly createdAt: number;
+	public readonly createdAt: Date;
 
 	@UpdatedAt
-	public readonly updatedAt: number;
+	public readonly updatedAt: Date;
 
 	@HasOne(() => Booking)
 	public readonly booking?: Booking;

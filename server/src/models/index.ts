@@ -45,15 +45,6 @@ const sequelize = new Sequelize(
 		logging: process.env.NODE_ENV === "development" ? console.log : false,
 		host: config.database.host,
 		port: parseInt(config.database.port),
-		define: {
-			hooks: {
-				afterFind: (results): void => {
-					if (results) {
-						convertSequelizeDatesToUnix(results);
-					}
-				}
-			}
-		},
 		models: [
 			Accident,
 			AccidentUserStatus,
