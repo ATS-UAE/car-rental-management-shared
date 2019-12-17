@@ -35,8 +35,8 @@ export class VehicleCategory extends Model<VehicleCategory>
 	public vehicle: Vehicle;
 
 	@CreatedAt
-	public readonly createdAt: number;
+	public readonly createdAt: Date;
 
 	@UpdatedAt
-	public readonly updatedAt: number;
+	public readonly updatedAt: Date;
 }
