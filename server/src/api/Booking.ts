@@ -1,4 +1,3 @@
-import moment from "moment";
 import { ValidationError } from "yup";
 import { Booking as BookingValidators } from "./validators";
 import {
@@ -9,7 +8,7 @@ import {
 	BookingAttributes,
 	ReplaceVehicleAttributes
 } from "../models";
-import { FormErrorBuilder } from "./exceptions";
+import { FormErrorBuilder, ApiException } from "./exceptions";
 import { UseParameters } from ".";
 import { Role } from "../variables/enums";
 
@@ -98,7 +97,7 @@ export class Booking {
 				errors.throw;
 			}
 			// Unknown error.
-			throw new Error("An unknown error has occurred.");
+			throw new ApiException("An unknown error has occurred.");
 		}
 	};
 
@@ -148,7 +147,32 @@ export class Booking {
 				errors.throw;
 			}
 			// Unknown error.
-			throw new Error("An unknown error has occurred.");
+			throw new ApiException("An unknown error has occurred.");
+		}
+	};
+
+	public finalize = async (options: BookingFinalizeOptions) => {
+		try {
+			await BookingValidators.finalize.validate(options, {
+				abortEarly: false,
+				context: {
+					booking: this.data
+				}
+			});
+			const finalizeOptions = await BookingValidators.finalize.cast(options);
+
+			await this.data.update(finalizeOptions);
+		} catch (e) {
+			const errors = new FormErrorBuilder();
+			if (e instanceof ValidationError) {
+				// Add fields to errors
+				for (const error of e.inner) {
+					errors.add(error.path, error.message);
+				}
+				errors.throw;
+			}
+			// Unknown error.
+			throw new ApiException("An unknown error has occurred.");
 		}
 	};
 }
