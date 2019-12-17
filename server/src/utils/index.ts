@@ -2,9 +2,11 @@ import moment from "moment-timezone";
 import path from "path";
 import fs from "fs";
 import _ from "lodash";
-import { BookingStatus } from "../variables/enums";
 import { Moment } from "moment";
 import { URL } from "url";
+
+import { BookingStatus } from "../variables/enums";
+import { ExtractArray } from "../typings";
 
 export { default as ResponseBuilder } from "./ResponseBuilder";
 
@@ -18,6 +20,10 @@ export const pickAndMerge = <
 	fields: K[] = []
 ): Pick<T2, K> & T1 => {
 	return { ...obj1, ..._.pick(obj2, fields) };
+};
+
+export const getArray = <T>(array: T): ExtractArray<T>[] => {
+	return array instanceof Array ? array : [];
 };
 
 export const pickFields = (target: object, fields: string[]): object => {
@@ -118,7 +124,7 @@ export const convertDatesToUnix = <T extends object>(
 export const getBookingStatus = (booking: {
 	from: number;
 	to: number;
-	[key: string]: any;
+	approved: boolean | null;
 }): BookingStatus => {
 	let status = BookingStatus.UNKNOWN;
 	let currentTime = moment();
@@ -189,3 +195,4 @@ export const rangeOverlap = (
 };
 
 export * from "./RoleUtils";
+export * from "./FormErrorBuilder";

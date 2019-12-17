@@ -9,16 +9,19 @@ import {
 	CreatedAt,
 	DataType,
 	UpdatedAt,
-	BelongsToMany
+	BelongsToMany,
+	HasMany
 } from "sequelize-typescript";
 import {
 	Client,
 	Accident,
 	AccidentUserStatus,
 	Category,
-	UserVehicleCategory
+	UserVehicleCategory,
+	Booking
 } from "./";
 import { Role } from "../variables/enums";
+
 export interface UserAttributes {
 	id: number;
 	username: string;
@@ -131,4 +134,7 @@ export class User extends Model<User> implements UserAttributes {
 		() => UserVehicleCategory
 	)
 	categories: Category[];
+
+	@HasMany(() => Booking)
+	bookings: Booking[];
 }
