@@ -1,21 +1,18 @@
-import { ObjectSchema } from "yup";
-import { FieldError, FormException } from "../api/exceptions";
-
-interface FormErrorBuilderRequiredField {
-	value: any;
-}
+import { FieldError, FormException } from ".";
 
 export class FormErrorBuilder {
 	public fields: FieldError[] = [];
 
 	public add = (field: string, message: string) => {
 		this.fields.push({ field, message });
+		return this;
 	};
 
 	public addIf = (condition: boolean, field: string, message: string) => {
 		if (condition) {
 			this.add(field, message);
 		}
+		return this;
 	};
 
 	public throw(message: string = "An error has occured in one of the fields.") {

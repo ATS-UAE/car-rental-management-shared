@@ -64,13 +64,9 @@ passport.serializeUser(function(user: { id: number }, cb) {
 
 passport.deserializeUser(async (id: number, cb) => {
 	try {
-		let user = await User.findByPk(id);
-		const categories = await user.$get<Category>("categories");
+		const user = await User.findByPk(id);
 
-		cb(null, {
-			...user.get({ plain: true }),
-			categories: categories instanceof Array ? categories : []
-		});
+		cb(null, user);
 	} catch (e) {
 		cb(e);
 	}

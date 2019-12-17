@@ -1,11 +1,11 @@
 import * as Yup from "yup";
+import moment from "moment";
 
-import { User, Vehicle } from "../../models";
+import { User, Vehicle, Booking as BookingModel } from "../../models";
 import { BookingType } from "../../variables/enums";
-import moment = require("moment");
 
 export abstract class Booking {
-	static bookVehicle = Yup.object().shape({
+	static book = Yup.object().shape({
 		userId: Yup.number()
 			.required()
 			.test(
@@ -45,32 +45,6 @@ export abstract class Booking {
 		bookingType: Yup.string()
 			.oneOf(Object.values(BookingType))
 			.required(),
-		startMileage: Yup.number()
-			.nullable()
-			.transform(v => (v === undefined ? null : v)),
-		endMileage: Yup.number().test(
-			"no-lower-than-other",
-			function() {
-				const { parent } = this;
-				return `End mileage cannot be lower than ${parent.endMileage}`;
-			},
-			function(value) {
-				const { parent } = this;
-				return parent.startMileage !== null && value < parent.startMileage;
-			}
-		),
-		startFuel: Yup.number(),
-		endFuel: Yup.number().test(
-			"no-lower-than-other",
-			function() {
-				const { parent } = this;
-				return `End fuel cannot be lower than ${parent.startFuel}`;
-			},
-			function(value) {
-				const { parent } = this;
-				return parent.startFuel !== null && value < parent.startFuel;
-			}
-		),
 		replaceVehicle: Yup.lazy(function() {
 			const { parent } = this;
 			if (parent.bookingType === BookingType.REPLACEMENT) {
@@ -85,5 +59,51 @@ export abstract class Booking {
 				.transform(() => null)
 				.notRequired();
 		})
+	});
+
+	static approve = Yup.object().shape({
+		startFuel: Yup.number()
+			.nullable()
+			.default(null),
+		startMileage: Yup.number()
+			.nullable()
+			.default(null),
+		approved: Yup.boolean()
+			.required()
+			.test(
+				"no-finished-booking",
+				"This booking has already finished.",
+				function() {
+					const booking = (this.options.context as any).booking as BookingModel;
+					return !booking.finished;
+				}
+			)
+			.test(
+				"pending-only",
+				function() {
+					const booking = (this.options.context as any).booking as BookingModel;
+					return `Booking has already been ${
+						booking.approved ? "approved" : "denied"
+					}`;
+				},
+				function() {
+					const booking = (this.options.context as any).booking as BookingModel;
+					return booking.approved !== null;
+				}
+			)
+			.test("booking-expired", "Booking has already expired", function() {
+				const booking = (this.options.context as any).booking as BookingModel;
+				return moment(booking.from).isAfter(moment());
+			})
+	});
+
+	static finalize = Yup.object().shape({
+		endFuel: Yup.number()
+			.nullable()
+			.default(null),
+		endMileage: Yup.number()
+			.nullable()
+			.default(null),
+		paid: Yup.boolean().required()
 	});
 }
