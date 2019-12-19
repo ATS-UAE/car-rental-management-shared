@@ -3,7 +3,6 @@ import moment from "moment";
 
 import { User, Vehicle, Booking as BookingModel } from "../../models";
 import { BookingType, Role } from "../../variables/enums";
-import { notInRoles } from "../utils";
 
 export abstract class Booking {
 	static create = Yup.object()
