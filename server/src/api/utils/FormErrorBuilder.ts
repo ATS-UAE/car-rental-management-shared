@@ -1,4 +1,4 @@
-import { FieldError, FormException } from ".";
+import { FieldError, FormException } from "../exceptions";
 
 export class FormErrorBuilder {
 	public fields: FieldError[] = [];

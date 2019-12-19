@@ -3,14 +3,14 @@ import { Booking as BookingValidators } from "./validators";
 import {
 	User,
 	Booking as BookingModel,
-	Vehicle as VehicleModel,
 	ReplaceVehicle,
 	BookingAttributes,
 	ReplaceVehicleAttributes
 } from "../models";
-import { FormErrorBuilder, ApiException } from "./exceptions";
+import { ApiException, ItemNotFoundException } from "./exceptions";
 import { UseParameters } from ".";
 import { Role } from "../variables/enums";
+import { ApiErrorHandler } from "./utils";
 
 export type BookingCreateOptions = UseParameters<
 	BookingAttributes,
@@ -23,18 +23,21 @@ export type BookingCreateOptions = UseParameters<
 	>;
 };
 
-export type BookingApproveOptions = UseParameters<
+export type BookingUpdateOptions = UseParameters<
 	BookingAttributes,
 	undefined,
-	"startFuel" | "startMileage"
-> & {
-	approved: boolean;
-};
-
-export type BookingFinalizeOptions = UseParameters<
-	BookingAttributes,
-	undefined,
-	"endFuel" | "endMileage"
+	| "paid"
+	| "amount"
+	| "from"
+	| "to"
+	| "approved"
+	| "finished"
+	| "startMileage"
+	| "endMileage"
+	| "startFuel"
+	| "endFuel"
+	| "vehicleId"
+	| "bookingType"
 >;
 
 export class Booking {
@@ -66,15 +69,14 @@ export class Booking {
 		return [];
 	};
 
-	public static book = async (options: BookingCreateOptions) => {
-		const errors = new FormErrorBuilder();
-
+	public create = async (user: User, options: BookingCreateOptions) => {
 		try {
-			await BookingValidators.book.validate(options, {
-				abortEarly: false
+			await BookingValidators.create.validate(options, {
+				abortEarly: false,
+				context: { user, booking: this.data }
 			});
 
-			const bookingOptions = await BookingValidators.book.cast(options);
+			const bookingOptions = await BookingValidators.create.cast(options);
 
 			const replacedVehicle =
 				bookingOptions.replaceVehicle &&
@@ -89,28 +91,20 @@ export class Booking {
 
 			return new Booking(createdBooking);
 		} catch (e) {
-			if (e instanceof ValidationError) {
-				// Add fields to errors
-				for (const error of e.inner) {
-					errors.add(error.path, error.message);
-				}
-				errors.throw;
-			}
-			// Unknown error.
-			throw new ApiException("An unknown error has occurred.");
+			new ApiErrorHandler(e);
 		}
 	};
 
 	public static get = async (user: User, bookingId: number) => {
-		const errors = new FormErrorBuilder();
-		errors.addIf(!bookingId, "bookingId", "Booking ID does not exist.").throw();
-
 		const booking = await BookingModel.findByPk(bookingId, {
 			include: [{ all: true }]
 		});
-		errors
-			.addIf(!booking, "bookingId", `Booking with ${bookingId} does not exist.`)
-			.throw();
+
+		if (!booking) {
+			throw new ItemNotFoundException(
+				`Booking with ${bookingId} does not exist.`
+			);
+		}
 
 		if (user.role === Role.GUEST) {
 			// Return only own bookings.
@@ -123,56 +117,6 @@ export class Booking {
 			}
 		} else if (user.role === Role.MASTER) {
 			return new Booking(booking);
-		}
-	};
-
-	public approve = async (options: BookingApproveOptions) => {
-		try {
-			await BookingValidators.approve.validate(options, {
-				abortEarly: false,
-				context: {
-					booking: this.data
-				}
-			});
-			const approveOptions = await BookingValidators.approve.cast(options);
-
-			await this.data.update(approveOptions);
-		} catch (e) {
-			const errors = new FormErrorBuilder();
-			if (e instanceof ValidationError) {
-				// Add fields to errors
-				for (const error of e.inner) {
-					errors.add(error.path, error.message);
-				}
-				errors.throw;
-			}
-			// Unknown error.
-			throw new ApiException("An unknown error has occurred.");
-		}
-	};
-
-	public finalize = async (options: BookingFinalizeOptions) => {
-		try {
-			await BookingValidators.finalize.validate(options, {
-				abortEarly: false,
-				context: {
-					booking: this.data
-				}
-			});
-			const finalizeOptions = await BookingValidators.finalize.cast(options);
-
-			await this.data.update(finalizeOptions);
-		} catch (e) {
-			const errors = new FormErrorBuilder();
-			if (e instanceof ValidationError) {
-				// Add fields to errors
-				for (const error of e.inner) {
-					errors.add(error.path, error.message);
-				}
-				errors.throw;
-			}
-			// Unknown error.
-			throw new ApiException("An unknown error has occurred.");
 		}
 	};
 }

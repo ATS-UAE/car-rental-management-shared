@@ -12,7 +12,7 @@ import expressSession from "express-session";
 import { getStaticFilesPath } from "./utils";
 import { Role } from "./variables/enums";
 import config from "./config";
-import { User, Category } from "./models";
+import { User } from "./models";
 import authRoutes from "./routes/auth";
 import userRoutes from "./routes/users";
 import inviteRoutes from "./routes/invites";

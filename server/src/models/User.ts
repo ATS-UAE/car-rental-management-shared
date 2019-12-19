@@ -102,7 +102,7 @@ export class User extends Model<User> implements UserAttributes {
 
 	@ForeignKey(() => Client)
 	@Column
-	public clientId: number;
+	public clientId: number | null;
 
 	@Column({ type: DataType.STRING, allowNull: false })
 	public role: Role;
