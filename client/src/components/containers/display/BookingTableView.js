@@ -361,7 +361,7 @@ class BookingTableView extends Component {
 						toMonth: bookingEnd.format("MMM"),
 						toDay: bookingEnd.date(),
 						status: toTitleWords(getBookingStatus(booking)),
-						bookingType: toTitleWords(bookingType.name),
+						bookingType: toTitleWords(bookingType),
 						booking
 					});
 				}
@@ -375,7 +375,7 @@ class BookingTableView extends Component {
 			auth,
 			fetchBookings,
 			fetchVehicles,
-			fetchLocations,
+			fetchLocations
 		} = this.props;
 		const {
 			formData,

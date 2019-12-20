@@ -80,8 +80,7 @@ guestRole.addPermission(
 				console.error(e);
 				return false;
 			}
-		},
-		["clientId"]
+		}
 	)
 );
 guestRole.addPermission(
@@ -99,7 +98,7 @@ guestRole.addPermission(
 				return false;
 			}
 		},
-		["clientId", "bookingChargeUnitId", "bookingChargeCount", "bookingCharge"]
+		["bookingChargeUnitId", "bookingChargeCount", "bookingCharge"]
 	)
 );
 guestRole.addPermission(

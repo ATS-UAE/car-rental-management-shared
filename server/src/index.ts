@@ -25,6 +25,7 @@ import clientRoutes from "./routes/clients";
 import vehicelIssueRoutes from "./routes/vehicleIssues";
 import wialonRoutes from "./routes/wialon";
 import reportRoutes from "./routes/reports";
+import { Category } from "../build/models/Category";
 
 const app = express();
 // PASSPORT CONFIGURATIONS
@@ -64,7 +65,12 @@ passport.serializeUser(function(user: { id: number }, cb) {
 
 passport.deserializeUser(async (id: number, cb) => {
 	try {
-		const user = await User.findByPk(id);
+		const user = await User.findByPk(id, {
+			include: [{ model: Category }],
+			attributes: {
+				exclude: ["password"]
+			}
+		});
 
 		cb(null, user);
 	} catch (e) {

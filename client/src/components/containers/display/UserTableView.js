@@ -249,10 +249,14 @@ class UserTableView extends Component {
 						const client = clients.data.find(
 							client => client.id === user.clientId
 						);
-						data["client"] =
-							(client && client.name) || user.role === Role.MASTER
-								? toTitleWords(Role.MASTER)
-								: "Unassigned";
+
+						if (user.role === Role.MASTER) {
+							data["client"] = toTitleWords(Role.MASTER);
+						} else if (client && client.name) {
+							data["client"] = client.name;
+						} else {
+							data["client"] = "Unassigned";
+						}
 					}
 					newUserData.push(data);
 				}
