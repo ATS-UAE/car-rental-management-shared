@@ -37,7 +37,7 @@ export interface UserAttributes {
 	licenseImageSrc: string | null;
 	blocked: boolean;
 	emailConfirmed: boolean;
-	clientId: number;
+	clientId: number | null;
 	role: Role;
 	userCreatorId: number;
 

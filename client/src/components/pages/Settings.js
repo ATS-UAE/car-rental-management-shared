@@ -12,6 +12,7 @@ const Settings = ({
 	fetchCategories,
 	fetchCurrentUserDetails,
 	fetchVehicles,
+	fetchClients,
 	location,
 	match,
 	history
@@ -20,6 +21,7 @@ const Settings = ({
 		fetchCategories();
 		fetchCurrentUserDetails();
 		fetchVehicles();
+		fetchClients();
 	}, []);
 
 	const [value, setValue] = useState(0);
@@ -81,9 +83,6 @@ const mapStateToProps = ({ categories }) => ({
 });
 
 export default compose(
-	connect(
-		mapStateToProps,
-		actions
-	),
+	connect(mapStateToProps, actions),
 	withStyles(styles)
 )(Settings);

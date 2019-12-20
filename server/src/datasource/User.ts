@@ -1,3 +1,4 @@
+import bcrypt from "bcryptjs";
 import DataSource from "./DataSource";
 import { Operation, Resource, Role } from "../variables/enums";
 import UserAccessor from "./types/UserAccessor";
@@ -82,8 +83,12 @@ export default class User extends DataSource {
 		if (!accessible) {
 			throw new InvalidPermissionException();
 		}
-		console.log(data);
-		await foundUser.update(data, options);
+		let hashedPassword =
+			data["password"] && (await bcrypt.hash(data["password"], 10));
+		await foundUser.update(
+			{ ...data, password: data["password"] && hashedPassword },
+			options
+		);
 		return this.get(id);
 	}
 

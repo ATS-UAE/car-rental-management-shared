@@ -8,6 +8,23 @@ declare global {
 			user?: User;
 		}
 	}
+
+	namespace NodeJS {
+		interface ProcessEnv {
+			DATABASE_NAME: string;
+			DATABASE_USERNAME: string;
+			DATABASE_PASSWORD: string;
+			DATABASE_HOST: string;
+			DATABASE_PORT: string;
+			MAIL_USER: string;
+			MAIL_PASS: string;
+			MAIL_PORT: string;
+			MAIL_HOST: string;
+			SERVER_PORT: string;
+			SERVER_URL: string;
+			SECRET_KEY: string;
+		}
+	}
 }
 
 declare module "yup" {

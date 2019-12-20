@@ -19,6 +19,7 @@ import {
 	InvalidPermissionException,
 	ResourceNotFoundException
 } from "../utils/exceptions";
+import { InviteToken } from "../typings";
 
 const router = express.Router();
 
@@ -42,7 +43,7 @@ router.post(
 	upload("carbooking/media/users/profile").single("userImageSrc"),
 	parseBody,
 	async ({ user, body, file = {} }, res, next) => {
-		const { location: fileLocation = null, key: fileKey = null } = file;
+		const { location: fileLocation = null } = file;
 		const response = new ResponseBuilder();
 		const UserDataSource = new User(db, user);
 		let inviteTokenUsed = false;
@@ -51,11 +52,14 @@ router.post(
 
 		// Consume invite token
 		if (body.inviteToken) {
-			const inviteToken = jwt.verify(body.inviteToken, config.secretKey);
+			const inviteToken = jwt.verify(
+				body.inviteToken,
+				config.secretKey
+			) as InviteToken;
 			if (inviteToken) {
 				inviteTokenUsed = true;
 				email = inviteToken.email;
-				clientId = inviteToken.clientId;
+				clientId = inviteToken.clientId || null;
 			}
 		}
 

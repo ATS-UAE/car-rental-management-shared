@@ -83,7 +83,7 @@ export abstract class Booking {
 			}
 		);
 
-	static update = Yup.object()
+	static approve = Yup.object()
 		// Approve/deny booking
 		.shape({
 			startFuel: Yup.number()
@@ -130,8 +130,8 @@ export abstract class Booking {
 				}
 				return false;
 			}
-		)
-		// Finalize booking
+		);
+	static finalize = Yup.object() // Finalize booking
 		.shape({
 			endFuel: Yup.number()
 				.nullable()

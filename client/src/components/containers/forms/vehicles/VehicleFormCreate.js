@@ -21,6 +21,7 @@ function VehicleFormCreate({ fetchVehicles, exclude, onSubmit }) {
 			exclude={exclude}
 			loading={loading}
 			showFooter={true}
+			showVehicleIssues={false}
 			onSubmit={() => {
 				setLoading(true);
 				api

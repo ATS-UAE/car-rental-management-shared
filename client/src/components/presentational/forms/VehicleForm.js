@@ -19,6 +19,7 @@ function VehicleForm({
 	errors,
 	readOnly,
 	hints,
+	showVehicleIssues = true,
 	vehicleIssues = [],
 	vehicleIssueMenuValue,
 	onVehicleIssueMenuChange,
@@ -52,16 +53,6 @@ function VehicleForm({
 				label: "Select vehicle picture",
 				main: true,
 				icon: "DirectionsCar"
-			}
-		},
-		{
-			type: TEXT,
-			id: "object-id",
-			name: "objectId",
-			validators: [validators.requiredField],
-			props: {
-				label: "Object Number",
-				required: true
 			}
 		},
 		{
@@ -195,26 +186,28 @@ function VehicleForm({
 			readOnly={readOnly}
 			wrapper={wrapper}
 		>
-			<Grid item xs={12} sm={6}>
-				<ButtonModal
-					buttonProps={{
-						fullWidth: true,
-						children: "Vehicle Issues"
-					}}
-					onClick={onVehicleIssueMenuOpen}
-					onClose={onVehicleIssueMenuClose}
-					open={vehicleIssueMenuOpen}
-				>
-					<VehicleIssuesEditor
-						onChange={onVehicleIssueMenuChange}
-						loading={vehicleIssueMenuLoading}
-						values={vehicleIssues}
-						newValue={vehicleIssueMenuValue}
-						onAdd={onVehicleIssueMenuAdd}
-						onDelete={onVehicleIssueMenuDelete}
-					/>
-				</ButtonModal>
-			</Grid>
+			{showVehicleIssues && (
+				<Grid item xs={12} sm={6}>
+					<ButtonModal
+						buttonProps={{
+							fullWidth: true,
+							children: "Vehicle Issues"
+						}}
+						onClick={onVehicleIssueMenuOpen}
+						onClose={onVehicleIssueMenuClose}
+						open={vehicleIssueMenuOpen}
+					>
+						<VehicleIssuesEditor
+							onChange={onVehicleIssueMenuChange}
+							loading={vehicleIssueMenuLoading}
+							values={vehicleIssues}
+							newValue={vehicleIssueMenuValue}
+							onAdd={onVehicleIssueMenuAdd}
+							onDelete={onVehicleIssueMenuDelete}
+						/>
+					</ButtonModal>
+				</Grid>
+			)}
 		</Form>
 	);
 }

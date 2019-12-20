@@ -2,7 +2,7 @@ import * as Yup from "yup";
 import moment from "moment";
 
 import { User, Vehicle as VehicleModel } from "../../models";
-import { BookingType, Role } from "../../variables/enums";
+import {  Role } from "../../variables/enums";
 
 export abstract class Vehicle {
 	static create = Yup.object()

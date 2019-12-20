@@ -20,6 +20,7 @@ function VehicleFormContainer({
 	showFooter,
 	categories,
 	wialonUnits,
+	showVehicleIssues,
 	fetchVehicles
 }) {
 	let [errors, setErrors] = useState({});
@@ -104,6 +105,7 @@ function VehicleFormContainer({
 			exclude={exclude}
 			title={title}
 			values={values}
+			showVehicleIssues={showVehicleIssues}
 			locationList={locationList}
 			onChangeEvent={onChangeEvent}
 			errorNotes={errorNotes}

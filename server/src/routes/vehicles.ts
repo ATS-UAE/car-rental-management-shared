@@ -63,6 +63,7 @@ router.post(
 			});
 			response.handleSuccess("Vehicle has been created.", res);
 		} catch (e) {
+			console.log(e);
 			response.handleError(e, res);
 		}
 

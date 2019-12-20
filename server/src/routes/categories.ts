@@ -18,7 +18,10 @@ router.get("/", requireLogin, async (req, res) => {
 
 router.post("/", requireLogin, async ({ body }, res) => {
 	let response = new ResponseBuilder();
-	const created = await db.Category.create({ name: body.name });
+	const created = await db.Category.create({
+		name: body.name,
+		clientId: body.clientId
+	});
 	response.setData(created);
 	response.setSuccess(true);
 	response.setCode(200);
@@ -29,7 +32,7 @@ router.post("/", requireLogin, async ({ body }, res) => {
 router.patch("/:id", requireLogin, async ({ params, body }, res) => {
 	let response = new ResponseBuilder();
 	const found = await db.Category.findByPk(params.id);
-	found && found.update({ name: body.name });
+	found && found.update({ name: body.name, clientId: body.clientId });
 	response.setData(found);
 	response.setSuccess(true);
 	response.setCode(200);

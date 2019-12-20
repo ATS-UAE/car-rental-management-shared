@@ -11,6 +11,7 @@ import { sendPasswordResetToken } from "../utils/mail";
 import db from "../models";
 import requireLogin from "../middlewares/requireLogin";
 import config from "../config";
+import { PasswordResetToken } from "../typings";
 
 const { secretKey } = config;
 const router = express.Router();
@@ -137,7 +138,7 @@ router.post(
 
 		if (token) {
 			try {
-				const validToken = jwt.verify(token, secretKey);
+				const validToken = jwt.verify(token, secretKey) as PasswordResetToken;
 				if (validToken && validToken.passwordReset) {
 					const user = await db.User.findOne({
 						where: { email: validToken.email }
