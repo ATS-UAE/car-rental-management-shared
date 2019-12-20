@@ -39,7 +39,7 @@ export class UnitSummary implements Generatable<UnitSummaryResponse[]> {
 			{ field: "plateNumber", title: "Plate Number" },
 			{ field: "odometer", title: "Odometer", type: "numeric" },
 			{ field: "accidents", title: "Accidents", type: "numeric" },
-			{ field: "bookings", title: "Accidents", type: "numeric" },
+			{ field: "bookings", title: "Bookings", type: "numeric" },
 			{
 				field: "categories",
 				title: "Categories",

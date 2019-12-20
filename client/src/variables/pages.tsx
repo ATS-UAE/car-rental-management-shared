@@ -194,7 +194,7 @@ const pages: IPage[] = [
 		access: [Role.MASTER, Role.ADMIN, Role.KEY_MANAGER],
 		sidebar: {
 			title: "Reports",
-			icon: People,
+			icon: Assessment,
 			location: "top"
 		},
 		wrapPaper: true
