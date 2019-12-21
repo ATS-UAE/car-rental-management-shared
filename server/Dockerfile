@@ -4,6 +4,5 @@ COPY ./package.json ./
 RUN npm install -g typescript
 RUN npm install
 COPY . .
-RUN tsc
 EXPOSE 5000
 CMD ["npm", "run", "start"]

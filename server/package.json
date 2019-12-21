@@ -59,7 +59,7 @@
 	},
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"start": "node build/index",
+		"start": "npm run prod:build && node build/bundle",
 		"clean": "rm -rf ./build",
 		"dev:build": "webpack --mode=development",
 		"prod:build": "webpack --mode=development",
