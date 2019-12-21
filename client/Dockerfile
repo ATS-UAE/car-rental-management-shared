@@ -1,9 +1,8 @@
 FROM node:10 AS builder
 WORKDIR /var/www/car-booking-v2
-COPY ./package.json ./
-COPY ./package-lock.json ./
+COPY ./package.json .
 RUN npm install
-COPY ./ ./
+COPY . .
 RUN npm run build
 
 FROM nginx
