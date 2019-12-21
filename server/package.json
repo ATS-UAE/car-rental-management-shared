@@ -44,18 +44,25 @@
 		"sequelize-typescript": "^1.1.0",
 		"staticmaps": "^1.2.4",
 		"ts-jest": "^24.2.0",
-		"typescript": "^3.7.2",
 		"yup": "^0.27.0"
 	},
 	"devDependencies": {
+		"clean-webpack-plugin": "^3.0.0",
 		"nodemon": "^1.19.4",
-		"ts-node": "^8.5.2"
+		"source-map-loader": "^0.2.4",
+		"ts-loader": "^6.2.1",
+		"ts-node": "^8.5.2",
+		"typescript": "^3.7.4",
+		"webpack": "^4.41.4",
+		"webpack-cli": "^3.3.10",
+		"webpack-node-externals": "^1.7.2"
 	},
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"start": "node build/index",
-		"build": "tsc -p ./tsconfig.json",
 		"clean": "rm -rf ./build",
+		"dev:build": "webpack --mode=development",
+		"prod:build": "webpack --mode=development",
 		"dev:start": "nodemon -L --config nodemon.json",
 		"build:sequelize": "tsc -p ./sequelize --listEmittedFiles --outDir ./sequelize/build --rootDir ./sequelize",
 		"dev:db:migrate": "npm run build:sequelize && npx sequelize-cli db:migrate --env development --config ./sequelize/config.json --migrations-path ./sequelize/build/migrations --debug",

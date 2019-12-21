@@ -12,7 +12,7 @@ import expressSession from "express-session";
 import { getStaticFilesPath } from "./utils";
 import { Role } from "./variables/enums";
 import config from "./config";
-import { User } from "./models";
+import { User, Category } from "./models";
 import authRoutes from "./routes/auth";
 import userRoutes from "./routes/users";
 import inviteRoutes from "./routes/invites";
@@ -25,7 +25,6 @@ import clientRoutes from "./routes/clients";
 import vehicelIssueRoutes from "./routes/vehicleIssues";
 import wialonRoutes from "./routes/wialon";
 import reportRoutes from "./routes/reports";
-import { Category } from "../build/models/Category";
 
 const app = express();
 // PASSPORT CONFIGURATIONS

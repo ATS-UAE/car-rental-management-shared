@@ -12,7 +12,10 @@ import { getStaticFilesPath, makeDirectoryIfNotExist } from "..";
 const { mail, secretKey } = config;
 
 const getTemplate = (fileName: string): string =>
-	fs.readFileSync(`${__dirname}/templates/${fileName}.mjml`, "utf8");
+	fs.readFileSync(
+		path.resolve(`${__dirname}/templates/${fileName}.mjml`),
+		"utf8"
+	);
 
 const getTransport = () => nodemailer.createTransport(mail);
 

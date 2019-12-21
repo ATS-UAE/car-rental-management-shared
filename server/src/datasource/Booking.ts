@@ -8,6 +8,8 @@ import {
 } from "../utils/exceptions";
 import { toMySQLDate, exceptFields } from "../utils";
 import { BookingType } from "../variables/enums";
+import { User } from "../models";
+import moment = require("moment");
 export default class Booking extends DataSource {
 	user: UserAccessor;
 
@@ -19,6 +21,11 @@ export default class Booking extends DataSource {
 	async get(id: number): Promise<any> {
 		let role: Role = this.user.role;
 		let foundBooking = await this.getBooking(id, {
+			include: [
+				{
+					model: User
+				}
+			],
 			attributes: {
 				exclude: RBAC.getExcludedFields(role, Operation.READ, Resource.USERS)
 			}
@@ -32,6 +39,7 @@ export default class Booking extends DataSource {
 			accessor: this.user,
 			target: foundBooking
 		});
+		console.log(accessible);
 		if (!accessible) {
 			throw new InvalidPermissionException();
 		}
@@ -43,7 +51,12 @@ export default class Booking extends DataSource {
 		let foundBookings = await this.getBookings({
 			attributes: {
 				exclude: RBAC.getExcludedFields(role, Operation.READ, Resource.USERS)
-			}
+			},
+			include: [
+				{
+					model: User
+				}
+			]
 		});
 		let bookings = [];
 		for (let booking of foundBookings) {
@@ -92,7 +105,11 @@ export default class Booking extends DataSource {
 			replaceVehicle.destroy();
 		}
 
-		await foundBooking.update(data);
+		await foundBooking.update({
+			...data,
+			from: data.from && toMySQLDate(data.from),
+			to: data.from && toMySQLDate(data.to)
+		});
 		return this.get(id);
 	}
 

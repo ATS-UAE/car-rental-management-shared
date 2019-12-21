@@ -6,6 +6,7 @@ import {
 	InvalidPermissionException,
 	ResourceNotFoundException
 } from "../utils/exceptions";
+import { Client } from "../models";
 
 export default class Location extends DataSource {
 	user: UserAccessor;
@@ -18,6 +19,7 @@ export default class Location extends DataSource {
 	async get(id: number): Promise<any> {
 		let role: Role = this.user.role;
 		let foundLocation = await this.getLocation(id, {
+			include: [{ model: Client }],
 			attributes: {
 				exclude: RBAC.getExcludedFields(
 					role,
@@ -44,6 +46,7 @@ export default class Location extends DataSource {
 	async getAll(): Promise<any> {
 		let role: Role = this.user.role;
 		let foundLocations = await this.getLocations({
+			include: [{ model: Client }],
 			attributes: {
 				exclude: RBAC.getExcludedFields(
 					role,

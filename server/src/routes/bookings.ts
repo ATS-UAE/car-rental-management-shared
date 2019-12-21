@@ -70,8 +70,8 @@ router.patch("/:id", async ({ user, params, body }: any, res) => {
 				amount: body.amount,
 				customerName: bookingData.user.firstName,
 				vehicleName: `${bookingData.vehicle.brand} ${bookingData.vehicle.model}`,
-				from: moment(bookingData.from).unix(),
-				to: moment(bookingData.to).unix(),
+				from: moment(bookingData.from, "X").unix(),
+				to: moment(bookingData.to, "X").unix(),
 				bookingId: bookingData.id
 			});
 		}
@@ -84,8 +84,8 @@ router.patch("/:id", async ({ user, params, body }: any, res) => {
 				email: bookingData.user.email,
 				customerName: bookingData.user.firstName,
 				vehicleName: `${bookingData.vehicle.brand} ${bookingData.vehicle.model} ${bookingData.vehicle.plateNumber}`,
-				from: moment(bookingData.from).unix(),
-				to: moment(bookingData.to).unix(),
+				from: moment(bookingData.from, "X").unix(),
+				to: moment(bookingData.to, "X").unix(),
 				bookingId: bookingData.id,
 				address: location && location.address,
 				parkingLocation: bookingData.vehicle.parkingLocation,
