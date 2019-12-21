@@ -45,7 +45,7 @@
 		"redux-thunk": "^2.3.0",
 		"tinygradient": "^1.0.0",
 		"typeface-roboto": "0.0.75",
-		"typescript": "^3.6.3",
+		"typescript": "^3.7.3",
 		"yup": "^0.27.0"
 	},
 	"scripts": {
