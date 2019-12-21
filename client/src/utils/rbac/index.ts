@@ -30,7 +30,7 @@ guestRole.addPermission(
 		bookings,
 		({ accessor, body }: any) => {
 			try {
-				if (accessor && accessor.id === body.userId) {
+				if (accessor.id !== undefined && accessor.id === body.userId) {
 					return true;
 				}
 				return false;
@@ -67,22 +67,17 @@ guestRole.addPermission(
 ////////////
 
 guestRole.addPermission(
-	new Action(
-		READ,
-		bookings,
-		({ accessor, target }: any) => {
-			try {
-				if (accessor.id && accessor.id === target.userId) {
-					return true;
-				}
-				return false;
-			} catch (e) {
-				console.error(e);
-				return false;
+	new Action(READ, bookings, ({ accessor, target }: any) => {
+		try {
+			if (accessor.id && accessor.id === target.user.userId) {
+				return true;
 			}
-		},
-		["clientId"]
-	)
+			return false;
+		} catch (e) {
+			console.error(e);
+			return false;
+		}
+	})
 );
 guestRole.addPermission(
 	new Action(
@@ -99,7 +94,7 @@ guestRole.addPermission(
 				return false;
 			}
 		},
-		["clientId", "bookingChargeUnit", "bookingChargeCount", "bookingCharge"]
+		["bookingChargeUnitId", "bookingChargeCount", "bookingCharge"]
 	)
 );
 guestRole.addPermission(
@@ -108,7 +103,10 @@ guestRole.addPermission(
 		locations,
 		({ accessor, target }: any) => {
 			try {
-				if (accessor.clientId && accessor.clientId === target.clientId) {
+				if (
+					accessor.clientId &&
+					target.clients.find(client => client.id === accessor.clientId)
+				) {
 					return true;
 				}
 				return false;
@@ -146,7 +144,7 @@ guestRole.addPermission(
 guestRole.addPermission(
 	new Action(UPDATE, bookings, ({ accessor, target }: any) => {
 		try {
-			if (accessor.id === target.userId && target.approved === false) {
+			if (accessor.id === target.user.userId && target.approved === false) {
 				return true;
 			}
 			return false;
@@ -164,7 +162,7 @@ guestRole.addPermission(
 guestRole.addPermission(
 	new Action(DELETE, bookings, ({ accessor, target }: any) => {
 		try {
-			if (accessor.id === target.userId && target.approved === false) {
+			if (accessor.id === target.user.userId && target.approved === false) {
 				return true;
 			}
 			return false;
@@ -182,6 +180,20 @@ guestRole.addPermission(
 ////////////
 //  READ  //
 ////////////
+
+keyManagerRole.addPermission(
+	new Action(READ, bookings, ({ accessor, target }: any) => {
+		try {
+			if (accessor.clientId && accessor.clientId === target.user.clientId) {
+				return true;
+			}
+			return false;
+		} catch (e) {
+			console.error(e);
+			return false;
+		}
+	})
+);
 
 keyManagerRole.addPermission(
 	new Action(READ, users, ({ accessor, target }: any) => {
@@ -230,7 +242,7 @@ keyManagerRole.addPermission(
 		try {
 			if (
 				accessor.clientId &&
-				target.clients.find(client => accessor.clientId === client.id)
+				target.clients.find(client => client.id === accessor.clientId)
 			) {
 				return true;
 			}
@@ -282,7 +294,7 @@ keyManagerRole.addPermission(
 keyManagerRole.addPermission(
 	new Action(UPDATE, bookings, ({ accessor, target }: any) => {
 		try {
-			if (accessor.clientId && accessor.clientId === target.clientId) {
+			if (accessor.clientId && accessor.clientId === target.user.clientId) {
 				return true;
 			}
 			return false;
@@ -368,6 +380,51 @@ adminRole.addPermission(
 ////////////
 //  READ  //
 ////////////
+
+adminRole.addPermission(
+	new Action(READ, bookings, ({ accessor, target }: any) => {
+		try {
+			if (accessor.clientId && accessor.clientId === target.user.clientId) {
+				return true;
+			}
+			return false;
+		} catch (e) {
+			console.error(e);
+			return false;
+		}
+	})
+);
+
+adminRole.addPermission(
+	new Action(UPDATE, bookings, ({ accessor, target }: any) => {
+		try {
+			if (accessor.clientId && accessor.clientId === target.user.clientId) {
+				return true;
+			}
+			return false;
+		} catch (e) {
+			console.error(e);
+			return false;
+		}
+	})
+);
+
+adminRole.addPermission(
+	new Action(READ, locations, ({ accessor, target }: any) => {
+		try {
+			if (
+				accessor.clientId &&
+				target.clients.find(client => client.id === accessor.clientId)
+			) {
+				return true;
+			}
+			return false;
+		} catch (e) {
+			console.error(e);
+			return false;
+		}
+	})
+);
 
 adminRole.addPermission(
 	new Action(READ, users, ({ accessor, target }: any) => {
@@ -479,11 +536,7 @@ adminRole.addPermission(
 adminRole.addPermission(
 	new Action(UPDATE, categories, ({ accessor, target }: any) => {
 		try {
-			if (
-				accessor &&
-				accessor.clientId &&
-				accessor.clientId === target.clientId
-			) {
+			if (accessor.clientId && accessor.clientId === target.clientId) {
 				return true;
 			}
 			return false;
@@ -501,11 +554,7 @@ adminRole.addPermission(
 adminRole.addPermission(
 	new Action(DELETE, categories, ({ accessor, target }: any) => {
 		try {
-			if (
-				accessor &&
-				accessor.clientId &&
-				accessor.clientId === target.clientId
-			) {
+			if (accessor.clientId && accessor.clientId === target.clientId) {
 				return true;
 			}
 			return false;
@@ -520,11 +569,8 @@ adminRole.addPermission(
 	new Action(DELETE, bookings, ({ accessor, target }: any) => {
 		try {
 			if (
-				accessor &&
 				accessor.clientId &&
-				target &&
-				target.clientId &&
-				accessor.clientId === target.clientId &&
+				accessor.clientId === target.user.clientId &&
 				target.approved === false
 			) {
 				return true;

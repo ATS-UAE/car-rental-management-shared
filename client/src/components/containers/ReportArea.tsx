@@ -33,9 +33,11 @@ export const ReportAreaContainer: FC<ReportAreaStateProps> = ({ auth }) => {
 	const [columns, setColumns] = useState<Array<Column<any>>>();
 	const [data, setData] = useState<object[]>();
 	const [loading, setLoading] = useState(false);
+	const [tableTitle, setTableTitle] = useState("");
 
 	return (
 		<ReportAreaPresentational
+			title={tableTitle}
 			reportList={reportList}
 			data={data}
 			loading={loading}
@@ -48,12 +50,14 @@ export const ReportAreaContainer: FC<ReportAreaStateProps> = ({ auth }) => {
 				const report = selectedReport && getGenerator(selectedReport);
 				try {
 					const data = report && (await report.generate());
+
 					const columns =
 						auth &&
 						auth.data &&
 						report &&
 						(await report.getColumnData(auth.data.role));
 					data && setData(data);
+					report && setTableTitle(report.title);
 					columns && setColumns(columns);
 				} catch (e) {
 					console.error(e);

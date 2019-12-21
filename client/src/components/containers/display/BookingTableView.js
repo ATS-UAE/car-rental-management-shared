@@ -188,8 +188,6 @@ class BookingTableView extends Component {
 	resetActions = async () => {
 		// Set actions for user
 		const { history, auth } = this.props;
-		let userRole = this.props.auth.data.role;
-		let canUpdate = await RBAC.can(userRole, Action.UPDATE, Resource.BOOKINGS);
 		const newActions = [
 			{
 				icon: Refresh,
@@ -211,8 +209,7 @@ class BookingTableView extends Component {
 			newActions.push(
 				({ booking }) => {
 					let expiredBooking = booking.from < moment().unix();
-					const visible =
-						booking.approved === null && !expiredBooking && canUpdate;
+					const visible = booking.approved === null && !expiredBooking;
 					return {
 						icon: ThumbUp,
 						tooltip: "Approve",
@@ -233,8 +230,7 @@ class BookingTableView extends Component {
 				},
 				({ booking }) => {
 					let expiredBooking = booking.from < moment().unix();
-					const visible =
-						booking.approved === null && !expiredBooking && canUpdate;
+					const visible = booking.approved === null && !expiredBooking;
 					return {
 						icon: ThumbDown,
 						tooltip: "Deny",
@@ -410,7 +406,7 @@ class BookingTableView extends Component {
 								auth.data.role,
 								Action.READ,
 								Resource.BOOKINGS,
-								{ target: booking, accessor: auth.data }
+								{ target: booking.data, accessor: auth.data }
 							),
 							exclude: RBAC.getExcludedFields(
 								auth.data.role,
@@ -424,7 +420,7 @@ class BookingTableView extends Component {
 								auth.data.role,
 								Action.UPDATE,
 								Resource.BOOKINGS,
-								{ accessor: auth.data, target: booking }
+								{ accessor: auth.data, target: booking.data }
 							),
 							exclude: RBAC.getExcludedFields(
 								auth.data.role,
@@ -438,7 +434,7 @@ class BookingTableView extends Component {
 								auth.data.role,
 								Action.DELETE,
 								Resource.BOOKINGS,
-								{ target: booking, accessor: auth.data }
+								{ target: booking.data, accessor: auth.data }
 							)
 						};
 
@@ -447,7 +443,7 @@ class BookingTableView extends Component {
 								auth.data.role,
 								Action.READ,
 								Resource.BOOKINGS,
-								{ target: booking, accessor: auth.data }
+								{ target: booking.data, accessor: auth.data }
 							),
 							exclude: RBAC.getExcludedFields(
 								auth.data.role,
@@ -455,7 +451,15 @@ class BookingTableView extends Component {
 								Resource.BOOKINGS
 							)
 						};
-
+						console.log(
+							booking,
+							vehicle,
+							location,
+							create,
+							read,
+							update,
+							destroy
+						);
 						return {
 							booking,
 							vehicle,
@@ -466,6 +470,7 @@ class BookingTableView extends Component {
 							destroy
 						};
 					} catch (e) {
+						console.error(e);
 						history.replace("/bookings");
 					}
 				}}
@@ -487,6 +492,7 @@ class BookingTableView extends Component {
 							renderDialog({
 								match,
 								children: async ({ booking, read, update, location }) => {
+									console.log(booking, read, update, location);
 									if (
 										booking &&
 										(booking.data.amount !== null || booking.data.paid)

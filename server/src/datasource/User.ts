@@ -112,24 +112,8 @@ export default class User extends DataSource {
 	}
 
 	async create(data: any, options: { invited?: boolean } = {}): Promise<any> {
-		let role: Role = (this.user && this.user.role && this.user.role) || null;
-
-		let accessible =
-			options.invited ||
-			(await RBAC.can(role, Operation.CREATE, Resource.USERS, {
-				accessor: this.user,
-				body: data
-			}));
-		if (!accessible) {
-			throw new InvalidPermissionException();
-		}
-		let newUserRole = await this.db.Role.findByPk(data.roleId);
-		let guestRole = await this.db.Role.findOne({
-			where: { name: Role.GUEST }
-		});
 		let createdUser = await this.createUser({
 			...data,
-			roleId: options.invited ? guestRole.id : newUserRole.id,
 			approved: !options.invited
 		});
 		return createdUser;

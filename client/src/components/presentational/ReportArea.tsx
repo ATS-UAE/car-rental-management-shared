@@ -22,6 +22,7 @@ export interface ReportAreaProps<T extends object>
 		label: string;
 		value: string | number;
 	}>;
+	title?: string;
 	columns?: Array<Column<T>>;
 	loading?: boolean;
 	data?: T[];
@@ -31,9 +32,9 @@ export interface ReportAreaProps<T extends object>
 }
 class ReportAreaBase<T extends object> extends Component<ReportAreaProps<T>> {
 	renderTable() {
-		const { columns, data } = this.props;
+		const { columns, data, title = "" } = this.props;
 		if (columns && data) {
-			return <MaterialTable data={data} columns={columns} />;
+			return <MaterialTable title={title} data={data} columns={columns} />;
 		}
 		return null;
 	}

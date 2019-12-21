@@ -8,6 +8,8 @@ import { Role } from "../../variables/enums";
 import { RoleUtils } from "../";
 
 export class UnitSummary implements Generatable<UnitSummaryResponse[]> {
+	public title = "Unit Summary";
+
 	public generate = async () => {
 		const response = await api.fetchUnitSummaryReport();
 		return response.data;

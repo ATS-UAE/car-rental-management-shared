@@ -1,15 +1,17 @@
 import React, { useState } from "react";
 import { connect } from "react-redux";
 import UserForm from "./UserForm";
+import { Role } from "../../../../variables/enums";
 import * as reduxActions from "../../../../actions";
 import { api, apiErrorHandler } from "../../../../utils/helpers";
 
-function UserFormCreate({ fetchUsers, exclude, onSubmit }) {
+function UserFormCreate({ auth, fetchUsers, exclude, onSubmit }) {
 	let [errorNotes, setErrorNotes] = useState([]);
 	let [loading, setLoading] = useState(false);
 	const [values, setValues] = useState({});
 	return (
 		<UserForm
+			readOnly={false}
 			title="Create User"
 			values={values}
 			onChangeEvent={(data, name, event) =>
@@ -24,7 +26,10 @@ function UserFormCreate({ fetchUsers, exclude, onSubmit }) {
 			onSubmit={() => {
 				setLoading(true);
 				api
-					.createUser(values)
+					.createUser({
+						...values,
+						clientId: auth.data.role === Role.MASTER ? null : auth.data.clientId
+					})
 					.then(() => {
 						fetchUsers();
 						setValues({});
@@ -40,7 +45,6 @@ function UserFormCreate({ fetchUsers, exclude, onSubmit }) {
 	);
 }
 
-export default connect(
-	null,
-	reduxActions
-)(UserFormCreate);
+const mapStateToProps = ({ auth }) => ({ auth });
+
+export default connect(mapStateToProps, reduxActions)(UserFormCreate);

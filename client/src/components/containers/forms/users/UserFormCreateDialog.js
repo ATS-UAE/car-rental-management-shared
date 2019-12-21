@@ -8,54 +8,24 @@ import * as reduxActions from "../../../../actions";
 import UserFormCreate from "./UserFormCreate";
 import Dialog from "../../../presentational/display/Dialog";
 
-function Users({ auth, fetchUsers, fetchCurrentUserDetails, history }) {
+function Users({ fetchUsers, fetchCurrentUserDetails, history }) {
 	useEffect(() => {
 		fetchCurrentUserDetails();
 	}, []);
 	return (
 		<Dialog
-			onMount={async () => {
-				try {
-					const create = {
-						access: await RBAC.can(
-							auth.data.role,
-							Action.CREATE,
-							Resource.USERS
-						)
-					};
-
-					return {
-						create
-					};
-				} catch (e) {
-					history.replace("/users");
-				}
-			}}
 			open={true}
 			onClose={() => history.push("/users")}
-			children={async ({ create }) => {
-				if (create && create.access) {
-					return (
-						<UserFormCreate
-							onSubmit={() => {
-								fetchUsers();
-								history.push("/users");
-							}}
-						/>
-					);
-				} else if (create && !create.access) {
-					history.push("/users");
-				}
-				return null;
-			}}
+			children={() => (
+				<UserFormCreate
+					onSubmit={() => {
+						fetchUsers();
+						history.push("/users");
+					}}
+				/>
+			)}
 		/>
 	);
 }
 
-export default compose(
-	withRouter,
-	connect(
-		({ auth }) => ({ auth }),
-		reduxActions
-	)
-)(Users);
+export default compose(withRouter, connect(null, reduxActions))(Users);
