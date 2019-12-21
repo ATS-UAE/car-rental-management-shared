@@ -114,6 +114,7 @@ export default class User extends DataSource {
 	async create(data: any, options: { invited?: boolean } = {}): Promise<any> {
 		let createdUser = await this.createUser({
 			...data,
+			role: options.invited ? Role.GUEST : data.role,
 			approved: !options.invited
 		});
 		return createdUser;
