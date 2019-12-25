@@ -26,8 +26,6 @@ export const hasActiveBooking = (
 };
 
 export const isVehicleAvailableToBook = (bookings: Booking[]): boolean => {
-	let active = false;
-
 	for (const booking of bookings) {
 		let status = getBookingStatus(booking);
 		if (
@@ -35,11 +33,11 @@ export const isVehicleAvailableToBook = (bookings: Booking[]): boolean => {
 			status === BookingStatus.ONGOING ||
 			status === BookingStatus.APPROVED
 		) {
-			return true;
+			return false;
 		}
 	}
 
-	return active;
+	return true;
 };
 
 export const isBookingTimeSlotTaken = (
