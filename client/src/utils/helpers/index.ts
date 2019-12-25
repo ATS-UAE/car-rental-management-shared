@@ -2,7 +2,6 @@ import { AxiosError } from "axios";
 import moment from "moment";
 import BookingStatus from "../../variables/enums/BookingStatus";
 import { Booking } from "../../typings/api";
-import { BookingChargeUnit } from "../../variables/enums";
 export { default as CancellablePromise } from "./CancellablePromise";
 export { default as api } from "./api";
 
@@ -23,6 +22,23 @@ export const hasActiveBooking = (
 			}
 		}
 	}
+	return active;
+};
+
+export const isVehicleAvailableToBook = (bookings: Booking[]): boolean => {
+	let active = false;
+
+	for (const booking of bookings) {
+		let status = getBookingStatus(booking);
+		if (
+			status === BookingStatus.PENDING ||
+			status === BookingStatus.ONGOING ||
+			status === BookingStatus.APPROVED
+		) {
+			return true;
+		}
+	}
+
 	return active;
 };
 

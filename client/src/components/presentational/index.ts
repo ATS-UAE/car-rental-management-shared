@@ -8,3 +8,5 @@ export * from "./MaterialTable";
 export * from "./VehicleIssuesEditor";
 export * from "./ButtonModal";
 export * from "./ReportArea";
+export * from "./BarChart";
+export * from "./RoleView";
