@@ -304,6 +304,7 @@ function BookingFormCreateStepper({
 					<VehicleFormReplacement
 						title="Specify vehicle to be replaced"
 						values={values[step]}
+						showVehicleIssues={false}
 						onChangeEvent={(data, name, event) => {
 							let newValues = [...values];
 							newValues[step] = {

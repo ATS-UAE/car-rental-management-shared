@@ -6,6 +6,7 @@ import {
 	InvalidPermissionException,
 	ResourceNotFoundException
 } from "../utils/exceptions";
+import { exceptFields } from "../utils";
 
 export default class Vehicle extends DataSource {
 	user: UserAccessor;
@@ -71,7 +72,7 @@ export default class Vehicle extends DataSource {
 		if (!accessible) {
 			throw new InvalidPermissionException();
 		}
-		await foundVehicle.update(data);
+		await foundVehicle.update(exceptFields(data, ["categories"]));
 		return this.get(id);
 	}
 

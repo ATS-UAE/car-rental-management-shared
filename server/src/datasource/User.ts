@@ -3,6 +3,7 @@ import DataSource from "./DataSource";
 import { Operation, Resource, Role } from "../variables/enums";
 import UserAccessor from "./types/UserAccessor";
 import RBAC from "../utils/rbac";
+import { exceptFields } from "../utils";
 import {
 	InvalidPermissionException,
 	ResourceNotFoundException
@@ -86,7 +87,10 @@ export default class User extends DataSource {
 		let hashedPassword =
 			data["password"] && (await bcrypt.hash(data["password"], 10));
 		await foundUser.update(
-			{ ...data, password: data["password"] && hashedPassword },
+			{
+				...exceptFields(data, ["categories"]),
+				password: data["password"] && hashedPassword
+			},
 			options
 		);
 		return this.get(id);

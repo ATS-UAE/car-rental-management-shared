@@ -515,7 +515,7 @@ adminRole.addPermission(
 				return false;
 			}
 		},
-		["categories", "objectId", "plateNumber", "vin", "wialonUnitId"]
+		["objectId", "plateNumber", "vin", "wialonUnitId"]
 	)
 );
 

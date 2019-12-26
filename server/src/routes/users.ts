@@ -162,7 +162,7 @@ router.patch(
 				let categories = await db.Category.findAll({
 					where: { id: body.categories }
 				});
-				await foundUser.setCategories(categories);
+				await foundUser.$set("categories", categories);
 			}
 			let updatedUser = await UserDataSource.update(foundUser.id, {
 				...body,
@@ -174,6 +174,7 @@ router.patch(
 			response.setMessage(`User with ID ${params.id} updated.`);
 			response.setSuccess(true);
 		} catch (e) {
+			console.log(e);
 			if (e instanceof InvalidPermissionException) {
 				response.setMessage(e.message);
 				response.setCode(422);
