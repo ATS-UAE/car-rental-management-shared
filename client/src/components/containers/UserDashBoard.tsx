@@ -6,11 +6,16 @@ import { Role } from "../../variables/enums";
 
 interface UserDashBoardStateProps {
 	users: ReduxState["users"];
+	auth: ReduxState["auth"];
 }
 
 type Props = UserDashBoardStateProps;
 
-const UserDashBoardBase: FC<Props> = ({ users }) => {
+const UserDashBoardBase: FC<Props> = ({ users, auth }) => {
+	const bars = ["Admin", "Key Manager", "User"];
+	if (auth && auth.data && auth.data.role === Role.MASTER) {
+		bars.unshift("Master");
+	}
 	const data: any[] | null =
 		users &&
 		users.data &&
@@ -19,6 +24,7 @@ const UserDashBoardBase: FC<Props> = ({ users }) => {
 				switch (user.role) {
 					case Role.MASTER: {
 						acc[0]["Master"]++;
+
 						break;
 					}
 					case Role.ADMIN: {
@@ -39,19 +45,13 @@ const UserDashBoardBase: FC<Props> = ({ users }) => {
 			[{ Master: 0, Admin: 0, "Key Manager": 0, User: 0, name: "User roles" }]
 		);
 
-	return (
-		<BarChart
-			title="User Count"
-			data={data || []}
-			bars={["Master", "Admin", "Key Manager", "User"]}
-		/>
-	);
+	return <BarChart title="User Count" data={data || []} bars={bars} />;
 };
 
 const mapStateToProps: MapStateToProps<
 	UserDashBoardStateProps,
 	{},
 	ReduxState
-> = ({ users }) => ({ users });
+> = ({ users, auth }) => ({ users, auth });
 
 export const UserDashBoard = connect(mapStateToProps)(UserDashBoardBase);
