@@ -25,6 +25,7 @@ const ListView: FC<ListViewProps> = ({ classes, list, body, header }) => {
 			<Drawer
 				className={classes.drawer}
 				SlideProps={{
+					// @ts-ignore
 					className: classes.slide
 				}}
 				variant="persistent"
