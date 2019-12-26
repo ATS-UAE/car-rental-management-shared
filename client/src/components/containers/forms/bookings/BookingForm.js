@@ -6,12 +6,10 @@ import BookingForm from "../../../presentational/forms/BookingForm";
 import VehicleForm from "../../../presentational/forms/VehicleForm";
 import * as reduxActions from "../../../../actions";
 import {
-	toTitleWords,
 	hasActiveBooking,
 	isBookingTimeSlotTaken
 } from "../../../../utils/helpers";
 import { BookingType } from "../../../../variables/enums";
-import VehicleBookingRange from "../../../presentational/display/VehicleBookingRange";
 
 function BookingFormContainer({
 	locations,
