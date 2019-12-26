@@ -99,7 +99,6 @@ function BookingFormCreateStepper({
 
 	useEffect(() => {
 		let availableVehicles = [];
-
 		if (vehicles && vehicles.data && auth && auth.data) {
 			availableVehicles = vehicles.data.reduce((acc, vehicle) => {
 				if (
@@ -112,8 +111,14 @@ function BookingFormCreateStepper({
 						if (!auth.data.categories.length) {
 							inCategory = true;
 						} else {
-							for (const categoryId of auth.data.categories) {
-								if (vehicle.categories.includes(categoryId)) inCategory = true;
+							for (const userCategories of auth.data.categories) {
+								if (
+									vehicle.categories.find(
+										category => category.id === userCategories.id
+									)
+								) {
+									inCategory = true;
+								}
 							}
 						}
 						inCategory && acc.push(vehicle);
