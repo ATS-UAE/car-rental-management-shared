@@ -1,8 +1,10 @@
+import { Category } from ".";
+
 export interface VehicleResponse extends Vehicle {}
 
 export interface Vehicle {
 	id: number;
-	categories: number[];
+	categories: Category[];
 	clientId: number;
 	brand: string;
 	chassis: string;

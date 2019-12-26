@@ -136,7 +136,7 @@ class CategoryTableView extends Component<Props, State> {
 				let count = 0;
 
 				for (const vehicle of vehicles.data!) {
-					if (vehicle.categories.includes(id)) count++;
+					if (vehicle.categories.find(c => c.id === id)) count++;
 				}
 				return {
 					id,
@@ -151,16 +151,19 @@ class CategoryTableView extends Component<Props, State> {
 	};
 
 	render() {
-		const { categories, fetchCategories, fetchVehicles } = this.props;
+		const { categories, fetchCategories, fetchVehicles, auth } = this.props;
 		const { categoryColumns, masterColumns, categoryData } = this.state;
-		console.log(categoryData);
 		return (
 			<MaterialTable
 				editable={{
 					onRowAdd: async ({ name, clientId }) => {
+						let newClientId = clientId;
+						if (auth && auth.data && auth.data.role !== Role.MASTER) {
+							newClientId = auth.data.clientId;
+						}
 						await api.createCategories({
 							name,
-							clientId
+							clientId: newClientId
 						});
 						await fetchVehicles();
 						await fetchCategories();

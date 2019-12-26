@@ -412,8 +412,8 @@ function VehicleCardList({
 							if (!auth.data.categories.length) {
 								inCategory = true;
 							} else {
-								for (const categoryId of auth.data.categories) {
-									if (vehicle.categories.includes(categoryId))
+								for (const category of auth.data.categories) {
+									if (vehicle.categories.find(c => c.id === category.id))
 										inCategory = true;
 								}
 							}
