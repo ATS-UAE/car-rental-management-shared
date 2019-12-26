@@ -24,9 +24,9 @@ const ListView: FC<ListViewProps> = ({ classes, list, body, header }) => {
 		<Paper className={classes.root}>
 			<Drawer
 				className={classes.drawer}
-				// SlideProps={{
-				// 	className: classes.slide
-				// }}
+				SlideProps={{
+					className: classes.slide
+				}}
 				variant="persistent"
 				anchor="left"
 				open={open}
