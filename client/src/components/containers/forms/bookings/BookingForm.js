@@ -24,7 +24,6 @@ function BookingFormContainer({
 	onChange,
 	loading,
 	readOnly,
-	ticksMap,
 	allowBefore,
 	users,
 	inLocation: inLocationProp,
@@ -101,14 +100,6 @@ function BookingFormContainer({
 	let footer = readOnly !== true && (
 		<Fragment>
 			<Grid item>
-				<VehicleBookingRange
-					includeDatePicker={false}
-					dateRange={{ from: values.from, to: values.to }}
-					vehicles={vehicles && vehicles.data ? vehicles.data : []}
-					ticksMap={ticksMap}
-				/>
-			</Grid>
-			<Grid item>
 				<Button
 					disabled={loading || disableButton}
 					type="submit"
@@ -135,6 +126,7 @@ function BookingFormContainer({
 					replaceVehicle: data
 				});
 			}}
+			showVehicleIssues={false}
 			errors={errors}
 			onError={e => {
 				setErrors(errors => ({ ...errors, ...e }));
@@ -144,8 +136,13 @@ function BookingFormContainer({
 				"objectId",
 				"parkingLocation",
 				"locationId",
-				"categories"
+				"categories",
+				"wialonUnitId",
+				"bookingChargeUnit",
+				"bookingChargeCount",
+				"bookingCharge"
 			]}
+			hints=""
 			wrapper="div"
 			showFooter={false}
 		/>

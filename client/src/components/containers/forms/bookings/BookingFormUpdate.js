@@ -50,18 +50,8 @@ function BookingFormUpdate({
 					});
 			}}
 			allowBefore={allowBefore}
-			ticksMap={{
-				xs: 3,
-				sm: 4,
-				md: 4,
-				lg: 4,
-				xl: 4
-			}}
 		/>
 	);
 }
 
-export default connect(
-	null,
-	reduxActions
-)(BookingFormUpdate);
+export default connect(null, reduxActions)(BookingFormUpdate);

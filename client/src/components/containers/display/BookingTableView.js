@@ -451,15 +451,6 @@ class BookingTableView extends Component {
 								Resource.BOOKINGS
 							)
 						};
-						console.log(
-							booking,
-							vehicle,
-							location,
-							create,
-							read,
-							update,
-							destroy
-						);
 						return {
 							booking,
 							vehicle,
@@ -482,7 +473,7 @@ class BookingTableView extends Component {
 				children={children}
 			/>
 		);
-console.log(bookingData)
+
 		return (
 			<Fragment>
 				<Switch>
@@ -492,7 +483,6 @@ console.log(bookingData)
 							renderDialog({
 								match,
 								children: async ({ booking, read, update, location }) => {
-									console.log(booking, read, update, location);
 									if (
 										booking &&
 										(booking.data.amount !== null || booking.data.paid)
