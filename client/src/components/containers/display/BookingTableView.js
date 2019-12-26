@@ -482,7 +482,7 @@ class BookingTableView extends Component {
 				children={children}
 			/>
 		);
-
+console.log(bookingData)
 		return (
 			<Fragment>
 				<Switch>

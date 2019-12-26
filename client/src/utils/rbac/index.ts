@@ -69,7 +69,7 @@ guestRole.addPermission(
 guestRole.addPermission(
 	new Action(READ, bookings, ({ accessor, target }: any) => {
 		try {
-			if (accessor.id && accessor.id === target.user.userId) {
+			if (accessor.id && accessor.id === target.userId) {
 				return true;
 			}
 			return false;
@@ -144,7 +144,7 @@ guestRole.addPermission(
 guestRole.addPermission(
 	new Action(UPDATE, bookings, ({ accessor, target }: any) => {
 		try {
-			if (accessor.id === target.user.userId && target.approved === false) {
+			if (accessor.id === target.userId && target.approved === false) {
 				return true;
 			}
 			return false;
@@ -162,7 +162,7 @@ guestRole.addPermission(
 guestRole.addPermission(
 	new Action(DELETE, bookings, ({ accessor, target }: any) => {
 		try {
-			if (accessor.id === target.user.userId && target.approved === false) {
+			if (accessor.id === target.userId && target.approved === false) {
 				return true;
 			}
 			return false;

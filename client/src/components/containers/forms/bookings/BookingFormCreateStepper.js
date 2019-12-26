@@ -494,6 +494,8 @@ function BookingFormCreateStepper({
 								.createBooking(bookingData)
 								.then(() => {
 									setLoading(false);
+									fetchBookings();
+									fetchVehicles();
 									history.push("/bookings");
 								})
 								.catch(e => {
