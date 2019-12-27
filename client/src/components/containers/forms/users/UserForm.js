@@ -54,11 +54,11 @@ function UserFormContainer({
 		roleList = Object.values(Role).reduce((acc, role) => {
 			const userRole = auth.data.role;
 
-			if (
-				(readOnly === false || userRole !== Role.MASTER) &&
-				role === Role.MASTER
-			) {
-				return acc;
+			if (role === Role.MASTER) {
+				console.log(readOnly, userRole);
+				if (!readOnly && userRole !== Role.MASTER) {
+					return acc;
+				}
 			}
 
 			acc.push({
