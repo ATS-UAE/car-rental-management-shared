@@ -17,7 +17,13 @@ const getTemplate = (fileName: string): string =>
 		"utf8"
 	);
 
-const getTransport = () => nodemailer.createTransport(mail);
+const getTransport = () =>
+	nodemailer.createTransport({
+		auth: mail.auth,
+		port: Number(mail.port),
+		secure: mail.secure,
+		host: mail.host
+	});
 
 const compileTemplate = (mjml: string, context: any) => compile(mjml)(context);
 
@@ -112,6 +118,107 @@ export const sendInvoice = ({
 	});
 };
 
+export interface SendBookingNotificationOptions {
+	email: string;
+	customerEmail: string;
+	customerName: string;
+	mobile: string;
+	bookingId: number;
+	from: number;
+	to: number;
+	vehicleId: number;
+	vehicle: string;
+	plateNumber: string;
+	location: string;
+	lat: number;
+	lng: number;
+	company: string;
+}
+
+export const sendBookingNotification = async ({
+	email,
+	customerEmail,
+	customerName,
+	mobile,
+	bookingId,
+	from,
+	to,
+	vehicleId,
+	vehicle,
+	plateNumber,
+	location,
+	lat,
+	lng,
+	company
+}: SendBookingNotificationOptions) => {
+	const transporter = getTransport();
+
+	const map = new StaticMaps({
+		width: 1200,
+		height: 800,
+		tileUrl: "https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png?lang=en"
+	});
+	map.addMarker({
+		img: path.join(__dirname, "../../public/images/LocationMarker.png"),
+		coord: [lng, lat],
+		offsetX: 50,
+		offsetY: 100,
+		width: 100,
+		height: 100
+	});
+	await map.render([lng, lat], 10);
+	const filePath = path.join(getStaticFilesPath(), "/maps");
+	const fileName = `${Date.now()}.png`;
+	const fileSavePath = path.join(filePath, fileName);
+	await makeDirectoryIfNotExist(filePath);
+	await map.image.save(fileSavePath);
+	const compiled = compileTemplate(getTemplate("bookingNotification"), {
+		customerEmail,
+		customerName,
+		mobile,
+		bookingId,
+		from: moment(from, "X").format("LLL"),
+		to: moment(to, "X").format("LLL"),
+		vehicleId,
+		vehicle,
+		plateNumber,
+		location,
+		lat,
+		lng,
+		company,
+		mapURL: `cid:${fileName}`,
+		logoSrc: `${process.env.SERVER_URL}/static/images/mail-header.png`
+	});
+
+	const template = mjml2html(compiled);
+
+	return new Promise((resolve, reject) => {
+		transporter.sendMail(
+			{
+				from: "LeasePlan Rentals <no-reply@atsuae.net>",
+				to: email,
+				subject: `Booking request on ${vehicle}`,
+				html: template.html,
+				attachments: [
+					{
+						filename: "Map Location.png",
+						path: fileSavePath,
+						cid: fileName
+					}
+				]
+			},
+			function(err, info) {
+				fs.promises.unlink(fileSavePath);
+				if (err) {
+					return reject(err);
+				} else {
+					return resolve(info.response);
+				}
+			}
+		);
+	});
+};
+
 export const sendBookingConfirmation = async ({
 	email,
 	customerName,
@@ -137,23 +244,20 @@ export const sendBookingConfirmation = async ({
 }): Promise<string> => {
 	const transporter = getTransport();
 
-	const options = {
+	const map = new StaticMaps({
 		width: 1200,
 		height: 800,
 		tileUrl: "https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png?lang=en"
-	};
-
-	const map = new StaticMaps(options);
-	const marker = {
-		img: path.join(__dirname, "../public/images/LocationMarker.png"),
+	});
+	map.addMarker({
+		img: path.join(__dirname, "../../public/images/LocationMarker.png"),
 		coord: [lng, lat],
 		offsetX: 50,
 		offsetY: 100,
 		width: 100,
 		height: 100
-	};
-	map.addMarker(marker, { zoom: 10 });
-	await map.render([lng, lat]);
+	});
+	await map.render([lng, lat], 10);
 	const filePath = path.join(getStaticFilesPath(), "/maps");
 	const fileName = `${Date.now()}.png`;
 	const fileSavePath = path.join(filePath, fileName);
@@ -191,7 +295,6 @@ export const sendBookingConfirmation = async ({
 	return new Promise((resolve, reject) => {
 		transporter.sendMail(mainOptions, function(err, info) {
 			fs.promises.unlink(fileSavePath);
-			console.log(err, info);
 			if (err) {
 				return reject(err);
 			} else {
