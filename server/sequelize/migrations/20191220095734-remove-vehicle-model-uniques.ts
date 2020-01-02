@@ -5,7 +5,7 @@ module.exports = {
 		queryInterface: QueryInterface,
 		Sequelize: typeof DataTypes
 	) {
-		// await queryInterface.removeColumn("Vehicles", "objectId");
+		await queryInterface.removeColumn("Vehicles", "objectId");
 		await queryInterface.changeColumn("Vehicles", "plateNumber", {
 			allowNull: true,
 			type: Sequelize.STRING

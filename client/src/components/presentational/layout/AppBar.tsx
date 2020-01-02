@@ -1,13 +1,16 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { withStyles } from "@material-ui/core/styles";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import IconButton from "@material-ui/core/IconButton";
-import MenuIcon from "@material-ui/icons/Menu";
+import React, { FC, ReactNode } from "react";
+import {
+	AppBar,
+	Toolbar,
+	Typography,
+	IconButton,
+	withStyles,
+	createStyles,
+	WithStyles
+} from "@material-ui/core";
+import { Menu } from "@material-ui/icons";
 
-const styles = {
+const styles = createStyles({
 	logo: {
 		marginBottom: "-41px",
 		cursor: "pointer"
@@ -16,9 +19,16 @@ const styles = {
 		display: "flex",
 		justifyContent: "space-between"
 	}
-};
+});
 
-function ButtonAppBar(props) {
+export interface AppBarProps extends WithStyles<typeof styles> {
+	title?: string;
+	renderActions?: () => ReactNode;
+	onMenuClick?: () => void;
+	onLogoClick?: () => void;
+}
+
+const ButtonAppBar: FC<AppBarProps> = props => {
 	const { classes, title, renderActions, onMenuClick, onLogoClick } = props;
 	return (
 		<div className={classes.root}>
@@ -38,7 +48,7 @@ function ButtonAppBar(props) {
 						)}
 					</div>
 					<div>
-						{renderActions()}
+						{renderActions && renderActions()}
 						{onMenuClick && (
 							<IconButton
 								className={classes.menuButton}
@@ -46,7 +56,7 @@ function ButtonAppBar(props) {
 								aria-label="Menu"
 								onClick={onMenuClick}
 							>
-								<MenuIcon />
+								<Menu />
 							</IconButton>
 						)}
 					</div>
@@ -54,19 +64,6 @@ function ButtonAppBar(props) {
 			</AppBar>
 		</div>
 	);
-}
-
-ButtonAppBar.propTypes = {
-	classes: PropTypes.object.isRequired,
-	title: PropTypes.string,
-	renderActions: PropTypes.func,
-	onMenuClick: PropTypes.func,
-	onLogoClick: PropTypes.func
-};
-
-ButtonAppBar.defaultProps = {
-	title: "",
-	renderActions: () => null
 };
 
 export default withStyles(styles)(ButtonAppBar);

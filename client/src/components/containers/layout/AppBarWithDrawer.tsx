@@ -1,8 +1,10 @@
 import React, { Fragment, useEffect } from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { compose } from "redux";
+import { compose } from "recompose";
 import { ExitToApp } from "@material-ui/icons";
+import { History } from "history";
+import { ReduxState } from "../../../typings";
 
 import AppBarWithDrawer from "../../presentational/layout/AppBarWithDrawer";
 import * as actions from "../../../actions";
@@ -10,12 +12,24 @@ import { Typography } from "@material-ui/core";
 import { pages } from "../../../variables";
 import { toTitleWords } from "../../../utils/helpers";
 
-function AppBarWithDrawerContainer({
+interface AppBarWithDrawerStateProps {
+	auth: ReduxState["auth"];
+}
+
+type AppBarWithDrawerActionProps = typeof actions;
+
+interface AppBarWithDrawerInnerProps {
+	history: History;
+}
+
+type Props = AppBarWithDrawerActionProps & AppBarWithDrawerStateProps;
+
+export const AppBarWithDrawerContainer: FC<Props> = ({
 	auth,
 	history,
 	fetchCurrentUserDetails,
 	authLogout
-}) {
+}) => {
 	useEffect(() => {
 		fetchCurrentUserDetails();
 	}, []);
@@ -29,7 +43,7 @@ function AppBarWithDrawerContainer({
 		profile = {
 			title: `${auth.data.firstName} ${auth.data.lastName}`,
 			subtitle: `${toTitleWords(role)}`,
-			initials: `${auth.data.firstName[0]}${auth.data.lastName[0]}`,
+			initials: `${auth.data.firstName[0] || ""}${auth.data.lastName[0] || ""}`,
 			imgSrc: auth.data.userImageSrc || null
 		};
 		for (let page of pages) {
@@ -83,13 +97,13 @@ function AppBarWithDrawerContainer({
 			/>
 		</Fragment>
 	);
-}
+};
 
 const mapStateToProps = ({ auth }) => ({
 	auth
 });
 
-export default compose(
+export default compose<Props>(
 	connect(mapStateToProps, actions),
 	withRouter
 )(AppBarWithDrawerContainer);

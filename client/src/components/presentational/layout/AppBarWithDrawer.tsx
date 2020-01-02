@@ -3,7 +3,9 @@ import PropTypes from "prop-types";
 import AppBar from "./AppBar";
 import Drawer from "./Drawer";
 
-export default function AppBarWithDrawer({
+interface AppBarWithDrawerProps {}
+
+const AppBarWithDrawer: FC<AppBarWithDrawerProps> = ({
 	list,
 	renderActions,
 	title,
@@ -11,7 +13,7 @@ export default function AppBarWithDrawer({
 	showMenu,
 	endList,
 	profile
-}) {
+}) => {
 	const [isDrawerOpen, setDrawerOpenState] = useState(false);
 	return (
 		<Fragment>
@@ -27,7 +29,6 @@ export default function AppBarWithDrawer({
 			/>
 			<Drawer
 				profile={profile}
-				anchor="right"
 				isOpen={isDrawerOpen}
 				list={list}
 				onClick={() => setDrawerOpenState(false)}
@@ -36,7 +37,7 @@ export default function AppBarWithDrawer({
 			/>
 		</Fragment>
 	);
-}
+};
 
 AppBarWithDrawer.propTypes = {
 	list: PropTypes.arrayOf(

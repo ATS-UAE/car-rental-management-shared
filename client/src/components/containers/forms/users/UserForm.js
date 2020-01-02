@@ -55,7 +55,6 @@ function UserFormContainer({
 			const userRole = auth.data.role;
 
 			if (role === Role.MASTER) {
-				console.log(readOnly, userRole);
 				if (!readOnly && userRole !== Role.MASTER) {
 					return acc;
 				}

@@ -1,6 +1,10 @@
-import React, { Fragment } from "react";
-import PropTypes from "prop-types";
-import { withStyles } from "@material-ui/core/styles";
+import React, { Fragment, ReactNode, FC } from "react";
+import {
+	withStyles,
+	Theme,
+	createStyles,
+	WithStyles
+} from "@material-ui/core/styles";
 
 import {
 	Drawer,
@@ -13,26 +17,47 @@ import {
 	Typography
 } from "@material-ui/core";
 
-const styles = theme => ({
-	list: {
-		width: 250,
-		display: "flex",
-		flexDirection: "column",
-		justifyContent: "space-between",
-		minHeight: "100vh"
-	},
-	text: {
-		textDecoration: "none"
-	},
+export type DrawerListItem = {
+	icon: ReactNode;
+	text: ReactNode;
+	onClick?: () => void;
+};
+
+export interface DrawerProps extends WithStyles<typeof styles> {
+	list?: Array<DrawerListItem>[];
+	endList?: Array<DrawerListItem>[];
 	profile: {
-		display: "flex",
-		margin: theme.spacing(2),
-		alignItems: "center"
-	},
-	picture: {
-		marginRight: theme.spacing(1)
-	}
-});
+		title: string;
+		subtitle: string;
+		imgSrc?: string;
+		initials: string;
+	};
+	isOpen: boolean;
+	onClose: () => void;
+	onClick: () => void;
+}
+
+const styles = (theme: Theme) =>
+	createStyles({
+		list: {
+			width: 250,
+			display: "flex",
+			flexDirection: "column",
+			justifyContent: "space-between",
+			minHeight: "100vh"
+		},
+		text: {
+			textDecoration: "none"
+		},
+		profile: {
+			display: "flex",
+			margin: theme.spacing(2),
+			alignItems: "center"
+		},
+		picture: {
+			marginRight: theme.spacing(1)
+		}
+	});
 
 const renderProfile = ({ title, subtitle, imgSrc, initials }, classes) => (
 	<Fragment>
@@ -55,15 +80,15 @@ const renderProfile = ({ title, subtitle, imgSrc, initials }, classes) => (
 	</Fragment>
 );
 
-function TemporaryDrawer({
+const TemporaryDrawer: FC<DrawerProps> = ({
 	classes,
-	list,
+	list = [],
+	endList = [],
 	isOpen,
 	onClick,
 	onClose,
-	endList,
 	profile
-}) {
+}) => {
 	const sideList = (
 		<div className={classes.list}>
 			<div>
@@ -126,33 +151,6 @@ function TemporaryDrawer({
 			{sideList}
 		</Drawer>
 	);
-}
-
-TemporaryDrawer.propTypes = {
-	classes: PropTypes.object.isRequired,
-	list: PropTypes.arrayOf(
-		PropTypes.arrayOf(
-			PropTypes.shape({
-				icon: PropTypes.node.isRequired,
-				text: PropTypes.node.isRequired,
-				onClick: PropTypes.func
-			})
-		)
-	),
-	profile: PropTypes.shape({
-		title: PropTypes.string.isRequired,
-		subtitle: PropTypes.string.isRequired,
-		imgSrc: PropTypes.string,
-		initials: PropTypes.string.isRequired
-	}),
-	isOpen: PropTypes.bool.isRequired,
-	onClose: PropTypes.func,
-	onClick: PropTypes.func
-};
-
-TemporaryDrawer.defaultProps = {
-	list: [],
-	endList: []
 };
 
 export default withStyles(styles)(TemporaryDrawer);
