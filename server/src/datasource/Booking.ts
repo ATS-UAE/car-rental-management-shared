@@ -1,3 +1,5 @@
+import { Wialon } from "node-wialon";
+import { Op } from "sequelize";
 import DataSource from "./DataSource";
 import { Role, Operation, Resource } from "../variables/enums";
 import UserAccessor from "./types/UserAccessor";
@@ -8,8 +10,9 @@ import {
 } from "../utils/exceptions";
 import { toMySQLDate, exceptFields } from "../utils";
 import { BookingType } from "../variables/enums";
-import { User } from "../models";
+import { User, Vehicle, Location } from "../models";
 import moment = require("moment");
+import { sendBookingNotification } from "../utils/mail";
 export default class Booking extends DataSource {
 	user: UserAccessor;
 
@@ -165,6 +168,53 @@ export default class Booking extends DataSource {
 				from: toMySQLDate(data.from),
 				replaceVehicleId: (replacementVehicle && replacementVehicle.id) || null
 			});
+
+			if (this.user.role === Role.GUEST) {
+				User.findAll({
+					where: {
+						clientId: this.user.clientId,
+						role: {
+							[Op.in]: [Role.ADMIN, Role.KEY_MANAGER]
+						}
+					}
+				}).then(async users => {
+					const vehicle = await Vehicle.findByPk(data.vehicleId);
+					const location = await Location.findByPk(data.vehicleId);
+
+					let lng = location.lng;
+					let lat = location.lat;
+
+					if (vehicle.wialonUnitId) {
+						const w = await Wialon.login({
+							token: process.env.WIALON_TOKEN
+						});
+						const unit = await w.Core.searchItem({
+							id: vehicle.wialonUnitId,
+							flags: 1024 + 8192
+						});
+					}
+					for (const user of users) {
+						try {
+							sendBookingNotification({
+								email: user.email,
+								company: "LeasePlan",
+								bookingId: createdBooking.id,
+								customerEmail: this.user.email,
+								customerName: `${this.user.firstName} ${this.user.lastName}`,
+								from: createdBooking.from,
+								to: createdBooking.to,
+								lat,
+								lng,
+								location: location.name,
+								mobile: this.user.mobileNumber,
+								plateNumber: vehicle.plateNumber || "None",
+								vehicle: `${vehicle.brand} ${vehicle.model}`,
+								vehicleId: vehicle.id
+							});
+						} catch (e) {}
+					}
+				});
+			}
 			return createdBooking;
 		} catch (e) {
 			replacementVehicle && (await replacementVehicle.destroy());
