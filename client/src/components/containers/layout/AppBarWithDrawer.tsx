@@ -1,36 +1,52 @@
-import React, { Fragment, useEffect } from "react";
+import React, { useEffect, FC } from "react";
 import { withRouter } from "react-router-dom";
-import { connect } from "react-redux";
-import { compose } from "redux";
+import { connect, ResolveThunks } from "react-redux";
+import { compose } from "recompose";
 import { ExitToApp } from "@material-ui/icons";
 
-import AppBarWithDrawer from "../../presentational/layout/AppBarWithDrawer";
+import { AppBarWithDrawer, DrawerListItem } from "../../presentational";
 import * as actions from "../../../actions";
 import { Typography } from "@material-ui/core";
 import { pages } from "../../../variables";
 import { toTitleWords } from "../../../utils/helpers";
+import { ReduxState } from "../../../typings";
+import { History } from "history";
 
-function AppBarWithDrawerContainer({
+interface AppBarWithDrawerStateProps {
+	auth: ReduxState["auth"];
+}
+
+type AppBarWithDrawerActionProps = ResolveThunks<typeof actions>;
+
+interface AppBarWithDrawerInnerProps {
+	history: History;
+}
+
+type Props = AppBarWithDrawerInnerProps &
+	AppBarWithDrawerActionProps &
+	AppBarWithDrawerStateProps;
+
+export const AppBarWithDrawerContainer: FC<Props> = ({
 	auth,
 	history,
 	fetchCurrentUserDetails,
 	authLogout
-}) {
+}) => {
 	useEffect(() => {
 		fetchCurrentUserDetails();
 	}, []);
-	let menuList = [];
-	let endList = [];
+	let menuList: DrawerListItem[][] = [];
+	let endList: DrawerListItem[][] = [];
 	let profile;
-	if (auth) {
-		let pageList = [];
-		let optionsList = [];
+	if (auth && auth.data) {
+		let pageList: DrawerListItem[] = [];
+		let optionsList: DrawerListItem[] = [];
 		let role = auth.data.role;
 		profile = {
 			title: `${auth.data.firstName} ${auth.data.lastName}`,
 			subtitle: `${toTitleWords(role)}`,
-			initials: `${auth.data.firstName[0]}${auth.data.lastName[0]}`,
-			imgSrc: auth.data.userImageSrc || null
+			initials: `${auth.data.firstName[0] || ""}${auth.data.lastName[0] || ""}`,
+			imgSrc: auth.data.userImageSrc
 		};
 		for (let page of pages) {
 			if (page.sidebar !== undefined) {
@@ -40,7 +56,6 @@ function AppBarWithDrawerContainer({
 				) {
 					if (page.sidebar.location === "bottom") {
 						optionsList.push({
-							path: page.path,
 							icon: <page.sidebar.icon />,
 							text: <Typography>{page.sidebar.title}</Typography>,
 							onClick: () => history.push(page.path)
@@ -61,17 +76,16 @@ function AppBarWithDrawerContainer({
 		optionsList.push({
 			icon: <ExitToApp />,
 			text: <Typography>Logout</Typography>,
-			onClick: () => {
-				authLogout().then(() => {
-					history.push("/");
-				});
+			onClick: async () => {
+				authLogout();
+				history.push("/");
 			}
 		});
 		endList.push(optionsList);
 	}
 
 	return (
-		<Fragment>
+		<>
 			<AppBarWithDrawer
 				onLogoClick={() => {
 					history.location.pathname !== "/" && history.push("/");
@@ -81,15 +95,15 @@ function AppBarWithDrawerContainer({
 				endList={endList}
 				profile={profile}
 			/>
-		</Fragment>
+		</>
 	);
-}
+};
 
 const mapStateToProps = ({ auth }) => ({
 	auth
 });
 
-export default compose(
+export default compose<Props, {}>(
 	connect(mapStateToProps, actions),
 	withRouter
 )(AppBarWithDrawerContainer);

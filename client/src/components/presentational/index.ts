@@ -10,3 +10,6 @@ export * from "./ButtonModal";
 export * from "./ReportArea";
 export * from "./BarChart";
 export * from "./RoleView";
+export * from "./Drawer";
+export * from "./AppBar";
+export * from "./AppBarWithDrawer";

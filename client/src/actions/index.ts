@@ -14,10 +14,14 @@ import {
 } from "../typings/api";
 import { ReduxState } from "../typings";
 
-type DispatchCallBack<Payload> = (action: {
+export type ExtractAction<T extends (...args: any) => any> = (
+	...args: Parameters<ReturnType<T>>
+) => ReturnType<T>;
+
+export type DispatchCallBack<Payload> = (action: {
 	type: Action;
 	payload: Payload;
-}) => null;
+}) => void;
 
 export const fetchCurrentUserDetails = () => async (
 	dispatch: DispatchCallBack<ReduxState["auth"]>
