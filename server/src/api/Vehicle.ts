@@ -1,6 +1,5 @@
-import { ValidationError } from "yup";
 import moment from "moment";
-import { Op } from "sequelize/types";
+import { Op } from "sequelize";
 import {
 	Vehicle as VehicleModel,
 	User,

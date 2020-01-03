@@ -7,10 +7,11 @@ import {
 	BookingAttributes,
 	ReplaceVehicleAttributes
 } from "../models";
-import { ApiException, ItemNotFoundException } from "./exceptions";
+import { ItemNotFoundException } from "./exceptions";
 import { UseParameters } from ".";
 import { Role } from "../variables/enums";
 import { ApiErrorHandler } from "./utils";
+import { Castable, Collection } from "./Collection";
 
 export type BookingCreateOptions = UseParameters<
 	BookingAttributes,
@@ -40,15 +41,23 @@ export type BookingUpdateOptions = UseParameters<
 	| "bookingType"
 >;
 
-export class Booking {
+export class Booking implements Castable {
 	private constructor(public data: BookingModel) {}
+
+	public cast = (user: User) =>
+		BookingValidators.get.cast(this.data, {
+			context: { user, booking: this.data },
+			stripUnknown: true
+		});
 
 	public static getAll = async (user: User) => {
 		let bookings: BookingModel[] = [];
 
 		if (user.role === Role.GUEST) {
+			// Get bookings on self.
 			bookings = await user.$get("bookings");
 		} else if (user.role === Role.ADMIN || user.role === Role.KEY_MANAGER) {
+			// Get bookings on self client.
 			bookings = await BookingModel.findAll({
 				include: [
 					{
@@ -60,33 +69,34 @@ export class Booking {
 				]
 			});
 		} else if (user.role === Role.MASTER) {
+			// Get all bookings.
 			bookings = await BookingModel.findAll();
 		}
-
-		if (bookings instanceof Array) {
-			return bookings.map(b => new Booking(b));
-		}
-		return [];
+		return new Collection(bookings.map(b => new Booking(b)));
 	};
 
-	public create = async (user: User, options: BookingCreateOptions) => {
+	public static create = async (user: User, options: BookingCreateOptions) => {
 		try {
+			// Validate JSON schema.
 			await BookingValidators.create.validate(options, {
 				abortEarly: false,
-				context: { user, booking: this.data }
+				context: { user, booking: user }
 			});
-
+			// Cast the JSON
 			const bookingOptions = await BookingValidators.create.cast(options);
 
+			// Create replaced vehicle.
 			const replacedVehicle =
 				bookingOptions.replaceVehicle &&
 				(await ReplaceVehicle.create(bookingOptions.replaceVehicle));
 
+			// Create booking
+			// TODO: Include "paid", and "amount" in schema.
 			const createdBooking = await BookingModel.create({
 				paid: false,
 				amount: null,
 				...bookingOptions,
-				replaceVehicleId: replacedVehicle || null
+				replaceVehicleId: replacedVehicle?.id || null
 			});
 
 			return new Booking(createdBooking);
@@ -117,6 +127,47 @@ export class Booking {
 			}
 		} else if (user.role === Role.MASTER) {
 			return new Booking(booking);
+		}
+	};
+
+	public update = async (user: User, options: BookingUpdateOptions) => {
+		try {
+			// Validate JSON schema.
+			await BookingValidators.update.validate(options, {
+				abortEarly: false,
+				context: { user, booking: this.data }
+			});
+			// Cast the JSON
+			const bookingOptions = await BookingValidators.create.cast(options);
+
+			// Create replaced vehicle.
+			const replacedVehicle =
+				bookingOptions.replaceVehicle &&
+				(await ReplaceVehicle.create(bookingOptions.replaceVehicle));
+
+			// Create booking
+			// TODO: Include "paid", and "amount" in schema.
+			const updatedBooking = await this.data.update({
+				...bookingOptions,
+				replaceVehicleId: replacedVehicle?.id
+			});
+
+			return new Booking(updatedBooking);
+		} catch (e) {
+			new ApiErrorHandler(e);
+		}
+	};
+	public destroy = async (user: User) => {
+		try {
+			// Validate JSON schema.
+			await BookingValidators.destroy.validate(this.data, {
+				abortEarly: false,
+				context: { user }
+			});
+
+			await this.data.destroy();
+		} catch (e) {
+			new ApiErrorHandler(e);
 		}
 	};
 }

@@ -1,20 +1,20 @@
 import express from "express";
 import requireLogin from "../middlewares/requireLogin";
-import db from "../models";
+import { Booking } from "../api";
+import { Location } from "../models";
 import { ResponseBuilder } from "../utils";
 import { sendInvoice, sendBookingConfirmation } from "../utils/mail";
-import { Booking } from "../datasource";
+
 import moment from "moment";
 const router = express.Router();
 router.use(requireLogin);
 
 router.get("/", async ({ user }: any, res) => {
 	const response = new ResponseBuilder();
-	const BookingDataSource = new Booking(db, user);
 	try {
-		const foundBookings = await BookingDataSource.getAll();
-		response.handleSuccess(`Found ${foundBookings.length} bookings.`, res);
-		response.setData(foundBookings);
+		const foundBookings = await Booking.getAll(user);
+		response.handleSuccess(`Found ${foundBookings.data.length} bookings.`, res);
+		response.setData(foundBookings.cast(user));
 	} catch (e) {
 		response.handleError(e, res);
 	}
@@ -24,46 +24,41 @@ router.get("/", async ({ user }: any, res) => {
 
 router.post("/", async ({ user, body }: any, res) => {
 	const response = new ResponseBuilder();
-	const BookingDataSource = new Booking(db, user);
-
 	try {
-		const createdBooking = await BookingDataSource.create(body);
-		response.setData(createdBooking.get({ plain: true }));
+		const createdBooking = await Booking.create(user, body);
+		response.setData(createdBooking.cast(user));
 		response.handleSuccess("Booking has been created.", res);
 	} catch (e) {
 		response.handleError(e, res);
 	}
-
 	res.json(response);
 });
 
 router.get("/:id", async ({ user, params }: any, res) => {
 	let response = new ResponseBuilder();
-	const BookingDataSource = new Booking(db, user);
 	try {
-		let foundBooking = await BookingDataSource.get(params.id);
-		response.setData(foundBooking.get({ plain: true }));
+		let foundBooking = await Booking.get(user, params.id);
+		response.setData(foundBooking.cast(user));
 		response.handleSuccess(`Booking with ID of ${params.id} found.`, res);
 	} catch (e) {
 		response.handleError(e, res);
 	}
-
 	res.json(response);
 });
 
 router.patch("/:id", async ({ user, params, body }: any, res) => {
 	const response = new ResponseBuilder();
-	const BookingDataSource = new Booking(db, user);
 	try {
-		const bookingPreviousValue = await BookingDataSource.get(params.id);
-		const updatedBooking = await BookingDataSource.update(params.id, body);
-		const bookingData = await db.Booking.findByPk(params.id, {
+		const bookingPreviousValue = await Booking.get(user, params.id);
+		const updatedBooking = await bookingPreviousValue.update(user, body);
+		const bookingData = await updatedBooking.data.reload({
 			include: [{ all: true }]
 		});
+
 		if (
 			body.amount !== undefined &&
 			body.amount !== null &&
-			bookingPreviousValue.amount === null
+			bookingPreviousValue.data.amount === null
 		) {
 			sendInvoice({
 				email: bookingData.user.email,
@@ -75,11 +70,8 @@ router.patch("/:id", async ({ user, params, body }: any, res) => {
 				bookingId: bookingData.id
 			});
 		}
-
-		if (body.approved === true && bookingPreviousValue.approved === null) {
-			const location = await db.Location.findByPk(
-				bookingData.vehicle.locationId
-			);
+		if (body.approved === true && bookingPreviousValue.data.approved === null) {
+			const location = await Location.findByPk(bookingData.vehicle.locationId);
 			sendBookingConfirmation({
 				email: bookingData.user.email,
 				customerName: bookingData.user.firstName,
@@ -94,8 +86,8 @@ router.patch("/:id", async ({ user, params, body }: any, res) => {
 			});
 		}
 
-		response.setData(updatedBooking.get({ plain: true }));
-		response.handleSuccess("Booking has been created", res);
+		response.setData(updatedBooking.cast(user));
+		response.handleSuccess("Booking has been updated", res);
 	} catch (e) {
 		response.handleError(e, res);
 	}
@@ -104,10 +96,10 @@ router.patch("/:id", async ({ user, params, body }: any, res) => {
 
 router.delete("/:id", async ({ user, params }: any, res) => {
 	const response = new ResponseBuilder();
-	const BookingDataSource = new Booking(db, user);
 	try {
-		const deletedBooking = await BookingDataSource.delete(params.id);
-		response.setData(deletedBooking.get({ plain: true }));
+		const foundBooking = await Booking.get(user, params.id);
+		await foundBooking.destroy(user);
+		response.setData(foundBooking.cast(user));
 		response.handleSuccess(
 			`Booking with ID ${params.id} has been deleted.`,
 			res

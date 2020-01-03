@@ -60,15 +60,6 @@ const sequelize = new Sequelize(
 			VehicleCategory,
 			VehicleIssue
 		],
-		define: {
-			hooks: {
-				afterFind: (results): void => {
-					if (results) {
-						convertSequelizeDatesToUnix(results);
-					}
-				}
-			}
-		},
 		...config.database.sequelize
 	}
 );

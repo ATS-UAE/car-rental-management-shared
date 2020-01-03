@@ -1,15 +1,15 @@
 import { Response } from "express";
 import {
 	InvalidPermissionException,
-	ResourceNotFoundException,
-	InvalidInputException
+	ResourceNotFoundException
 } from "./exceptions";
+import { FormException, FieldError } from "../api/exceptions";
 export default class ResponseBuilder<T = unknown> {
 	constructor(
 		private data: T = null,
 		private success = false,
 		private message = "Unknown server error.",
-		private errors: string[] = [],
+		private errors: FieldError[] = [],
 		private code = 500
 	) {}
 
@@ -21,7 +21,7 @@ export default class ResponseBuilder<T = unknown> {
 		this.success = success;
 	}
 
-	appendError(error: string) {
+	appendError(error: FieldError) {
 		this.errors.push(error);
 	}
 
@@ -40,16 +40,13 @@ export default class ResponseBuilder<T = unknown> {
 		} else if (e instanceof ResourceNotFoundException) {
 			this.setCode(404);
 			res.status(404);
-		} else if (e instanceof InvalidInputException) {
-			this.setCode(403);
+		} else if (e instanceof FormException) {
+			e.fields.forEach(error => this.appendError(error));
 			res.status(403);
 		} else {
 			res.status(500);
 		}
 		this.setMessage(e.message);
-		if (e.fields && e.fields.length) {
-			e.fields.forEach((error: string) => this.appendError(error));
-		}
 	}
 
 	handleSuccess(message: string, res: Response) {
