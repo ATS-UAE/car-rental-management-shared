@@ -27,9 +27,12 @@ const getTransport = () =>
 
 const compileTemplate = (mjml: string, context: any) => compile(mjml)(context);
 
-const getDateStringFromOriginalTimezone = (timestamp: number) => {
+const getDateStringFromOriginalTimezone = (
+	timestamp: number,
+	utcOffset: string
+) => {
 	return moment(timestamp, "X")
-		.utcOffset(moment(timestamp, "X").format("Z"))
+		.utcOffset(utcOffset)
 		.format("LLL");
 };
 
@@ -92,15 +95,25 @@ export const sendInvoice = ({
 	vehicleName,
 	from,
 	to,
-	bookingId
+	bookingId,
+	utcOffset
+}: {
+	email: string;
+	amount: number;
+	customerName: string;
+	vehicleName: string;
+	from: number;
+	to: number;
+	bookingId: number;
+	utcOffset: string;
 }) => {
 	const transporter = getTransport();
 	const compiled = compileTemplate(getTemplate("invoice"), {
 		company: "LeasePlan",
 		customerName,
 		vehicleName,
-		from: getDateStringFromOriginalTimezone(from),
-		to: getDateStringFromOriginalTimezone(to),
+		from: getDateStringFromOriginalTimezone(from, utcOffset),
+		to: getDateStringFromOriginalTimezone(to, utcOffset),
 		contactEmail: "support@atsuae.net",
 		logoSrc: `${process.env.SERVER_URL}/static/images/mail-header.png`,
 		amount,
@@ -140,6 +153,7 @@ export interface SendBookingNotificationOptions {
 	lng: number;
 	company: string;
 	timezone: string;
+	utcOffset: string;
 }
 
 export const sendBookingNotification = async ({
@@ -156,7 +170,8 @@ export const sendBookingNotification = async ({
 	location,
 	lat,
 	lng,
-	company
+	company,
+	utcOffset
 }: SendBookingNotificationOptions) => {
 	const transporter = getTransport();
 
@@ -184,8 +199,8 @@ export const sendBookingNotification = async ({
 		customerName,
 		mobile,
 		bookingId,
-		from: getDateStringFromOriginalTimezone(from),
-		to: getDateStringFromOriginalTimezone(to),
+		from: getDateStringFromOriginalTimezone(from, utcOffset),
+		to: getDateStringFromOriginalTimezone(to, utcOffset),
 		vehicleId,
 		vehicle,
 		plateNumber,
@@ -236,7 +251,8 @@ export const sendBookingConfirmation = async ({
 	parkingLocation,
 	lat,
 	lng,
-	address
+	address,
+	utcOffset
 }: {
 	email: string;
 	customerName: string;
@@ -249,6 +265,7 @@ export const sendBookingConfirmation = async ({
 	lng: number;
 	address: string;
 	timezone: string;
+	utcOffset: string;
 }): Promise<string> => {
 	const transporter = getTransport();
 
@@ -276,8 +293,8 @@ export const sendBookingConfirmation = async ({
 		contactEmail: "support@atsuae.net",
 		logoSrc: `${process.env.SERVER_URL}/static/images/mail-header.png`,
 		bookingId,
-		from: getDateStringFromOriginalTimezone(from),
-		to: getDateStringFromOriginalTimezone(to),
+		from: getDateStringFromOriginalTimezone(from, utcOffset),
+		to: getDateStringFromOriginalTimezone(to, utcOffset),
 		vehicleName,
 		customerName,
 		mapURL: `cid:${fileName}`,
