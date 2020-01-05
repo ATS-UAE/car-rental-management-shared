@@ -4,7 +4,7 @@ import { compile } from "handlebars";
 import mjml2html from "mjml";
 import nodemailer from "nodemailer";
 import jwt from "jsonwebtoken";
-import moment from "moment";
+import moment from "moment-timezone";
 import StaticMaps from "staticmaps";
 import config from "../../config";
 import { getStaticFilesPath, makeDirectoryIfNotExist } from "..";
@@ -26,6 +26,12 @@ const getTransport = () =>
 	});
 
 const compileTemplate = (mjml: string, context: any) => compile(mjml)(context);
+
+const getDateStringFromOriginalTimezone = (timestamp: number) => {
+	return moment(timestamp, "X")
+		.utcOffset(moment(timestamp, "X").format("Z"))
+		.format("LLL");
+};
 
 export const sendPasswordResetToken = ({
 	email,
@@ -93,8 +99,8 @@ export const sendInvoice = ({
 		company: "LeasePlan",
 		customerName,
 		vehicleName,
-		from: moment(from, "X").format("LLL"),
-		to: moment(to, "X").format("LLL"),
+		from: getDateStringFromOriginalTimezone(from),
+		to: getDateStringFromOriginalTimezone(to),
 		contactEmail: "support@atsuae.net",
 		logoSrc: `${process.env.SERVER_URL}/static/images/mail-header.png`,
 		amount,
@@ -133,6 +139,7 @@ export interface SendBookingNotificationOptions {
 	lat: number;
 	lng: number;
 	company: string;
+	timezone: string;
 }
 
 export const sendBookingNotification = async ({
@@ -177,8 +184,8 @@ export const sendBookingNotification = async ({
 		customerName,
 		mobile,
 		bookingId,
-		from: moment(from, "X").format("LLL"),
-		to: moment(to, "X").format("LLL"),
+		from: getDateStringFromOriginalTimezone(from),
+		to: getDateStringFromOriginalTimezone(to),
 		vehicleId,
 		vehicle,
 		plateNumber,
@@ -241,6 +248,7 @@ export const sendBookingConfirmation = async ({
 	lat: number;
 	lng: number;
 	address: string;
+	timezone: string;
 }): Promise<string> => {
 	const transporter = getTransport();
 
@@ -268,8 +276,8 @@ export const sendBookingConfirmation = async ({
 		contactEmail: "support@atsuae.net",
 		logoSrc: `${process.env.SERVER_URL}/static/images/mail-header.png`,
 		bookingId,
-		from: moment(from, "X").format("LLL"),
-		to: moment(to, "X").format("LLL"),
+		from: getDateStringFromOriginalTimezone(from),
+		to: getDateStringFromOriginalTimezone(to),
 		vehicleName,
 		customerName,
 		mapURL: `cid:${fileName}`,
