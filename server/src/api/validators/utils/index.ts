@@ -57,9 +57,9 @@ export const stripField = <T extends yup.Schema<any>>(
 		const exists = roles.includes(user.role);
 
 		if (exists && stripFound) {
-			return schema.strip(true);
+			return yup.mixed().strip(true);
 		} else if (!exists && !stripFound) {
-			return schema.strip(true);
+			return yup.mixed().strip(true);
 		}
 		return schema;
 	});

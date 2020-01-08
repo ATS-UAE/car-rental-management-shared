@@ -7,6 +7,7 @@ import { URL } from "url";
 
 import { BookingStatus } from "../variables/enums";
 import { ExtractArray } from "../typings";
+import { Booking } from "../models";
 
 export { default as ResponseBuilder } from "./ResponseBuilder";
 
@@ -143,10 +144,13 @@ export const getBookingStatus = (booking: {
 	return status;
 };
 
-export const hasActiveBooking = (vehicle: any, bookingId?: number): boolean => {
+export const hasActiveBooking = (
+	bookings: Array<{ from: number; to: number; approved: boolean | null }>,
+	bookingId?: number
+): boolean => {
 	let active = false;
-	if (vehicle && vehicle.bookings) {
-		for (const booking of vehicle.bookings) {
+	if (bookings) {
+		for (const booking of bookings) {
 			let status = getBookingStatus(booking);
 			if (
 				status === BookingStatus.PENDING ||
@@ -161,14 +165,14 @@ export const hasActiveBooking = (vehicle: any, bookingId?: number): boolean => {
 };
 
 export const isBookingTimeSlotTaken = (
-	vehicle: any,
+	bookings: Booking[],
 	from: number,
 	to: number,
-	bookingId: number
+	bookingId?: number
 ): boolean => {
 	let taken = false;
-	if (vehicle && vehicle.bookings) {
-		for (const booking of vehicle.bookings) {
+	if (bookings) {
+		for (const booking of bookings.bookings) {
 			let status = getBookingStatus(booking);
 			if (
 				status === BookingStatus.PENDING ||

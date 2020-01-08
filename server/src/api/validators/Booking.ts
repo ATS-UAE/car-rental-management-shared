@@ -10,7 +10,7 @@ import {
 import { BookingType, Role } from "../../variables/enums";
 import { stripField } from "./utils";
 import { catchYupVadationErrors } from "../utils";
-import { isBookingTimeSlotTaken } from "../../utils";
+import { isBookingTimeSlotTaken, hasActiveBooking } from "../../utils";
 import { BookingCreateOptions, BookingUpdateOptions } from "../Booking";
 
 export abstract class Booking {
@@ -129,7 +129,7 @@ export abstract class Booking {
 					const bookedVehicle = await Vehicle.findByPk(v.vehicleId, {
 						include: [{ model: BookingModel }]
 					});
-					return isBookingTimeSlotTaken(bookedVehicle.bookings, v.from, v.to);
+					return !isBookingTimeSlotTaken(bookedVehicle.bookings, v.from, v.to);
 				}
 				return false;
 			}
@@ -218,11 +218,27 @@ export abstract class Booking {
 					}
 					return true;
 				}),
-			finished: stripField(yup.boolean(), [
-				Role.MASTER,
-				Role.ADMIN,
-				Role.KEY_MANAGER
-			]),
+			finished: stripField(
+				yup
+					.boolean()
+					.test(
+						"timeslot-available",
+						"The vehicle is intersects with another booking at the time specified.",
+						async function(v) {
+							const booking = this.options.context["booking"] as BookingModel;
+							const bookedVehicle = await Vehicle.findByPk(booking.vehicleId, {
+								include: [{ model: BookingModel }]
+							});
+							return !isBookingTimeSlotTaken(
+								bookedVehicle.bookings,
+								v.from,
+								v.to,
+								v.id
+							);
+						}
+					),
+				[Role.MASTER, Role.ADMIN, Role.KEY_MANAGER]
+			),
 			userId: yup
 				.number()
 				.test("no-approved", "Booking has already been approved", function() {
@@ -303,6 +319,7 @@ export abstract class Booking {
 							return !booking.finished;
 						}
 					)
+
 					.test(
 						"pending-only",
 						function() {
@@ -411,7 +428,7 @@ export abstract class Booking {
 					const bookedVehicle = await Vehicle.findByPk(v.vehicleId, {
 						include: [{ model: BookingModel }]
 					});
-					return isBookingTimeSlotTaken(
+					return !isBookingTimeSlotTaken(
 						bookedVehicle.bookings,
 						v.from,
 						v.to,
