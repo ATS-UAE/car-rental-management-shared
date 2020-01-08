@@ -129,7 +129,16 @@ export abstract class Booking {
 					const bookedVehicle = await Vehicle.findByPk(v.vehicleId, {
 						include: [{ model: BookingModel }]
 					});
-					return !isBookingTimeSlotTaken(bookedVehicle.bookings, v.from, v.to);
+					return !isBookingTimeSlotTaken(
+						bookedVehicle.bookings.map(({ from, to, approved, id }) => ({
+							from: moment(from).unix(),
+							to: moment(to).unix(),
+							approved,
+							id
+						})),
+						v.from,
+						v.to
+					);
 				}
 				return false;
 			}
@@ -223,14 +232,19 @@ export abstract class Booking {
 					.boolean()
 					.test(
 						"timeslot-available",
-						"The vehicle is intersects with another booking at the time specified.",
+						"This booking is intersects with another booking at the time specified.",
 						async function(v) {
 							const booking = this.options.context["booking"] as BookingModel;
 							const bookedVehicle = await Vehicle.findByPk(booking.vehicleId, {
 								include: [{ model: BookingModel }]
 							});
 							return !isBookingTimeSlotTaken(
-								bookedVehicle.bookings,
+								bookedVehicle.bookings.map(({ from, to, approved, id }) => ({
+									from: moment(from).unix(),
+									to: moment(to).unix(),
+									approved,
+									id
+								})),
 								v.from,
 								v.to,
 								v.id
@@ -319,7 +333,6 @@ export abstract class Booking {
 							return !booking.finished;
 						}
 					)
-
 					.test(
 						"pending-only",
 						function() {
@@ -429,7 +442,12 @@ export abstract class Booking {
 						include: [{ model: BookingModel }]
 					});
 					return !isBookingTimeSlotTaken(
-						bookedVehicle.bookings,
+						bookedVehicle.bookings.map(({ from, to, approved, id }) => ({
+							from: moment(from).unix(),
+							to: moment(to).unix(),
+							approved,
+							id
+						})),
 						v.from,
 						v.to,
 						v.id

@@ -165,14 +165,19 @@ export const hasActiveBooking = (
 };
 
 export const isBookingTimeSlotTaken = (
-	bookings: Booking[],
+	bookings: Array<{
+		from: number;
+		to: number;
+		approved: boolean | null;
+		id: number;
+	}>,
 	from: number,
 	to: number,
 	bookingId?: number
 ): boolean => {
 	let taken = false;
 	if (bookings) {
-		for (const booking of bookings.bookings) {
+		for (const booking of bookings) {
 			let status = getBookingStatus(booking);
 			if (
 				status === BookingStatus.PENDING ||
