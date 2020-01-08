@@ -2,7 +2,11 @@ import express from "express";
 import requireLogin from "../middlewares/requireLogin";
 import db from "../models";
 import { ResponseBuilder } from "../utils";
-import { sendInvoice, sendBookingConfirmation } from "../utils/mail";
+import {
+	sendInvoice,
+	sendBookingConfirmation,
+	sendBookingNotification
+} from "../utils/mail";
 import { Booking } from "../datasource";
 import moment from "moment";
 const router = express.Router();
@@ -72,7 +76,8 @@ router.patch("/:id", async ({ user, params, body }: any, res) => {
 				vehicleName: `${bookingData.vehicle.brand} ${bookingData.vehicle.model}`,
 				from: moment(bookingData.from, "X").unix(),
 				to: moment(bookingData.to, "X").unix(),
-				bookingId: bookingData.id
+				bookingId: bookingData.id,
+				timeZone: bookingData.user.timeZone
 			});
 		}
 
@@ -90,7 +95,8 @@ router.patch("/:id", async ({ user, params, body }: any, res) => {
 				address: location && location.address,
 				parkingLocation: bookingData.vehicle.parkingLocation,
 				lat: location && location.lat,
-				lng: location && location.lng
+				lng: location && location.lng,
+				timeZone: bookingData.user.timeZone
 			});
 		}
 
