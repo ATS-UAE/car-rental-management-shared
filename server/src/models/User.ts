@@ -40,6 +40,7 @@ export interface UserAttributes {
 	clientId: number | null;
 	role: Role;
 	userCreatorId: number;
+	timeZone: string;
 
 	readonly createdAt: Date;
 	readonly updatedAt: Date;
@@ -106,6 +107,9 @@ export class User extends Model<User> implements UserAttributes {
 
 	@Column({ type: DataType.STRING, allowNull: false })
 	public role: Role;
+
+	@Column({ type: DataType.STRING, allowNull: false })
+	public timeZone: string;
 
 	@ForeignKey(() => User)
 	@Column

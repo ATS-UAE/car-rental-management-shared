@@ -67,7 +67,8 @@ router.patch("/:id", async ({ user, params, body }: any, res) => {
 				vehicleName: `${bookingData.vehicle.brand} ${bookingData.vehicle.model}`,
 				from: moment(bookingData.from, "X").unix(),
 				to: moment(bookingData.to, "X").unix(),
-				bookingId: bookingData.id
+				bookingId: bookingData.id,
+				timeZone: bookingData.user.timeZone
 			});
 		}
 		if (body.approved === true && bookingPreviousValue.data.approved === null) {
@@ -82,7 +83,8 @@ router.patch("/:id", async ({ user, params, body }: any, res) => {
 				address: location && location.address,
 				parkingLocation: bookingData.vehicle.parkingLocation,
 				lat: location && location.lat,
-				lng: location && location.lng
+				lng: location && location.lng,
+				timeZone: bookingData.user.timeZone
 			});
 		}
 

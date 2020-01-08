@@ -42,7 +42,7 @@ export type BookingUpdateOptions = UseParameters<
 	| "bookingType"
 >;
 
-export class Booking implements Castable {
+export class Booking implements Castable<Partial<BookingAttributes>> {
 	private constructor(public data: BookingModel) {}
 
 	public cast = (user: User) => BookingValidators.get.cast(user, this.data);
@@ -69,7 +69,9 @@ export class Booking implements Castable {
 			// Get all bookings.
 			bookings = await BookingModel.findAll();
 		}
-		return new Collection(bookings.map(b => new Booking(b)));
+		return new Collection<Partial<BookingAttributes>, Booking>(
+			bookings.map(b => new Booking(b))
+		);
 	};
 
 	public static create = async (user: User, options: BookingCreateOptions) => {

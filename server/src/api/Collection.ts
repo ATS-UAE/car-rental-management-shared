@@ -1,10 +1,10 @@
 import { User } from "../models";
 
-export interface Castable {
-	cast: (user: User) => any;
+export interface Castable<R> {
+	cast: (user: User) => R;
 }
 
-export class Collection<T extends Castable> {
+export class Collection<R, T extends Castable<R>> {
 	constructor(public data: T[]) {}
 
 	public cast = (user: User) => {

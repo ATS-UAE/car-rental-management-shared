@@ -4,7 +4,7 @@ import { compile } from "handlebars";
 import mjml2html from "mjml";
 import nodemailer from "nodemailer";
 import jwt from "jsonwebtoken";
-import moment from "moment";
+import moment from "moment-timezone";
 import StaticMaps from "staticmaps";
 import config from "../../config";
 import { getStaticFilesPath, makeDirectoryIfNotExist } from "..";
@@ -26,6 +26,12 @@ const getTransport = () =>
 	});
 
 const compileTemplate = (mjml: string, context: any) => compile(mjml)(context);
+
+const getDateStringFromUserTimezone = (timestamp: number, timeZone: string) => {
+	return moment(timestamp, "X")
+		.tz(timeZone)
+		.format("LLL");
+};
 
 export const sendPasswordResetToken = ({
 	email,
@@ -86,15 +92,25 @@ export const sendInvoice = ({
 	vehicleName,
 	from,
 	to,
-	bookingId
+	bookingId,
+	timeZone
+}: {
+	email: string;
+	amount: number;
+	customerName: string;
+	vehicleName: string;
+	from: number;
+	to: number;
+	bookingId: number;
+	timeZone: string;
 }) => {
 	const transporter = getTransport();
 	const compiled = compileTemplate(getTemplate("invoice"), {
 		company: "LeasePlan",
 		customerName,
 		vehicleName,
-		from: moment(from, "X").format("LLL"),
-		to: moment(to, "X").format("LLL"),
+		from: getDateStringFromUserTimezone(from, timeZone),
+		to: getDateStringFromUserTimezone(to, timeZone),
 		contactEmail: "support@atsuae.net",
 		logoSrc: `${process.env.SERVER_URL}/static/images/mail-header.png`,
 		amount,
@@ -133,6 +149,7 @@ export interface SendBookingNotificationOptions {
 	lat: number;
 	lng: number;
 	company: string;
+	timeZone: string;
 }
 
 export const sendBookingNotification = async ({
@@ -149,7 +166,8 @@ export const sendBookingNotification = async ({
 	location,
 	lat,
 	lng,
-	company
+	company,
+	timeZone
 }: SendBookingNotificationOptions) => {
 	const transporter = getTransport();
 
@@ -177,8 +195,8 @@ export const sendBookingNotification = async ({
 		customerName,
 		mobile,
 		bookingId,
-		from: moment(from, "X").format("LLL"),
-		to: moment(to, "X").format("LLL"),
+		from: getDateStringFromUserTimezone(from, timeZone),
+		to: getDateStringFromUserTimezone(to, timeZone),
 		vehicleId,
 		vehicle,
 		plateNumber,
@@ -229,7 +247,8 @@ export const sendBookingConfirmation = async ({
 	parkingLocation,
 	lat,
 	lng,
-	address
+	address,
+	timeZone
 }: {
 	email: string;
 	customerName: string;
@@ -241,6 +260,7 @@ export const sendBookingConfirmation = async ({
 	lat: number;
 	lng: number;
 	address: string;
+	timeZone: string;
 }): Promise<string> => {
 	const transporter = getTransport();
 
@@ -268,8 +288,8 @@ export const sendBookingConfirmation = async ({
 		contactEmail: "support@atsuae.net",
 		logoSrc: `${process.env.SERVER_URL}/static/images/mail-header.png`,
 		bookingId,
-		from: moment(from, "X").format("LLL"),
-		to: moment(to, "X").format("LLL"),
+		from: getDateStringFromUserTimezone(from, timeZone),
+		to: getDateStringFromUserTimezone(to, timeZone),
 		vehicleName,
 		customerName,
 		mapURL: `cid:${fileName}`,

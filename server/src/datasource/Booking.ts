@@ -42,7 +42,7 @@ export default class Booking extends DataSource {
 			accessor: this.user,
 			target: foundBooking
 		});
-		console.log(accessible);
+
 		if (!accessible) {
 			throw new InvalidPermissionException();
 		}
@@ -169,17 +169,21 @@ export default class Booking extends DataSource {
 				replaceVehicleId: (replacementVehicle && replacementVehicle.id) || null
 			});
 
+			let user = await this.getUser(
+				role === Role.GUEST ? this.user.id : data.userId
+			);
+
 			if (this.user.role === Role.GUEST) {
 				User.findAll({
 					where: {
-						clientId: this.user.clientId,
+						clientId: user.clientId,
 						role: {
 							[Op.in]: [Role.ADMIN, Role.KEY_MANAGER]
 						}
 					}
 				}).then(async users => {
 					const vehicle = await Vehicle.findByPk(data.vehicleId);
-					const location = await Location.findByPk(data.vehicleId);
+					const location = await Location.findByPk(vehicle.locationId);
 
 					let lng = location.lng;
 					let lat = location.lat;
@@ -192,6 +196,10 @@ export default class Booking extends DataSource {
 							id: vehicle.wialonUnitId,
 							flags: 1024 + 8192
 						});
+						if (unit) {
+							lat = unit.item && unit.item.pos && unit.item.pos.y;
+							lng = unit.item && unit.item.pos && unit.item.pos.x;
+						}
 					}
 					for (const user of users) {
 						try {
@@ -207,9 +215,10 @@ export default class Booking extends DataSource {
 								lng,
 								location: location.name,
 								mobile: this.user.mobileNumber,
-								plateNumber: vehicle.plateNumber || "None",
+								plateNumber: vehicle.plateNumber || "N/A",
 								vehicle: `${vehicle.brand} ${vehicle.model}`,
-								vehicleId: vehicle.id
+								vehicleId: vehicle.id,
+								timeZone: user.timeZone
 							});
 						} catch (e) {}
 					}
