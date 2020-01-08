@@ -145,7 +145,12 @@ export const getBookingStatus = (booking: {
 };
 
 export const hasActiveBooking = (
-	bookings: Array<{ from: number; to: number; approved: boolean | null }>,
+	bookings: Array<{
+		from: number;
+		to: number;
+		approved: boolean | null;
+		id: number;
+	}>,
 	bookingId?: number
 ): boolean => {
 	let active = false;
