@@ -10,6 +10,7 @@ import {
 import { BookingType, Role } from "../../variables/enums";
 import { stripField } from "./utils";
 import { catchYupVadationErrors } from "../utils";
+import { isBookingTimeSlotTaken } from "../../utils";
 import { BookingCreateOptions, BookingUpdateOptions } from "../Booking";
 
 export abstract class Booking {
@@ -121,6 +122,19 @@ export abstract class Booking {
 			})
 		})
 		.test(
+			"timeslot-available",
+			"The vehicle is unavailable at the time specified.",
+			async function(v) {
+				if (v && v.vehicleId && v.from && v.to) {
+					const bookedVehicle = await Vehicle.findByPk(v.vehicleId, {
+						include: [{ model: BookingModel }]
+					});
+					return isBookingTimeSlotTaken(bookedVehicle.bookings, v.from, v.to);
+				}
+				return false;
+			}
+		)
+		.test(
 			"permission",
 			"You do not have the permission to do this.",
 			async function(v) {
@@ -142,245 +156,271 @@ export abstract class Booking {
 			}
 		);
 
-	private static YupSchemaUpdate = yup.object().shape({
-		amount: stripField(yup.number().nullable(), [
-			Role.MASTER,
-			Role.ADMIN,
-			Role.KEY_MANAGER
-		]),
-		from: yup
-			.date()
-			.transform((value, originalValue) => moment(originalValue, "X").toDate())
-			.test("no-approved", "Booking has already been approved", function() {
-				const booking = this.options.context["booking"] as BookingModel;
-				const user = this.options.context["user"] as User;
-				const bookingOptions = this.options.context[
-					"bookingOptions"
-				] as BookingUpdateOptions;
-
-				const changed = bookingOptions?.from !== booking.from;
-
-				if (!changed) {
-					return true;
-				}
-
-				// If Guest, deny changes if approved.
-				if (user.role === Role.GUEST && booking.approved) {
-					return false;
-				} else if (user.role === Role.KEY_MANAGER && booking.finished) {
-					// If Key Manager, deny if booking has finished.
-					return false;
-				}
-				return true;
-			}),
-		to: yup
-			.date()
-			.transform((value, originalValue) => moment(originalValue, "X").toDate())
-			.test("no-approved", "Booking has already been approved", function() {
-				const booking = this.options.context["booking"] as BookingModel;
-				const user = this.options.context["user"] as User;
-				const bookingOptions = this.options.context[
-					"bookingOptions"
-				] as BookingUpdateOptions;
-
-				const changed = bookingOptions?.to !== booking.to;
-
-				if (!changed) {
-					return true;
-				}
-
-				// If Guest, deny changes if approved.
-				if (user.role === Role.GUEST && booking.approved) {
-					return false;
-				} else if (user.role === Role.KEY_MANAGER && booking.finished) {
-					// If Key Manager, deny if booking has finished.
-					return false;
-				}
-				return true;
-			}),
-		finished: stripField(yup.boolean(), [
-			Role.MASTER,
-			Role.ADMIN,
-			Role.KEY_MANAGER
-		]),
-		userId: yup
-			.number()
-			.test("no-approved", "Booking has already been approved", function() {
-				const booking = this.options.context["booking"] as BookingModel;
-				const user = this.options.context["user"] as User;
-
-				const bookingOptions = this.options.context[
-					"bookingOptions"
-				] as BookingUpdateOptions;
-
-				const changed = bookingOptions?.userId !== booking.userId;
-
-				if (!changed) {
-					return true;
-				}
-
-				// If Guest, deny changes if approved.
-				if (user.role === Role.GUEST && booking.approved) {
-					return false;
-				} else if (user.role === Role.KEY_MANAGER && booking.finished) {
-					// If Key Manager, deny if booking has finished.
-					return false;
-				}
-				return true;
-			}),
-		vehicleId: yup
-			.number()
-			.test("no-approved", "Booking has already been approved", function() {
-				const booking = this.options.context["booking"] as BookingModel;
-				const user = this.options.context["user"] as User;
-				const bookingOptions = this.options.context[
-					"bookingOptions"
-				] as BookingUpdateOptions;
-
-				const changed = bookingOptions?.vehicleId !== booking.vehicleId;
-
-				if (!changed) {
-					return true;
-				}
-
-				// If Guest or KM, deny changes if approved.
-				if (user.role === Role.GUEST || user.role === Role.KEY_MANAGER) {
-					if (booking.approved) {
-						return false;
-					}
-				}
-				return true;
-			}),
-		startFuel: stripField(yup.number().nullable(), [
-			Role.MASTER,
-			Role.ADMIN,
-			Role.KEY_MANAGER
-		]),
-		startMileage: stripField(yup.number().nullable(), [
-			Role.MASTER,
-			Role.ADMIN,
-			Role.KEY_MANAGER
-		]),
-		approved: stripField(
-			yup
-				.boolean()
-				.nullable()
-				.test(
-					"no-finished-booking",
-					"This booking has already finished.",
-					function() {
-						const booking = this.options.context["booking"] as BookingModel;
-						const bookingOptions = this.options.context[
-							"bookingOptions"
-						] as BookingUpdateOptions;
-
-						const changed = bookingOptions?.approved !== booking.approved;
-
-						if (!changed) {
-							return true;
-						}
-
-						return !booking.finished;
-					}
+	private static YupSchemaUpdate = yup
+		.object()
+		.shape({
+			amount: stripField(yup.number().nullable(), [
+				Role.MASTER,
+				Role.ADMIN,
+				Role.KEY_MANAGER
+			]),
+			from: yup
+				.date()
+				.transform((value, originalValue) =>
+					moment(originalValue, "X").toDate()
 				)
-				.test(
-					"pending-only",
-					function() {
-						const booking = this.options.context["booking"] as BookingModel;
-						return `Booking has already been ${
-							booking.approved ? "approved" : "denied"
-						}`;
-					},
-					function() {
-						const booking = this.options.context["booking"] as BookingModel;
-						const bookingOptions = this.options.context[
-							"bookingOptions"
-						] as BookingUpdateOptions;
-
-						const changed = bookingOptions?.approved !== booking.approved;
-
-						if (!changed) {
-							return true;
-						}
-
-						return changed ? booking.approved !== null : true;
-					}
-				)
-				.test("booking-expired", "Booking has already expired", function() {
+				.test("no-approved", "Booking has already been approved", function() {
 					const booking = this.options.context["booking"] as BookingModel;
+					const user = this.options.context["user"] as User;
 					const bookingOptions = this.options.context[
 						"bookingOptions"
 					] as BookingUpdateOptions;
 
-					const changed = bookingOptions?.approved !== booking.approved;
+					const changed = bookingOptions?.from !== booking.from;
 
 					if (!changed) {
 						return true;
 					}
 
-					return moment(booking.from).isAfter(moment());
+					// If Guest, deny changes if approved.
+					if (user.role === Role.GUEST && booking.approved) {
+						return false;
+					} else if (user.role === Role.KEY_MANAGER && booking.finished) {
+						// If Key Manager, deny if booking has finished.
+						return false;
+					}
+					return true;
 				}),
-			[Role.MASTER, Role.ADMIN, Role.KEY_MANAGER]
-		),
-		endFuel: stripField(yup.number().nullable(), [
-			Role.MASTER,
-			Role.ADMIN,
-			Role.KEY_MANAGER
-		]),
-		endMileage: stripField(yup.number().nullable(), [
-			Role.MASTER,
-			Role.ADMIN,
-			Role.KEY_MANAGER
-		]),
-		paid: stripField(yup.boolean(), [
-			Role.MASTER,
-			Role.ADMIN,
-			Role.KEY_MANAGER
-		]),
-		replaceVehicle: yup.lazy(function(value, options) {
-			const booking = options.context["booking"] as BookingModel;
-			const bookingOptions = options.context["bookingOptions"] as BookingModel;
-			// If booking type has been changed to replacement, then require a replacement vehicle.
-			if (
-				bookingOptions.bookingType === BookingType.REPLACEMENT &&
-				booking.bookingType !== BookingType.REPLACEMENT
-			) {
-				return yup
-					.object()
-					.shape({
-						plateNumber: yup.string().required(),
-						vin: yup.string().required(),
-						brand: yup.string().required(),
-						model: yup.string().required()
-					})
-					.required();
-			} else if (booking.bookingType === BookingType.REPLACEMENT) {
-				// If existing booking type is Replacement, allow updating partially.
-				return yup
-					.object()
-					.shape({
-						plateNumber: yup.string(),
-						vin: yup.string(),
-						brand: yup.string(),
-						model: yup.string()
-					})
-					.when("$booking", (booking, schema) =>
-						schema.transform(function(v) {
-							console.log(booking);
-							const replaceVehicle = ReplaceVehicle.findByPk(
-								booking.replaceVehicleId
-							);
-							return { ...v, ...replaceVehicle };
+			to: yup
+				.date()
+				.transform((value, originalValue) =>
+					moment(originalValue, "X").toDate()
+				)
+				.test("no-approved", "Booking has already been approved", function() {
+					const booking = this.options.context["booking"] as BookingModel;
+					const user = this.options.context["user"] as User;
+					const bookingOptions = this.options.context[
+						"bookingOptions"
+					] as BookingUpdateOptions;
+
+					const changed = bookingOptions?.to !== booking.to;
+
+					if (!changed) {
+						return true;
+					}
+
+					// If Guest, deny changes if approved.
+					if (user.role === Role.GUEST && booking.approved) {
+						return false;
+					} else if (user.role === Role.KEY_MANAGER && booking.finished) {
+						// If Key Manager, deny if booking has finished.
+						return false;
+					}
+					return true;
+				}),
+			finished: stripField(yup.boolean(), [
+				Role.MASTER,
+				Role.ADMIN,
+				Role.KEY_MANAGER
+			]),
+			userId: yup
+				.number()
+				.test("no-approved", "Booking has already been approved", function() {
+					const booking = this.options.context["booking"] as BookingModel;
+					const user = this.options.context["user"] as User;
+
+					const bookingOptions = this.options.context[
+						"bookingOptions"
+					] as BookingUpdateOptions;
+
+					const changed = bookingOptions?.userId !== booking.userId;
+
+					if (!changed) {
+						return true;
+					}
+
+					// If Guest, deny changes if approved.
+					if (user.role === Role.GUEST && booking.approved) {
+						return false;
+					} else if (user.role === Role.KEY_MANAGER && booking.finished) {
+						// If Key Manager, deny if booking has finished.
+						return false;
+					}
+					return true;
+				}),
+			vehicleId: yup
+				.number()
+				.test("no-approved", "Booking has already been approved", function() {
+					const booking = this.options.context["booking"] as BookingModel;
+					const user = this.options.context["user"] as User;
+					const bookingOptions = this.options.context[
+						"bookingOptions"
+					] as BookingUpdateOptions;
+
+					const changed = bookingOptions?.vehicleId !== booking.vehicleId;
+
+					if (!changed) {
+						return true;
+					}
+
+					// If Guest or KM, deny changes if approved.
+					if (user.role === Role.GUEST || user.role === Role.KEY_MANAGER) {
+						if (booking.approved) {
+							return false;
+						}
+					}
+					return true;
+				}),
+			startFuel: stripField(yup.number().nullable(), [
+				Role.MASTER,
+				Role.ADMIN,
+				Role.KEY_MANAGER
+			]),
+			startMileage: stripField(yup.number().nullable(), [
+				Role.MASTER,
+				Role.ADMIN,
+				Role.KEY_MANAGER
+			]),
+			approved: stripField(
+				yup
+					.boolean()
+					.nullable()
+					.test(
+						"no-finished-booking",
+						"This booking has already finished.",
+						function() {
+							const booking = this.options.context["booking"] as BookingModel;
+							const bookingOptions = this.options.context[
+								"bookingOptions"
+							] as BookingUpdateOptions;
+
+							const changed = bookingOptions?.approved !== booking.approved;
+
+							if (!changed) {
+								return true;
+							}
+
+							return !booking.finished;
+						}
+					)
+					.test(
+						"pending-only",
+						function() {
+							const booking = this.options.context["booking"] as BookingModel;
+							return `Booking has already been ${
+								booking.approved ? "approved" : "denied"
+							}`;
+						},
+						function() {
+							const booking = this.options.context["booking"] as BookingModel;
+							const bookingOptions = this.options.context[
+								"bookingOptions"
+							] as BookingUpdateOptions;
+
+							const changed = bookingOptions?.approved !== booking.approved;
+
+							if (!changed) {
+								return true;
+							}
+
+							return changed ? booking.approved !== null : true;
+						}
+					)
+					.test("booking-expired", "Booking has already expired", function() {
+						const booking = this.options.context["booking"] as BookingModel;
+						const bookingOptions = this.options.context[
+							"bookingOptions"
+						] as BookingUpdateOptions;
+
+						const changed = bookingOptions?.approved !== booking.approved;
+
+						if (!changed) {
+							return true;
+						}
+
+						return moment(booking.from).isAfter(moment());
+					}),
+				[Role.MASTER, Role.ADMIN, Role.KEY_MANAGER]
+			),
+			endFuel: stripField(yup.number().nullable(), [
+				Role.MASTER,
+				Role.ADMIN,
+				Role.KEY_MANAGER
+			]),
+			endMileage: stripField(yup.number().nullable(), [
+				Role.MASTER,
+				Role.ADMIN,
+				Role.KEY_MANAGER
+			]),
+			paid: stripField(yup.boolean(), [
+				Role.MASTER,
+				Role.ADMIN,
+				Role.KEY_MANAGER
+			]),
+			replaceVehicle: yup.lazy(function(value, options) {
+				const booking = options.context["booking"] as BookingModel;
+				const bookingOptions = options.context[
+					"bookingOptions"
+				] as BookingModel;
+				// If booking type has been changed to replacement, then require a replacement vehicle.
+				if (
+					bookingOptions.bookingType === BookingType.REPLACEMENT &&
+					booking.bookingType !== BookingType.REPLACEMENT
+				) {
+					return yup
+						.object()
+						.shape({
+							plateNumber: yup.string().required(),
+							vin: yup.string().required(),
+							brand: yup.string().required(),
+							model: yup.string().required()
 						})
-					);
-			}
-			return yup
-				.mixed()
-				.notRequired()
-				.nullable()
-				.transform(() => null);
+						.required();
+				} else if (booking.bookingType === BookingType.REPLACEMENT) {
+					// If existing booking type is Replacement, allow updating partially.
+					return yup
+						.object()
+						.shape({
+							plateNumber: yup.string(),
+							vin: yup.string(),
+							brand: yup.string(),
+							model: yup.string()
+						})
+						.when("$booking", (booking, schema) =>
+							schema.transform(function(v) {
+								console.log(booking);
+								const replaceVehicle = ReplaceVehicle.findByPk(
+									booking.replaceVehicleId
+								);
+								return { ...v, ...replaceVehicle };
+							})
+						);
+				}
+				return yup
+					.mixed()
+					.notRequired()
+					.nullable()
+					.transform(() => null);
+			})
 		})
-	});
+		.test(
+			"timeslot-available",
+			"The vehicle is unavailable at the time specified.",
+			async function(v) {
+				if (v && v.id && v.vehicleId && v.from && v.to) {
+					const bookedVehicle = await Vehicle.findByPk(v.vehicleId, {
+						include: [{ model: BookingModel }]
+					});
+					return isBookingTimeSlotTaken(
+						bookedVehicle.bookings,
+						v.from,
+						v.to,
+						v.id
+					);
+				}
+				return false;
+			}
+		);
 
 	public static get = {
 		cast: (user: User, booking: BookingModel) =>
