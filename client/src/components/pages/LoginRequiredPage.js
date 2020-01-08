@@ -2,7 +2,7 @@ import React from "react";
 import { Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import { compose } from "redux";
-import Loading from "../presentational/layout/Loading";
+import Loading from "../presentational/Loading";
 
 const LoginRequiredPage = ({ auth, children }) => {
 	if (auth === null) {

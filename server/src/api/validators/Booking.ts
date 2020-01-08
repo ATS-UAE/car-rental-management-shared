@@ -9,12 +9,18 @@ import {
 } from "../../models";
 import { BookingType, Role } from "../../variables/enums";
 import { stripField } from "./utils";
+import { catchYupVadationErrors } from "../utils";
+import { BookingCreateOptions, BookingUpdateOptions } from "../Booking";
 
 export abstract class Booking {
-	static get = yup.object().shape({
+	private static YupSchemaGet = yup.object().shape({
 		id: yup.number(),
 		paid: yup.boolean(),
-		amount: yup.number().nullable(),
+		amount: stripField(yup.number().nullable(), [
+			Role.MASTER,
+			Role.ADMIN,
+			Role.KEY_MANAGER
+		]),
 		from: yup
 			.number()
 			.transform((value, originalValue) => moment(originalValue).unix()),
@@ -43,9 +49,10 @@ export abstract class Booking {
 			)
 	});
 
-	static destroy = yup.object().shape({
+	private static YupSchemaDestroy = yup.object().shape({
 		approved: yup
 			.boolean()
+			.nullable()
 			.test(
 				"not-approved",
 				"Booking has already been approved and cannot be deleted.",
@@ -53,7 +60,7 @@ export abstract class Booking {
 			)
 	});
 
-	static create = yup
+	private static YupSchemaCreate = yup
 		.object()
 		.shape({
 			userId: yup
@@ -83,13 +90,7 @@ export abstract class Booking {
 				.required()
 				.test(
 					"no-lower-than-other",
-					function() {
-						const { parent } = this;
-						return `Booking time start cannot be lower than ${moment(
-							parent.from,
-							"X"
-						).format("YYYY/MM/DD HH:mm")}`;
-					},
+					`Booking time end cannot be lower than starting time.`,
 					function(value) {
 						const { parent } = this;
 						return moment(value, "X") < parent.from;
@@ -102,9 +103,9 @@ export abstract class Booking {
 				.string()
 				.oneOf(Object.values(BookingType))
 				.required(),
-			replaceVehicle: yup.lazy(function() {
-				const { parent } = this;
-				if (parent.bookingType === BookingType.REPLACEMENT) {
+			replaceVehicle: yup.lazy(function(value, options) {
+				const { context } = options;
+				if (context["bookingOptions"].bookingType === BookingType.REPLACEMENT) {
 					return yup.object().shape({
 						plateNumber: yup.string().required(),
 						vin: yup.string().required(),
@@ -114,6 +115,7 @@ export abstract class Booking {
 				}
 				return yup
 					.mixed()
+					.nullable()
 					.transform(() => null)
 					.notRequired();
 			})
@@ -140,14 +142,28 @@ export abstract class Booking {
 			}
 		);
 
-	static update = yup.object().shape({
-		amount: yup.number(),
+	private static YupSchemaUpdate = yup.object().shape({
+		amount: stripField(yup.number().nullable(), [
+			Role.MASTER,
+			Role.ADMIN,
+			Role.KEY_MANAGER
+		]),
 		from: yup
 			.date()
 			.transform((value, originalValue) => moment(originalValue, "X").toDate())
 			.test("no-approved", "Booking has already been approved", function() {
 				const booking = this.options.context["booking"] as BookingModel;
 				const user = this.options.context["user"] as User;
+				const bookingOptions = this.options.context[
+					"bookingOptions"
+				] as BookingUpdateOptions;
+
+				const changed = bookingOptions?.from !== booking.from;
+
+				if (!changed) {
+					return true;
+				}
+
 				// If Guest, deny changes if approved.
 				if (user.role === Role.GUEST && booking.approved) {
 					return false;
@@ -163,6 +179,16 @@ export abstract class Booking {
 			.test("no-approved", "Booking has already been approved", function() {
 				const booking = this.options.context["booking"] as BookingModel;
 				const user = this.options.context["user"] as User;
+				const bookingOptions = this.options.context[
+					"bookingOptions"
+				] as BookingUpdateOptions;
+
+				const changed = bookingOptions?.to !== booking.to;
+
+				if (!changed) {
+					return true;
+				}
+
 				// If Guest, deny changes if approved.
 				if (user.role === Role.GUEST && booking.approved) {
 					return false;
@@ -182,6 +208,17 @@ export abstract class Booking {
 			.test("no-approved", "Booking has already been approved", function() {
 				const booking = this.options.context["booking"] as BookingModel;
 				const user = this.options.context["user"] as User;
+
+				const bookingOptions = this.options.context[
+					"bookingOptions"
+				] as BookingUpdateOptions;
+
+				const changed = bookingOptions?.userId !== booking.userId;
+
+				if (!changed) {
+					return true;
+				}
+
 				// If Guest, deny changes if approved.
 				if (user.role === Role.GUEST && booking.approved) {
 					return false;
@@ -196,6 +233,16 @@ export abstract class Booking {
 			.test("no-approved", "Booking has already been approved", function() {
 				const booking = this.options.context["booking"] as BookingModel;
 				const user = this.options.context["user"] as User;
+				const bookingOptions = this.options.context[
+					"bookingOptions"
+				] as BookingUpdateOptions;
+
+				const changed = bookingOptions?.vehicleId !== booking.vehicleId;
+
+				if (!changed) {
+					return true;
+				}
+
 				// If Guest or KM, deny changes if approved.
 				if (user.role === Role.GUEST || user.role === Role.KEY_MANAGER) {
 					if (booking.approved) {
@@ -204,12 +251,12 @@ export abstract class Booking {
 				}
 				return true;
 			}),
-		startFuel: stripField(yup.number(), [
+		startFuel: stripField(yup.number().nullable(), [
 			Role.MASTER,
 			Role.ADMIN,
 			Role.KEY_MANAGER
 		]),
-		startMileage: stripField(yup.number(), [
+		startMileage: stripField(yup.number().nullable(), [
 			Role.MASTER,
 			Role.ADMIN,
 			Role.KEY_MANAGER
@@ -217,11 +264,22 @@ export abstract class Booking {
 		approved: stripField(
 			yup
 				.boolean()
+				.nullable()
 				.test(
 					"no-finished-booking",
 					"This booking has already finished.",
 					function() {
 						const booking = this.options.context["booking"] as BookingModel;
+						const bookingOptions = this.options.context[
+							"bookingOptions"
+						] as BookingUpdateOptions;
+
+						const changed = bookingOptions?.approved !== booking.approved;
+
+						if (!changed) {
+							return true;
+						}
+
 						return !booking.finished;
 					}
 				)
@@ -235,21 +293,41 @@ export abstract class Booking {
 					},
 					function() {
 						const booking = this.options.context["booking"] as BookingModel;
-						return booking.approved !== null;
+						const bookingOptions = this.options.context[
+							"bookingOptions"
+						] as BookingUpdateOptions;
+
+						const changed = bookingOptions?.approved !== booking.approved;
+
+						if (!changed) {
+							return true;
+						}
+
+						return changed ? booking.approved !== null : true;
 					}
 				)
 				.test("booking-expired", "Booking has already expired", function() {
 					const booking = this.options.context["booking"] as BookingModel;
+					const bookingOptions = this.options.context[
+						"bookingOptions"
+					] as BookingUpdateOptions;
+
+					const changed = bookingOptions?.approved !== booking.approved;
+
+					if (!changed) {
+						return true;
+					}
+
 					return moment(booking.from).isAfter(moment());
 				}),
 			[Role.MASTER, Role.ADMIN, Role.KEY_MANAGER]
 		),
-		endFuel: stripField(yup.number(), [
+		endFuel: stripField(yup.number().nullable(), [
 			Role.MASTER,
 			Role.ADMIN,
 			Role.KEY_MANAGER
 		]),
-		endMileage: stripField(yup.number(), [
+		endMileage: stripField(yup.number().nullable(), [
 			Role.MASTER,
 			Role.ADMIN,
 			Role.KEY_MANAGER
@@ -261,10 +339,10 @@ export abstract class Booking {
 		]),
 		replaceVehicle: yup.lazy(function(value, options) {
 			const booking = options.context["booking"] as BookingModel;
-			const { parent } = this;
+			const bookingOptions = options.context["bookingOptions"] as BookingModel;
 			// If booking type has been changed to replacement, then require a replacement vehicle.
 			if (
-				parent.bookingType === BookingType.REPLACEMENT &&
+				bookingOptions.bookingType === BookingType.REPLACEMENT &&
 				booking.bookingType !== BookingType.REPLACEMENT
 			) {
 				return yup
@@ -288,7 +366,7 @@ export abstract class Booking {
 					})
 					.when("$booking", (booking, schema) =>
 						schema.transform(function(v) {
-							this.option;
+							console.log(booking);
 							const replaceVehicle = ReplaceVehicle.findByPk(
 								booking.replaceVehicleId
 							);
@@ -299,7 +377,71 @@ export abstract class Booking {
 			return yup
 				.mixed()
 				.notRequired()
+				.nullable()
 				.transform(() => null);
 		})
 	});
+
+	public static get = {
+		cast: (user: User, booking: BookingModel) =>
+			Booking.YupSchemaGet.cast(booking, {
+				context: { user, booking },
+				stripUnknown: true
+			}),
+		validate: (user: User, booking: BookingModel) =>
+			catchYupVadationErrors(async () => {
+				await Booking.YupSchemaGet.validate(booking, {
+					context: { user, booking },
+					abortEarly: false
+				});
+			})
+	};
+
+	public static create = {
+		cast: (user: User, bookingOptions: BookingCreateOptions) =>
+			Booking.YupSchemaCreate.cast(bookingOptions, {
+				context: { user, bookingOptions },
+				stripUnknown: true
+			}),
+		validate: (user: User, booking: BookingCreateOptions) =>
+			catchYupVadationErrors(async () => {
+				await Booking.YupSchemaCreate.validate(booking, {
+					context: { user, booking },
+					abortEarly: false
+				});
+			})
+	};
+
+	public static update = {
+		cast: (
+			user: User,
+			booking: BookingModel,
+			bookingOptions: BookingUpdateOptions
+		) =>
+			Booking.YupSchemaUpdate.cast(bookingOptions, {
+				context: { user, booking, bookingOptions },
+				stripUnknown: true
+			}),
+		validate: (
+			user: User,
+			booking: BookingModel,
+			bookingOptions: BookingUpdateOptions
+		) =>
+			catchYupVadationErrors(async () => {
+				await Booking.YupSchemaUpdate.validate(bookingOptions, {
+					context: { user, booking, bookingOptions },
+					abortEarly: false
+				});
+			})
+	};
+
+	public static destroy = {
+		validate: (user: User, booking: BookingModel) =>
+			catchYupVadationErrors(async () => {
+				await Booking.YupSchemaDestroy.validate(booking, {
+					context: { user },
+					abortEarly: false
+				});
+			})
+	};
 }

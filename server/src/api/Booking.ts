@@ -27,6 +27,7 @@ export type BookingCreateOptions = UseParameters<
 export type BookingUpdateOptions = UseParameters<
 	BookingAttributes,
 	undefined,
+	| "userId"
 	| "paid"
 	| "amount"
 	| "from"
@@ -44,11 +45,7 @@ export type BookingUpdateOptions = UseParameters<
 export class Booking implements Castable {
 	private constructor(public data: BookingModel) {}
 
-	public cast = (user: User) =>
-		BookingValidators.get.cast(this.data, {
-			context: { user, booking: this.data },
-			stripUnknown: true
-		});
+	public cast = (user: User) => BookingValidators.get.cast(user, this.data);
 
 	public static getAll = async (user: User) => {
 		let bookings: BookingModel[] = [];
@@ -78,12 +75,9 @@ export class Booking implements Castable {
 	public static create = async (user: User, options: BookingCreateOptions) => {
 		try {
 			// Validate JSON schema.
-			await BookingValidators.create.validate(options, {
-				abortEarly: false,
-				context: { user, booking: user }
-			});
+			await BookingValidators.create.validate(user, options);
 			// Cast the JSON
-			const bookingOptions = await BookingValidators.create.cast(options);
+			const bookingOptions = await BookingValidators.create.cast(user, options);
 
 			// Create replaced vehicle.
 			const replacedVehicle =
@@ -133,12 +127,13 @@ export class Booking implements Castable {
 	public update = async (user: User, options: BookingUpdateOptions) => {
 		try {
 			// Validate JSON schema.
-			await BookingValidators.update.validate(options, {
-				abortEarly: false,
-				context: { user, booking: this.data }
-			});
+			await BookingValidators.update.validate(user, this.data, options);
 			// Cast the JSON
-			const bookingOptions = await BookingValidators.create.cast(options);
+			const bookingOptions = await BookingValidators.update.cast(
+				user,
+				this.data,
+				options
+			);
 
 			// Create replaced vehicle.
 			const replacedVehicle =
@@ -160,10 +155,7 @@ export class Booking implements Castable {
 	public destroy = async (user: User) => {
 		try {
 			// Validate JSON schema.
-			await BookingValidators.destroy.validate(this.data, {
-				abortEarly: false,
-				context: { user }
-			});
+			await BookingValidators.destroy.validate(user, this.data);
 
 			await this.data.destroy();
 		} catch (e) {

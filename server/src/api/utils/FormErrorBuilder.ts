@@ -3,14 +3,19 @@ import { FieldError, FormException } from "../exceptions";
 export class FormErrorBuilder {
 	public fields: FieldError[] = [];
 
-	public add = (field: string, message: string) => {
-		this.fields.push({ field, message });
+	public add = (field: string, message: string, name: string) => {
+		this.fields.push({ field, message, name });
 		return this;
 	};
 
-	public addIf = (condition: boolean, field: string, message: string) => {
+	public addIf = (
+		condition: boolean,
+		field: string,
+		message: string,
+		name: string
+	) => {
 		if (condition) {
-			this.add(field, message);
+			this.add(field, message, name);
 		}
 		return this;
 	};

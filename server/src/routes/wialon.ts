@@ -1,6 +1,7 @@
 import express from "express";
 import { Wialon } from "node-wialon";
 import { ResponseBuilder } from "../utils";
+import { ItemNotFoundException } from "../api/exceptions";
 
 const router = express.Router();
 
@@ -29,9 +30,12 @@ router.get("/units/:id", async (req, res) => {
 		if (unit) {
 			response.handleSuccess(`Found ${units.items.length} units.`, res);
 			response.setData(units.items);
+		} else {
+			response.setCode(404);
+			throw new ItemNotFoundException(
+				`Unit with ID ${req.query.id} is not found.`
+			);
 		}
-		response.handleError(`Unit not found.`, res);
-		response.setCode(404);
 	} catch (e) {
 		response.handleError(e, res);
 	}

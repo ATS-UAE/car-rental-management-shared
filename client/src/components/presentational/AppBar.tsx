@@ -1,6 +1,6 @@
 import React, { FC, ReactNode } from "react";
 import {
-	AppBar,
+	AppBar as MuiAppBar,
 	Toolbar,
 	Typography,
 	IconButton,
@@ -31,8 +31,8 @@ export interface AppBarProps extends WithStyles<typeof styles> {
 const ButtonAppBar: FC<AppBarProps> = props => {
 	const { classes, title, renderActions, onMenuClick, onLogoClick } = props;
 	return (
-		<div className={classes.root}>
-			<AppBar position="static">
+		<div>
+			<MuiAppBar position="static">
 				<Toolbar className={classes.toolbar}>
 					<div>
 						<img
@@ -42,7 +42,7 @@ const ButtonAppBar: FC<AppBarProps> = props => {
 							onClick={() => onLogoClick && onLogoClick()}
 						/>
 						{title && (
-							<Typography variant="h6" color="inherit" className={classes.grow}>
+							<Typography variant="h6" color="inherit">
 								{title}
 							</Typography>
 						)}
@@ -51,7 +51,6 @@ const ButtonAppBar: FC<AppBarProps> = props => {
 						{renderActions && renderActions()}
 						{onMenuClick && (
 							<IconButton
-								className={classes.menuButton}
 								color="inherit"
 								aria-label="Menu"
 								onClick={onMenuClick}
@@ -61,9 +60,9 @@ const ButtonAppBar: FC<AppBarProps> = props => {
 						)}
 					</div>
 				</Toolbar>
-			</AppBar>
+			</MuiAppBar>
 		</div>
 	);
 };
 
-export default withStyles(styles)(ButtonAppBar);
+export const AppBar = withStyles(styles)(ButtonAppBar);

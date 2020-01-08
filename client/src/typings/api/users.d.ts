@@ -10,6 +10,8 @@ export interface User {
 	role: Role;
 	mobileNumber: string;
 	email: string;
+	categories: number[];
 	createdAt: number;
 	updatedAt: number;
+	userImageSrc: string | null;
 }

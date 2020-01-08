@@ -1,4 +1,4 @@
-import React, { Fragment, ReactNode, FC } from "react";
+import React, { ReactElement, Fragment, ReactNode, FC } from "react";
 import {
 	withStyles,
 	Theme,
@@ -7,7 +7,7 @@ import {
 } from "@material-ui/core/styles";
 
 import {
-	Drawer,
+	Drawer as MuiDrawer,
 	List,
 	Divider,
 	ListItem,
@@ -18,14 +18,19 @@ import {
 } from "@material-ui/core";
 
 export type DrawerListItem = {
-	icon: ReactNode;
+	icon: ReactElement;
 	text: ReactNode;
 	onClick?: () => void;
 };
 
+export interface DrawerListProps {
+	list: DrawerListItem[][];
+	onClick?: () => void;
+}
+
 export interface DrawerProps extends WithStyles<typeof styles> {
-	list?: Array<DrawerListItem>[];
-	endList?: Array<DrawerListItem>[];
+	list?: DrawerListItem[][];
+	endList?: DrawerListItem[][];
 	profile: {
 		title: string;
 		subtitle: string;
@@ -59,8 +64,11 @@ const styles = (theme: Theme) =>
 		}
 	});
 
-const renderProfile = ({ title, subtitle, imgSrc, initials }, classes) => (
-	<Fragment>
+const renderProfile = (
+	{ title, subtitle, imgSrc, initials }: DrawerProps["profile"],
+	classes
+) => (
+	<>
 		<div className={classes.profile}>
 			{imgSrc ? (
 				<Avatar alt={title} src={imgSrc} className={classes.picture} />
@@ -77,7 +85,34 @@ const renderProfile = ({ title, subtitle, imgSrc, initials }, classes) => (
 			</div>
 		</div>
 		<Divider />
-	</Fragment>
+	</>
+);
+
+export const DrawerList: FC<DrawerListProps> = ({ list, onClick }) => (
+	<>
+		{list.map((listGroup, index, array) => (
+			<Fragment key={index}>
+				<List>
+					{listGroup.map((listItem: DrawerListItem, index) => {
+						return (
+							<ListItem
+								button
+								key={index}
+								onClick={() => {
+									onClick && onClick();
+									listItem.onClick && listItem.onClick();
+								}}
+							>
+								<ListItemIcon>{listItem.icon}</ListItemIcon>
+								<ListItemText>{listItem.text}</ListItemText>
+							</ListItem>
+						);
+					})}
+				</List>
+				{index !== array.length - 1 && <Divider />}
+			</Fragment>
+		))}
+	</>
 );
 
 const TemporaryDrawer: FC<DrawerProps> = ({
@@ -94,63 +129,22 @@ const TemporaryDrawer: FC<DrawerProps> = ({
 			<div>
 				{profile && renderProfile(profile, classes)}
 				<div>
-					{list.map((listGroup, index, array) => (
-						<Fragment key={index}>
-							<List>
-								{listGroup.map((listItem, index) => (
-									<ListItem
-										button
-										key={index}
-										onClick={() => {
-											onClick && onClick();
-											listItem.onClick && listItem.onClick();
-										}}
-									>
-										<ListItemIcon>{listItem.icon}</ListItemIcon>
-										<ListItemText className={classes.text}>
-											{listItem.text}
-										</ListItemText>
-									</ListItem>
-								))}
-							</List>
-							{index !== array.length - 1 && <Divider />}
-						</Fragment>
-					))}
+					<DrawerList list={list} onClick={onClick} />
 				</div>
 			</div>
 			{endList.length > 0 && (
 				<div>
-					{endList.map((listGroup, index, array) => (
-						<Fragment key={index}>
-							<Divider />
-							<List>
-								{listGroup.map((listItem, index) => (
-									<ListItem
-										button
-										key={index}
-										onClick={() => {
-											onClick && onClick();
-											listItem.onClick && listItem.onClick();
-										}}
-									>
-										<ListItemIcon>{listItem.icon}</ListItemIcon>
-										<ListItemText>{listItem.text}</ListItemText>
-									</ListItem>
-								))}
-							</List>
-							{index !== array.length - 1 && <Divider />}
-						</Fragment>
-					))}
+					<DrawerList list={endList} onClick={onClick} />
 				</div>
 			)}
 		</div>
 	);
 
 	return (
-		<Drawer open={isOpen} onClose={() => onClose && onClose()}>
+		<MuiDrawer open={isOpen} onClose={() => onClose && onClose()}>
 			{sideList}
-		</Drawer>
+		</MuiDrawer>
 	);
 };
 
-export default withStyles(styles)(TemporaryDrawer);
+export const Drawer = withStyles(styles)(TemporaryDrawer);

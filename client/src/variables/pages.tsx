@@ -14,7 +14,7 @@ import {
 import Role from "./enums/Role";
 
 import DynamicImport from "../components/containers/layout/DynamicImport";
-import Loading from "../components/presentational/layout/Loading";
+import Loading from "../components/presentational/Loading";
 import { IPage } from "../typings";
 
 const pages: IPage[] = [

@@ -1,20 +1,18 @@
-import { ValidationError } from "yup";
-import { FormErrorBuilder } from ".";
-import { ApiException } from "../exceptions";
+import { ApiException, FormException } from "../exceptions";
 import { InvalidPermissionException } from "../exceptions";
 
 export class ApiErrorHandler {
 	constructor(e: Error) {
-		if (e instanceof ValidationError) {
+		console.log("ApiErrorHandler", e);
+		if (e instanceof FormException) {
 			// Add fields to errors
-			const errors = new FormErrorBuilder();
-			for (const error of e.inner) {
+			for (const error of e.fields) {
+				console.log("error fields",error);
 				if (error.name === "permission") {
 					throw new InvalidPermissionException(error.message);
 				}
-				errors.add(error.path, error.message);
 			}
-			errors.throw;
+			throw e;
 		}
 		// Unknown error.
 		throw new ApiException("An unknown error has occurred.");
