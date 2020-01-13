@@ -1,17 +1,23 @@
 import React, { FC } from "react";
 import classNames from "classnames";
 import { useLocation, Route } from "react-router-dom";
-import { Dialog, Theme, WithStyles, createStyles } from "@material-ui/core";
+import {
+	Dialog,
+	Theme,
+	WithStyles,
+	createStyles,
+	withStyles
+} from "@material-ui/core";
 import { Loading } from ".";
 
 export interface ModalProps extends WithStyles<typeof styles> {
 	path?: string;
-	onClose: () => void;
+	onClose?: () => void;
 	open: boolean;
 	loading?: boolean;
 }
 
-export const Modal: FC<ModalProps> = ({
+const BaseModal: FC<ModalProps> = ({
 	children,
 	path,
 	onClose,
@@ -22,7 +28,7 @@ export const Modal: FC<ModalProps> = ({
 	const location = useLocation<{ background?: boolean }>();
 
 	const background = location && location.state && location.state.background;
-
+	console.log(location);
 	const modalComponent = (
 		<Dialog
 			onClose={onClose}
@@ -56,3 +62,5 @@ const styles = (theme: Theme) =>
 			backgroundColor: "rgba(0, 0, 0, 0)"
 		}
 	});
+
+export const Modal = withStyles(styles)(BaseModal);

@@ -11,7 +11,7 @@ import {
 import TransferList, {
 	TransferListProps
 } from "../../../presentational/display/TransferList";
-import Loading from "../../../presentational/Loading";
+import { Loading } from "../../../presentational";
 interface LocationTransferListFormProps {
 	clientId: number;
 	onSubmit?: () => void;

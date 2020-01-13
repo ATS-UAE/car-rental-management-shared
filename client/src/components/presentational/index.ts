@@ -13,3 +13,5 @@ export * from "./RoleView";
 export * from "./Drawer";
 export * from "./AppBar";
 export * from "./AppBarWithDrawer";
+export * from "./Loading";
+export * from "./Modal";

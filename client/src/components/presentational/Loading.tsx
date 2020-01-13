@@ -2,11 +2,11 @@ import React, { ReactNode, FC } from "react";
 import { withStyles, WithStyles, createStyles } from "@material-ui/core/";
 import CircleLoader from "react-spinners/CircleLoader";
 
-interface LoadingProps {
+export interface LoadingProps {
 	component?: ReactNode;
 }
 
-const Loading: FC<LoadingProps & WithStyles<typeof styles>> = ({
+const BaseLoading: FC<LoadingProps & WithStyles<typeof styles>> = ({
 	component = <CircleLoader color="#FE6B8B" />,
 	classes
 }) => {
@@ -31,4 +31,4 @@ const styles = createStyles({
 	}
 });
 
-export default withStyles(styles)(Loading);
+export const Loading = withStyles(styles)(BaseLoading);
