@@ -1,17 +1,18 @@
-import moment from "moment";
-import { Op } from "sequelize";
+import { Op, FindOptions } from "sequelize";
+import _ from "lodash";
 import {
 	Vehicle as VehicleModel,
 	User,
 	Booking,
-	VehicleAttributes
+	VehicleAttributes,
+	Category
 } from "../models";
 import { getBookingStatus } from "../utils";
 import { BookingStatus, Role } from "../variables/enums";
 import { InvalidPermissionException, ApiException } from "./exceptions";
 import { Vehicle as VehicleValidators } from "./validators";
 import { FormErrorBuilder, ApiErrorHandler } from "./utils";
-import { UseParameters } from ".";
+import { UseParameters, Collection, Castable, API_OPERATION } from ".";
 
 export type CreateVehicleOptions = UseParameters<
 	VehicleAttributes,
@@ -42,17 +43,24 @@ export type UpdateVehicleOptions = UseParameters<
 	| "clientId"
 	| "locationId"
 >;
-export class Vehicle {
+export class Vehicle implements Castable<Partial<VehicleAttributes>> {
 	private constructor(public data: VehicleModel) {}
 
-	public availableForBooking = async (from: number, to: number) => {
+	public cast = (user: User) =>
+		VehicleValidators.getValidator(user, API_OPERATION.READ).cast(this.data);
+
+	public availableForBooking = async (
+		from: number,
+		to: number,
+		bookings: Booking[]
+	) => {
 		if (this.data.defleeted === true) {
 			return false;
 		}
 
-		const bookings = await this.data.$get("bookings");
+		const vehicleBookings = bookings || (await this.data.$get("bookings"));
 
-		for (const booking of bookings) {
+		for (const booking of vehicleBookings) {
 			const status = getBookingStatus({
 				from,
 				to,
@@ -81,14 +89,41 @@ export class Vehicle {
 		throw new InvalidPermissionException("You cannot access this vehicle.");
 	};
 
-	static create = async (user: User, options: CreateVehicleOptions) => {
+	public update = async (user: User, options: UpdateVehicleOptions) => {
 		try {
-			await VehicleValidators.create.validate(options, {
-				abortEarly: false,
-				context: { user }
-			});
+			await VehicleValidators.getValidator(user, API_OPERATION.UPDATE, {
+				newData: options,
+				target: this.data
+			}).validate(options);
 
-			const vehicleOptions = VehicleValidators.create.cast(options);
+			const vehicleOptions = VehicleValidators.getValidator(
+				user,
+				API_OPERATION.UPDATE,
+				{
+					newData: options,
+					target: this.data
+				}
+			).cast(options);
+
+			await this.data.update(vehicleOptions);
+		} catch (e) {
+			new ApiErrorHandler(e);
+		}
+	};
+
+	public static create = async (user: User, options: CreateVehicleOptions) => {
+		try {
+			await VehicleValidators.getValidator(user, API_OPERATION.CREATE, {
+				newData: options
+			}).validate(options);
+
+			const vehicleOptions = await VehicleValidators.getValidator(
+				user,
+				API_OPERATION.CREATE,
+				{
+					newData: options
+				}
+			).cast(options);
 
 			const createdVehicle = await VehicleModel.create(vehicleOptions);
 
@@ -98,61 +133,88 @@ export class Vehicle {
 		}
 	};
 
-	public update = async (user: User, options: UpdateVehicleOptions) => {
-		try {
-			await VehicleValidators.create.validate(
-				{ ...options },
-				{
-					abortEarly: false,
-					context: { user, vehicle: this.data }
-				}
-			);
-
-			const vehicleOptions = VehicleValidators.update.cast(options);
-
-			await this.data.update(vehicleOptions);
-		} catch (e) {
-			new ApiErrorHandler(e);
-		}
-	};
-
-	public static getAll = async (user: User) => {
+	public static getAll = async (
+		user: User,
+		availability?: { from: Date; to: Date }
+	) => {
 		let vehicles: VehicleModel[] = [];
+
+		const baseFindOptions: FindOptions = availability
+			? {
+					where: {
+						$bookings$: null
+					},
+					include: [
+						{
+							model: Booking,
+							where: {
+								// Check if the intervals does not intersect with other bookings.
+								[Op.not]: {
+									[Op.gte]: {
+										to: availability.to
+									},
+									[Op.lte]: {
+										from: availability.from
+									}
+								}
+							}
+						}
+					]
+			  }
+			: {};
 
 		if (user.role === Role.MASTER) {
 			vehicles = await VehicleModel.findAll();
 		} else if (user.role === Role.GUEST) {
 			// Get only available vehicles in the same client.
-			vehicles = await VehicleModel.findAll({
-				where: {
-					clientId: user.clientId,
-					$Booking$: null
-				},
-				include: [
-					{
-						model: Booking,
-						required: false,
-						where: {
-							approved: true,
-							finished: false,
-							from: {
-								[Op.lte]: moment().toDate()
-							},
-							to: {
-								[Op.gte]: moment().toDate()
+			// Only vehicles which have the same categories as the user.
+			const userCategories = await user.$get("categories");
+
+			// Get all vehicles in the client if user does not contain a category.
+			if (!userCategories.length) {
+				vehicles = await VehicleModel.findAll(
+					_.merge(
+						{
+							where: {
+								clientId: user.clientId
 							}
-						}
-					}
-				]
-			});
+						},
+						baseFindOptions
+					)
+				);
+			} else {
+				vehicles = await VehicleModel.findAll(
+					_.merge(
+						{
+							where: {
+								clientId: user.clientId
+							},
+							include: [
+								{
+									model: Category,
+									where: {
+										id: { [Op.in]: userCategories.map(c => c.id) }
+									}
+								}
+							]
+						},
+						baseFindOptions
+					)
+				);
+			}
 		} else if (user.clientId) {
-			vehicles = await VehicleModel.findAll({
-				where: {
-					clientId: user.clientId
-				}
-			});
+			vehicles = await VehicleModel.findAll(
+				_.merge(
+					{
+						where: {
+							clientId: user.clientId
+						}
+					},
+					baseFindOptions
+				)
+			);
 		}
 
-		return vehicles.map(v => new Vehicle(v));
+		return new Collection(vehicles.map(v => new Vehicle(v)));
 	};
 }

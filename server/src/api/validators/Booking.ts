@@ -520,3 +520,4 @@ export abstract class Booking {
 			})
 	};
 }
+
