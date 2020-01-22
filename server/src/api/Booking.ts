@@ -13,7 +13,7 @@ import {
 	Vehicle
 } from "../models";
 import { ItemNotFoundException } from "./exceptions";
-import { UseParameters } from ".";
+import { UseParameters, API_OPERATION } from ".";
 import { Role } from "../variables/enums";
 import { ApiErrorHandler } from "./utils";
 import { Castable, Collection } from "./Collection";
@@ -36,7 +36,7 @@ export type BookingCreateOptions = UseParameters<
 
 export type BookingUpdateOptions = UseParameters<
 	BookingAttributes,
-	undefined,
+	"id",
 	| "userId"
 	| "paid"
 	| "amount"
@@ -50,12 +50,18 @@ export type BookingUpdateOptions = UseParameters<
 	| "endFuel"
 	| "vehicleId"
 	| "bookingType"
->;
+> & {
+	replaceVehicle?: UseParameters<
+		ReplaceVehicleAttributes,
+		"vin" | "brand" | "model" | "plateNumber"
+	>;
+};
 
 export class Booking implements Castable<Partial<BookingAttributes>> {
 	private constructor(public data: BookingModel) {}
 
-	public cast = (user: User) => BookingValidators.get.cast(user, this.data);
+	public cast = (user: User) =>
+		BookingValidators.getValidator(user, API_OPERATION.READ).cast(this.data);
 
 	public static getAll = async (user: User) => {
 		let bookings: BookingModel[] = [];
@@ -86,10 +92,18 @@ export class Booking implements Castable<Partial<BookingAttributes>> {
 
 	public static create = async (user: User, options: BookingCreateOptions) => {
 		try {
+			const validator = BookingValidators.getValidator(
+				user,
+				API_OPERATION.CREATE,
+				{
+					newData: options
+				}
+			);
+
 			// Validate JSON schema.
-			await BookingValidators.create.validate(user, options);
+			await validator.validate(options);
 			// Cast the JSON
-			const bookingOptions = await BookingValidators.create.cast(user, options);
+			const bookingOptions = validator.cast(options);
 
 			// Create replaced vehicle.
 			const replacedVehicle =
@@ -138,22 +152,32 @@ export class Booking implements Castable<Partial<BookingAttributes>> {
 
 	public update = async (user: User, options: BookingUpdateOptions) => {
 		try {
-			// Validate JSON schema.
-			await BookingValidators.update.validate(user, this.data, options);
-			// Cast the JSON
-			const bookingOptions = await BookingValidators.update.cast(
+			const booking = await BookingModel.findByPk(options.id, {
+				include: [{ model: ReplaceVehicle }]
+			});
+			const validator = BookingValidators.getValidator(
 				user,
-				this.data,
-				options
+				API_OPERATION.UPDATE,
+				{
+					newData: options,
+					target: booking
+				}
 			);
+			// Validate JSON schema.
+			await validator.validate(options);
+			// Cast the JSON
+			const bookingOptions = validator.cast(options);
 
 			// Create replaced vehicle.
 			const replacedVehicle =
 				bookingOptions.replaceVehicle &&
 				(await ReplaceVehicle.create(bookingOptions.replaceVehicle));
-
+			// Delete replaced vehicle
+			if (replacedVehicle && booking.replaceVehicleId) {
+				await ReplaceVehicle.destroy();
+			}
 			// Create booking
-			// TODO: Include "paid", and "amount" in schema.
+
 			const updatedBooking = await this.data.update({
 				...bookingOptions,
 				replaceVehicleId: replacedVehicle?.id
@@ -167,7 +191,9 @@ export class Booking implements Castable<Partial<BookingAttributes>> {
 	public destroy = async (user: User) => {
 		try {
 			// Validate JSON schema.
-			await BookingValidators.destroy.validate(user, this.data);
+			await BookingValidators.getValidator(user, API_OPERATION.DELETE, {
+				target: this.data
+			}).validate(this.data);
 
 			await this.data.destroy();
 		} catch (e) {

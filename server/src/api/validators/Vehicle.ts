@@ -14,6 +14,7 @@ type VehicleValidatorContextWithSchema = [
 	API_OPERATION,
 	VehicleModel,
 	UpdateVehicleOptions | CreateVehicleOptions,
+	boolean,
 	Yup.ObjectSchema<VehicleAttributes>
 ];
 export abstract class Vehicle {
@@ -49,11 +50,13 @@ export abstract class Vehicle {
 		.when(
 			["$user", "$operation", "$target", "$data"],
 			(...args: VehicleValidatorContextWithSchema) => {
-				const [user, operation, target, data, schema] = args;
+				const [user, operation, target, data, casting, schema] = args;
 
 				switch (operation) {
 					case API_OPERATION.READ: {
-						schema.shape({ id: Yup.number() });
+						schema.shape({
+							id: Yup.number()
+						});
 						break;
 					}
 					case API_OPERATION.CREATE: {

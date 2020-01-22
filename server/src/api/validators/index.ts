@@ -17,12 +17,12 @@ export class Validator<Schema extends object, Target, NewData> {
 		const { user, operation, schema, target } = this;
 
 		return schema.cast(value, {
-			abortEarly: false,
 			context: {
 				user,
 				operation,
 				target,
-				data: value
+				data: value,
+				casting: true
 			}
 		});
 	};
@@ -35,7 +35,8 @@ export class Validator<Schema extends object, Target, NewData> {
 				user,
 				operation,
 				target: target,
-				data: value
+				data: value,
+				casting: false
 			}
 		});
 	};

@@ -173,7 +173,6 @@ export const isBookingTimeSlotTaken = (
 	bookings: Array<{
 		from: number;
 		to: number;
-		approved: boolean | null;
 		id: number;
 	}>,
 	from: number,
@@ -181,21 +180,14 @@ export const isBookingTimeSlotTaken = (
 	bookingId?: number
 ): boolean => {
 	let taken = false;
-	if (bookings) {
-		for (const booking of bookings) {
-			let status = getBookingStatus(booking);
-			if (
-				status === BookingStatus.PENDING ||
-				status === BookingStatus.ONGOING ||
-				status === BookingStatus.APPROVED
-			) {
-				taken = rangeOverlap(from, to, booking.from, booking.to);
-				if ((taken && !bookingId) || bookingId !== booking.id) {
-					return taken;
-				}
-			}
+
+	for (const booking of bookings) {
+		taken = rangeOverlap(from, to, booking.from, booking.to);
+		if ((taken && !bookingId) || bookingId !== booking.id) {
+			return taken;
 		}
 	}
+
 	return taken;
 };
 
