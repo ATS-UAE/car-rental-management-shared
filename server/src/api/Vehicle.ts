@@ -147,6 +147,7 @@ export class Vehicle implements Castable<Partial<VehicleAttributes>> {
 						include: [
 							{
 								model: Booking,
+								required: false,
 								where: {
 									// Check if the intervals does not intersect with other bookings.
 									to: {
