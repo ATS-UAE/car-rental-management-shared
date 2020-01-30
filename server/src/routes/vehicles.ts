@@ -10,19 +10,32 @@ import disallowGuests from "../middlewares/disallowGuests";
 import parseBody from "../middlewares/parseBody";
 import upload from "../middlewares/multerUpload";
 import deleteFileOnError from "../middlewares/deleteFileOnError";
-import db from "../models";
+import db, { VehicleAttributes } from "../models";
 import { ResponseBuilder, getFileURL } from "../utils";
-import { Vehicle } from "../datasource";
+import { Vehicle } from "../api";
+import { Vehicle as VehicleDS } from "../datasource"; // Deprecate
+import moment from "moment";
 
 const router = express.Router();
 router.use(requireLogin);
 
-router.get("/", async ({ user }: any, res) => {
+router.get("/", async ({ user, query }: any, res) => {
 	const response = new ResponseBuilder();
-	const VehicleDataSource = new Vehicle(db, user);
-
 	try {
-		let vehicles = await VehicleDataSource.getAll();
+		let vehicles: Partial<VehicleAttributes>[] = [];
+		const from = query.from && Number(query.from);
+		const to = query.to && Number(query.to);
+		if (from && to) {
+			vehicles = (
+				await Vehicle.getAll(user, {
+					from: moment(from, "X").toDate(),
+					to: moment(to, "X").toDate()
+				})
+			).cast(user);
+		} else {
+			vehicles = (await Vehicle.getAll(user)).cast(user);
+		}
+
 		response.setData(vehicles);
 		response.handleSuccess(`Found ${vehicles.length} vehicles.`, res);
 	} catch (e) {
@@ -43,7 +56,7 @@ router.post(
 			file.filename &&
 			getFileURL("carbooking/media/vehicles", file.filename);
 		let response = new ResponseBuilder();
-		const VehicleDataSource = new Vehicle(db, user);
+		const VehicleDataSource = new VehicleDS(db, user);
 
 		try {
 			let createdVehicle = await VehicleDataSource.create({
@@ -74,7 +87,7 @@ router.post(
 
 router.get("/:id", async ({ user, params }: any, res) => {
 	let response = new ResponseBuilder();
-	const VehicleDataSource = new Vehicle(db, user);
+	const VehicleDataSource = new VehicleDS(db, user);
 	try {
 		const foundVehicle = await VehicleDataSource.get(params.id);
 		const foundVehiclePlain = {
@@ -122,7 +135,7 @@ router.patch(
 			file.filename &&
 			getFileURL("carbooking/media/vehicles", file.filename);
 		let response = new ResponseBuilder();
-		const VehicleDataSource = new Vehicle(db, user);
+		const VehicleDataSource = new VehicleDS(db, user);
 
 		try {
 			let updatedVehicle = await VehicleDataSource.update(params.id, {
@@ -165,7 +178,7 @@ router.delete(
 	async ({ user, params }: any, res, next) => {
 		let response = new ResponseBuilder();
 
-		const VehicleDataSource = new Vehicle(db, user);
+		const VehicleDataSource = new VehicleDS(db, user);
 		try {
 			const deletedVehicle = await VehicleDataSource.delete(params.id);
 			addReplacedFiles(res, {

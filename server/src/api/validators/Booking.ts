@@ -18,13 +18,18 @@ import { Validator } from ".";
 
 type ValidatorParameters = Parameters<typeof Booking.getValidator>;
 
+interface BookingValidationData extends Omit<BookingAttributes, "from" | "to"> {
+	from: number | Date;
+	to: number | Date;
+}
+
 type BookingValidatorContextWithSchema = [
 	ValidatorParameters[0],
 	API_OPERATION,
 	BookingModel,
 	BookingUpdateOptions | BookingCreateOptions,
 	boolean,
-	yup.ObjectSchema<BookingAttributes>
+	yup.ObjectSchema<BookingValidationData>
 ];
 export abstract class Booking {
 	public static getValidator = (
@@ -43,10 +48,18 @@ export abstract class Booking {
 			amount: yup.number().nullable(),
 			from: yup
 				.date()
-				.transform(v => typeof v === "number" && moment(v, "X").toDate()),
+				.transform(
+					(v, originalValue) =>
+						typeof originalValue === "number" &&
+						moment(originalValue, "X").toDate()
+				),
 			to: yup
 				.date()
-				.transform(v => typeof v === "number" && moment(v, "X").toDate()),
+				.transform(
+					(v, originalValue) =>
+						typeof originalValue === "number" &&
+						moment(originalValue, "X").toDate()
+				),
 			approved: yup.boolean().nullable(),
 			finished: yup.boolean(),
 			startMileage: yup.number().nullable(),
@@ -67,24 +80,38 @@ export abstract class Booking {
 		.when(
 			["$user", "$operation", "$target", "$data", "$casting"],
 			(...args: BookingValidatorContextWithSchema) => {
-				const [user, operation, target, data, casting, schema] = args;
-
+				let [user, operation, target, data, casting, schema] = args;
 				switch (operation) {
 					case API_OPERATION.READ: {
-						schema.shape({
-							from: yup.number().transform(v => v && moment(v as Date).unix()),
-							to: yup.number().transform(v => v && moment(v as Date).unix()),
+						schema = schema.shape({
+							from: yup
+								.number()
+								.transform((v, originalValue) =>
+									moment(originalValue as Date).unix()
+								),
+							to: yup
+								.number()
+								.transform((v, originalValue) =>
+									moment(originalValue as Date).unix()
+								),
 							createdAt: yup
 								.number()
-								.transform(v => v && moment(v as Date).unix()),
+								.transform((v, originalValue) =>
+									moment(originalValue as Date).unix()
+								),
 							updatedAt: yup
 								.number()
-								.transform(v => v && moment(v as Date).unix())
+								.nullable()
+								.transform(
+									(v, originalValue) =>
+										(originalValue && moment(originalValue as Date).unix()) ||
+										null
+								)
 						});
 						break;
 					}
 					case API_OPERATION.UPDATE: {
-						schema.shape({
+						schema = schema.shape({
 							from: yup
 								.date()
 								.transform((value, originalValue) =>
@@ -504,7 +531,7 @@ export abstract class Booking {
 						break;
 					}
 					case API_OPERATION.DELETE: {
-						schema.shape({
+						schema = schema.shape({
 							approved: yup
 								.boolean()
 								.nullable()

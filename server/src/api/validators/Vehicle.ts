@@ -36,7 +36,7 @@ export abstract class Vehicle {
 			plateNumber: Yup.string(),
 			vin: Yup.string(),
 			defleeted: Yup.boolean(),
-			parkingLocation: Yup.string(),
+			parkingLocation: Yup.string().nullable(),
 			vehicleImageSrc: Yup.string().nullable(),
 			bookingChargeCount: Yup.number(),
 			bookingChargeUnit: Yup.mixed()
@@ -45,22 +45,23 @@ export abstract class Vehicle {
 			bookingCharge: Yup.number(),
 			clientId: Yup.number().nullable(),
 			locationId: Yup.number().nullable(),
-			wialonUnitId: Yup.number().nullable()
+			wialonUnitId: Yup.number().nullable(),
+			available: Yup.boolean()
 		})
 		.when(
-			["$user", "$operation", "$target", "$data"],
+			["$user", "$operation", "$target", "$data", "$casting"],
 			(...args: VehicleValidatorContextWithSchema) => {
-				const [user, operation, target, data, casting, schema] = args;
+				let [user, operation, target, data, casting, schema] = args;
 
 				switch (operation) {
 					case API_OPERATION.READ: {
-						schema.shape({
+						schema = schema.shape({
 							id: Yup.number()
 						});
 						break;
 					}
 					case API_OPERATION.CREATE: {
-						schema
+						schema = schema
 							.shape({
 								brand: Yup.string().required(),
 								model: Yup.string().required(),
@@ -77,7 +78,7 @@ export abstract class Vehicle {
 						break;
 					}
 					case API_OPERATION.UPDATE: {
-						schema
+						schema = schema
 							.shape({ id: Yup.number().required() })
 							.test(
 								"permission",

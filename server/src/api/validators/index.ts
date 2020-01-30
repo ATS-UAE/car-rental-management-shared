@@ -1,6 +1,6 @@
 import { User } from "../../models";
 import { API_OPERATION } from "../";
-import { ObjectSchema, Shape } from "yup";
+import { ObjectSchema } from "yup";
 
 export * from "./Booking";
 export * from "./Vehicle";
@@ -17,6 +17,7 @@ export class Validator<Schema extends object, Target, NewData> {
 		const { user, operation, schema, target } = this;
 
 		return schema.cast(value, {
+			stripUnknown: true,
 			context: {
 				user,
 				operation,

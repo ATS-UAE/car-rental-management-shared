@@ -135,36 +135,34 @@ export class Vehicle implements Castable<Partial<VehicleAttributes>> {
 
 	public static getAll = async (
 		user: User,
-		availability?: { from: Date; to: Date }
+		options?: { from: Date; to: Date }
 	) => {
 		let vehicles: VehicleModel[] = [];
-
-		const baseFindOptions: FindOptions = availability
-			? {
-					where: {
-						$bookings$: null
-					},
-					include: [
-						{
-							model: Booking,
-							where: {
-								// Check if the intervals does not intersect with other bookings.
-								[Op.not]: {
-									[Op.gte]: {
-										to: availability.to
+		const baseFindOptions: FindOptions =
+			options?.from && options?.to
+				? {
+						where: {
+							"$bookings.vehicleId$": null
+						},
+						include: [
+							{
+								model: Booking,
+								where: {
+									// Check if the intervals does not intersect with other bookings.
+									to: {
+										[Op.lte]: options.to
 									},
-									[Op.lte]: {
-										from: availability.from
+									from: {
+										[Op.gte]: options.from
 									}
 								}
 							}
-						}
-					]
-			  }
-			: {};
+						]
+				  }
+				: {};
 
 		if (user.role === Role.MASTER) {
-			vehicles = await VehicleModel.findAll();
+			vehicles = await VehicleModel.findAll(baseFindOptions);
 		} else if (user.role === Role.GUEST) {
 			// Get only available vehicles in the same client.
 			// Only vehicles which have the same categories as the user.
@@ -215,6 +213,8 @@ export class Vehicle implements Castable<Partial<VehicleAttributes>> {
 			);
 		}
 
-		return new Collection(vehicles.map(v => new Vehicle(v)));
+		return new Collection<Partial<VehicleAttributes>, Vehicle>(
+			vehicles.map(v => new Vehicle(v))
+		);
 	};
 }
