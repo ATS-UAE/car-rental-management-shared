@@ -28,7 +28,7 @@ const BaseModal: FC<ModalProps> = ({
 	const location = useLocation<{ background?: boolean }>();
 
 	const background = location && location.state && location.state.background;
-	console.log(location);
+
 	const modalComponent = (
 		<Dialog
 			onClose={onClose}

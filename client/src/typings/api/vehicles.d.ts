@@ -12,6 +12,11 @@ export interface Vehicle {
 	defleeted: boolean;
 	model: string;
 	plateNumber: string;
+	locationId: number | null;
+	bookingChargeCount: number;
+	bookingChargeUnit: BookingChargeUnit;
+	bookingCharge: number;
+	available?: boolean;
 }
 
 export interface VehicleRequest extends Vehicle {}

@@ -51,6 +51,7 @@ export class BarChart<T extends BarChartData> extends Component<
 						<Legend />
 						{bars.map((bar, index) => (
 							<Bar
+								key={index}
 								dataKey={bar}
 								label={false}
 								fill={`#${legendColors[index].toHex()}`}

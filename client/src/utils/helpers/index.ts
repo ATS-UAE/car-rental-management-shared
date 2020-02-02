@@ -65,7 +65,11 @@ export const isBookingTimeSlotTaken = (
 	return taken;
 };
 
-export const getBookingStatus = (booking: Booking): BookingStatus => {
+export const getBookingStatus = (booking: {
+	from: number;
+	to: number;
+	approved: boolean | null;
+}): BookingStatus => {
 	let status = BookingStatus.UNKNOWN;
 	let currentTime = moment();
 	let hasPassedFrom = moment(booking.from, "X").isSameOrBefore(currentTime);

@@ -9,10 +9,11 @@
 		"@material-ui/pickers": "^3.2.6",
 		"@types/classnames": "^2.2.9",
 		"@types/history": "^4.7.3",
+		"@types/lodash": "^4.14.149",
 		"@types/material-ui": "^0.21.7",
 		"@types/node": "12.7.8",
 		"@types/pluralize": "0.0.29",
-		"@types/react": "16.9.3",
+		"@types/react": "^16.9.17",
 		"@types/react-dom": "16.9.1",
 		"@types/react-leaflet": "^2.4.0",
 		"@types/react-redux": "^7.1.4",
@@ -21,11 +22,12 @@
 		"@types/recompose": "^0.30.7",
 		"@types/yup": "^0.26.24",
 		"axios": "^0.19.0",
+		"axios-mock-adapter": "^1.17.0",
 		"classnames": "^2.2.6",
 		"debounce": "^1.2.0",
-		"formik": "^1.5.8",
+		"formik": "^2.1.2",
 		"leaflet": "^1.5.1",
-		"material-table": "^1.51.0",
+		"material-table": "^1.55.0",
 		"moment": "^2.24.0",
 		"node-wialon": "^0.12.5",
 		"pluralize": "^8.0.0",
@@ -44,13 +46,12 @@
 		"redux-thunk": "^2.3.0",
 		"tinygradient": "^1.0.0",
 		"typeface-roboto": "0.0.75",
-		"typescript": "^3.7.3",
-		"yup": "^0.27.0"
+		"yup": "^0.28.1"
 	},
 	"scripts": {
 		"start": "react-scripts start",
 		"build": "react-scripts build",
-		"test": "react-scripts test",
+		"test": "jest --watch",
 		"eject": "react-scripts eject"
 	},
 	"eslintConfig": {
@@ -75,6 +76,8 @@
 		"enzyme": "^3.11.0",
 		"enzyme-adapter-react-16": "^1.15.2",
 		"jest": "^24.9.0",
-		"ts-jest": "^24.3.0"
+		"jest-extended": "^0.11.2",
+		"ts-jest": "^24.3.0",
+		"typescript": "^3.7.4"
 	}
 }

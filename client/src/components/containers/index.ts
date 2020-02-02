@@ -3,3 +3,7 @@ export * from "./AccidentDashBoard";
 export * from "./BookingDashBoard";
 export * from "./UserDashBoard";
 export * from "./VehicleDashBoard";
+export * from "./BookingTable";
+export * from "./FormBookingUpdate";
+export * from "./BookingCreateFormStepper";
+export * from "./layout/Role";

@@ -1,6 +1,12 @@
-export interface WithServerResponse<Result> {
+// TODO: Move api defs in "api" folder.
+
+export interface WithServerResponse<Result> extends ServerResponseMeta {
+	data: Result;
+}
+
+export interface ServerResponseMeta {
 	code: number;
-	errors: string[];
+	errors: Array<string | { key: string; value: string }>;
 	success: boolean;
-	data: Result | null;
+	message: string;
 }

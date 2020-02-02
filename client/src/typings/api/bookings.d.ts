@@ -5,4 +5,5 @@ export interface Booking {
 	approved: boolean;
 	vehicleId: number;
 	finalized: boolean;
+	userId: number;
 }

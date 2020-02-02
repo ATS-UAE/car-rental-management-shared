@@ -64,7 +64,7 @@
 		"start": "npm run prod:build && node build/bundle",
 		"clean": "rm -rf ./build",
 		"dev:build": "webpack --mode=development",
-		"prod:build": "webpack --mode=development",
+		"prod:build": "webpack --mode=production",
 		"dev:start": "nodemon -L --config nodemon.json",
 		"build:sequelize": "tsc -p ./sequelize --listEmittedFiles --outDir ./sequelize/build --rootDir ./sequelize",
 		"dev:db:migrate": "npm run build:sequelize && npx sequelize-cli db:migrate --env development --config ./sequelize/config.json --migrations-path ./sequelize/build/migrations --debug",

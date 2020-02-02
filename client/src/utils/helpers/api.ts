@@ -16,7 +16,7 @@ import {
 } from "../../typings/api";
 import { PartialExcept } from "../../typings";
 
-const API_URL = process.env.REACT_APP_CAR_BOOKING_API_DOMAIN;
+export const API_URL = process.env.REACT_APP_CAR_BOOKING_API_DOMAIN;
 
 export const executeFromAPI = <Data>(
 	action: "get" | "post" | "delete" | "patch",
@@ -104,8 +104,11 @@ const api = {
 				formData: true
 			}
 		),
-	fetchVehicles: () =>
-		executeFromAPI<VehicleResponse[]>("get", "/api/carbooking/vehicles"),
+	fetchVehicles: (from?: number, to?: number) =>
+		executeFromAPI<VehicleResponse[]>(
+			"get",
+			`/api/carbooking/vehicles${from && to ? `?from=${from}&to=${to}` : ""}`
+		),
 	fetchVehicle: (id: number) =>
 		executeFromAPI<VehicleResponse>("get", `/api/carbooking/vehicles/${id}`),
 	updateVehicle: (vehicle: PartialExcept<VehicleResponse, "id">) =>
@@ -119,13 +122,17 @@ const api = {
 		),
 
 	// bookings
-	createBooking: (booking: Omit<Booking, "id">) =>
-		executeFromAPI<Booking>("post", "/api/carbooking/bookings/", booking),
+	createBooking: (
+		booking: Omit<
+			PartialExcept<Booking, "from" | "to" | "userId" | "vehicleId">,
+			"id"
+		>
+	) => executeFromAPI<Booking>("post", "/api/carbooking/bookings/", booking),
 	fetchBookings: () =>
 		executeFromAPI<Booking[]>("get", "/api/carbooking/bookings"),
 	fetchBooking: (id: number) =>
 		executeFromAPI<Booking>("get", `/api/carbooking/bookings/${id}`),
-	updateBooking: (booking: Booking) =>
+	updateBooking: (booking: PartialExcept<Booking, "id">) =>
 		executeFromAPI<Booking>(
 			"patch",
 			`/api/carbooking/bookings/${booking.id}`,

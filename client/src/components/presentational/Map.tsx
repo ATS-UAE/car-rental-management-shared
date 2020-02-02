@@ -1,28 +1,27 @@
-import React, { useEffect, useState, FC } from "react";
-import {
-	withStyles,
-	createStyles,
-	WithStyles,
-	StyledComponentProps
-} from "@material-ui/core";
+import React, { useEffect, useState, FC, PropsWithChildren } from "react";
+import { withStyles, createStyles, WithStyles } from "@material-ui/core";
 import { Map as LeafletMap, TileLayer, withLeaflet } from "react-leaflet";
 import { LeafletMouseEvent } from "leaflet";
 import { compose } from "recompose";
+import { ClassNameMap } from "@material-ui/core/styles/withStyles";
 
 export interface Coordinates {
 	lat: number;
 	lng: number;
 }
 
-export interface MapProps extends WithStyles<typeof styles> {
+export interface MapProps {
 	center: Coordinates;
+	classes?: Partial<ClassNameMap<keyof typeof styles>>;
 	zoom: number;
 	askForLocation?: boolean;
 	onLocationAsk?(position: Position | null, error?: PositionError): void;
 	onClick?(event: LeafletMouseEvent): void;
 }
 
-const SimpleMap: FC<MapProps> = ({
+type InnerProps = WithStyles<typeof styles> & MapProps;
+
+const SimpleMap: FC<MapProps & InnerProps> = ({
 	center,
 	zoom,
 	onLocationAsk,
@@ -65,10 +64,7 @@ const styles = createStyles({
 	root: { height: "100%", width: "100%", minHeight: "200px" }
 });
 
-export const Map = compose<
-	MapProps,
-	Omit<MapProps, "classes"> & Partial<Pick<MapProps, "classes">>
->(
+export const Map = compose<InnerProps, MapProps>(
 	withStyles(styles),
 	withLeaflet
 )(SimpleMap);

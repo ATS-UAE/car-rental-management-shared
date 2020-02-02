@@ -65,10 +65,10 @@ export const fetchUsers = () => async (
 	return users;
 };
 
-export const fetchVehicles = () => async (
+export const fetchVehicles = (from?: number, to?: number) => async (
 	dispatch: DispatchCallBack<ReduxState["vehicles"]>
 ): Promise<WithServerResponse<VehicleResponse[]>> => {
-	let vehicles = await api.fetchVehicles();
+	let vehicles = await api.fetchVehicles(from, to);
 	dispatch({ type: Action.FETCH_VEHICLES, payload: vehicles });
 	return vehicles;
 };

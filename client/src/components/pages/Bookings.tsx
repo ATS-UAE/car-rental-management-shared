@@ -13,8 +13,9 @@ import {
 } from "@material-ui/core";
 import classNames from "classnames";
 import * as actions from "../../actions";
-import { Role } from "../../variables/enums";
-import BookingFormCreateStepper from "../containers/forms/bookings/BookingFormCreateStepper";
+import { Role as RoleEnum } from "../../variables/enums";
+// import BookingFormCreateStepper from "../containers/forms/bookings/BookingFormCreateStepper";
+import { BookingCreateFormStepper, Role } from "../containers";
 import BookingTableView from "../containers/display/BookingTableView";
 import { Auth, WithServerResponse } from "../../typings/api";
 interface IBookingsPage extends RouteComponentProps, WithStyles<typeof styles> {
@@ -33,43 +34,36 @@ const Bookings: FC<typeof actions & IBookingsPage> = ({
 	history
 }) => {
 	useEffect(() => {
-		const start = () => {
-			fetchBookings();
-			fetchUsers();
-			fetchVehicles();
-			fetchLocations();
-			fetchCurrentUserDetails();
-		};
-		start();
+		fetchBookings();
+		fetchUsers();
+		fetchVehicles();
+		fetchLocations();
+		fetchCurrentUserDetails();
 	}, []);
+
 	return (
 		<Paper className={classNames(classes.root, classes.items)}>
 			<Switch>
 				<Route
 					path="/bookings/new"
-					render={props => <BookingFormCreateStepper {...props} />}
+					render={props => <BookingCreateFormStepper {...props} />}
 				/>
 				<Route
 					path="/bookings"
-					render={props => {
-						return (
-							<Fragment>
-								<div className={classes.items}>
-									{auth && auth.data && auth.data.role === Role.GUEST && (
-										<Button
-											variant="contained"
-											color="primary"
-											onClick={() => history.push("/bookings/new")}
-										>
-											Book a vehicle
-										</Button>
-									)}
-
-									<BookingTableView {...props} />
-								</div>
-							</Fragment>
-						);
-					}}
+					render={props => (
+						<div className={classes.items}>
+							<Role excludes={[RoleEnum.KEY_MANAGER]}>
+								<Button
+									variant="contained"
+									color="primary"
+									onClick={() => history.push("/bookings/new")}
+								>
+									Book a vehicle
+								</Button>
+							</Role>
+							<BookingTableView {...props} />
+						</div>
+					)}
 				/>
 			</Switch>
 		</Paper>

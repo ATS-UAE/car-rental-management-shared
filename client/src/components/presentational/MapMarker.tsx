@@ -1,21 +1,29 @@
-import React, { FC } from "react";
+import React, { FC, Component } from "react";
 import { renderToString } from "react-dom/server";
 import { Marker, ContextProps, withLeaflet } from "react-leaflet";
 import L, { LatLngExpression } from "leaflet";
 
-import { withStyles, WithStyles, createStyles } from "@material-ui/core";
+import {
+	withStyles,
+	WithStyles,
+	createStyles,
+	Tooltip
+} from "@material-ui/core";
+import { ClassNameMap } from "@material-ui/core/styles/withStyles";
 import { LocationCity } from "@material-ui/icons";
 import classNames from "classnames";
 
 export interface MapMarkerProps extends ContextProps, MapMarkerSVGProps {
 	position: LatLngExpression;
-	classes?: WithStyles<typeof iconStyles>["classes"];
+	classes?: Partial<ClassNameMap<keyof typeof iconStyles>>;
+	onClick?: () => void;
+	title?: string;
 }
 
 interface MapMarkerSVGProps {
 	active?: boolean;
 	icon?: React.ElementType;
-	classes?: WithStyles<typeof iconStyles>["classes"];
+	classes?: Partial<ClassNameMap<keyof typeof iconStyles>>;
 }
 
 const MapMarkerSVG: FC<MapMarkerSVGProps & WithStyles<typeof iconStyles>> = ({
@@ -78,18 +86,19 @@ const LeafletDivIcon = (props: MapMarkerSVGProps) =>
 		className: "location-icon"
 	});
 
-const BaseMapMarker: FC<MapMarkerProps> = ({
-	position,
-	active,
-	icon,
-	classes
-}) => {
-	return (
-		<Marker
-			position={position}
-			icon={LeafletDivIcon({ active, icon, classes })}
-		/>
-	);
-};
+class BaseMapMarker extends Component<MapMarkerProps, {}> {
+	render() {
+		const { position, active, icon, classes, onClick, title } = this.props;
+		return (
+			<Tooltip title={title || ""}>
+				<Marker
+					onClick={onClick}
+					position={position}
+					icon={LeafletDivIcon({ active, icon, classes })}
+				/>
+			</Tooltip>
+		);
+	}
+}
 
 export const MapMarker = withLeaflet<MapMarkerProps>(BaseMapMarker);
