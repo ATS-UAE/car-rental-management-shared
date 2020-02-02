@@ -1,4 +1,6 @@
 import React, { FC, useState, useEffect } from "react";
+import { withRouter, RouteChildrenProps } from "react-router";
+import { compose } from "recompose";
 import moment from "moment";
 import {
 	connect,
@@ -19,7 +21,7 @@ import {
 import _ from "lodash";
 import { ReduxState } from "../../typings";
 import { Role, BookingChargeUnit } from "../../variables/enums";
-import { RoleUtils, FormErrors } from "../../utils";
+import { RoleUtils } from "../../utils";
 import { Booking, ServerQueryError } from "../../api";
 
 interface BookingCreateFormStepperStateProps {
@@ -30,7 +32,9 @@ interface BookingCreateFormStepperStateProps {
 	bookings: ReduxState["bookings"];
 }
 
-type Props = BookingCreateFormStepperStateProps & ResolveThunks<typeof actions>;
+type Props = BookingCreateFormStepperStateProps &
+	ResolveThunks<typeof actions> &
+	RouteChildrenProps;
 
 const getVehicleCost = (
 	bookingChargeCount: number,
@@ -50,11 +54,16 @@ export const BookingCreateFormStepperBase: FC<Props> = ({
 	auth,
 	users,
 	bookings,
-	fetchVehicles
+	fetchVehicles,
+	fetchBookings,
+	history
 }) => {
 	const [getAvailableVehicles] = useState<(from: number, to: number) => void>(
 		() =>
-			_.debounce((from: number, to: number) => fetchVehicles(from, to), 1000)
+			_.debounce((from: number, to: number) => {
+				fetchVehicles(from, to);
+				fetchBookings();
+			}, 1000)
 	);
 
 	const [values, setValues] = useState<any>({
@@ -128,6 +137,7 @@ export const BookingCreateFormStepperBase: FC<Props> = ({
 				setLoading(true);
 				try {
 					await Booking.create(v);
+					history.replace("/bookings");
 				} catch (e) {
 					if (e instanceof ServerQueryError) {
 						setErrors(e.fieldErrors);
@@ -174,7 +184,7 @@ const mapStateToProps: MapStateToProps<
 
 const mapDispatchToProps: MapDispatchToProps<typeof actions, {}> = actions;
 
-export const BookingCreateFormStepper = connect(
-	mapStateToProps,
-	mapDispatchToProps
+export const BookingCreateFormStepper = compose<Props, {}>(
+	connect(mapStateToProps, mapDispatchToProps),
+	withRouter
 )(BookingCreateFormStepperBase);
