@@ -14,7 +14,7 @@ import {
 } from "../models";
 import { ItemNotFoundException } from "./exceptions";
 import { UseParameters, API_OPERATION } from ".";
-import { Role } from "../variables/enums";
+import { Role, BookingType } from "../variables/enums";
 import { ApiErrorHandler } from "./utils";
 import { Castable, Collection } from "./Collection";
 import {
@@ -68,7 +68,9 @@ export class Booking implements Castable<Partial<BookingAttributes>> {
 
 		if (user.role === Role.GUEST) {
 			// Get bookings on self.
-			bookings = await user.$get("bookings");
+			bookings = await user.$get("bookings", {
+				include: [Vehicle, ReplaceVehicle]
+			});
 		} else if (user.role === Role.ADMIN || user.role === Role.KEY_MANAGER) {
 			// Get bookings on self client.
 			bookings = await BookingModel.findAll({
@@ -78,12 +80,16 @@ export class Booking implements Castable<Partial<BookingAttributes>> {
 						where: {
 							clientId: user.clientId
 						}
-					}
+					},
+					Vehicle,
+					ReplaceVehicle
 				]
 			});
 		} else if (user.role === Role.MASTER) {
 			// Get all bookings.
-			bookings = await BookingModel.findAll();
+			bookings = await BookingModel.findAll({
+				include: [Vehicle, ReplaceVehicle]
+			});
 		}
 		return new Collection<Partial<BookingAttributes>, Booking>(
 			bookings.map(b => new Booking(b))
@@ -103,7 +109,9 @@ export class Booking implements Castable<Partial<BookingAttributes>> {
 			// Validate JSON schema.
 			await validator.validate(options);
 			// Cast the JSON
-			const bookingOptions = validator.cast(options);
+			const bookingOptions = validator.cast(options) as Partial<
+				BookingCreateOptions
+			>;
 
 			// Create replaced vehicle.
 			const replacedVehicle =
@@ -166,7 +174,9 @@ export class Booking implements Castable<Partial<BookingAttributes>> {
 			// Validate JSON schema.
 			await validator.validate(options);
 			// Cast the JSON
-			const bookingOptions = validator.cast(options);
+			const bookingOptions = validator.cast(options) as Partial<
+				BookingUpdateOptions
+			>;
 
 			// Create replaced vehicle.
 			const replacedVehicle =

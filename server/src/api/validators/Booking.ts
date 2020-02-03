@@ -10,8 +10,7 @@ import {
 } from "../../models";
 import { BookingType, Role } from "../../variables/enums";
 import { stripField } from "./utils";
-import { catchYupVadationErrors } from "../utils";
-import { isBookingTimeSlotTaken, RoleUtils } from "../../utils";
+import { isBookingTimeSlotTaken } from "../../utils";
 import { BookingCreateOptions, BookingUpdateOptions } from "../Booking";
 import { API_OPERATION } from "..";
 import { Validator } from ".";
@@ -69,13 +68,7 @@ export abstract class Booking {
 			userId: yup.number(),
 			vehicleId: yup.number(),
 			bookingType: yup.mixed<BookingType>().oneOf(Object.values(BookingType)),
-			replaceVehicleId: yup.number().nullable(),
-			replaceVehicle: yup.object().shape({
-				brand: yup.string(),
-				model: yup.string(),
-				vin: yup.string(),
-				plateNumber: yup.string()
-			})
+			replaceVehicleId: yup.number().nullable()
 		})
 		.when(
 			["$user", "$operation", "$target", "$data", "$casting"],
@@ -83,7 +76,21 @@ export abstract class Booking {
 				let [user, operation, target, data, casting, schema] = args;
 				switch (operation) {
 					case API_OPERATION.READ: {
+						if (data.bookingType === BookingType.REPLACEMENT) {
+							schema = schema.shape({
+								replaceVehicle: yup
+									.object()
+									.shape({
+										brand: yup.string().nullable(),
+										model: yup.string().nullable(),
+										vin: yup.string().nullable(),
+										plateNumber: yup.string().nullable()
+									})
+									.nullable()
+							});
+						}
 						schema = schema.shape({
+							id: yup.number(),
 							from: yup
 								.number()
 								.transform((v, originalValue) =>
@@ -106,7 +113,13 @@ export abstract class Booking {
 									(v, originalValue) =>
 										(originalValue && moment(originalValue as Date).unix()) ||
 										null
-								)
+								),
+							vehicle: yup.object().shape({
+								id: yup.number(),
+								brand: yup.string(),
+								model: yup.string(),
+								vin: yup.string()
+							})
 						});
 						break;
 					}
@@ -465,12 +478,15 @@ export abstract class Booking {
 										context["bookingOptions"].bookingType ===
 										BookingType.REPLACEMENT
 									) {
-										return yup.object().shape({
-											plateNumber: yup.string().required(),
-											vin: yup.string().required(),
-											brand: yup.string().required(),
-											model: yup.string().required()
-										});
+										return yup
+											.object()
+											.shape({
+												plateNumber: yup.string().required(),
+												vin: yup.string().required(),
+												brand: yup.string().required(),
+												model: yup.string().required()
+											})
+											.required();
 									}
 									return yup
 										.mixed()
