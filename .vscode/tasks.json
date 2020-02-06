@@ -2,9 +2,9 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "Server",
+			"label": "Server Typing Check",
 			"command": "tsc",
-			"args": ["--noEmit", "-p", "server", "-w"],
+			"args": ["--noEmit", "-p", "", "-w"],
 			"type": "shell",
 			"presentation": {
 				"echo": true,
@@ -16,20 +16,6 @@
 			},
 			"problemMatcher": "$tsc"
 		},
-		{
-			"label": "Client",
-			"command": "tsc",
-			"args": ["--noEmit", "-p", "client", "-w"],
-			"type": "shell",
-			"presentation": {
-				"echo": true,
-				"reveal": "silent",
-				"focus": false,
-				"panel": "shared",
-				"showReuseMessage": true,
-				"clear": false
-			},
-			"problemMatcher": "$tsc"
-		}
+		
 	]
 }

@@ -1,0 +1,6 @@
+{
+	"watch": ["src"],
+	"ext": "ts,js",
+	"ignore": ["build"],
+	"exec": "(npm run server:clean && npm run server:dev:build && node build/server/bundle.js) || true"
+}

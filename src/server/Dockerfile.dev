@@ -1,0 +1,8 @@
+FROM node:10
+WORKDIR /app
+COPY ./package.json ./
+RUN npm install
+RUN apt update && apt -y install vim
+COPY . .
+EXPOSE 5000
+CMD ["npm", "run", "dev:start"]

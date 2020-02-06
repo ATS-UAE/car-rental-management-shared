@@ -1,0 +1,86 @@
+<mjml>
+  <mj-head>
+    <mj-title>Your booking has been confirmed!</mj-title>
+    <mj-font name="Raleway" href="https://fonts.googleapis.com/css?family=Roboto" />
+  </mj-head>
+  <mj-body background-color="#ffffff" font-size="13px">
+    <mj-wrapper color="black" background-color="linear-gradient(45deg, #FF8E53 30%, #FE6B8B 90%)" padding="0">
+      <mj-section padding="0">
+        <mj-column vertical-align="top" width="100%">
+          <mj-image src="{{logoSrc}}" css-class="logo" padding="0px"></mj-image>
+        </mj-column>
+      </mj-section>
+      </mj-section>
+
+      <mj-section padding-bottom="0px" padding-top="0">
+        <mj-column width="100%">
+          <mj-text align="center" font-size="13px" font-family="Ubuntu, Helvetica, Arial, sans-serif" padding-left="25px" padding-right="25px" padding-bottom="18px" padding-top="28px">HELLO
+            <p style="font-size:16px">{{customerName}}</p>
+          </mj-text>
+        </mj-column>
+      </mj-section>
+
+      <mj-section padding-bottom="5px" padding-top="0">
+        <mj-column width="100%">
+          <mj-divider border-color="#ffffff" border-width="2px" border-style="solid" padding-left="20px" padding-right="20px" padding-bottom="0px" padding-top="0"></mj-divider>
+          <mj-text align="center" font-size="13px" font-family="Helvetica" padding-left="25px" padding-right="25px" padding-bottom="28px" padding-top="28px"><span style="font-size:20px; font-weight:bold">Your booking has been confirmed!</span>
+            <br />
+            <span style="font-size:15px">Please find the details below.</span></mj-text>
+        </mj-column>
+      </mj-section>
+
+      <mj-section background-color="#FE6B8B" padding-bottom="15px">
+        <mj-column>
+          <mj-text align="center" font-size="15px" font-family="Ubuntu, Helvetica, Arial, sans-serif" padding-left="25px" padding-right="25px" padding-bottom="0px"><strong>Booking ID</strong></mj-text>
+          <mj-text align="center" font-size="13px" font-family="Helvetica" padding-left="25px" padding-right="25px" padding-bottom="20px" padding-top="10px">{{bookingId}}</mj-text>
+        </mj-column>
+
+        <mj-column>
+          <mj-text align="center" font-size="15px" font-family="Ubuntu, Helvetica, Arial, sans-serif" padding-left="25px" padding-right="25px" padding-bottom="0px"><strong>Vehicle</strong></mj-text>
+          <mj-text align="center" font-size="13px" font-family="Helvetica" padding-left="25px" padding-right="25px" padding-bottom="20px" padding-top="10px">{{vehicleName}}</mj-text>
+        </mj-column>
+
+        <mj-column>
+          <mj-text align="center" font-size="15px" font-family="Ubuntu, Helvetica, Arial, sans-serif" padding-left="25px" padding-right="25px" padding-bottom="0px"><strong>Starting From</strong></mj-text>
+          <mj-text align="center" font-size="13px" font-family="Helvetica" padding-left="25px" padding-right="25px" padding-bottom="20px" padding-top="10px">{{from}}</mj-text>
+        </mj-column>
+        <mj-column>
+          <mj-text align="center" font-size="15px" font-family="Ubuntu, Helvetica, Arial, sans-serif" padding-left="25px" padding-right="25px" padding-bottom="0px"><strong>Ending To</strong></mj-text>
+          <mj-text align="center" font-size="13px" font-family="Helvetica" padding-left="25px" padding-right="25px" padding-bottom="20px" padding-top="10px">{{to}}</mj-text>
+        </mj-column>
+      </mj-section>
+
+      <mj-section padding-bottom="5px" padding-top="0">
+        <mj-column width="100%">
+          {{#if address}}
+            <mj-text align="center" font-size="15px" font-family="Helvetica" padding-left="25px" padding-right="25px" padding-top="20px" padding-bottom="0">You can pick up the vehicle at:</mj-text>
+            <mj-text align="center" font-size="15px" font-family="Helvetica" padding-left="25px" padding-right="25px" padding-bottom="20px">{{address}}</mj-text>
+          {{/if}}
+          {{#if parkingLocation}}
+            <mj-text align="center" font-size="15px" font-family="Helvetica" padding-left="25px" padding-right="25px" padding-top="20px" padding-bottom="0">Parked at:</mj-text>
+            <mj-text align="center" font-size="15px" font-family="Helvetica" padding-left="25px" padding-right="25px" padding-bottom="20px">{{parkingLocation}}</mj-text>
+          {{/if}}
+        </mj-column>
+      </mj-section>
+
+      <mj-section padding="0">
+        <mj-column vertical-align="top" width="100%">
+          <mj-image href="http://maps.google.com/?q={{lat}},{{lng}}" src="{{mapURL}}" css-class="logo" padding="0px"></mj-image>
+        </mj-column>
+      </mj-section>
+
+      <mj-section padding-bottom="5px" padding-top="0">
+        <mj-column width="100%">
+          <mj-divider border-color="#ffffff" border-width="2px" border-style="solid" padding-left="20px" padding-right="20px" padding-bottom="0px" padding-top="0"></mj-divider>
+          <mj-text align="center" font-size="15px" font-family="Helvetica" padding-left="25px" padding-right="25px" padding-bottom="20px" padding-top="20px">If you have any questions, please reach out to us at {{contactEmail}}.</mj-text>
+        </mj-column>
+        <mj-column width="100%">
+          <mj-text align="center" font-size="15px" font-family="Helvetica" padding-left="25px" padding-right="25px" padding-bottom="20px" padding-top="20px">Best Regards,
+            <br />
+            <span style="font-size:15px">The {{company}} Team</span></mj-text>
+        </mj-column>
+      </mj-section>
+
+    </mj-wrapper>
+  </mj-body>
+</mjml>
