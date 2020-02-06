@@ -149,8 +149,8 @@ export const getBookingTableActions = (
 						!Array.isArray(data) && tableActions.onUpdate(data)
 				};
 			},
-			({ approved }) => {
-				const visible = approved;
+			({ approved, amount }) => {
+				const visible = approved && amount === null;
 				return {
 					icon: () => <Check />,
 					tooltip: "Finalize",

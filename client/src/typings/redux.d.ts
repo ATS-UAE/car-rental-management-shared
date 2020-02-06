@@ -3,7 +3,6 @@ import {
 	ClientResponse,
 	VehicleResponse,
 	Auth,
-	Booking,
 	Category,
 	UserResponse,
 	WithServerResponse,
@@ -12,6 +11,7 @@ import {
 	Unit
 } from "./api";
 import { Nullable } from "./utils";
+import { BookingGetResponseItem } from "../api";
 
 export interface ReduxAction {
 	type: Action;
@@ -22,7 +22,7 @@ export type ReduxState = Nullable<{
 	users: WithServerResponse<UserResponse[]>;
 	vehicles: WithServerResponse<VehicleResponse[]>;
 	categories: WithServerResponse<Category[]>;
-	bookings: WithServerResponse<Booking[]>;
+	bookings: WithServerResponse<BookingGetResponseItem[]>;
 	accidents: WithServerResponse<Accident[]>;
 	auth: WithServerResponse<Auth> | false;
 	clients: WithServerResponse<ClientResponse[]>;

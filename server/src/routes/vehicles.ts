@@ -10,11 +10,17 @@ import disallowGuests from "../middlewares/disallowGuests";
 import parseBody from "../middlewares/parseBody";
 import upload from "../middlewares/multerUpload";
 import deleteFileOnError from "../middlewares/deleteFileOnError";
-import db, { VehicleAttributes } from "../models";
+import db, {
+	VehicleAttributes,
+	Vehicle as VehicleModel,
+	Location,
+	LocationAttributes
+} from "../models";
 import { ResponseBuilder, getFileURL } from "../utils";
 import { Vehicle } from "../api";
 import { Vehicle as VehicleDS } from "../datasource"; // Deprecate
 import moment from "moment";
+import { Role } from "../variables/enums";
 
 const router = express.Router();
 router.use(requireLogin);
@@ -200,5 +206,28 @@ router.delete(
 	},
 	deleteReplacedFiles
 );
+
+router.get<{ id: string }>("/:id/location", async ({ user, params }, res) => {
+	// TODO: Abstraction of API
+	const response = new ResponseBuilder<LocationAttributes>();
+	const vehicle = await VehicleModel.findByPk(params.id, {
+		include: [Location]
+	});
+	if (!vehicle) {
+		res.status(404);
+		response.setCode(404);
+		response.setMessage(`Vehicle with id ${params.id} not found.`);
+	} else {
+		if (user.role === Role.MASTER || vehicle.clientId === user.clientId) {
+			response.setData(vehicle.location || null);
+			response.handleSuccess("Location found.", res);
+		} else {
+			res.status(401);
+			response.setCode(401);
+			response.setMessage(`You cannot access this vehicle.`);
+		}
+	}
+	res.json(response.toObject());
+});
 
 export default router;

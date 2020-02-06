@@ -18,6 +18,13 @@ interface BookingAttributes {
 	vehicleId: number;
 	bookingType: BookingType;
 	replaceVehicleId: number | null;
+	vehicle: {
+		id: number;
+		vin: string;
+		plateNumber: string;
+		brand: string;
+		model: string;
+	};
 
 	readonly createdAt: number;
 	readonly updatedAt: number;
@@ -38,6 +45,8 @@ export interface BookingCreateParams
 		| "replaceVehicleId"
 		| "createdAt"
 		| "updatedAt"
+		| "vehicle"
+		| "finalized"
 	> {
 	replaceVehicle?: {
 		vin: string;
@@ -53,9 +62,29 @@ export type BookingGetResponseItem = BookingAttributes;
 
 export class Booking {
 	constructor(
-		public data: PartialExcept<BookingAttributes, "id">,
-		public meta?: ServerResponseMeta
+		public data: BookingGetResponseItem,
+		public meta: ServerResponseMeta
 	) {}
+
+	public static fromId = (id: number) =>
+		Api.execute<BookingAttributes>(
+			"get",
+			`/api/carbooking/bookings/${id}`
+		).then(res => {
+			const { data, ...meta } = res;
+			return new Booking(data, meta);
+		});
+
+	public reload = () =>
+		Api.execute<BookingAttributes>(
+			"get",
+			`/api/carbooking/bookings/${this.data.id}`
+		).then(res => {
+			const { data, ...meta } = res;
+			this.data = { ...data };
+			this.meta = { ...meta };
+			return this;
+		});
 
 	public static fetch = (id: number) =>
 		Api.execute<BookingAttributes>(
@@ -90,18 +119,35 @@ export class Booking {
 		return this.data.approved === null || role === Role.ADMIN;
 	};
 
-	public delete = () =>
-		Api.execute<BookingAttributes>("delete", "/api/carbooking/bookings").then(
-			res => {
-				const { data, ...meta } = res;
-				return new Booking(data, meta);
-			}
-		);
+	public static delete = (id: number) =>
+		Api.execute<BookingAttributes>(
+			"delete",
+			`/api/carbooking/bookings/${id}`
+		).then(res => {
+			const { data, ...meta } = res;
+			return new Booking(data, meta);
+		});
 
-	public approve = (approval?: boolean) => {
-		const approved = approval === undefined ? true : false;
-		return this.update({ approved });
-	};
+	public delete = () => Booking.delete(this.data.id);
+	public approve = (approval?: boolean) =>
+		Booking.approve(this.data.id, approval);
+
+	public static approve = (id: number, approval?: boolean) =>
+		Booking.update(id, { approved: approval === undefined ? true : approval });
+
+	public static pay = (id: number) => Booking.update(id, { paid: true });
+
+	public static update = (id: number, params: BookingUpdateParams) =>
+		Api.execute<BookingAttributes, BookingUpdateParams>(
+			"patch",
+			`/api/carbooking/bookings/${id}`,
+			{ body: params }
+		).then(res => {
+			const { data, ...meta } = res;
+			return new Booking(data, meta);
+		});
+
+	public finalize = (amount: number) => this.update({ amount });
 
 	public update = (params: BookingUpdateParams) =>
 		Api.execute<BookingAttributes, BookingUpdateParams>(

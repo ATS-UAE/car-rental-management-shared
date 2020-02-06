@@ -88,22 +88,36 @@ export const BookingCreateFormStepperBase: FC<Props> = ({
 	const [errorNotes, setErrorNotes] = useState<string[]>([]);
 	const [touched, setTouched] = useState<
 		TouchedFields<BookingCreateFormStepperValues>
-	>({});
+	>({
+		from: true,
+		to: true
+	});
 
 	const vehicleList: BookingCreateFormStepperVehicleItem[] =
-		(vehicles &&
+		(auth &&
+			vehicles &&
 			vehicles.data &&
-			vehicles.data.map(v => ({
-				label: `${v.brand} ${v.model}`,
-				plateNumber: v.plateNumber,
-				id: v.id,
-				locationId: v.locationId as number,
-				cost: getVehicleCost(
-					v.bookingChargeCount,
-					v.bookingCharge,
-					v.bookingChargeUnit
-				)
-			}))) ||
+			vehicles.data
+				.filter(v => {
+					const user =
+						auth.data.role === Role.GUEST
+							? auth.data
+							: values.userId &&
+							  users &&
+							  users.data.find(u => u.id === values.userId);
+					return user && user.clientId === v.clientId;
+				})
+				.map(v => ({
+					label: `${v.brand} ${v.model}`,
+					plateNumber: v.plateNumber,
+					id: v.id,
+					locationId: v.locationId as number,
+					cost: getVehicleCost(
+						v.bookingChargeCount,
+						v.bookingCharge,
+						v.bookingChargeUnit
+					)
+				}))) ||
 		[];
 	const locationList: BookingCreateFormStepperLocationItem[] =
 		(locations &&

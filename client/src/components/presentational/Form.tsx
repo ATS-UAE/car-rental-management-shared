@@ -67,7 +67,7 @@ class FormBase<Values extends object> extends Component<
 		} = this.props;
 
 		return (
-			<Grid container className={classes.root} direction="column">
+			<Grid container className={classes.root} direction="column" spacing={2}>
 				<Grid item className={classes.header}>
 					<FormHeader errorNotes={errorNotes} title={title}>
 						{header}

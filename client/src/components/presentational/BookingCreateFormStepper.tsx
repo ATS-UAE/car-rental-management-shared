@@ -33,7 +33,7 @@ import moment from "moment";
 import { BookingType } from "../../variables/enums";
 import { Booking } from "../../typings";
 import { rangeOverlap } from "../../utils";
-import { BookingCreateParams } from "../../api";
+import { BookingCreateParams, BookingGetResponseItem } from "../../api";
 
 const useFieldStyles = makeStyles(theme => ({
 	spacer: {
@@ -378,7 +378,7 @@ export interface BookingCreateFormStepperProps
 	vehicles: BookingCreateFormStepperVehicleItem[];
 	locations: BookingCreateFormStepperLocationItem[];
 	users?: FieldSelectItems;
-	bookings: Booking[];
+	bookings: BookingGetResponseItem[];
 	loading: boolean;
 	onSubmit: (values: BookingCreateFormStepperValues) => void;
 }

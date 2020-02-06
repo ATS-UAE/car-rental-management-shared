@@ -13,6 +13,7 @@ import {
 	Unit
 } from "../typings/api";
 import { ReduxState } from "../typings";
+import { BookingGetResponseItem } from "../api";
 
 export type ExtractAction<T extends (...args: any) => any> = (
 	...args: Parameters<ReturnType<T>>
@@ -75,7 +76,7 @@ export const fetchVehicles = (from?: number, to?: number) => async (
 
 export const fetchBookings = () => async (
 	dispatch: DispatchCallBack<ReduxState["bookings"]>
-): Promise<WithServerResponse<Booking[]>> => {
+): Promise<WithServerResponse<BookingGetResponseItem[]>> => {
 	let bookings = await api.fetchBookings();
 	dispatch({ type: Action.FETCH_BOOKINGS, payload: bookings });
 	return bookings;

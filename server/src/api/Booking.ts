@@ -100,10 +100,7 @@ export class Booking implements Castable<Partial<BookingAttributes>> {
 		try {
 			const validator = BookingValidators.getValidator(
 				user,
-				API_OPERATION.CREATE,
-				{
-					newData: options
-				}
+				API_OPERATION.CREATE
 			);
 
 			// Validate JSON schema.
@@ -160,16 +157,13 @@ export class Booking implements Castable<Partial<BookingAttributes>> {
 
 	public update = async (user: User, options: BookingUpdateOptions) => {
 		try {
-			const booking = await BookingModel.findByPk(options.id, {
+			const booking = await this.data.reload({
 				include: [{ model: ReplaceVehicle }]
 			});
 			const validator = BookingValidators.getValidator(
 				user,
 				API_OPERATION.UPDATE,
-				{
-					newData: options,
-					target: booking
-				}
+				booking
 			);
 			// Validate JSON schema.
 			await validator.validate(options);
@@ -201,9 +195,11 @@ export class Booking implements Castable<Partial<BookingAttributes>> {
 	public destroy = async (user: User) => {
 		try {
 			// Validate JSON schema.
-			await BookingValidators.getValidator(user, API_OPERATION.DELETE, {
-				target: this.data
-			}).validate(this.data);
+			await BookingValidators.getValidator(
+				user,
+				API_OPERATION.DELETE,
+				this.data
+			).validate(this.data);
 
 			await this.data.destroy();
 		} catch (e) {

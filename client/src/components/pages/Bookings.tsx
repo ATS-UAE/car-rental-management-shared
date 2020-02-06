@@ -17,6 +17,13 @@ import { Role as RoleEnum } from "../../variables/enums";
 // import BookingFormCreateStepper from "../containers/forms/bookings/BookingFormCreateStepper";
 import { BookingCreateFormStepper, Role } from "../containers";
 import BookingTableView from "../containers/display/BookingTableView";
+import {
+	BookingTable,
+	ModalConfirmDeleteBooking,
+	ModalFormBookingUpdate,
+	ModalFormFinalizeBooking,
+	ModalConfirmPayBooking
+} from "../containers";
 import { Auth, WithServerResponse } from "../../typings/api";
 interface IBookingsPage extends RouteComponentProps, WithStyles<typeof styles> {
 	auth: WithServerResponse<Auth>;
@@ -43,6 +50,22 @@ const Bookings: FC<typeof actions & IBookingsPage> = ({
 
 	return (
 		<Paper className={classNames(classes.root, classes.items)}>
+			<Route
+				path="/bookings/delete/:id"
+				render={props => <ModalConfirmDeleteBooking {...props} />}
+			/>
+			<Route
+				path="/bookings/edit/:id"
+				render={props => <ModalFormBookingUpdate {...props} />}
+			/>
+			<Route
+				path="/bookings/pay/:id"
+				render={props => <ModalConfirmPayBooking {...props} />}
+			/>
+			<Route
+				path="/bookings/finalize/:id"
+				render={props => <ModalFormFinalizeBooking {...props} />}
+			/>
 			<Switch>
 				<Route
 					path="/bookings/new"
@@ -61,7 +84,7 @@ const Bookings: FC<typeof actions & IBookingsPage> = ({
 									Book a vehicle
 								</Button>
 							</Role>
-							<BookingTableView {...props} />
+							<BookingTable {...props} />
 						</div>
 					)}
 				/>

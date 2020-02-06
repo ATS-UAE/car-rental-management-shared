@@ -8,9 +8,9 @@
 		"noImplicitAny": false,
 		"moduleResolution": "node",
 		"esModuleInterop": true,
-		"inlineSourceMap": true,
+		"sourceMap": true,
 		"experimentalDecorators": true,
-		"emitDecoratorMetadata": true
+		"emitDecoratorMetadata": true,
 	},
 	"exclude": ["sequelize"]
 }

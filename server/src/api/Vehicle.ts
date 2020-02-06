@@ -9,9 +9,9 @@ import {
 } from "../models";
 import { getBookingStatus } from "../utils";
 import { BookingStatus, Role } from "../variables/enums";
-import { InvalidPermissionException, ApiException } from "./exceptions";
+import { InvalidPermissionException } from "./exceptions";
 import { Vehicle as VehicleValidators } from "./validators";
-import { FormErrorBuilder, ApiErrorHandler } from "./utils";
+import { ApiErrorHandler } from "./utils";
 import { UseParameters, Collection, Castable, API_OPERATION } from ".";
 
 export type CreateVehicleOptions = UseParameters<

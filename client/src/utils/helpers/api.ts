@@ -15,6 +15,7 @@ import {
 	UnitSummaryResponse
 } from "../../typings/api";
 import { PartialExcept } from "../../typings";
+import { BookingGetResponseItem } from "../../api";
 
 export const API_URL = process.env.REACT_APP_CAR_BOOKING_API_DOMAIN;
 
@@ -129,7 +130,7 @@ const api = {
 		>
 	) => executeFromAPI<Booking>("post", "/api/carbooking/bookings/", booking),
 	fetchBookings: () =>
-		executeFromAPI<Booking[]>("get", "/api/carbooking/bookings"),
+		executeFromAPI<BookingGetResponseItem[]>("get", "/api/carbooking/bookings"),
 	fetchBooking: (id: number) =>
 		executeFromAPI<Booking>("get", `/api/carbooking/bookings/${id}`),
 	updateBooking: (booking: PartialExcept<Booking, "id">) =>

@@ -2,6 +2,7 @@ import { AxiosError } from "axios";
 import moment from "moment";
 import BookingStatus from "../../variables/enums/BookingStatus";
 import { Booking } from "../../typings/api";
+import { BookingGetResponseItem } from "../../api";
 export { default as CancellablePromise } from "./CancellablePromise";
 export { default as api } from "./api";
 
@@ -25,7 +26,9 @@ export const hasActiveBooking = (
 	return active;
 };
 
-export const isVehicleAvailableToBook = (bookings: Booking[]): boolean => {
+export const isVehicleAvailableToBook = (
+	bookings: BookingGetResponseItem[]
+): boolean => {
 	for (const booking of bookings) {
 		let status = getBookingStatus(booking);
 		if (

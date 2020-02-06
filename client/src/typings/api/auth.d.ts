@@ -1,2 +1,5 @@
 import { User } from ".";
-type Auth = User;
+
+interface Auth extends Omit<User, "clientId"> {
+	clientId: number;
+}

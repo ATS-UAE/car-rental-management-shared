@@ -31,6 +31,7 @@
 		"moment": "^2.24.0",
 		"node-wialon": "^0.12.5",
 		"pluralize": "^8.0.0",
+		"qs": "^6.9.1",
 		"react": "^16.10.1",
 		"react-dom": "^16.10.1",
 		"react-helmet": "^5.2.1",

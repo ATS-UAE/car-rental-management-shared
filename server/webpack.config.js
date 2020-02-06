@@ -6,17 +6,13 @@ const nodeExternals = require("webpack-node-externals");
 module.exports = {
 	entry: "./src/index.ts",
 	target: "node",
+	devtool: "inline-source-map",
 	module: {
 		rules: [
 			{
 				test: /\.tsx?$/,
 				use: "ts-loader",
 				exclude: /node_modules/
-			},
-			{
-				enforce: "pre",
-				test: /\.js$/,
-				loader: "source-map-loader"
 			}
 		]
 	},

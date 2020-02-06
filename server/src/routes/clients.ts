@@ -1,7 +1,17 @@
 import express, { Response } from "express";
 import { ResponseBuilder } from "../utils";
 import { Client } from "../datasource";
-import db from "../models";
+import db, {
+	LocationAttributes,
+	Location,
+	Client as ClientModel,
+} from "../models";
+import requireLogin from "../middlewares/requireLogin";
+import { Role } from "../variables/enums";
+import {
+	ResourceNotFoundException,
+	InvalidPermissionException
+} from "../utils/exceptions";
 
 const router = express.Router();
 
@@ -93,5 +103,48 @@ router.delete("/:id", async ({ user, params }: any, res) => {
 
 	res.json(response);
 });
+
+router.get<{ id: string }>(
+	"/:id/locations",
+	requireLogin,
+	async ({ user, params }, res) => {
+		const response = new ResponseBuilder<LocationAttributes[]>();
+
+		// TODO: Abstraction of apis
+
+		try {
+			const foundClient = await ClientModel.findByPk(params.id);
+
+			if (!foundClient) {
+				throw new ResourceNotFoundException(
+					`User with ID ${params.id} cannot be found.`
+				);
+			}
+			if (user.role !== Role.MASTER && foundClient.id !== user.clientId) {
+				throw new InvalidPermissionException();
+			}
+
+			const clientLocations = await Location.findAll({
+				include: [
+					{
+						model: ClientModel,
+						where: {
+							id: foundClient.id
+						}
+					}
+				]
+			});
+
+			response.setData(clientLocations);
+
+			response.setSuccess(true);
+			response.setMessage(`Found ${clientLocations.length} locations.`);
+			response.setCode(200);
+		} catch (e) {
+			response.handleError(e, res);
+		}
+		res.json(response.toObject());
+	}
+);
 
 export default router;

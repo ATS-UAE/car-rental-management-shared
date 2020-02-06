@@ -32,6 +32,7 @@ export const FieldText: FC<FieldTextProps> = ({
 		<Field<FieldTextValue> name={name} defaultValue="">
 			{({ onBlur, setFieldValue, value, touched, error }) => (
 				<TextField
+					type={type}
 					{...TextFieldProps}
 					fullWidth={fullWidth}
 					onBlur={onBlur}

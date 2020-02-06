@@ -34,11 +34,8 @@ export abstract class Booking {
 	public static getValidator = (
 		user: User,
 		operation: API_OPERATION,
-		data?: {
-			target?: BookingModel;
-			newData?: BookingUpdateOptions | BookingCreateOptions;
-		}
-	) => new Validator(Booking.validatorSchema, user, operation, data);
+		target?: BookingModel
+	) => new Validator(Booking.validatorSchema, user, operation, target);
 
 	private static validatorSchema = yup
 		.object()
@@ -47,17 +44,17 @@ export abstract class Booking {
 			amount: yup.number().nullable(),
 			from: yup
 				.date()
-				.transform(
-					(v, originalValue) =>
-						typeof originalValue === "number" &&
-						moment(originalValue, "X").toDate()
+				.transform((v, originalValue) =>
+					typeof originalValue === "number"
+						? moment(originalValue, "X").toDate()
+						: originalValue
 				),
 			to: yup
 				.date()
-				.transform(
-					(v, originalValue) =>
-						typeof originalValue === "number" &&
-						moment(originalValue, "X").toDate()
+				.transform((v, originalValue) =>
+					typeof originalValue === "number"
+						? moment(originalValue, "X").toDate()
+						: originalValue
 				),
 			approved: yup.boolean().nullable(),
 			finished: yup.boolean(),
@@ -118,12 +115,14 @@ export abstract class Booking {
 								id: yup.number(),
 								brand: yup.string(),
 								model: yup.string(),
-								vin: yup.string()
+								vin: yup.string(),
+								plateNumber: yup.string()
 							})
 						});
 						break;
 					}
 					case API_OPERATION.UPDATE: {
+						const updateData = data as BookingUpdateOptions;
 						schema = schema.shape({
 							from: yup
 								.date()
@@ -134,7 +133,9 @@ export abstract class Booking {
 									"no-approved",
 									"Booking has already been approved",
 									function() {
-										const changed = data?.from !== target.from;
+										const changed =
+											updateData?.from !== undefined &&
+											updateData.from !== target.from;
 										if (!changed) {
 											return true;
 										}
@@ -160,7 +161,9 @@ export abstract class Booking {
 									"no-approved",
 									"Booking has already been approved",
 									function() {
-										const changed = data?.to !== target.to;
+										const changed =
+											updateData?.to !== undefined &&
+											updateData.to !== target.to;
 
 										if (!changed) {
 											return true;
@@ -185,7 +188,15 @@ export abstract class Booking {
 									.test(
 										"timeslot-available",
 										"This booking is intersects with another booking at the time specified.",
-										async function(v) {
+										async function() {
+											const changed =
+												updateData?.finished !== undefined &&
+												updateData.finished !== target.finished;
+
+											if (!changed) {
+												return true;
+											}
+
 											const bookedVehicle = await Vehicle.findByPk(
 												target.vehicleId,
 												{
@@ -198,9 +209,9 @@ export abstract class Booking {
 													to: moment(to).unix(),
 													id
 												})),
-												v.from,
-												v.to,
-												v.id
+												moment(target.from).unix(),
+												moment(target.from).unix(),
+												target.id
 											);
 										}
 									),
@@ -212,27 +223,20 @@ export abstract class Booking {
 									"no-approved",
 									"Booking has already been approved",
 									function() {
-										const booking = this.options.context[
-											"booking"
-										] as BookingModel;
-										const user = this.options.context["user"] as User;
-
-										const bookingOptions = this.options.context[
-											"bookingOptions"
-										] as BookingUpdateOptions;
-
-										const changed = bookingOptions?.userId !== booking.userId;
+										const changed =
+											updateData?.userId !== undefined &&
+											updateData.userId !== target.userId;
 
 										if (!changed) {
 											return true;
 										}
 
 										// If Guest, deny changes if approved.
-										if (user.role === Role.GUEST && booking.approved) {
+										if (user.role === Role.GUEST && target.approved) {
 											return false;
 										} else if (
 											user.role === Role.KEY_MANAGER &&
-											booking.finished
+											target.finished
 										) {
 											// If Key Manager, deny if booking has finished.
 											return false;
@@ -246,16 +250,9 @@ export abstract class Booking {
 									"no-approved",
 									"Booking has already been approved",
 									function() {
-										const booking = this.options.context[
-											"booking"
-										] as BookingModel;
-										const user = this.options.context["user"] as User;
-										const bookingOptions = this.options.context[
-											"bookingOptions"
-										] as BookingUpdateOptions;
-
 										const changed =
-											bookingOptions?.vehicleId !== booking.vehicleId;
+											updateData?.vehicleId !== undefined &&
+											updateData.vehicleId !== target.vehicleId;
 
 										if (!changed) {
 											return true;
@@ -266,7 +263,7 @@ export abstract class Booking {
 											user.role === Role.GUEST ||
 											user.role === Role.KEY_MANAGER
 										) {
-											if (booking.approved) {
+											if (target.approved) {
 												return false;
 											}
 										}
@@ -291,70 +288,49 @@ export abstract class Booking {
 										"no-finished-booking",
 										"This booking has already finished.",
 										function() {
-											const booking = this.options.context[
-												"booking"
-											] as BookingModel;
-											const bookingOptions = this.options.context[
-												"bookingOptions"
-											] as BookingUpdateOptions;
-
 											const changed =
-												bookingOptions?.approved !== booking.approved;
+												updateData?.approved !== undefined &&
+												updateData.approved !== target.approved;
 
 											if (!changed) {
 												return true;
 											}
 
-											return !booking.finished;
+											return !target.finished;
 										}
 									)
 									.test(
 										"pending-only",
 										function() {
-											const booking = this.options.context[
-												"booking"
-											] as BookingModel;
 											return `Booking has already been ${
-												booking.approved ? "approved" : "denied"
+												target.approved ? "approved" : "denied"
 											}`;
 										},
 										function() {
-											const booking = this.options.context[
-												"booking"
-											] as BookingModel;
-											const bookingOptions = this.options.context[
-												"bookingOptions"
-											] as BookingUpdateOptions;
-
 											const changed =
-												bookingOptions?.approved !== booking.approved;
+												updateData?.approved !== undefined &&
+												updateData.approved !== target.approved;
 
 											if (!changed) {
 												return true;
 											}
 
-											return changed ? booking.approved !== null : true;
+											return changed ? target.approved === null : true;
 										}
 									)
 									.test(
 										"booking-expired",
 										"Booking has already expired",
 										function() {
-											const booking = this.options.context[
-												"booking"
-											] as BookingModel;
-											const bookingOptions = this.options.context[
-												"bookingOptions"
-											] as BookingUpdateOptions;
-
 											const changed =
-												bookingOptions?.approved !== booking.approved;
+												updateData?.approved !== undefined &&
+												updateData.approved !== target.approved;
 
 											if (!changed) {
 												return true;
 											}
 
-											return moment(booking.from).isAfter(moment());
+											return moment(target.from).isAfter(moment());
 										}
 									),
 								[Role.MASTER, Role.ADMIN, Role.KEY_MANAGER]
@@ -377,7 +353,7 @@ export abstract class Booking {
 							replaceVehicle: yup.lazy(function(value, options) {
 								// If booking type has been changed to replacement, then require a replacement vehicle.
 								if (
-									data.bookingType === BookingType.REPLACEMENT &&
+									updateData.bookingType === BookingType.REPLACEMENT &&
 									target.bookingType !== BookingType.REPLACEMENT
 								) {
 									return yup
@@ -554,7 +530,7 @@ export abstract class Booking {
 								.test(
 									"not-approved",
 									"Booking has already been approved and cannot be deleted.",
-									value => value === true
+									value => value !== true
 								)
 						});
 					}

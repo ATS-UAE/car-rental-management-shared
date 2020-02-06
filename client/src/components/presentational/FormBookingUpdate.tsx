@@ -1,6 +1,7 @@
 import React, { FC } from "react";
 import * as Yup from "yup";
 import moment from "moment";
+import { Button, Grid } from "@material-ui/core";
 import {
 	Form,
 	FieldSelect,
@@ -14,11 +15,13 @@ import {
 import { BookingType } from "../../variables/enums";
 import { toTitleWords } from "../../utils";
 
-export interface FormBookingUpdateData {
-	from: number;
-	to: number;
+export type FormBookingUpdateValues = Partial<{
+	id: number;
+	from: Date;
+	to: Date;
 	userId: number;
 	vehicleId: number;
+	locationId: number;
 	bookingType: BookingType;
 	replaceVehicle?: {
 		plateNumber?: string;
@@ -26,18 +29,21 @@ export interface FormBookingUpdateData {
 		model?: string;
 		vin?: string;
 	};
-}
+}>;
 
 export interface FormBookingUpdateProps
-	extends FormProps<FormBookingUpdateData> {
+	extends FormProps<FormBookingUpdateValues> {
 	vehicleList: FieldSelectItems;
 	userList: FieldSelectItems;
+	locationList: FieldSelectItems;
 	onSubmit: () => void;
+	loading: boolean;
 }
 
-const formBookingUpdateValidationSchema = Yup.object().shape<
-	FormBookingUpdateData
+export  const formBookingUpdateValidationSchema = Yup.object().shape<
+	Omit<FormBookingUpdateValues, "locationId">
 >({
+	id: Yup.number(),
 	from: Yup.mixed()
 		.required("Required")
 		.when("$status", (status: FormStatus, schema) => {
@@ -96,8 +102,10 @@ const formBookingUpdateValidationSchema = Yup.object().shape<
 export const FormBookingUpdate: FC<FormBookingUpdateProps> = ({
 	vehicleList,
 	userList,
+	locationList,
 	onSubmit,
 	values,
+	loading,
 	...formProps
 }) => {
 	const renderReplaceVehicleFields = () => {
@@ -105,18 +113,28 @@ export const FormBookingUpdate: FC<FormBookingUpdateProps> = ({
 		if (isReplacementBooking) {
 			return (
 				<>
-					<FieldText
-						name="replaceVehicle.plateNumber"
-						label="Plate Number"
-						transformer={v => v.toUpperCase()}
-					/>
-					<FieldText name="replaceVehicle.brand" label="Brand" />
-					<FieldText name="replaceVehicle.model" label="Model" />
-					<FieldText
-						name="replaceVehicle.vin"
-						label="VIN"
-						transformer={v => v.toUpperCase()}
-					/>
+					<Grid item xs={12} lg={6}>
+						<FieldText
+							fullWidth
+							name="replaceVehicle.plateNumber"
+							label="Plate Number"
+							transformer={v => v.toUpperCase()}
+						/>
+					</Grid>
+					<Grid item xs={12} lg={6}>
+						<FieldText fullWidth name="replaceVehicle.brand" label="Brand" />
+					</Grid>
+					<Grid item xs={12} lg={6}>
+						<FieldText fullWidth name="replaceVehicle.model" label="Model" />
+					</Grid>
+					<Grid item xs={12} lg={6}>
+						<FieldText
+							fullWidth
+							name="replaceVehicle.vin"
+							label="VIN"
+							transformer={v => v.toUpperCase()}
+						/>
+					</Grid>
 				</>
 			);
 		}
@@ -124,33 +142,61 @@ export const FormBookingUpdate: FC<FormBookingUpdateProps> = ({
 	};
 
 	return (
-		<Form<FormBookingUpdateData>
+		<Form<Omit<FormBookingUpdateValues, "locationId">>
 			{...formProps}
 			validationSchema={formBookingUpdateValidationSchema}
 			values={values}
-		>
-			<>
-				<FieldDate name="from" label="From" />
-				<FieldDate name="to" label="To" />
-				<FieldSelect name="userId" label="Booked User" items={userList} />
-				<FieldSelect
-					name="bookingType"
-					label="Booking Type"
-					items={Object.values(BookingType).map(t => ({
-						label: toTitleWords(t),
-						value: t
-					}))}
-				/>
-				<FieldSelect
-					name="vehicleId"
-					label="Booked Vehicle"
-					items={vehicleList}
-				/>
-				{renderReplaceVehicleFields()}
-				<button type="submit" onClick={onSubmit}>
+			title="Update Booking"
+			footer={
+				<Button variant="contained" color="primary" onClick={onSubmit}>
 					Submit
-				</button>
-			</>
+				</Button>
+			}
+		>
+			<Grid container spacing={1}>
+				<Grid item xs={12} lg={6}>
+					<FieldDate fullWidth name="from" label="From" />
+				</Grid>
+				<Grid item xs={12} lg={6}>
+					<FieldDate fullWidth name="to" label="To" />
+				</Grid>
+				<Grid item xs={12} lg={6}>
+					<FieldSelect
+						fullWidth
+						name="userId"
+						label="Booked User"
+						items={userList}
+					/>
+				</Grid>
+				<Grid item xs={12} lg={6}>
+					<FieldSelect
+						fullWidth
+						name="bookingType"
+						label="Booking Type"
+						items={Object.values(BookingType).map(t => ({
+							label: toTitleWords(t),
+							value: t
+						}))}
+					/>
+				</Grid>
+				<Grid item xs={12} lg={6}>
+					<FieldSelect
+						fullWidth
+						name="locationId"
+						label="Location"
+						items={locationList}
+					/>
+				</Grid>
+				<Grid item xs={12} lg={6}>
+					<FieldSelect
+						fullWidth
+						name="vehicleId"
+						label="Booked Vehicle"
+						items={vehicleList}
+					/>
+				</Grid>
+				{renderReplaceVehicleFields()}
+			</Grid>
 		</Form>
 	);
 };

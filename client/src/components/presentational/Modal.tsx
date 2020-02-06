@@ -10,16 +10,15 @@ import {
 } from "@material-ui/core";
 import { Loading } from ".";
 
-export interface ModalProps extends WithStyles<typeof styles> {
-	path?: string;
+export interface ModalProps {
 	onClose?: () => void;
-	open: boolean;
+	open?: boolean;
 	loading?: boolean;
+	classes?: Record<keyof typeof styles, string>;
 }
 
-const BaseModal: FC<ModalProps> = ({
+const BaseModal: FC<ModalProps & WithStyles<typeof styles>> = ({
 	children,
-	path,
 	onClose,
 	open,
 	loading,
@@ -29,10 +28,10 @@ const BaseModal: FC<ModalProps> = ({
 
 	const background = location && location.state && location.state.background;
 
-	const modalComponent = (
+	return (
 		<Dialog
 			onClose={onClose}
-			open={open}
+			open={background || open || false}
 			classes={{
 				paper: classNames(classes.paper, {
 					[classes.loading]: Boolean(loading)
@@ -41,12 +40,6 @@ const BaseModal: FC<ModalProps> = ({
 		>
 			{loading ? <Loading /> : children}
 		</Dialog>
-	);
-
-	return path && background ? (
-		<Route path={path} children={modalComponent}></Route>
-	) : (
-		modalComponent
 	);
 };
 
