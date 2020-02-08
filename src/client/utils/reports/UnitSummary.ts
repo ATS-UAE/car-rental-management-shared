@@ -1,13 +1,12 @@
 import { Column } from "material-table";
 
-import { UnitSummaryResponse } from "../../typings/api";
+import { ReportUnitSummaryAttributes } from "../../../shared/typings";
 import { Generatable } from ".";
-import { ExtractServerResponseData } from "../../typings";
 import api from "../helpers/api";
-import { Role } from "../../variables/enums";
+import { Role } from "../../../shared/typings";
 import { RoleUtils } from "../";
 
-export class UnitSummary implements Generatable<UnitSummaryResponse[]> {
+export class UnitSummary implements Generatable<ReportUnitSummaryAttributes[]> {
 	public title = "Unit Summary";
 
 	public generate = async () => {
@@ -15,11 +14,13 @@ export class UnitSummary implements Generatable<UnitSummaryResponse[]> {
 		return response.data;
 	};
 
-	public getColumnData = (role?: Role): Array<Column<UnitSummaryResponse>> => {
+	public getColumnData = (
+		role?: Role
+	): Array<Column<ReportUnitSummaryAttributes>> => {
 		const showSensitive =
 			(role && RoleUtils.isRoleBetter(Role.KEY_MANAGER, role)) || false;
 
-		const columns: Array<Column<UnitSummaryResponse>> = [
+		const columns: Array<Column<ReportUnitSummaryAttributes>> = [
 			{
 				field: "brand",
 				title: "Brand"

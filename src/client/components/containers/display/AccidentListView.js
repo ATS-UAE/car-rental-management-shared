@@ -15,7 +15,7 @@ import { Delete, Image } from "@material-ui/icons";
 import moment from "moment";
 
 import * as reduxActions from "../../../actions";
-import { Action, Resource } from "../../../variables/enums";
+import { Action, Resource } from "../../../../shared/typings";
 import { Role, permission } from "../layout/Role";
 import Can from "../layout/Can";
 import api from "../../../utils/helpers/api";

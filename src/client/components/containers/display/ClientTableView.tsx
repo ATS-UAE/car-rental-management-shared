@@ -5,8 +5,11 @@ import { compose } from "recompose";
 import { Location, History } from "history";
 import * as reduxActions from "../../../actions";
 import api from "../../../utils/helpers/api";
-import { ReduxState } from "../../../typings";
-import { ClientResponse } from "../../../typings/api";
+import { ReduxState } from "../../../reducers";
+import {
+	ExtractServerResponseData,
+	ClientServerResponseGet
+} from "../../../../shared/typings";
 import { ModalSwitch } from "../../presentational/display/ModalSwitch";
 import MaterialTable, { Column, Icons } from "material-table";
 import {
@@ -64,9 +67,9 @@ const tableIcons: Icons = {
 
 interface ClientTableViewProps {}
 interface ClientTableViewState {
-	clientColumns: Column<ClientResponse>[];
-	clientData: ClientResponse[];
-	clientSelected: ClientResponse | null;
+	clientColumns: Column<ExtractServerResponseData<ClientServerResponseGet>>[];
+	clientData: ExtractServerResponseData<ClientServerResponseGet>[];
+	clientSelected: ExtractServerResponseData<ClientServerResponseGet> | null;
 }
 
 type Props = {
@@ -190,7 +193,7 @@ class ClientTableView extends Component<Props, ClientTableViewState> {
 						onRowUpdate: ({ id, name }) =>
 							new Promise(resolve => {
 								api
-									.updateClient({ id, name })
+									.updateClient(id, { name })
 									.then(fetchClients)
 									.then(() => resolve());
 							}),
@@ -226,7 +229,11 @@ class ClientTableView extends Component<Props, ClientTableViewState> {
 							icon: () => <DirectionsCar />,
 							tooltip: "Add vehicles",
 							onClick: (event, data) => {
-								this.setState({ clientSelected: data as ClientResponse });
+								this.setState({
+									clientSelected: data as ExtractServerResponseData<
+										ClientServerResponseGet
+									>
+								});
 								history.replace("/clients/vehicles/edit", { modal: true });
 							}
 						},
@@ -234,7 +241,11 @@ class ClientTableView extends Component<Props, ClientTableViewState> {
 							icon: () => <LocationCity />,
 							tooltip: "Add Locations",
 							onClick: (event, data) => {
-								this.setState({ clientSelected: data as ClientResponse });
+								this.setState({
+									clientSelected: data as ExtractServerResponseData<
+										ClientServerResponseGet
+									>
+								});
 								history.replace("/clients/locations/edit", { modal: true });
 							}
 						},
@@ -242,7 +253,11 @@ class ClientTableView extends Component<Props, ClientTableViewState> {
 							icon: () => <People />,
 							tooltip: "Add Users",
 							onClick: (event, data) => {
-								this.setState({ clientSelected: data as ClientResponse });
+								this.setState({
+									clientSelected: data as ExtractServerResponseData<
+										ClientServerResponseGet
+									>
+								});
 								history.replace("/clients/users/edit", { modal: true });
 							}
 						}
@@ -259,8 +274,5 @@ const mapStateToProps = ({ clients }: { clients: ReduxState["clients"] }) => ({
 
 export default compose<Props & typeof reduxActions, {}>(
 	withRouter,
-	connect(
-		mapStateToProps,
-		reduxActions
-	)
+	connect(mapStateToProps, reduxActions)
 )(ClientTableView);

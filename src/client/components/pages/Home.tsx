@@ -1,5 +1,5 @@
 import React, { useEffect, FC } from "react";
-import { connect } from "react-redux";
+import { connect, ResolveThunks } from "react-redux";
 import { compose } from "recompose";
 import {
 	Paper,
@@ -11,7 +11,7 @@ import {
 } from "@material-ui/core";
 
 import * as actions from "../../actions";
-import { Role } from "../../variables/enums";
+import { Role } from "../../../shared/typings";
 import {
 	AccidentDashBoard,
 	BookingDashBoard,
@@ -19,24 +19,21 @@ import {
 	VehicleDashBoard
 } from "../containers";
 import { RoleView } from "../presentational";
-import {
-	Booking,
-	VehicleResponse,
-	UserResponse,
-	Accident,
-	Auth,
-	WithServerResponse
-} from "../../typings/api";
+import { ReduxState } from "../../reducers";
 
-interface IPageHome {
-	auth?: WithServerResponse<Auth>;
-	bookings?: WithServerResponse<Booking[]>;
-	vehicles?: WithServerResponse<VehicleResponse[]>;
-	users?: WithServerResponse<UserResponse[]>;
-	accidents?: WithServerResponse<Accident[]>;
+interface HomeStateProps {
+	auth?: ReduxState["auth"];
+	bookings?: ReduxState["bookings"];
+	vehicles?: ReduxState["vehicles"];
+	users?: ReduxState["users"];
+	accidents?: ReduxState["accidents"];
 }
 
-const Home: FC<IPageHome & typeof actions & WithStyles<typeof styles>> = ({
+type HomeActionProps = ResolveThunks<typeof actions>;
+
+type Props = HomeStateProps & HomeActionProps & WithStyles<typeof styles>;
+
+const Home: FC<Props> = ({
 	fetchBookings,
 	fetchVehicles,
 	fetchUsers,
@@ -112,7 +109,7 @@ const mapStateToProps = ({
 	accidents,
 	auth
 }: Pick<
-	IPageHome,
+	HomeStateProps,
 	"bookings" | "vehicles" | "users" | "accidents" | "auth"
 >) => ({
 	bookings,
@@ -122,10 +119,7 @@ const mapStateToProps = ({
 	auth
 });
 
-export default compose<
-	IPageHome & typeof actions & WithStyles<typeof styles>,
-	{}
->(
+export default compose<Props, {}>(
 	connect(mapStateToProps, actions),
 	withStyles(styles)
 )(Home);

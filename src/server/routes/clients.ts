@@ -1,13 +1,9 @@
 import express, { Response } from "express";
 import { ResponseBuilder } from "../utils";
 import { Client } from "../datasource";
-import db, {
-	LocationAttributes,
-	Location,
-	Client as ClientModel,
-} from "../models";
+import db, { Location, Client as ClientModel } from "../models";
 import requireLogin from "../middlewares/requireLogin";
-import { Role } from "../variables/enums";
+import { Role, LocationAttributes } from "../../shared/typings";
 import {
 	ResourceNotFoundException,
 	InvalidPermissionException

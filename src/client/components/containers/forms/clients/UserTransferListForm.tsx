@@ -1,12 +1,14 @@
 import React, { useEffect, FC, useState } from "react";
 import { connect } from "react-redux";
 import api from "../../../../utils/helpers/api";
-import { ReduxState } from "../../../../typings/redux";
-import { UserResponse } from "../../../../typings/api";
-import TransferList, {
-	TransferListProps
-} from "../../../presentational/display/TransferList";
-import { Role } from "../../../../variables/enums";
+import { ReduxState } from "../../../../reducers";
+import {
+	UserServerResponseGet,
+	UserServerResponseGetAll,
+	ExtractServerResponseData
+} from "../../../../../shared/typings";
+import TransferList from "../../../presentational/display/TransferList";
+import { Role } from "../../../../../shared/typings";
 import { toTitleWords } from "../../../../utils/helpers";
 
 interface UserTransferListFormProps {
@@ -19,14 +21,18 @@ interface Props extends UserTransferListFormProps {
 }
 
 const UserTransferListForm: FC<Props> = ({ users, clientId, onSubmit }) => {
-	const [items, setItems] = useState<UserResponse[]>([]);
-	const [right, setRight] = useState<UserResponse[]>([]);
+	const [items, setItems] = useState<
+		ExtractServerResponseData<UserServerResponseGetAll>
+	>([]);
+	const [right, setRight] = useState<
+		ExtractServerResponseData<UserServerResponseGetAll>
+	>([]);
 	const [loading, setLoading] = useState<boolean>(false);
 
 	useEffect(() => {
 		if (users && users.data) {
-			const left: UserResponse[] = [];
-			const right: UserResponse[] = [];
+			const left: ExtractServerResponseData<UserServerResponseGetAll> = [];
+			const right: ExtractServerResponseData<UserServerResponseGetAll> = [];
 
 			for (const user of users.data) {
 				if (clientId === user.clientId) {
@@ -42,12 +48,11 @@ const UserTransferListForm: FC<Props> = ({ users, clientId, onSubmit }) => {
 	}, [users]);
 
 	return (
-		<TransferList<UserResponse>
+		<TransferList<ExtractServerResponseData<UserServerResponseGet>>
 			onSubmit={(e, data) => {
 				setLoading(true);
 				api
-					.updateClient({
-						id: clientId,
+					.updateClient(clientId, {
 						users: data.map(value => value.id)
 					})
 					.then(() => {

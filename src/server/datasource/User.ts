@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import DataSource from "./DataSource";
-import { Operation, Resource, Role } from "../variables/enums";
+import { Operation, Resource, Role } from "../../shared/typings";
 import UserAccessor from "./types/UserAccessor";
 import RBAC from "../utils/rbac";
 import { exceptFields } from "../utils";

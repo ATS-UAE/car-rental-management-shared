@@ -1,3 +1,4 @@
+//eslint-disable import/first
 import env from "dotenv";
 env.config();
 import express from "express";
@@ -10,7 +11,7 @@ import bodyParser from "body-parser";
 import expressSession from "express-session";
 
 import { getStaticFilesPath } from "./utils";
-import { Role } from "./variables/enums";
+import { Role } from "../shared/typings";
 import config from "./config";
 import { User, Category } from "./models";
 import authRoutes from "./routes/auth";

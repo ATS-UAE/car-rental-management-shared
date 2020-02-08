@@ -7,10 +7,10 @@ import {
 	BookingTable as BookingTablePresentational,
 	BookingTableItemData
 } from "../presentational";
-import { BookingType, Role } from "../../variables/enums";
+import { BookingType, Role } from "../../../shared/typings";
 import { BOOKING_TABLE_DATA } from "../../fixtures";
 import * as actions from "../../actions";
-import { ReduxState } from "../../typings";
+import { ReduxState } from "../../reducers";
 import { Booking } from "../../api";
 
 interface BookingTableStateProps {

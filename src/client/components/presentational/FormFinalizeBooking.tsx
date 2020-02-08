@@ -17,7 +17,7 @@ import {
 	FieldSelectItems,
 	InfoText
 } from ".";
-import { BookingType } from "../../variables/enums";
+import { BookingType } from "../../../shared/typings";
 
 export interface FormFinalizeBookingValues {
 	amount: number;

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import Select from "../../presentational/inputs/Select";
-import { Role } from "../../../variables/enums";
+import { Role } from "../../../../shared/typings";
 import * as actions from "../../../actions";
 
 function RoleSelect({ value, required, fullWidth, onChange }) {

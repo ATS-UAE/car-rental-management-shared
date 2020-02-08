@@ -1,5 +1,5 @@
 import * as yup from "yup";
-import { Role } from "../../../variables/enums";
+import { Role } from "../../../../shared/typings";
 import { User } from "../../../models";
 import { Schema } from "express-validator";
 

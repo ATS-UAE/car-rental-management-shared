@@ -11,7 +11,7 @@ import {
 	TouchedFields,
 	FormError
 } from "../presentational";
-import { ReduxState } from "../../typings";
+import { ReduxState } from "../../reducers";
 import * as actions from "../../actions";
 
 interface ModalFinalizeBookingStateProps {

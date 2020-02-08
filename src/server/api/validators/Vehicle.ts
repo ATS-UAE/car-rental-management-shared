@@ -1,12 +1,15 @@
 import * as Yup from "yup";
 import moment from "moment";
 
-import { User, Vehicle as VehicleModel, VehicleAttributes } from "../../models";
-import { Role, BookingChargeUnit } from "../../variables/enums";
+import { User, Vehicle as VehicleModel } from "../../models";
 import { API_OPERATION } from "..";
 import { UpdateVehicleOptions, CreateVehicleOptions } from "../Vehicle";
-import { Validator, DataCaster } from ".";
-
+import { Validator } from ".";
+import {
+	VehicleAttributes,
+	Role,
+	BookingChargeUnit
+} from "../../../shared/typings";
 type ValidatorParameters = Parameters<typeof Vehicle.getValidator>;
 
 type VehicleValidatorContextWithSchema = [

@@ -5,7 +5,7 @@ import VehicleForm from "../../presentational/forms/VehicleForm";
 import * as reduxActions from "../../../actions";
 import { api, apiErrorHandler } from "../../../utils/helpers";
 import DialogButton from "../../presentational/forms/DialogButton";
-import { Resource, Action } from "../../../variables/enums";
+import { Resource, Action } from "../../../../shared/typings";
 import Can from "../layout/Can";
 
 function NewVehicleButtonDialog({

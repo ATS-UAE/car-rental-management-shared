@@ -20,7 +20,7 @@ import {
 	UserVehicleCategory,
 	Booking
 } from "./";
-import { Role } from "../variables/enums";
+import { Role } from "../../shared/typings";
 import { UserAttributes } from "../../shared/typings";
 
 @Table

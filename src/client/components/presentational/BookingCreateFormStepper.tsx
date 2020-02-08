@@ -30,8 +30,11 @@ import {
 	FieldSelectItems
 } from ".";
 import moment from "moment";
-import { BookingType } from "../../variables/enums";
-import { Booking } from "../../typings";
+import { BookingType } from "../../../shared/typings";
+import {
+	ExtractServerResponseData,
+	BookingServerResponseGetAll
+} from "../../../shared/typings";
 import { rangeOverlap } from "../../utils";
 import { BookingCreateParams, BookingGetResponseItem } from "../../api";
 
@@ -273,28 +276,35 @@ const formBookingCreateValidationSchema = yup.object().shape({
 				return moment(from).isBefore(to);
 			}
 		)
-		.when("$bookings", (bookings: Booking[], schema: yup.MixedSchema) => {
-			return schema.test(
-				"no-same-schedules",
-				"You already have a booking during this time.",
-				function(from: Date) {
-					const { userId, to } = this.parent as BookingCreateFormStepperValues;
-					if (from && to) {
-						return !bookings
-							.filter(b => b.userId === userId)
-							.some(b =>
-								rangeOverlap(
-									moment(from).unix(),
-									moment(to).unix(),
-									b.from,
-									b.to
-								)
-							);
+		.when(
+			"$bookings",
+			(
+				bookings: ExtractServerResponseData<BookingServerResponseGetAll>,
+				schema: yup.MixedSchema
+			) => {
+				return schema.test(
+					"no-same-schedules",
+					"You already have a booking during this time.",
+					function(from: Date) {
+						const { userId, to } = this
+							.parent as BookingCreateFormStepperValues;
+						if (from && to) {
+							return !bookings
+								.filter(b => b.userId === userId)
+								.some(b =>
+									rangeOverlap(
+										moment(from).unix(),
+										moment(to).unix(),
+										b.from,
+										b.to
+									)
+								);
+						}
+						return true;
 					}
-					return true;
-				}
-			);
-		})
+				);
+			}
+		)
 		.when("$status", (status: FormStatus, schema: yup.MixedSchema) => {
 			if (status === FormStatus.SUBMITTING) {
 				return schema.transform(v => moment(v).unix());
@@ -311,29 +321,35 @@ const formBookingCreateValidationSchema = yup.object().shape({
 				return moment(to).isAfter(from);
 			}
 		)
-		.when("$bookings", (bookings: Booking[], schema: yup.MixedSchema) => {
-			return schema.test(
-				"no-same-schedules",
-				"You already have a booking during this time.",
-				function(to: Date) {
-					const { userId, from } = this
-						.parent as BookingCreateFormStepperValues;
-					if (from && to) {
-						return !bookings
-							.filter(b => b.userId === userId)
-							.some(b =>
-								rangeOverlap(
-									moment(from).unix(),
-									moment(to).unix(),
-									b.from,
-									b.to
-								)
-							);
+		.when(
+			"$bookings",
+			(
+				bookings: ExtractServerResponseData<BookingServerResponseGetAll>,
+				schema: yup.MixedSchema
+			) => {
+				return schema.test(
+					"no-same-schedules",
+					"You already have a booking during this time.",
+					function(to: Date) {
+						const { userId, from } = this
+							.parent as BookingCreateFormStepperValues;
+						if (from && to) {
+							return !bookings
+								.filter(b => b.userId === userId)
+								.some(b =>
+									rangeOverlap(
+										moment(from).unix(),
+										moment(to).unix(),
+										b.from,
+										b.to
+									)
+								);
+						}
+						return true;
 					}
-					return true;
-				}
-			);
-		})
+				);
+			}
+		)
 		.when("$status", (status: FormStatus, schema: yup.MixedSchema) => {
 			if (status === FormStatus.SUBMITTING) {
 				return schema.transform(v => moment(v).unix());

@@ -4,17 +4,18 @@ import moment from "moment";
 
 import { Booking as BookingValidators } from "./validators";
 import {
+	BookingAttributes,
+	ReplaceVehicleAttributes,Role
+} from "../../shared/typings";
+import {
 	User,
 	Booking as BookingModel,
 	ReplaceVehicle,
-	BookingAttributes,
-	ReplaceVehicleAttributes,
 	Location,
 	Vehicle
 } from "../models";
 import { ItemNotFoundException } from "./exceptions";
 import { UseParameters, API_OPERATION } from ".";
-import { Role } from "../variables/enums";
 import { ApiErrorHandler } from "./utils";
 import { Castable, Collection } from "./Collection";
 import {

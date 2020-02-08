@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosError } from "axios";
-import { WithServerResponse } from "../typings";
+import { ServerResponse } from "../../shared/typings";
 import { FormErrors } from "../utils";
 
 export * from "./Booking";
@@ -16,14 +16,12 @@ type Config = {
 };
 
 export class ApiError extends Error {
-	constructor(message: string) {
+	constructor(public message: string) {
 		super(message);
 	}
 }
 
-export class ServerQueryError<
-	Data extends WithServerResponse<any>
-> extends Error {
+export class ServerQueryError<Data extends ServerResponse<any>> extends Error {
 	constructor(message: string, data: Data) {
 		super(message);
 		this.errors = FormErrors.handleFormApiErrors(data);
@@ -42,7 +40,7 @@ export class NetworkError extends Error {}
 
 export abstract class Api {
 	private static generateServerError = (
-		error: AxiosError<WithServerResponse<null>>
+		error: AxiosError<ServerResponse<null>>
 	) => {
 		if (error.response) {
 			throw new ServerQueryError(
@@ -56,17 +54,17 @@ export abstract class Api {
 		action: ActionTypes,
 		path: string,
 		config?: Config
-	): Promise<WithServerResponse<Response>>;
+	): Promise<ServerResponse<Response>>;
 	public static async execute<Response, Body extends object>(
 		action: ActionTypes,
 		path: string,
 		config?: Config & { body?: Body }
-	): Promise<WithServerResponse<Response>>;
+	): Promise<ServerResponse<Response>>;
 	public static async execute<Response, Body extends object>(
 		action: ActionTypes,
 		path: string,
 		config: Config & { body?: Body } = {}
-	): Promise<WithServerResponse<Response>> {
+	): Promise<ServerResponse<Response>> {
 		let payload: FormData | Body | undefined = config.body;
 		const baseAxiosConfig: AxiosRequestConfig = {
 			withCredentials: true,
@@ -91,15 +89,12 @@ export abstract class Api {
 		switch (action) {
 			case "get":
 				return axios
-					.get<WithServerResponse<Response>>(
-						`${API_URL}${path}`,
-						baseAxiosConfig
-					)
+					.get<ServerResponse<Response>>(`${API_URL}${path}`, baseAxiosConfig)
 					.then(data => data.data)
 					.catch(Api.generateServerError);
 			case "post":
 				return axios
-					.post<WithServerResponse<Response>>(
+					.post<ServerResponse<Response>>(
 						`${API_URL}${path}`,
 						payload,
 						baseAxiosConfig
@@ -108,7 +103,7 @@ export abstract class Api {
 					.catch(Api.generateServerError);
 			case "patch":
 				return axios
-					.patch<WithServerResponse<Response>>(
+					.patch<ServerResponse<Response>>(
 						`${API_URL}${path}`,
 						payload,
 						baseAxiosConfig
@@ -117,7 +112,7 @@ export abstract class Api {
 					.catch(Api.generateServerError);
 			case "delete":
 				return axios
-					.delete<WithServerResponse<Response>>(
+					.delete<ServerResponse<Response>>(
 						`${API_URL}${path}`,
 						baseAxiosConfig
 					)

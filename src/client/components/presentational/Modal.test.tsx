@@ -1,8 +1,8 @@
 import React, { FC } from "react";
 import { Backdrop } from "@material-ui/core";
 import { Modal } from ".";
-import { MemoryRouter, Route } from "react-router-dom";
-import { shallow, render, mount } from "enzyme";
+import { MemoryRouter } from "react-router-dom";
+import { mount } from "enzyme";
 
 describe("Modal", () => {
 	test("Renders when on correct route", () => {
@@ -18,7 +18,7 @@ describe("Modal", () => {
 					}
 				]}
 			>
-				<Modal path={"/:id"} open={true}>
+				<Modal open={true}>
 					<ModalContent />
 				</Modal>
 				}
@@ -37,7 +37,7 @@ describe("Modal", () => {
 					}
 				]}
 			>
-				<Modal path={"/:id"} open={true}>
+				<Modal open={true}>
 					<ModalContent />
 				</Modal>
 				}
@@ -60,7 +60,7 @@ describe("Modal", () => {
 					}
 				]}
 			>
-				<Modal path={"/:id"} open={true} onClose={onCloseMock}>
+				<Modal open={true} onClose={onCloseMock}>
 					<ModalContent />
 				</Modal>
 				}

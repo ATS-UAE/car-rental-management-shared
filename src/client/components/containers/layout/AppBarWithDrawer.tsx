@@ -10,7 +10,7 @@ import * as actions from "../../../actions";
 import { Typography } from "@material-ui/core";
 import { pages } from "../../../variables";
 import { toTitleWords } from "../../../utils/helpers";
-import { ReduxState } from "../../../typings";
+import { ReduxState } from "../../../reducers";
 
 interface AppBarWithDrawerStateProps {
 	auth: ReduxState["auth"];

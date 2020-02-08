@@ -1,5 +1,7 @@
-import UserType from "../variables/enums/Role";
-import ResourceType from "../variables/enums/Resource";
+import {
+	Role as UserType,
+	Resource as ResourceType
+} from "../../shared/typings";
 
 export class RBAC {
 	name: string;

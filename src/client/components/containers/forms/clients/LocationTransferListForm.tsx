@@ -2,16 +2,13 @@ import React, { useEffect, FC, useState } from "react";
 import { connect } from "react-redux";
 import * as reduxActions from "../../../../actions";
 import api from "../../../../utils/helpers/api";
-import { ReduxState } from "../../../../typings/redux";
+import { ReduxState } from "../../../../reducers";
 import {
-	LocationResponse,
-	ClientResponse,
-	WithServerResponse
-} from "../../../../typings/api";
-import TransferList, {
-	TransferListProps
-} from "../../../presentational/display/TransferList";
-import { Loading } from "../../../presentational";
+	LocationServerResponseGet,
+	LocationServerResponseGetAll,
+	ExtractServerResponseData
+} from "../../../../../shared/typings";
+import TransferList from "../../../presentational/display/TransferList";
 interface LocationTransferListFormProps {
 	clientId: number;
 	onSubmit?: () => void;
@@ -31,25 +28,18 @@ const LocationTransferListForm: FC<Props> = ({
 	fetchLocations,
 	onSubmit
 }) => {
-	const [items, setItems] = useState<LocationResponse[]>([]);
-	const [right, setRight] = useState<LocationResponse[]>([]);
+	const [items, setItems] = useState<
+		ExtractServerResponseData<LocationServerResponseGetAll>
+	>([]);
+	const [right, setRight] = useState<
+		ExtractServerResponseData<LocationServerResponseGetAll>
+	>([]);
 	const [loading, setLoading] = useState<boolean>(false);
-	const [clientData, setClientData] = useState<WithServerResponse<
-		ClientResponse
-	> | null>(null);
-
-	useEffect(() => {
-		const getClientData = async () => {
-			const clientData = await api.fetchClient(clientId);
-			setClientData(clientData);
-		};
-		getClientData();
-	}, []);
 
 	useEffect(() => {
 		if (locations && locations.data) {
-			const left: LocationResponse[] = [];
-			const right: LocationResponse[] = [];
+			const left: ExtractServerResponseData<LocationServerResponseGetAll> = [];
+			const right: ExtractServerResponseData<LocationServerResponseGetAll> = [];
 
 			for (const location of locations.data) {
 				if (
@@ -66,36 +56,33 @@ const LocationTransferListForm: FC<Props> = ({
 			setItems([...left, ...right]);
 			setRight(right);
 		}
-	}, [locations, clientData]);
+	}, [locations]);
 
 	return (
-		(clientData && (
-			<TransferList<LocationResponse>
-				onSubmit={(e, data) => {
-					setLoading(true);
-					api
-						.updateClient({
-							id: clientId,
-							locations: data.map(value => value.id)
-						})
-						.then(fetchLocations)
-						.then(() => {
-							setLoading(false);
-							onSubmit && onSubmit();
-						});
-				}}
-				loading={loading}
-				items={items}
-				right={right}
-				onChange={right => setRight(right)}
-				comparator={(a, b) => a.id === b.id && a.clientId === b.clientId}
-				listMapper={item => ({
-					id: item.id,
-					primaryLabel: item.name,
-					secondaryLabel: item.address
-				})}
-			/>
-		)) || <Loading />
+		<TransferList<ExtractServerResponseData<LocationServerResponseGet>>
+			onSubmit={(e, data) => {
+				setLoading(true);
+				api
+					.updateClient(clientId, {
+						locations: data.map(value => value.id)
+					})
+					.then(fetchLocations)
+					.then(() => {
+						setLoading(false);
+						onSubmit && onSubmit();
+					});
+			}}
+			loading={loading}
+			items={items}
+			right={right}
+			onChange={right => setRight(right)}
+			comparator={(a, b) => a.id === b.id}
+			listMapper={item => ({
+				id: item.id,
+				primaryLabel: item.name,
+				secondaryLabel: item.address
+			})}
+		/>
 	);
 };
 

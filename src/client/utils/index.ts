@@ -1,5 +1,4 @@
-import { WithServerResponse } from "../typings";
-import { AxiosResponse, AxiosError } from "axios";
+import { ServerResponse } from "../../shared/typings";
 import { FormError } from "../components/presentational";
 export * from "./RoleUtils";
 export * from "./helpers";
@@ -20,7 +19,7 @@ export class FormErrors<Values extends object> {
 	}
 
 	static handleFormApiErrors = <Values extends object>(
-		error: WithServerResponse<Values>
+		error: ServerResponse<Values>
 	) => {
 		const errors = new FormErrors<Values>();
 		const apiErrors = error.errors;

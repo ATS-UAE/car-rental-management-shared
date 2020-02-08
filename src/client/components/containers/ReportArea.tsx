@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { ReportArea as ReportAreaPresentational } from "../presentational";
 import { UnitSummary } from "../../utils/reports";
 import { Column } from "material-table";
-import { ReduxState } from "../../typings";
+import { ReduxState } from "../../reducers";
 
 const reportList = [
 	{

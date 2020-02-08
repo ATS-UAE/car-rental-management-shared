@@ -8,7 +8,7 @@ import { Edit, Visibility } from "@material-ui/icons";
 import FormPage from "../../pages/FormPage";
 import VehicleFormUpdate from "../forms/bookings/BookingFormUpdate";
 import * as reduxActions from "../../../actions";
-import { Action, Resource } from "../../../variables/enums";
+import { Action, Resource } from "../../../../shared/typings";
 import { api } from "../../../utils/helpers";
 import CardList from "../../presentational/display/CardList";
 import Can from "../layout/Can";

@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { Role as RoleEnum } from "../../variables/enums";
+import { Role as RoleEnum } from "../../../shared/typings";
 
 export { permission } from "../../variables/permissions";
 

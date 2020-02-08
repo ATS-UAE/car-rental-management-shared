@@ -10,17 +10,16 @@ import disallowGuests from "../middlewares/disallowGuests";
 import parseBody from "../middlewares/parseBody";
 import upload from "../middlewares/multerUpload";
 import deleteFileOnError from "../middlewares/deleteFileOnError";
-import db, {
+import db, { Vehicle as VehicleModel, Location } from "../models";
+import {
 	VehicleAttributes,
-	Vehicle as VehicleModel,
-	Location,
-	LocationAttributes
-} from "../models";
+	LocationAttributes,
+	Role
+} from "../../shared/typings";
 import { ResponseBuilder, getFileURL } from "../utils";
 import { Vehicle } from "../api";
 import { Vehicle as VehicleDS } from "../datasource"; // Deprecate
 import moment from "moment";
-import { Role } from "../variables/enums";
 
 const router = express.Router();
 router.use(requireLogin);

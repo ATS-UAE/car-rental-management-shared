@@ -5,7 +5,7 @@ import * as reduxActions from "../../../actions";
 import TableView from "../../presentational/forms/TableView";
 import VehicleForm from "../../presentational/forms/VehicleForm";
 import { api, apiErrorHandler } from "../../../utils/helpers";
-import { Resource, Action } from "../../../variables/enums";
+import { Resource, Action } from "../../../../shared/typings";
 import Can from "../layout/Can";
 
 function VehicleTableView({

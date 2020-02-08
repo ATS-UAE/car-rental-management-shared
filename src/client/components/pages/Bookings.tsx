@@ -1,7 +1,6 @@
-import React, { useEffect, Fragment, FC } from "react";
-import { connect } from "react-redux";
+import React, { useEffect, FC } from "react";
+import { connect, ResolveThunks, MapStateToProps } from "react-redux";
 import { compose } from "recompose";
-import { History } from "history";
 import { Switch, Route, RouteComponentProps } from "react-router";
 import {
 	withStyles,
@@ -13,10 +12,8 @@ import {
 } from "@material-ui/core";
 import classNames from "classnames";
 import * as actions from "../../actions";
-import { Role as RoleEnum } from "../../variables/enums";
-// import BookingFormCreateStepper from "../containers/forms/bookings/BookingFormCreateStepper";
+import { Role as RoleEnum } from "../../../shared/typings";
 import { BookingCreateFormStepper, Role } from "../containers";
-import BookingTableView from "../containers/display/BookingTableView";
 import {
 	BookingTable,
 	ModalConfirmDeleteBooking,
@@ -24,13 +21,20 @@ import {
 	ModalFormFinalizeBooking,
 	ModalConfirmPayBooking
 } from "../containers";
-import { Auth, WithServerResponse } from "../../typings/api";
-interface IBookingsPage extends RouteComponentProps, WithStyles<typeof styles> {
-	auth: WithServerResponse<Auth>;
-	history: History;
+import { ReduxState } from "../../reducers";
+
+interface BookingsStateProps {
+	auth: ReduxState["auth"];
 }
 
-const Bookings: FC<typeof actions & IBookingsPage> = ({
+type BookingsActionProps = ResolveThunks<typeof actions>;
+
+type Props = BookingsStateProps &
+	RouteComponentProps &
+	WithStyles<typeof styles> &
+	BookingsActionProps;
+
+const Bookings: FC<Props> = ({
 	classes,
 	auth,
 	fetchUsers,
@@ -118,9 +122,11 @@ const styles = (theme: Theme) =>
 		}
 	});
 
-const mapStateToProps = ({ auth }: Pick<IBookingsPage, "auth">) => ({ auth });
+const mapStateToProps: MapStateToProps<BookingsStateProps, {}, ReduxState> = ({
+	auth
+}) => ({ auth });
 
-export default compose<typeof actions & IBookingsPage, {}>(
+export default compose<Props, {}>(
 	withStyles(styles),
 	connect(mapStateToProps, actions)
 )(Bookings);

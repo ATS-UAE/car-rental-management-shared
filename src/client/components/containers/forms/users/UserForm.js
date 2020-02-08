@@ -5,7 +5,7 @@ import UserForm from "../../../presentational/forms/UserForm";
 import * as reduxActions from "../../../../actions";
 import { toTitleWords } from "../../../../utils/helpers";
 
-import { Role } from "../../../../variables/enums";
+import { Role } from "../../../../../shared/typings";
 
 function UserFormContainer({
 	onSubmit,

@@ -1,7 +1,7 @@
-import React, { FC, forwardRef } from "react";
-import { Column, Action, MaterialTableProps } from "material-table";
-import { MaterialTable, tableIcons } from ".";
-import { BookingType, BookingStatus, Role } from "../../variables/enums";
+import React, { FC } from "react";
+import { Column, MaterialTableProps } from "material-table";
+import { MaterialTable } from ".";
+import { BookingType, Role } from "../../../shared/typings";
 import {
 	Refresh,
 	ThumbUp,

@@ -1,14 +1,8 @@
 import { Op, FindOptions } from "sequelize";
 import _ from "lodash";
-import {
-	Vehicle as VehicleModel,
-	User,
-	Booking,
-	VehicleAttributes,
-	Category
-} from "../models";
+import { Vehicle as VehicleModel, User, Booking, Category } from "../models";
+import { VehicleAttributes, BookingStatus, Role } from "../../shared/typings";
 import { getBookingStatus } from "../utils";
-import { BookingStatus, Role } from "../variables/enums";
 import { InvalidPermissionException } from "./exceptions";
 import { Vehicle as VehicleValidators } from "./validators";
 import { ApiErrorHandler } from "./utils";

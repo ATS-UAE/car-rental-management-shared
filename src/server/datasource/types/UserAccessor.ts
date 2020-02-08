@@ -1,4 +1,4 @@
-import { UserAttributes } from "../../models";
+import { UserAttributes } from "../../../shared/typings";
 
 type UserAccessor = UserAttributes;
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { Button } from "@material-ui/core";
-import { BookingType } from "../../../../variables/enums";
+import { BookingType } from "../../../../../shared/typings";
 import * as reduxActions from "../../../../actions";
 import BookingFinalizeForm from "../../../presentational/forms/BookingFinalizeForm";
 import { api } from "../../../../utils/helpers";

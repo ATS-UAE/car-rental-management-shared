@@ -1,7 +1,7 @@
 import React, { FC } from "react";
 import { withStyles, createStyles, WithStyles, Theme } from "@material-ui/core";
 import { ClassNameMap } from "@material-ui/core/styles/withStyles";
-import { BookingType } from "../../variables/enums";
+import { BookingType } from "../../../shared/typings";
 import { CardList, CardListProps } from ".";
 import { toTitleWords } from "../../utils";
 

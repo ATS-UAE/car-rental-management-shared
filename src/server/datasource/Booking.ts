@@ -1,7 +1,7 @@
 import { Wialon } from "node-wialon";
 import { Op } from "sequelize";
 import DataSource from "./DataSource";
-import { Role, Operation, Resource } from "../variables/enums";
+import { Role, Operation, Resource } from "../../shared/typings";
 import UserAccessor from "./types/UserAccessor";
 import RBAC from "../utils/rbac";
 import {
@@ -9,9 +9,8 @@ import {
 	ResourceNotFoundException
 } from "../utils/exceptions";
 import { toMySQLDate, exceptFields } from "../utils";
-import { BookingType } from "../variables/enums";
+import { BookingType } from "../../shared/typings";
 import { User, Vehicle, Location } from "../models";
-import moment = require("moment");
 import { sendBookingNotification } from "../utils/mail";
 export default class Booking extends DataSource {
 	user: UserAccessor;

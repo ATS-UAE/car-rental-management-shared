@@ -1,7 +1,7 @@
 import { Handler } from "express";
 import { ResponseBuilder } from "../utils";
 import { RoleUtils } from "../utils";
-import { Role } from "../variables/enums";
+import { Role } from "../../shared/typings";
 
 export const requireRole = (role: Role | Role[]): Handler => (
 	req,

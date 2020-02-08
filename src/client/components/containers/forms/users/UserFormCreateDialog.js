@@ -3,7 +3,7 @@ import { compose } from "recompose";
 import { connect } from "react-redux";
 import { withRouter } from "react-router";
 import RBAC from "../../../../utils/rbac";
-import { Resource, Action } from "../../../../variables/enums";
+import { Resource, Action } from "../../../../../shared/typings";
 import * as reduxActions from "../../../../actions";
 import UserFormCreate from "./UserFormCreate";
 import Dialog from "../../../presentational/display/Dialog";

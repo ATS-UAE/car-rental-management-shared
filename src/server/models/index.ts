@@ -2,26 +2,7 @@ import { Sequelize } from "sequelize-typescript";
 import bcrypt from "bcryptjs";
 
 import config from "../config";
-import {
-	Role as RoleEnum,
-	BookingType as BookingTypeEnum,
-	BookingChargeUnit as BookingChargeUnitEnum
-} from "../variables/enums";
-import { convertSequelizeDatesToUnix } from "../utils";
-
-export * from "./Accident";
-export * from "./AccidentUserStatus";
-export * from "./Booking";
-export * from "./Category";
-export * from "./Client";
-export * from "./ClientLocation";
-export * from "./Location";
-export * from "./ReplaceVehicle";
-export * from "./User";
-export * from "./UserVehicleCategory";
-export * from "./Vehicle";
-export * from "./VehicleCategory";
-export * from "./VehicleIssue";
+import { Role as RoleEnum } from "../../shared/typings";
 
 import { Accident } from "./Accident";
 import { AccidentUserStatus } from "./AccidentUserStatus";
@@ -36,6 +17,20 @@ import { UserVehicleCategory } from "./UserVehicleCategory";
 import { Vehicle } from "./Vehicle";
 import { VehicleCategory } from "./VehicleCategory";
 import { VehicleIssue } from "./VehicleIssue";
+
+export * from "./Accident";
+export * from "./AccidentUserStatus";
+export * from "./Booking";
+export * from "./Category";
+export * from "./Client";
+export * from "./ClientLocation";
+export * from "./Location";
+export * from "./ReplaceVehicle";
+export * from "./User";
+export * from "./UserVehicleCategory";
+export * from "./Vehicle";
+export * from "./VehicleCategory";
+export * from "./VehicleIssue";
 
 const sequelize = new Sequelize(
 	config.database.name,

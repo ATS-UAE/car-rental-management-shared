@@ -1,5 +1,5 @@
 import { Category as CategoryModel, User } from "../models";
-import { Role } from "../variables/enums";
+import { Role } from "../../shared/typings";
 export class Category {
 	private constructor(public data: CategoryModel) {}
 

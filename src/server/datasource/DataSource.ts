@@ -1,6 +1,6 @@
 import UserAccessor from "./types/UserAccessor";
 import RBAC from "../utils/rbac";
-import { Operation, Resource } from "../variables/enums";
+import { Operation, Resource } from "../../shared/typings";
 
 export default abstract class DataSource {
 	constructor(

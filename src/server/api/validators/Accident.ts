@@ -1,7 +1,7 @@
 import * as yup from "yup";
 import { Op } from "sequelize";
-import { Booking, User, Vehicle } from "../../models";
-import { Role } from "../../variables/enums";
+import { User } from "../../models";
+import { Role } from "../../../shared/typings";
 import moment from "moment";
 
 export abstract class Accident {

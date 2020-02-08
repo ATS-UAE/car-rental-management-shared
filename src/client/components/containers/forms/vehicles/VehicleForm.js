@@ -4,7 +4,7 @@ import { Grid, Button } from "@material-ui/core";
 import VehicleForm from "../../../presentational/forms/VehicleForm";
 import * as actions from "../../../../actions";
 import api from "../../../../utils/helpers/api";
-import { BookingChargeUnit } from "../../../../variables/enums";
+import { BookingChargeUnit } from "../../../../../shared/typings";
 
 function VehicleFormContainer({
 	onSubmit,

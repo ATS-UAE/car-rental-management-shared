@@ -1,7 +1,7 @@
 import RBAC, { Role, Resource, Action } from "../../rbac";
-import * as enums from "../../variables/enums";
+import * as enums from "../../../shared/typings";
 
-const { READ, UPDATE, DELETE, CREATE } = enums.Action;
+const { READ, UPDATE, DELETE, CREATE } = enums.Operation;
 const accessControl = new RBAC("Car Booking");
 const masterRole = new Role(enums.Role.MASTER);
 const adminRole = new Role(enums.Role.ADMIN);

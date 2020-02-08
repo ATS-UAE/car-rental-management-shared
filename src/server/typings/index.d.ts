@@ -1,5 +1,3 @@
-export * from "./utils";
-
 export interface InviteToken {
 	clientId?: number;
 	email: string;

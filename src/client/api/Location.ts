@@ -1,5 +1,5 @@
 import { Api } from ".";
-import { ServerResponseMeta } from "../typings";
+import { ServerResponseMeta } from "../../shared/typings";
 
 export interface LocationAttributes {
 	id: number;

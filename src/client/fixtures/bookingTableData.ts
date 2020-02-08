@@ -1,5 +1,5 @@
 import moment from "moment";
-import { BookingType, BookingStatus } from "../variables/enums";
+import { BookingType, BookingStatus } from "../../shared/typings";
 import { BookingTableItemData } from "../components/presentational";
 
 export interface BookingTableTestItem extends BookingTableItemData {

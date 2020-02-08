@@ -1,11 +1,13 @@
 import React, { useEffect, FC, useState } from "react";
 import { connect } from "react-redux";
 import api from "../../../../utils/helpers/api";
-import { ReduxState } from "../../../../typings/redux";
-import { VehicleResponse } from "../../../../typings/api";
-import TransferList, {
-	TransferListProps
-} from "../../../presentational/display/TransferList";
+import { ReduxState } from "../../../../reducers";
+import {
+	VehicleServerResponseGet,
+	VehicleServerResponseGetAll,
+	ExtractServerResponseData
+} from "../../../../../shared/typings";
+import TransferList from "../../../presentational/display/TransferList";
 
 interface VehicleTransformListFormProps {
 	clientId: number;
@@ -21,14 +23,18 @@ const VehicleTransferListForm: FC<Props> = ({
 	clientId,
 	onSubmit
 }) => {
-	const [items, setItems] = useState<VehicleResponse[]>([]);
-	const [right, setRight] = useState<VehicleResponse[]>([]);
+	const [items, setItems] = useState<
+		ExtractServerResponseData<VehicleServerResponseGetAll>
+	>([]);
+	const [right, setRight] = useState<
+		ExtractServerResponseData<VehicleServerResponseGetAll>
+	>([]);
 	const [loading, setLoading] = useState<boolean>(false);
 
 	useEffect(() => {
 		if (vehicles && vehicles.data) {
-			const left: VehicleResponse[] = [];
-			const right: VehicleResponse[] = [];
+			const left: ExtractServerResponseData<VehicleServerResponseGetAll> = [];
+			const right: ExtractServerResponseData<VehicleServerResponseGetAll> = [];
 
 			for (const vehicle of vehicles.data) {
 				if (clientId === vehicle.clientId) {
@@ -43,12 +49,11 @@ const VehicleTransferListForm: FC<Props> = ({
 	}, [vehicles]);
 
 	return (
-		<TransferList<VehicleResponse>
+		<TransferList<ExtractServerResponseData<VehicleServerResponseGet>>
 			onSubmit={(e, data) => {
 				setLoading(true);
 				api
-					.updateClient({
-						id: clientId,
+					.updateClient(clientId, {
 						vehicles: data.map(value => value.id)
 					})
 					.then(() => {

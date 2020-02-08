@@ -1,6 +1,6 @@
 import * as yup from "yup";
 import { User as UserModel } from "../../models";
-import { Role } from "../../variables/enums";
+import { Role } from "../../../shared/typings";
 import { InviteToken } from "../../typings";
 
 export abstract class User {

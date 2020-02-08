@@ -8,7 +8,7 @@ import { DialogChildren } from "../../presentational/forms/ConfirmDialog";
 import UserForm from "../forms/users/UserForm";
 import UserFormUpdate from "../forms/users/UserFormUpdate";
 import * as reduxActions from "../../../actions";
-import { Resource, Action, Role } from "../../../variables/enums";
+import { Resource, Action, Role } from "../../../../shared/typings";
 import RBAC from "../../../utils/rbac";
 import { toTitleWords, api } from "../../../utils/helpers";
 

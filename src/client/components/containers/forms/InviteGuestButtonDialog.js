@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import GuestInvite from "../../presentational/forms/GuestInvite";
 import { Grid, Button } from "@material-ui/core";
 import { api, apiErrorHandler } from "../../../utils/helpers";
-import { Resource, Action } from "../../../variables/enums";
+import { Resource, Action } from "../../../../shared/typings";
 import DialogButton from "../../presentational/forms/DialogButton";
 
 export default function InviteGuestButtonDialog({ onSubmit }) {

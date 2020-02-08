@@ -21,7 +21,7 @@ import {
 	toTitleWords,
 	apiErrorHandler
 } from "../../../../utils/helpers";
-import { BookingType, Role } from "../../../../variables/enums";
+import { BookingType, Role } from "../../../../../shared/typings";
 import CardList from "../../../presentational/display/CardList";
 import LocationMapSelectForm from "../../../presentational/forms/LocationMapSelectForm";
 import BookingForm from "../../../presentational/forms/BookingForm";

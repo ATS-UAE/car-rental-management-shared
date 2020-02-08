@@ -1,6 +1,6 @@
 import React, { FC } from "react";
 import classNames from "classnames";
-import { useLocation, Route } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import {
 	Dialog,
 	Theme,

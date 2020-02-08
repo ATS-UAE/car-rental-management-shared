@@ -17,7 +17,7 @@ import { DialogChildren } from "../../presentational/forms/ConfirmDialog";
 import BookingFormCreateMaintenance from "../forms/bookings/BookingFormCreateMaintenance";
 import VehicleFormUpdate from "../forms/vehicles/VehicleFormUpdate";
 import * as reduxActions from "../../../actions";
-import { Action, Resource, Role as RoleEnum } from "../../../variables/enums";
+import { Action, Resource, Role as RoleEnum } from "../../../../shared/typings";
 import { api } from "../../../utils/helpers";
 import RBAC from "../../../utils/rbac";
 import CardList from "../../presentational/display/CardList";

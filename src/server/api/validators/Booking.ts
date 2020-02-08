@@ -5,10 +5,9 @@ import {
 	User,
 	Vehicle,
 	Booking as BookingModel,
-	ReplaceVehicle,
-	BookingAttributes
+	ReplaceVehicle
 } from "../../models";
-import { BookingType, Role } from "../../variables/enums";
+import { BookingAttributes, BookingType, Role } from "../../../shared/typings";
 import { stripField } from "./utils";
 import { isBookingTimeSlotTaken } from "../../utils";
 import { BookingCreateOptions, BookingUpdateOptions } from "../Booking";
@@ -17,9 +16,12 @@ import { Validator } from ".";
 
 type ValidatorParameters = Parameters<typeof Booking.getValidator>;
 
-interface BookingValidationData extends Omit<BookingAttributes, "from" | "to"> {
+interface BookingValidationData
+	extends Omit<BookingAttributes, "from" | "to" | "createdAt" | "updatedAt"> {
 	from: number | Date;
 	to: number | Date;
+	createdAt: number | Date;
+	createdat: number | Date;
 }
 
 type BookingValidatorContextWithSchema = [

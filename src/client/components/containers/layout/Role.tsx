@@ -1,7 +1,7 @@
 import React, { FC, ReactNode } from "react";
 import { connect, MapStateToProps } from "react-redux";
-import { Role as RoleEnum } from "../../../variables/enums";
-import { ReduxState } from "../../../typings";
+import { Role as RoleEnum } from "../../../../shared/typings";
+import { ReduxState } from "../../../reducers";
 
 export { permission } from "../../../variables/permissions";
 

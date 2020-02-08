@@ -19,8 +19,8 @@ import {
 	FieldSelectItems
 } from "../presentational";
 import _ from "lodash";
-import { ReduxState } from "../../typings";
-import { Role, BookingChargeUnit } from "../../variables/enums";
+import { ReduxState } from "../../reducers";
+import { Role, BookingChargeUnit } from "../../../shared/typings";
 import { RoleUtils } from "../../utils";
 import { Booking, ServerQueryError } from "../../api";
 

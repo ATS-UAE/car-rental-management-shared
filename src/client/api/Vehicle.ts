@@ -1,5 +1,5 @@
-import { BookingChargeUnit } from "../variables/enums";
-import { PartialExcept, ServerResponseMeta } from "../typings";
+import { BookingChargeUnit } from "../../shared/typings";
+import { PartialExcept, ServerResponseMeta } from "../../shared/typings";
 import { Api, LocationAttributes, Location } from ".";
 
 export interface VehicleAttributes {

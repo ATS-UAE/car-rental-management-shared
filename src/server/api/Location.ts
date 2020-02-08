@@ -1,5 +1,6 @@
-import { Vehicle as VehicleModel, LocationAttributes } from "../models";
+import { Vehicle as VehicleModel } from "../models";
 import { Vehicle, UseParameters } from ".";
+import { LocationAttributes } from "../../shared/typings";
 
 export type CreateLocationOptions = UseParameters<
 	LocationAttributes,

@@ -4,7 +4,7 @@ import { Button } from "@material-ui/core";
 import UserFormCreate from "./UserFormCreate";
 import FormPage from "../../../pages/FormPage";
 import Can from "../../layout/Can";
-import { Action, Resource, Role } from "../../../../variables/enums";
+import { Action, Resource, Role } from "../../../../../shared/typings";
 
 function UserFormCreateButtonDialog({ history }) {
 	return (

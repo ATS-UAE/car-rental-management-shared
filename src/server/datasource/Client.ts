@@ -2,7 +2,7 @@ import { Op } from "sequelize";
 import _ from "lodash";
 import DataSource from "./DataSource";
 import { Vehicle } from "../models";
-import { Role, Operation, Resource } from "../variables/enums";
+import { Role, Operation, Resource } from "../../shared/typings";
 import UserAccessor from "./types/UserAccessor";
 import RBAC from "../utils/rbac";
 import {

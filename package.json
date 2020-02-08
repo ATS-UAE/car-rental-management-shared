@@ -147,9 +147,6 @@
 		"server:prod:db:migrate": "npm run server:build:sequelize && npx sequelize-cli db:migrate --env production --config ./sequelize/config.json --migrations-path ./sequelize/build/migrations --debug",
 		"server:prod:db:migrate:undo": "npm run server:build:sequelize && npx sequelize-cli db:migrate --env production --config ./sequelize/config.json --migrations-path ./sequelize/build/migrations --debug"
 	},
-	"eslintConfig": {
-		"extends": "react-app"
-	},
 	"browserslist": {
 		"production": [
 			">0.2%",
@@ -170,7 +167,7 @@
 		"enzyme": "^3.11.0",
 		"enzyme-adapter-react-16": "^1.15.2",
 		"jest": "^24.9.0",
-		"jest-extended": "^0.11.2",
+		"jest-extended": "^0.11.5",
 		"nodemon": "^2.0.2",
 		"source-map-loader": "^0.2.4",
 		"ts-jest": "^24.3.0",

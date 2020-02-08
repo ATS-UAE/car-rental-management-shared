@@ -3,8 +3,7 @@ import { connect, MapStateToProps } from "react-redux";
 import moment from "moment";
 import { BarChart, BarChartProps } from "../presentational";
 import { getBookingStatus, toTitleWords } from "../../utils/helpers";
-import { ReduxState, FlattenIfArray } from "../../typings";
-import { BookingStatus } from "../../variables/enums";
+import { ReduxState } from "../../reducers";
 
 interface BookingDashBoardStateProps {
 	bookings: ReduxState["bookings"];

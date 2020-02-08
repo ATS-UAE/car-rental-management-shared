@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import { compose } from "recompose";
 import * as reduxActions from "../../../actions";
 import { api } from "../../../utils/helpers";
-import { ReduxState } from "../../../typings";
+import { ReduxState } from "../../../reducers";
 import MaterialTable, { Column, Icons } from "material-table";
 import AddBox from "@material-ui/icons/AddBox";
 import ArrowUpward from "@material-ui/icons/ArrowUpward";
@@ -21,7 +21,7 @@ import Remove from "@material-ui/icons/Remove";
 import SaveAlt from "@material-ui/icons/SaveAlt";
 import Search from "@material-ui/icons/Search";
 import ViewColumn from "@material-ui/icons/ViewColumn";
-import { Role } from "../../../variables/enums";
+import { Role } from "../../../../shared/typings";
 
 const tableIcons: Icons = {
 	Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),

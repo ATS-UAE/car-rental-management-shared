@@ -21,7 +21,7 @@ import {
 	VehicleCategory,
 	Accident
 } from ".";
-import { BookingChargeUnit } from "../variables/enums";
+import { BookingChargeUnit } from "../../shared/typings";
 import { VehicleAttributes } from "../../shared/typings";
 
 @Table

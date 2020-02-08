@@ -7,7 +7,7 @@ import {
 	BookingTabeleRowData
 } from ".";
 import { shallow } from "enzyme";
-import { Role, BookingType, BookingStatus } from "../../variables/enums";
+import { Role, BookingType, BookingStatus } from "../../../shared/typings";
 import { BOOKING_TABLE_DATA } from "../../fixtures";
 import {
 	getBookingTableActions,

@@ -4,7 +4,7 @@ import moment from "moment";
 import BookingForm from "./BookingForm";
 import * as reduxActions from "../../../../actions";
 import { api, apiErrorHandler } from "../../../../utils/helpers";
-import { BookingType } from "../../../../variables/enums";
+import { BookingType } from "../../../../../shared/typings";
 
 function BookingFromCreate({
 	fetchBookings,

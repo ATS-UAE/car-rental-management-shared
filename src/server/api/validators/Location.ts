@@ -1,6 +1,6 @@
 import * as yup from "yup";
 import { User } from "../../models";
-import { Role } from "../../variables/enums";
+import { Role } from "../../../shared/typings";
 
 export abstract class Location {
 	static create = yup

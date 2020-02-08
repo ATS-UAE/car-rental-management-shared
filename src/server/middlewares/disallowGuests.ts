@@ -1,4 +1,4 @@
-import { Role } from "../variables/enums";
+import { Role } from "../../shared/typings";
 import { ResponseBuilder } from "../utils";
 
 export default (req, res, next) => {

@@ -1,7 +1,11 @@
 import { AxiosError } from "axios";
 import moment from "moment";
-import BookingStatus from "../../variables/enums/BookingStatus";
-import { Booking } from "../../typings/api";
+import { BookingStatus } from "../../../shared/typings";
+import {
+	BookingAttributes,
+	DatePropsToUnix,
+	ExtractServerResponseData
+} from "../../../shared/typings";
 import { BookingGetResponseItem } from "../../api";
 export { default as CancellablePromise } from "./CancellablePromise";
 export { default as api } from "./api";
@@ -27,7 +31,7 @@ export const hasActiveBooking = (
 };
 
 export const isVehicleAvailableToBook = (
-	bookings: BookingGetResponseItem[]
+	bookings: ExtractServerResponseData<BookingGetResponseItem>[]
 ): boolean => {
 	for (const booking of bookings) {
 		let status = getBookingStatus(booking);
@@ -44,7 +48,7 @@ export const isVehicleAvailableToBook = (
 };
 
 export const isBookingTimeSlotTaken = (
-	vehicleBookings: Array<Booking>,
+	vehicleBookings: Array<DatePropsToUnix<BookingAttributes>>,
 	from: number,
 	to: number,
 	bookingId: number

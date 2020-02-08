@@ -14,9 +14,9 @@ import {
 } from "../presentational";
 import { Booking, LocationAttributes, Location, Vehicle } from "../../api";
 import { ResolveThunks, connect, MapStateToProps } from "react-redux";
-import { ReduxState } from "../../typings";
+import { ReduxState } from "../../reducers";
 import * as actions from "../../actions";
-import { Role } from "../../variables/enums";
+import { Role } from "../../../shared/typings";
 import moment from "moment";
 
 interface ModalFormBookingUpdateStateProps {

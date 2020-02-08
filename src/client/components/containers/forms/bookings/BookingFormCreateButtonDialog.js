@@ -4,7 +4,7 @@ import BookingFormCreate from "./BookingFormCreate";
 import { Button } from "@material-ui/core";
 import FormPage from "../../../pages/FormPage";
 import Can from "../../layout/Can";
-import { Resource, Action } from "../../../../variables/enums";
+import { Resource, Action } from "../../../../../shared/typings";
 
 function BookingCreateButtonDialog({ history }) {
 	return (

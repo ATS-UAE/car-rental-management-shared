@@ -15,9 +15,23 @@ import Role from "./enums/Role";
 
 import DynamicImport from "../components/containers/layout/DynamicImport";
 import { Loading } from "../components/presentational";
-import { IPage } from "../typings";
 
-const pages: IPage[] = [
+export interface Page {
+	id: string;
+	path: string;
+	component: (props: any) => React.ReactNode;
+	exact?: boolean;
+	requireLogin?: boolean;
+	sidebar?: {
+		title: string;
+		icon: React.ElementType;
+		location: "top" | "bottom";
+	};
+	access?: Role[];
+	wrapPaper?: boolean;
+}
+
+const pages: Page[] = [
 	{
 		id: "Home",
 		path: "/",

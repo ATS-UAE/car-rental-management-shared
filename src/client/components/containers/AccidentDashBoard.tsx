@@ -2,7 +2,7 @@ import React, { FC } from "react";
 import { connect, MapStateToProps } from "react-redux";
 import moment from "moment";
 import { BarChart, BarChartProps } from "../presentational";
-import { ReduxState } from "../../typings";
+import { ReduxState } from "../../reducers";
 
 interface AccidentDashBoardStateProps {
 	accidents: ReduxState["accidents"];

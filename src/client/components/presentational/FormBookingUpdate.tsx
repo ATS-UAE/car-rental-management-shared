@@ -12,7 +12,7 @@ import {
 	FormProps,
 	FormError
 } from ".";
-import { BookingType } from "../../variables/enums";
+import { BookingType } from "../../../shared/typings";
 import { toTitleWords } from "../../utils";
 
 export type FormBookingUpdateValues = Partial<{

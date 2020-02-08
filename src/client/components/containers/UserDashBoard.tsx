@@ -1,8 +1,8 @@
 import React, { FC } from "react";
 import { connect, MapStateToProps } from "react-redux";
 import { BarChart } from "../presentational";
-import { ReduxState } from "../../typings";
-import { Role } from "../../variables/enums";
+import { ReduxState } from "../../reducers";
+import { Role } from "../../../shared/typings";
 
 interface UserDashBoardStateProps {
 	users: ReduxState["users"];

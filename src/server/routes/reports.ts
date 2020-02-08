@@ -12,7 +12,7 @@ import {
 	Category
 } from "../models";
 import { ResponseBuilder, RoleUtils } from "../utils";
-import { Role } from "../variables/enums";
+import { Role } from "../../shared/typings";
 
 const router = express.Router();
 

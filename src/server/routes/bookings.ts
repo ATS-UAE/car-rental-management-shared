@@ -1,7 +1,7 @@
 import express from "express";
 import requireLogin from "../middlewares/requireLogin";
 import { Booking, BookingCreateOptions, BookingUpdateOptions } from "../api";
-import { BookingAttributes } from "../models";
+import { BookingAttributes } from "../../shared/typings";
 import { ResponseBuilder } from "../utils";
 
 const router = express.Router();

@@ -1,38 +1,14 @@
 import { Api } from ".";
-import { PartialExcept, ServerResponseMeta } from "../typings";
-import { BookingType, Role } from "../variables/enums";
-
-interface BookingAttributes {
-	id: number;
-	paid: boolean;
-	amount: number | null;
-	from: number;
-	to: number;
-	approved: boolean | null;
-	finished: boolean;
-	startMileage: number | null;
-	endMileage: number | null;
-	startFuel: number | null;
-	endFuel: number | null;
-	userId: number;
-	vehicleId: number;
-	bookingType: BookingType;
-	replaceVehicleId: number | null;
-	vehicle: {
-		id: number;
-		vin: string;
-		plateNumber: string;
-		brand: string;
-		model: string;
-	};
-
-	readonly createdAt: number;
-	readonly updatedAt: number;
-}
+import {
+	ServerResponseMeta,
+	ExtractServerResponseData,
+	BookingServerResponseGet
+} from "../../shared/typings";
+import { Role } from "../../shared/typings";
 
 export interface BookingCreateParams
 	extends Omit<
-		BookingAttributes,
+		ExtractServerResponseData<BookingServerResponseGet>,
 		| "id"
 		| "paid"
 		| "amount"
@@ -56,9 +32,13 @@ export interface BookingCreateParams
 	};
 }
 
-export type BookingUpdateParams = Partial<Omit<BookingAttributes, "id">>;
+export type BookingUpdateParams = Partial<
+	Omit<ExtractServerResponseData<BookingServerResponseGet>, "id">
+>;
 
-export type BookingGetResponseItem = BookingAttributes;
+export type BookingGetResponseItem = ExtractServerResponseData<
+	BookingServerResponseGet
+>;
 
 export class Booking {
 	constructor(
@@ -67,7 +47,7 @@ export class Booking {
 	) {}
 
 	public static fromId = (id: number) =>
-		Api.execute<BookingAttributes>(
+		Api.execute<ExtractServerResponseData<BookingServerResponseGet>>(
 			"get",
 			`/api/carbooking/bookings/${id}`
 		).then(res => {
@@ -76,7 +56,7 @@ export class Booking {
 		});
 
 	public reload = () =>
-		Api.execute<BookingAttributes>(
+		Api.execute<ExtractServerResponseData<BookingServerResponseGet>>(
 			"get",
 			`/api/carbooking/bookings/${this.data.id}`
 		).then(res => {
@@ -87,7 +67,7 @@ export class Booking {
 		});
 
 	public static fetch = (id: number) =>
-		Api.execute<BookingAttributes>(
+		Api.execute<ExtractServerResponseData<BookingServerResponseGet>>(
 			"get",
 			`/api/carbooking/bookings/${id}`
 		).then(res => {
@@ -96,31 +76,31 @@ export class Booking {
 		});
 
 	public static create = (params: BookingCreateParams) =>
-		Api.execute<BookingAttributes, BookingCreateParams>(
-			"post",
-			`/api/carbooking/bookings`,
-			{
-				body: params
-			}
-		).then(res => {
+		Api.execute<
+			ExtractServerResponseData<BookingServerResponseGet>,
+			BookingCreateParams
+		>("post", `/api/carbooking/bookings`, {
+			body: params
+		}).then(res => {
 			const { data, ...meta } = res;
 			return new Booking(res.data, meta);
 		});
 
 	public static fetchAll = () =>
-		Api.execute<BookingAttributes[]>("get", "/api/carbooking/bookings").then(
-			res => {
-				const { data, ...meta } = res;
-				return data.map(b => new Booking(b, meta));
-			}
-		);
+		Api.execute<ExtractServerResponseData<BookingServerResponseGet>[]>(
+			"get",
+			"/api/carbooking/bookings"
+		).then(res => {
+			const { data, ...meta } = res;
+			return data.map(b => new Booking(b, meta));
+		});
 
 	public canDelete = (role: Role) => {
 		return this.data.approved === null || role === Role.ADMIN;
 	};
 
 	public static delete = (id: number) =>
-		Api.execute<BookingAttributes>(
+		Api.execute<ExtractServerResponseData<BookingServerResponseGet>>(
 			"delete",
 			`/api/carbooking/bookings/${id}`
 		).then(res => {
@@ -138,11 +118,10 @@ export class Booking {
 	public static pay = (id: number) => Booking.update(id, { paid: true });
 
 	public static update = (id: number, params: BookingUpdateParams) =>
-		Api.execute<BookingAttributes, BookingUpdateParams>(
-			"patch",
-			`/api/carbooking/bookings/${id}`,
-			{ body: params }
-		).then(res => {
+		Api.execute<
+			ExtractServerResponseData<BookingServerResponseGet>,
+			BookingUpdateParams
+		>("patch", `/api/carbooking/bookings/${id}`, { body: params }).then(res => {
 			const { data, ...meta } = res;
 			return new Booking(data, meta);
 		});
@@ -150,11 +129,12 @@ export class Booking {
 	public finalize = (amount: number) => this.update({ amount });
 
 	public update = (params: BookingUpdateParams) =>
-		Api.execute<BookingAttributes, BookingUpdateParams>(
-			"patch",
-			`/api/carbooking/bookings/${this.data.id}`,
-			{ body: params }
-		).then(res => {
+		Api.execute<
+			ExtractServerResponseData<BookingServerResponseGet>,
+			BookingUpdateParams
+		>("patch", `/api/carbooking/bookings/${this.data.id}`, {
+			body: params
+		}).then(res => {
 			const { data, ...meta } = res;
 			this.data = { ...this.data, ...data };
 			this.meta = meta;

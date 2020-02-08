@@ -1,10 +1,9 @@
 import React, { FC } from "react";
 import { connect, MapStateToProps } from "react-redux";
-import moment from "moment";
 import { BarChart } from "../presentational";
 
 import { isVehicleAvailableToBook } from "../../utils";
-import { ReduxState } from "../../typings";
+import { ReduxState } from "../../reducers";
 
 interface VehicleDashBoardStateProps {
 	vehicles: ReduxState["vehicles"];

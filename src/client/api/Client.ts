@@ -1,14 +1,12 @@
-import { Api } from ".";
-import { ServerResponseMeta } from "../typings";
-
-export interface ClientAttributes {
-	id: number;
-	name: string;
-
-	readonly createdAt: Date;
-	readonly updatedAt: Date;
-}
+import {
+	ServerResponseMeta,
+	ExtractServerResponseData,
+	ClientServerResponseGet
+} from "../../shared/typings";
 
 export class Client {
-	constructor(data: ClientAttributes, meta: ServerResponseMeta) {}
+	constructor(
+		public data: ExtractServerResponseData<ClientServerResponseGet>,
+		public meta: ServerResponseMeta
+	) {}
 }

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import Select from "../../presentational/inputs/Select";
 import * as actions from "../../../actions";
-import { Role } from "../../../variables/enums";
+import { Role } from "../../../../shared/typings";
 function RoleSelect({ value, required, fullWidth, onChange }) {
 	const [stateValue, setStateValue] = useState("");
 

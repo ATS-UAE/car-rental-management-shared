@@ -9,7 +9,7 @@ import {
 	hasActiveBooking,
 	isBookingTimeSlotTaken
 } from "../../../../utils/helpers";
-import { BookingType } from "../../../../variables/enums";
+import { BookingType } from "../../../../../shared/typings";
 
 function BookingFormContainer({
 	locations,

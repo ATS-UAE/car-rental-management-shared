@@ -11,7 +11,7 @@ import {
 	UpdatedAt
 } from "sequelize-typescript";
 import { User, Vehicle, ReplaceVehicle } from ".";
-import { BookingType } from "../variables/enums";
+import { BookingType } from "../../shared/typings";
 import { BookingAttributes } from "../../shared/typings";
 
 @Table
@@ -67,10 +67,10 @@ export class Booking extends Model<Booking> implements BookingAttributes {
 	public replaceVehicleId: number | null;
 
 	@CreatedAt
-	public readonly createdAt: number;
+	public readonly createdAt: Date;
 
 	@UpdatedAt
-	public readonly updatedAt: number;
+	public readonly updatedAt: Date;
 
 	@BelongsTo(() => User)
 	public readonly user: User;

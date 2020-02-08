@@ -1,5 +1,5 @@
 import DataSource from "./DataSource";
-import { Role, Operation, Resource } from "../variables/enums";
+import { Role, Operation, Resource } from "../../shared/typings";
 import UserAccessor from "./types/UserAccessor";
 import RBAC from "../utils/rbac";
 import {

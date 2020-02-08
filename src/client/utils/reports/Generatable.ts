@@ -1,6 +1,6 @@
-import { ExtractServerResponseData, FlattenIfArray } from "../../typings";
+import { FlattenIfArray } from "../../../shared/typings";
 import { Column } from "material-table";
-import { Role } from "../../variables/enums";
+import { Role } from "../../../shared/typings";
 
 export interface Generatable<T extends Object> {
 	title: string;

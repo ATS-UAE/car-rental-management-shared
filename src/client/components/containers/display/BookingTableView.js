@@ -15,7 +15,7 @@ import {
 	getBookingStatus,
 	getRelatedDataById
 } from "../../../utils/helpers";
-import { Resource, Action, Role, BookingType } from "../../../variables/enums";
+import { Resource, Action, Role, BookingType } from "../../../../shared/typings";
 import RBAC from "../../../utils/rbac";
 import BookingFinalizeForm from "../forms/bookings/BookingFinalizeForm";
 import AddBox from "@material-ui/icons/AddBox";

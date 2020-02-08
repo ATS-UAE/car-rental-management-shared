@@ -6,7 +6,7 @@ import { Button } from "@material-ui/core";
 import AccidentFormCreate from "./AccidentFormCreate";
 import FormPage from "../../../pages/FormPage";
 import Can from "../../layout/Can";
-import { Resource, Action } from "../../../../variables/enums";
+import { Resource, Action } from "../../../../../shared/typings";
 
 function AccidentFormCreateButtonDialog({ history, classes }) {
 	return (

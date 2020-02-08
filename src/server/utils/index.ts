@@ -5,9 +5,7 @@ import _ from "lodash";
 import { Moment } from "moment";
 import { URL } from "url";
 
-import { BookingStatus } from "../variables/enums";
-import { ExtractArray } from "../typings";
-import { Booking } from "../models";
+import { FlattenIfArray,BookingStatus } from "../../shared/typings";
 
 export { default as ResponseBuilder } from "./ResponseBuilder";
 
@@ -23,7 +21,7 @@ export const pickAndMerge = <
 	return { ...obj1, ..._.pick(obj2, fields) };
 };
 
-export const getArray = <T>(array: T): ExtractArray<T>[] => {
+export const getArray = <T>(array: T): FlattenIfArray<T>[] => {
 	return array instanceof Array ? array : [];
 };
 

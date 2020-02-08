@@ -1,4 +1,4 @@
-import { Role } from "../variables/enums";
+import { Role } from "../../shared/typings";
 
 export class RoleUtils {
 	/**
