@@ -7,17 +7,8 @@ import {
 	CreatedAt,
 	UpdatedAt
 } from "sequelize-typescript";
+import { AccidentUserStatusAttributes } from "../../shared/typings";
 import { Accident, User } from ".";
-
-export interface AccidentUserStatusAttributes {
-	read: boolean;
-	deleted: boolean;
-	accidentId: number;
-	userId: number;
-
-	readonly createdAt: Date;
-	readonly updatedAt: Date;
-}
 
 @Table
 export class AccidentUserStatus extends Model<AccidentUserStatus>

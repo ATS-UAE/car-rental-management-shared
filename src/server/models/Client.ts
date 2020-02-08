@@ -10,14 +10,7 @@ import {
 	HasMany
 } from "sequelize-typescript";
 import { User, Vehicle, Category, Location, ClientLocation } from ".";
-
-export interface ClientAttributes {
-	id: number;
-	name: string;
-
-	readonly createdAt: Date;
-	readonly updatedAt: Date;
-}
+import { ClientAttributes } from "../../shared/typings";
 
 @Table
 export class Client extends Model<Client> implements ClientAttributes {

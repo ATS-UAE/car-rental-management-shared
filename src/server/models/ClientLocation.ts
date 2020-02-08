@@ -8,14 +8,7 @@ import {
 	UpdatedAt
 } from "sequelize-typescript";
 import { Client, Location } from ".";
-
-export interface ClientLocationAttributes {
-	locationId: number;
-	clientId: number;
-
-	readonly createdAt: Date;
-	readonly updatedAt: Date;
-}
+import { ClientLocationAttributes } from "../../shared/typings";
 
 @Table
 export class ClientLocation extends Model<ClientLocation>

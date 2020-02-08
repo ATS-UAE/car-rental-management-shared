@@ -7,20 +7,10 @@ import {
 	ForeignKey,
 	BelongsTo,
 	CreatedAt,
-	UpdatedAt,
-	HasMany,
-	BelongsToMany
+	UpdatedAt
 } from "sequelize-typescript";
 import { Vehicle } from ".";
-
-export interface VehicleIssueAttributes {
-	id: number;
-	message: string;
-	vehicleId: number;
-
-	readonly createdAt: Date;
-	readonly updatedAt: Date;
-}
+import { VehicleIssueAttributes } from "../../shared/typings";
 
 @Table
 export class VehicleIssue extends Model<VehicleIssue>

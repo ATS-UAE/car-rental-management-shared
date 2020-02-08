@@ -12,27 +12,7 @@ import {
 } from "sequelize-typescript";
 import { User, Vehicle, ReplaceVehicle } from ".";
 import { BookingType } from "../variables/enums";
-
-export interface BookingAttributes {
-	id: number;
-	paid: boolean;
-	amount: number | null;
-	from: Date;
-	to: Date;
-	approved: boolean | null;
-	finished: boolean;
-	startMileage: number | null;
-	endMileage: number | null;
-	startFuel: number | null;
-	endFuel: number | null;
-	userId: number;
-	vehicleId: number;
-	bookingType: BookingType;
-	replaceVehicleId: number | null;
-
-	readonly createdAt: number;
-	readonly updatedAt: number;
-}
+import { BookingAttributes } from "../../shared/typings";
 
 @Table
 export class Booking extends Model<Booking> implements BookingAttributes {

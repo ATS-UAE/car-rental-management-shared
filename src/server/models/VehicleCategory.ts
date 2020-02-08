@@ -8,14 +8,7 @@ import {
 	UpdatedAt
 } from "sequelize-typescript";
 import { Category, Vehicle } from ".";
-
-export interface VehicleCategoryAttributes {
-	categoryId: number;
-	vehicleId: number;
-
-	readonly createdAt: Date;
-	readonly updatedAt: Date;
-}
+import { VehicleCategoryAttributes } from "../../shared/typings";
 
 @Table
 export class VehicleCategory extends Model<VehicleCategory>

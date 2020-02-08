@@ -21,30 +21,7 @@ import {
 	Booking
 } from "./";
 import { Role } from "../variables/enums";
-
-export interface UserAttributes {
-	id: number;
-	username: string;
-	firstName: string;
-	lastName: string;
-	email: string;
-	password: string;
-	mobileNumber: string;
-	contractNo: string | null;
-	objectNo: string | null;
-	lastLogin: string | null;
-	userImageSrc: string | null;
-	licenseImageSrc: string | null;
-	blocked: boolean;
-	emailConfirmed: boolean;
-	clientId: number | null;
-	role: Role;
-	userCreatorId: number;
-	timeZone: string;
-
-	readonly createdAt: Date;
-	readonly updatedAt: Date;
-}
+import { UserAttributes } from "../../shared/typings";
 
 @Table
 export class User extends Model<User> implements UserAttributes {

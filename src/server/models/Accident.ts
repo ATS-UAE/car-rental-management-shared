@@ -11,22 +11,8 @@ import {
 	CreatedAt,
 	UpdatedAt
 } from "sequelize-typescript";
+import { AccidentAttributes } from "../../shared/typings";
 import { User, Vehicle, Booking, AccidentUserStatus } from ".";
-
-export interface AccidentAttributes {
-	id: number;
-	message: string;
-	accidentImageSrc: string;
-	accidentVideoSrc: string;
-	lat: number;
-	lng: number;
-	userId: number;
-	vehicleId: number;
-	bookingId: number;
-
-	readonly createdAt: Date;
-	readonly updatedAt: Date;
-}
 
 @Table
 export class Accident extends Model<Accident> implements AccidentAttributes {

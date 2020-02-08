@@ -10,18 +10,7 @@ import {
 	HasMany
 } from "sequelize-typescript";
 import { Vehicle, Client, ClientLocation } from ".";
-
-export interface LocationAttributes {
-	id: number;
-	name: string;
-	lat: number;
-	lng: number;
-	address: string;
-	locationImageSrc: string | null;
-
-	readonly createdAt: Date;
-	readonly updatedAt: Date;
-}
+import { LocationAttributes } from "../../shared/typings";
 
 @Table
 export class Location extends Model<Location> implements LocationAttributes {

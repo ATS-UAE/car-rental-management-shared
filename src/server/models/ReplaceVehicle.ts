@@ -9,17 +9,7 @@ import {
 	HasOne
 } from "sequelize-typescript";
 import { Booking } from ".";
-
-export interface ReplaceVehicleAttributes {
-	id: number;
-	plateNumber: string;
-	brand: string;
-	model: string;
-	vin: string;
-
-	readonly createdAt: Date;
-	readonly updatedAt: Date;
-}
+import { ReplaceVehicleAttributes } from "../../shared/typings";
 
 @Table
 export class ReplaceVehicle extends Model<ReplaceVehicle>
