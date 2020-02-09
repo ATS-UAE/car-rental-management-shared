@@ -2,9 +2,9 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "Server",
+			"label": "Client Typing Check",
 			"command": "tsc",
-			"args": ["--noEmit", "-p", "server", "-w"],
+			"args": ["--noEmit", "-p", "src/client/tsconfig.json", "-w"],
 			"type": "shell",
 			"presentation": {
 				"echo": true,
@@ -17,9 +17,9 @@
 			"problemMatcher": "$tsc"
 		},
 		{
-			"label": "Client",
+			"label": "Server Typing Check",
 			"command": "tsc",
-			"args": ["--noEmit", "-p", "client", "-w"],
+			"args": ["--noEmit", "-p", "src/server/tsconfig.json", "-w"],
 			"type": "shell",
 			"presentation": {
 				"echo": true,
