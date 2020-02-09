@@ -15,5 +15,6 @@
 		"noEmit": true,
 		"noImplicitAny": false,
 		"jsx": "react"
-	}
+	},
+	"include": ["../client", "../shared"]
 }

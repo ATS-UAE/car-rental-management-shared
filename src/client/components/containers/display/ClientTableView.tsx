@@ -73,7 +73,7 @@ interface ClientTableViewState {
 }
 
 type Props = {
-	location: Location;
+	location: Location<{ modal?: boolean }>;
 	history: History;
 	clients: ReduxState["clients"];
 } & ClientTableViewProps &

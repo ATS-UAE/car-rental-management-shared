@@ -56,28 +56,28 @@ const Bookings: FC<Props> = ({
 		<Paper className={classNames(classes.root, classes.items)}>
 			<Route
 				path="/bookings/delete/:id"
-				render={props => <ModalConfirmDeleteBooking {...props} />}
+				render={({ history, match }) => <ModalConfirmDeleteBooking />}
 			/>
 			<Route
 				path="/bookings/edit/:id"
-				render={props => <ModalFormBookingUpdate {...props} />}
+				render={({ history, match }) => <ModalFormBookingUpdate />}
 			/>
 			<Route
 				path="/bookings/pay/:id"
-				render={props => <ModalConfirmPayBooking {...props} />}
+				render={({ history, match }) => <ModalConfirmPayBooking />}
 			/>
 			<Route
 				path="/bookings/finalize/:id"
-				render={props => <ModalFormFinalizeBooking {...props} />}
+				render={({ history, match }) => <ModalFormFinalizeBooking />}
 			/>
 			<Switch>
 				<Route
 					path="/bookings/new"
-					render={props => <BookingCreateFormStepper {...props} />}
+					render={({ history, match }) => <BookingCreateFormStepper />}
 				/>
 				<Route
 					path="/bookings"
-					render={props => (
+					render={({ history, match }) => (
 						<div className={classes.items}>
 							<Role excludes={[RoleEnum.KEY_MANAGER]}>
 								<Button
@@ -88,7 +88,7 @@ const Bookings: FC<Props> = ({
 									Book a vehicle
 								</Button>
 							</Role>
-							<BookingTable {...props} />
+							<BookingTable />
 						</div>
 					)}
 				/>

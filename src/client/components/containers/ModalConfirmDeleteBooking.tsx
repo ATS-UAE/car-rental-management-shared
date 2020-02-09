@@ -1,6 +1,7 @@
 import React, { FC, useState, useEffect } from "react";
 import { connect, ResolveThunks } from "react-redux";
-import { RouteChildrenProps } from "react-router";
+import { compose } from "recompose";
+import { RouteChildrenProps, withRouter } from "react-router";
 import { ModalConfirm } from "../presentational";
 import { Booking } from "../../api";
 import * as actions from "../../actions";
@@ -47,7 +48,7 @@ const ModalConfirmDeleteBookingBase: FC<Props> = ({
 	);
 };
 
-export const ModalConfirmDeleteBooking = connect(
-	null,
-	actions
+export const ModalConfirmDeleteBooking = compose<Props, {}>(
+	connect(null, actions),
+	withRouter
 )(ModalConfirmDeleteBookingBase);

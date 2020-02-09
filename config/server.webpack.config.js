@@ -19,6 +19,10 @@ module.exports = {
 			}
 		]
 	},
+	optimization: {
+		// Code minification breaks sequelize in production mode.
+		minimize: false
+	},
 	plugins: [
 		new CleanWebpackPlugin(),
 		new webpack.ContextReplacementPlugin(

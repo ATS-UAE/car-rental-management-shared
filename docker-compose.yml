@@ -9,10 +9,12 @@ services:
   api:
     restart: always
     build:
-      context: ./server
+      dockerfile: Dockerfile.server
+      context: .
     volumes:
       - /var/www/static:/var/www/static
   client:
     restart: always
     build:
-      context: ./client
+      dockerfile: Dockerfile.client
+      context: .

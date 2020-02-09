@@ -1,5 +1,4 @@
 import React, { FC, ReactNode } from "react";
-import PropTypes from "prop-types";
 import {
 	Card,
 	CardContent,
@@ -26,7 +25,7 @@ export interface CardListItemProps {
 	imgSrc?: string;
 	iconName?: string;
 	CardContentProps?: CardContentProps;
-	TitleProps?: TypographyProps;
+	TitleProps?: TypographyProps<"h1", {}>;
 	selected?: boolean;
 	metaIcons?: Array<{
 		tooltip: string;
