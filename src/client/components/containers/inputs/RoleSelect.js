@@ -26,4 +26,4 @@ function RoleSelect({ value, required, fullWidth, onChange }) {
 	);
 }
 
-export default connect(mapStateToProps, actions)(RoleSelect);
+export default connect(null, actions)(RoleSelect);

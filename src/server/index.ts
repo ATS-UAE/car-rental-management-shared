@@ -1,4 +1,4 @@
-//eslint-disable import/first
+/* eslint-disable import/first */
 import env from "dotenv";
 env.config();
 import express from "express";
