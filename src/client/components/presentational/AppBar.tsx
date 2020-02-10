@@ -6,51 +6,39 @@ import {
 	IconButton,
 	withStyles,
 	createStyles,
-	WithStyles,
-	Theme
+	WithStyles
 } from "@material-ui/core";
 import { Menu } from "@material-ui/icons";
 
-const styles = (theme: Theme) =>
-	createStyles({
-		logo: {
-			cursor: "pointer",
-			padding: "5px",
-			...theme.mixins.toolbar
-		},
-		toolbar: {
-			display: "flex",
-			justifyContent: "space-between"
-		}
-	});
+const styles = createStyles({
+	logo: {
+		marginBottom: "-41px",
+		cursor: "pointer"
+	},
+	toolbar: {
+		display: "flex",
+		justifyContent: "space-between"
+	}
+});
 
 export interface AppBarProps extends WithStyles<typeof styles> {
 	title?: string;
 	renderActions?: () => ReactNode;
 	onMenuClick?: () => void;
 	onLogoClick?: () => void;
-	logoSrc: string;
-	logoAlt: string;
 }
 
-const ButtonAppBar: FC<AppBarProps> = ({
-	classes,
-	title,
-	renderActions,
-	onMenuClick,
-	onLogoClick,
-	logoSrc,
-	logoAlt
-}) => {
+const ButtonAppBar: FC<AppBarProps> = props => {
+	const { classes, title, renderActions, onMenuClick, onLogoClick } = props;
 	return (
 		<div>
 			<MuiAppBar position="static">
 				<Toolbar className={classes.toolbar}>
 					<div>
 						<img
-							src={logoSrc}
+							src="/static/images/logo-navigation.png"
 							className={classes.logo}
-							alt={logoAlt}
+							alt="LeasePlan Logo"
 							onClick={() => onLogoClick && onLogoClick()}
 						/>
 						{title && (

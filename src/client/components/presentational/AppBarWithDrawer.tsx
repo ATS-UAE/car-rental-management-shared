@@ -1,47 +1,45 @@
 import React, { useState, FC } from "react";
 import { AppBar, Drawer, DrawerProps, AppBarProps } from ".";
 
-export interface AppBarWithDrawerProps
-	extends Omit<DrawerProps, "onClick" | "onClose" | "classes" | "isOpen">,
-		Omit<AppBarProps, "onMenuClick" | "classes"> {
+export interface AppBarWithDrawerProps {
+	list: DrawerProps["list"];
+	endList: DrawerProps["endList"];
+	renderActions?: AppBarProps["renderActions"];
+	onLogoClick: AppBarProps["onLogoClick"];
 	showMenu: boolean;
 	title?: string;
+	profile: DrawerProps["profile"];
 }
 
 export const AppBarWithDrawer: FC<AppBarWithDrawerProps> = ({
 	list,
+	renderActions,
+	title,
+	onLogoClick,
 	showMenu,
-	...otherProps
+	endList,
+	profile
 }) => {
 	const [isDrawerOpen, setDrawerOpenState] = useState(false);
-
-	const {
-		title,
-		renderActions,
-		logoSrc,
-		logoAlt,
-		onLogoClick,
-		...drawerProps
-	} = otherProps;
-	const appBarProps = { title, renderActions, logoSrc, logoAlt, onLogoClick };
-
 	return (
 		<>
 			<AppBar
 				onMenuClick={
-					showMenu &&
-					((list && list.length) ||
-						(drawerProps.endList && drawerProps.endList.length))
+					showMenu && ((list && list.length) || (endList && endList.length))
 						? () => setDrawerOpenState(true)
 						: undefined
 				}
-				{...appBarProps}
+				title={title}
+				renderActions={renderActions}
+				onLogoClick={onLogoClick}
 			/>
 			<Drawer
+				profile={profile}
 				isOpen={isDrawerOpen}
+				list={list}
 				onClick={() => setDrawerOpenState(false)}
 				onClose={() => setDrawerOpenState(false)}
-				{...drawerProps}
+				endList={endList}
 			/>
 		</>
 	);
