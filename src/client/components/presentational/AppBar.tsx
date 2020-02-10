@@ -15,8 +15,14 @@ const styles = (theme: Theme) =>
 	createStyles({
 		logo: {
 			cursor: "pointer",
-			padding: "5px",
-			...theme.mixins.toolbar
+			padding: 5,
+			height: 56,
+			[`${theme.breakpoints.up("xs")} and (orientation: landscape)`]: {
+				height: 48
+			},
+			[theme.breakpoints.up("sm")]: {
+				height: 64
+			}
 		},
 		toolbar: {
 			display: "flex",
@@ -24,7 +30,8 @@ const styles = (theme: Theme) =>
 		}
 	});
 
-export interface AppBarProps extends WithStyles<typeof styles> {
+export interface AppBarProps {
+	classes?: Partial<Record<keyof typeof styles, string>>;
 	title?: string;
 	renderActions?: () => ReactNode;
 	onMenuClick?: () => void;
@@ -33,7 +40,7 @@ export interface AppBarProps extends WithStyles<typeof styles> {
 	logoAlt: string;
 }
 
-const ButtonAppBar: FC<AppBarProps> = ({
+const AppBarBase: FC<AppBarProps & WithStyles<typeof styles>> = ({
 	classes,
 	title,
 	renderActions,
@@ -77,4 +84,4 @@ const ButtonAppBar: FC<AppBarProps> = ({
 	);
 };
 
-export const AppBar = withStyles(styles)(ButtonAppBar);
+export const AppBar = withStyles(styles)(AppBarBase);

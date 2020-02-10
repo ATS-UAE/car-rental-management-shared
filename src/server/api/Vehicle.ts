@@ -73,7 +73,10 @@ export class Vehicle implements Castable<Partial<VehicleAttributes>> {
 	};
 
 	public static get = async (user: User, id: number) => {
-		const vehicle = await VehicleModel.findByPk(id);
+		// TODO: No Nested Models
+		const vehicle = await VehicleModel.findByPk(id, {
+			include: [{ model: Category }]
+		});
 
 		if (user.role === Role.MASTER) {
 			return new Vehicle(vehicle);
@@ -157,7 +160,14 @@ export class Vehicle implements Castable<Partial<VehicleAttributes>> {
 				: {};
 
 		if (user.role === Role.MASTER) {
-			vehicles = await VehicleModel.findAll(baseFindOptions);
+			vehicles = await VehicleModel.findAll(
+				_.merge(
+					{
+						include: [{ model: Category }]
+					},
+					baseFindOptions
+				)
+			);
 		} else if (user.role === Role.GUEST) {
 			// Get only available vehicles in the same client.
 			// Only vehicles which have the same categories as the user.
@@ -170,7 +180,8 @@ export class Vehicle implements Castable<Partial<VehicleAttributes>> {
 						{
 							where: {
 								clientId: user.clientId
-							}
+							},
+							include: [{ model: Category }]
 						},
 						baseFindOptions
 					)
@@ -201,7 +212,8 @@ export class Vehicle implements Castable<Partial<VehicleAttributes>> {
 					{
 						where: {
 							clientId: user.clientId
-						}
+						},
+						include: [{ model: Category }]
 					},
 					baseFindOptions
 				)

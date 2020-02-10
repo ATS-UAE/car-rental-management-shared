@@ -5,7 +5,7 @@ import * as reduxActions from "../../../actions";
 import TableView from "../../presentational/forms/TableView";
 import VehicleForm from "../../presentational/forms/VehicleForm";
 import { api, apiErrorHandler } from "../../../utils/helpers";
-import { Resource, Action } from "../../../../shared/typings";
+import { Resource, Operation } from "../../../../shared/typings";
 import Can from "../layout/Can";
 
 function VehicleTableView({
@@ -93,7 +93,7 @@ function VehicleTableView({
 				}}
 			>
 				<Can
-					action={Action.UPDATE}
+					action={Operation.UPDATE}
 					resource={Resource.VEHICLES}
 					yes={() => {
 						const footer = (

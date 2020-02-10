@@ -4,7 +4,7 @@ import { Grid, Button } from "@material-ui/core";
 import LocationForm from "../../presentational/forms/LocationForm";
 import * as reduxActions from "../../../actions";
 import { api, apiErrorHandler } from "../../../utils/helpers";
-import { Resource, Action } from "../../../../shared/typings";
+import { Resource, Operation } from "../../../../shared/typings";
 import DialogButton from "../../presentational/forms/DialogButton";
 import Can from "../layout/Can";
 function NewLocationButtonDialog({ fetchLocations, locations }) {
@@ -67,7 +67,7 @@ function NewLocationButtonDialog({ fetchLocations, locations }) {
 	return (
 		<Can
 			resource={Resource.LOCATIONS}
-			action={Action.CREATE}
+			action={Operation.CREATE}
 			yes={access => (
 				<DialogButton
 					open={open}

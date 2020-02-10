@@ -5,7 +5,7 @@ import VehicleForm from "../../presentational/forms/VehicleForm";
 import * as reduxActions from "../../../actions";
 import { api, apiErrorHandler } from "../../../utils/helpers";
 import DialogButton from "../../presentational/forms/DialogButton";
-import { Resource, Action } from "../../../../shared/typings";
+import { Resource, Operation } from "../../../../shared/typings";
 import Can from "../layout/Can";
 
 function NewVehicleButtonDialog({
@@ -77,7 +77,7 @@ function NewVehicleButtonDialog({
 	);
 	return (
 		<Can
-			action={Action.CREATE}
+			action={Operation.CREATE}
 			resource={Resource.VEHICLES}
 			yes={() => (
 				<DialogButton
@@ -103,7 +103,4 @@ function NewVehicleButtonDialog({
 
 const mapStateToProps = ({ locations }) => ({ locations });
 
-export default connect(
-	mapStateToProps,
-	reduxActions
-)(NewVehicleButtonDialog);
+export default connect(mapStateToProps, reduxActions)(NewVehicleButtonDialog);

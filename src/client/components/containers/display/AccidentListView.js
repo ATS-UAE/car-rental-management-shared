@@ -15,7 +15,7 @@ import { Delete, Image } from "@material-ui/icons";
 import moment from "moment";
 
 import * as reduxActions from "../../../actions";
-import { Action, Resource } from "../../../../shared/typings";
+import { Operation, Resource } from "../../../../shared/typings";
 import { Role, permission } from "../layout/Role";
 import Can from "../layout/Can";
 import api from "../../../utils/helpers/api";
@@ -67,7 +67,7 @@ const AccidentListView = ({
 				accidents.map(accident => (
 					<Can
 						key={accident.id}
-						action={Action.READ}
+						action={Operation.READ}
 						resource={Resource.ACCIDENTS}
 						params={{ accessor: auth, target: accident }}
 						yes={readAccess => {
@@ -254,9 +254,6 @@ const AccidentListView = ({
 
 export default compose(
 	withStyles(styles),
-	connect(
-		mapStateToProps,
-		reduxActions
-	),
+	connect(mapStateToProps, reduxActions),
 	withRouter
 )(AccidentListView);

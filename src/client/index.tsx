@@ -20,6 +20,13 @@ const jss = create({
 });
 
 const theme = createMuiTheme({
+	// palette: {
+	// 	primary: {
+	// 		main: "#FF875D",
+	// 		contrastText: "#000"
+	// 	},
+	// 	secondary: { main: "#11cb5f" }
+	// },
 	// overrides: {
 	// 	MuiAppBar: {
 	// 		root: {

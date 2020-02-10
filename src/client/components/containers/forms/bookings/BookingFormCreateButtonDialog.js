@@ -4,7 +4,7 @@ import BookingFormCreate from "./BookingFormCreate";
 import { Button } from "@material-ui/core";
 import FormPage from "../../../pages/FormPage";
 import Can from "../../layout/Can";
-import { Resource, Action } from "../../../../../shared/typings";
+import { Resource, Operation } from "../../../../../shared/typings";
 
 function BookingCreateButtonDialog({ history }) {
 	return (
@@ -33,7 +33,7 @@ function BookingCreateButtonDialog({ history }) {
 				)}
 			/>
 			<Can
-				action={Action.CREATE}
+				action={Operation.CREATE}
 				resource={Resource.BOOKINGS}
 				yes={createAccess => (
 					<Button

@@ -59,7 +59,13 @@ export abstract class Vehicle {
 				switch (operation) {
 					case API_OPERATION.READ: {
 						schema = schema.shape({
-							id: Yup.number()
+							id: Yup.number(),
+							categories: Yup.array(
+								Yup.object().shape({
+									id: Yup.number(),
+									name: Yup.string()
+								})
+							)
 						});
 						break;
 					}

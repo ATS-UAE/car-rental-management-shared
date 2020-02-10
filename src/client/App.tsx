@@ -54,7 +54,7 @@ const styles = (theme: Theme) =>
 	createStyles({
 		"@global": {
 			body: {
-				background: "linear-gradient(215deg, #FE6B8B, #EECDA3)",
+				background: "url(/static/images/wallpaper.svg)  center center fixed",
 				height: "100%"
 			},
 			html: {

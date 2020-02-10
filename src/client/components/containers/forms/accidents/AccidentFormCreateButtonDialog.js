@@ -6,7 +6,7 @@ import { Button } from "@material-ui/core";
 import AccidentFormCreate from "./AccidentFormCreate";
 import FormPage from "../../../pages/FormPage";
 import Can from "../../layout/Can";
-import { Resource, Action } from "../../../../../shared/typings";
+import { Resource, Operation } from "../../../../../shared/typings";
 
 function AccidentFormCreateButtonDialog({ history, classes }) {
 	return (
@@ -33,7 +33,7 @@ function AccidentFormCreateButtonDialog({ history, classes }) {
 				}}
 			/>
 			<Can
-				action={Action.CREATE}
+				action={Operation.CREATE}
 				resource={Resource.ACCIDENTS}
 				yes={createAccess => (
 					<Button

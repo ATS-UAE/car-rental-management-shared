@@ -15,7 +15,12 @@ import {
 	getBookingStatus,
 	getRelatedDataById
 } from "../../../utils/helpers";
-import { Resource, Action, Role, BookingType } from "../../../../shared/typings";
+import {
+	Resource,
+	Operation,
+	Role,
+	BookingType
+} from "../../../../shared/typings";
 import RBAC from "../../../utils/rbac";
 import BookingFinalizeForm from "../forms/bookings/BookingFinalizeForm";
 import AddBox from "@material-ui/icons/AddBox";
@@ -326,7 +331,7 @@ class BookingTableView extends Component {
 			for (let booking of bookings.data) {
 				let accessible = await RBAC.can(
 					auth.data.role,
-					Action.READ,
+					Operation.READ,
 					Resource.BOOKINGS,
 					{ target: booking, accessor: auth.data }
 				);
@@ -404,13 +409,13 @@ class BookingTableView extends Component {
 						const read = {
 							access: await RBAC.can(
 								auth.data.role,
-								Action.READ,
+								Operation.READ,
 								Resource.BOOKINGS,
 								{ target: booking.data, accessor: auth.data }
 							),
 							exclude: RBAC.getExcludedFields(
 								auth.data.role,
-								Action.UPDATE,
+								Operation.UPDATE,
 								Resource.BOOKINGS
 							)
 						};
@@ -418,13 +423,13 @@ class BookingTableView extends Component {
 						const update = {
 							access: await RBAC.can(
 								auth.data.role,
-								Action.UPDATE,
+								Operation.UPDATE,
 								Resource.BOOKINGS,
 								{ accessor: auth.data, target: booking.data }
 							),
 							exclude: RBAC.getExcludedFields(
 								auth.data.role,
-								Action.UPDATE,
+								Operation.UPDATE,
 								Resource.BOOKINGS
 							)
 						};
@@ -432,7 +437,7 @@ class BookingTableView extends Component {
 						const destroy = {
 							access: await RBAC.can(
 								auth.data.role,
-								Action.DELETE,
+								Operation.DELETE,
 								Resource.BOOKINGS,
 								{ target: booking.data, accessor: auth.data }
 							)
@@ -441,13 +446,13 @@ class BookingTableView extends Component {
 						const create = {
 							access: await RBAC.can(
 								auth.data.role,
-								Action.READ,
+								Operation.READ,
 								Resource.BOOKINGS,
 								{ target: booking.data, accessor: auth.data }
 							),
 							exclude: RBAC.getExcludedFields(
 								auth.data.role,
-								Action.READ,
+								Operation.READ,
 								Resource.BOOKINGS
 							)
 						};

@@ -17,7 +17,11 @@ import { DialogChildren } from "../../presentational/forms/ConfirmDialog";
 import BookingFormCreateMaintenance from "../forms/bookings/BookingFormCreateMaintenance";
 import VehicleFormUpdate from "../forms/vehicles/VehicleFormUpdate";
 import * as reduxActions from "../../../actions";
-import { Action, Resource, Role as RoleEnum } from "../../../../shared/typings";
+import {
+	Operation,
+	Resource,
+	Role as RoleEnum
+} from "../../../../shared/typings";
 import { api } from "../../../utils/helpers";
 import RBAC from "../../../utils/rbac";
 import CardList from "../../presentational/display/CardList";
@@ -46,13 +50,13 @@ function VehicleCardList({
 					const read = {
 						access: await RBAC.can(
 							auth.data.role,
-							Action.READ,
+							Operation.READ,
 							Resource.VEHICLES,
 							{ target: vehicle.data, accessor: auth.data }
 						),
 						exclude: RBAC.getExcludedFields(
 							auth.data.role,
-							Action.READ,
+							Operation.READ,
 							Resource.VEHICLES
 						)
 					};
@@ -60,13 +64,13 @@ function VehicleCardList({
 					const update = {
 						access: await RBAC.can(
 							auth.data.role,
-							Action.UPDATE,
+							Operation.UPDATE,
 							Resource.VEHICLES,
 							{ target: vehicle.data, accessor: auth.data }
 						),
 						exclude: RBAC.getExcludedFields(
 							auth.data.role,
-							Action.UPDATE,
+							Operation.UPDATE,
 							Resource.VEHICLES
 						)
 					};
@@ -74,7 +78,7 @@ function VehicleCardList({
 					const destroy = {
 						access: await RBAC.can(
 							auth.data.role,
-							Action.DELETE,
+							Operation.DELETE,
 							Resource.VEHICLES,
 							{ target: vehicle.data, accessor: auth.data }
 						)
@@ -317,13 +321,13 @@ function VehicleCardList({
 						},
 						controls: (
 							<Can
-								action={Action.READ}
+								action={Operation.READ}
 								resource={Resource.VEHICLES}
 								params={{ accessor: auth.data, target: vehicle }}
 								yes={readAccess => (
 									<Fragment>
 										<Can
-											action={Action.UPDATE}
+											action={Operation.UPDATE}
 											resource={Resource.VEHICLES}
 											params={{ accessor: auth.data, target: vehicle }}
 											yes={updateAccess => {
@@ -371,7 +375,7 @@ function VehicleCardList({
 											}}
 										/>
 										<Can
-											action={Action.DELETE}
+											action={Operation.DELETE}
 											resource={Resource.VEHICLES}
 											params={{ accessor: auth.data, target: vehicle }}
 											yes={() => {

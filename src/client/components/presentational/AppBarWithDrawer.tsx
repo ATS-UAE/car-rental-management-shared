@@ -9,28 +9,27 @@ export interface AppBarWithDrawerProps
 }
 
 export const AppBarWithDrawer: FC<AppBarWithDrawerProps> = ({
-	list,
+	title,
 	showMenu,
 	...otherProps
 }) => {
 	const [isDrawerOpen, setDrawerOpenState] = useState(false);
 
 	const {
-		title,
 		renderActions,
 		logoSrc,
 		logoAlt,
 		onLogoClick,
 		...drawerProps
 	} = otherProps;
-	const appBarProps = { title, renderActions, logoSrc, logoAlt, onLogoClick };
+	const appBarProps = { renderActions, logoSrc, logoAlt, onLogoClick };
 
 	return (
 		<>
 			<AppBar
 				onMenuClick={
 					showMenu &&
-					((list && list.length) ||
+					((drawerProps.list && drawerProps.list.length) ||
 						(drawerProps.endList && drawerProps.endList.length))
 						? () => setDrawerOpenState(true)
 						: undefined

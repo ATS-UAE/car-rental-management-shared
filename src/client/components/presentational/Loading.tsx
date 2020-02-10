@@ -1,18 +1,23 @@
-import React, { ReactNode, FC } from "react";
-import { withStyles, WithStyles, createStyles } from "@material-ui/core/";
+import React, {  FC } from "react";
+import {
+	withStyles,
+	WithStyles,
+	createStyles,
+	useTheme
+} from "@material-ui/core/";
 import CircleLoader from "react-spinners/CircleLoader";
 
-export interface LoadingProps {
-	component?: ReactNode;
-}
+export interface LoadingProps {}
 
 const BaseLoading: FC<LoadingProps & WithStyles<typeof styles>> = ({
-	component = <CircleLoader color="#FE6B8B" />,
 	classes
 }) => {
+	const theme = useTheme();
 	return (
 		<div className={classes.root}>
-			<div className={classes.spinner}>{component}</div>
+			<div className={classes.spinner}>
+				<CircleLoader color={theme.palette.primary.main} />
+			</div>
 		</div>
 	);
 };

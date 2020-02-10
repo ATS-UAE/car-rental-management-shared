@@ -8,7 +8,7 @@ import { DialogChildren } from "../../presentational/forms/ConfirmDialog";
 import UserForm from "../forms/users/UserForm";
 import UserFormUpdate from "../forms/users/UserFormUpdate";
 import * as reduxActions from "../../../actions";
-import { Resource, Action, Role } from "../../../../shared/typings";
+import { Resource, Operation, Role } from "../../../../shared/typings";
 import RBAC from "../../../utils/rbac";
 import { toTitleWords, api } from "../../../utils/helpers";
 
@@ -208,7 +208,7 @@ class UserTableView extends Component {
 			for (let user of users.data) {
 				let accessible = await RBAC.can(
 					auth.data.role,
-					Action.READ,
+					Operation.READ,
 					Resource.USERS,
 					{ target: user, accessor: auth.data }
 				);
@@ -218,14 +218,14 @@ class UserTableView extends Component {
 					const canUpdate =
 						user.id === 1
 							? false
-							: await RBAC.can(userRole, Action.UPDATE, Resource.USERS, {
+							: await RBAC.can(userRole, Operation.UPDATE, Resource.USERS, {
 									target: user,
 									accessor: auth.data
 							  });
 					const canDelete =
 						user.id === 1
 							? false
-							: await RBAC.can(userRole, Action.DELETE, Resource.USERS, {
+							: await RBAC.can(userRole, Operation.DELETE, Resource.USERS, {
 									target: user,
 									accessor: auth.data
 							  });
@@ -287,7 +287,7 @@ class UserTableView extends Component {
 						const read = {
 							access: await RBAC.can(
 								auth.data.role,
-								Action.READ,
+								Operation.READ,
 								Resource.USERS,
 								{
 									accessor: auth.data,
@@ -296,7 +296,7 @@ class UserTableView extends Component {
 							),
 							exclude: RBAC.getExcludedFields(
 								auth.data.role,
-								Action.READ,
+								Operation.READ,
 								Resource.USERS,
 								{
 									user: auth.data,
@@ -311,7 +311,7 @@ class UserTableView extends Component {
 						const update = {
 							access: await RBAC.can(
 								auth.data.role,
-								Action.UPDATE,
+								Operation.UPDATE,
 								Resource.USERS,
 								{
 									accessor: auth.data,
@@ -320,7 +320,7 @@ class UserTableView extends Component {
 							),
 							exclude: RBAC.getExcludedFields(
 								auth.data.role,
-								Action.UPDATE,
+								Operation.UPDATE,
 								Resource.USERS,
 								{
 									accessor: auth.data,
@@ -332,7 +332,7 @@ class UserTableView extends Component {
 						const destroy = {
 							access: await RBAC.can(
 								auth.data.role,
-								Action.DELETE,
+								Operation.DELETE,
 								Resource.USERS,
 								{
 									accessor: auth.data,
