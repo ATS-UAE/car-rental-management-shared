@@ -91,6 +91,8 @@ export const AppBarWithDrawerContainer: FC<Props> = ({
 					history.location.pathname !== "/" && history.push("/");
 				}}
 				showMenu={auth === null ? false : true}
+				logoSrc="/static/images/logo-navigation.png"
+				logoAlt="Company Logo"
 				list={menuList}
 				endList={endList}
 				profile={profile}
