@@ -1,4 +1,4 @@
-import React, { FC, useState, ReactNode, useEffect } from "react";
+import React, { FC, useState, ReactNode } from "react";
 import * as yup from "yup";
 import _ from "lodash";
 import {
@@ -207,9 +207,17 @@ const StepperFormActions: FC<{
 	onNextDisabled?: boolean;
 	onNext?: () => void;
 	onPrev?: () => void;
+	onSubmitDisabled?: boolean;
 	onSubmit?: () => void | Promise<void>;
 	loading?: boolean;
-}> = ({ onNext, onPrev, onSubmit, loading, onNextDisabled }) => {
+}> = ({
+	onNext,
+	onPrev,
+	onSubmit,
+	loading,
+	onNextDisabled,
+	onSubmitDisabled
+}) => {
 	const classes = useFieldStyles();
 	return (
 		<div className={classes.spacer}>
@@ -235,7 +243,7 @@ const StepperFormActions: FC<{
 			)}
 			{onSubmit && (
 				<Button
-					disabled={loading}
+					disabled={onSubmitDisabled || loading}
 					onClick={onSubmit}
 					variant="contained"
 					color="primary"
@@ -544,6 +552,7 @@ const BookingCreateFormStepperBase: FC<BookingCreateFormStepperProps> = ({
 								})) ||
 							undefined
 						}
+						onSubmitDisabled={hasErrors}
 					/>
 				);
 			}}
