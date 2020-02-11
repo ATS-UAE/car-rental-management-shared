@@ -1,14 +1,11 @@
 import React, { FC, useState } from "react";
 import { connect, ResolveThunks, MapStateToProps } from "react-redux";
 import { RouteChildrenProps, withRouter } from "react-router";
-import moment from "moment";
 import { compose } from "recompose";
 import {
 	BookingTable as BookingTablePresentational,
 	BookingTableItemData
 } from "../presentational";
-import { BookingType, Role } from "../../../shared/typings";
-import { BOOKING_TABLE_DATA } from "../../fixtures";
 import * as actions from "../../actions";
 import { ReduxState } from "../../reducers";
 import { Booking } from "../../api";
@@ -58,7 +55,7 @@ const BookingTableBase: FC<Props> = ({
 					paid: b.paid,
 					to: b.to,
 					username,
-					vehicle: `${b.vehicle.plateNumber} - ${b.vehicle.model} ${b.vehicle.model}`
+					vehicle: `${b.vehicle.plateNumber} - ${b.vehicle.brand} ${b.vehicle.model}`
 				};
 			})) ||
 		[];
@@ -128,5 +125,6 @@ const mapStateToProps: MapStateToProps<
 > = ({ bookings, users, auth }) => ({ bookings, users, auth });
 
 export const BookingTable = compose<Props, {}>(
+	withRouter,
 	connect(mapStateToProps, actions)
 )(BookingTableBase);
