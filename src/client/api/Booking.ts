@@ -1,8 +1,9 @@
-import { Api } from ".";
+import { Api, WialonUnit } from ".";
 import {
 	ServerResponseMeta,
 	ExtractServerResponseData,
-	BookingServerResponseGet
+	BookingServerResponseGet,
+	WialonUnitServerResponseGet
 } from "../../shared/typings";
 import { Role } from "../../shared/typings";
 
@@ -23,6 +24,7 @@ export interface BookingCreateParams
 		| "updatedAt"
 		| "vehicle"
 		| "finalized"
+		| "returned"
 	> {
 	replaceVehicle?: {
 		vin: string;
@@ -40,6 +42,16 @@ export type BookingGetResponseItem = ExtractServerResponseData<
 	BookingServerResponseGet
 >;
 
+export type BookingFinalizeParams = Pick<
+	BookingUpdateParams,
+	| "returned"
+	| "amount"
+	| "endFuel"
+	| "startFuel"
+	| "startMileage"
+	| "endMileage"
+>;
+
 export class Booking {
 	constructor(
 		public data: BookingGetResponseItem,
@@ -54,6 +66,12 @@ export class Booking {
 			const { data, ...meta } = res;
 			return new Booking(data, meta);
 		});
+
+	public static getVehicleWialonData = (bookingId: number) =>
+		Api.execute<ExtractServerResponseData<WialonUnitServerResponseGet>>(
+			"get",
+			`/api/carbooking/bookings/${bookingId}/vehicle/wialonUnit`
+		).then(({ data, ...meta }) => (data ? new WialonUnit(data, meta) : null));
 
 	public reload = () =>
 		Api.execute<ExtractServerResponseData<BookingServerResponseGet>>(
@@ -126,7 +144,7 @@ export class Booking {
 			return new Booking(data, meta);
 		});
 
-	public finalize = (amount: number) => this.update({ amount });
+	public finalize = (values: BookingFinalizeParams) => this.update(values);
 
 	public update = (params: BookingUpdateParams) =>
 		Api.execute<

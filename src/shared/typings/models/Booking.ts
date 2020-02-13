@@ -16,6 +16,7 @@ export interface BookingAttributes {
 	vehicleId: number;
 	bookingType: BookingType;
 	replaceVehicleId: number | null;
+	returned: boolean;
 
 	readonly createdAt: Date;
 	readonly updatedAt: Date;

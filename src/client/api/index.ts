@@ -5,6 +5,7 @@ import { FormErrors } from "../utils";
 export * from "./Booking";
 export * from "./Location";
 export * from "./Vehicle";
+export * from "./WialonUnit";
 
 export const API_URL = process.env.REACT_APP_CAR_BOOKING_API_DOMAIN;
 

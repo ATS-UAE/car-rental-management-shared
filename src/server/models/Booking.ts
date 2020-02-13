@@ -51,6 +51,9 @@ export class Booking extends Model<Booking> implements BookingAttributes {
 	@Column(DataType.FLOAT)
 	public endFuel: number | null;
 
+	@Column({ defaultValue: false, type: DataType.BOOLEAN, allowNull: false })
+	public returned: boolean;
+
 	@ForeignKey(() => User)
 	@Column({ allowNull: false })
 	public userId: number;

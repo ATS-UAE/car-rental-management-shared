@@ -50,10 +50,6 @@ export const FormContext = createContext<FormContextProviderValue>({
 export class FormProvider<Values extends object> extends Component<
 	FormProviderProps<Values>
 > {
-	constructor(props: FormProviderProps<Values>) {
-		super(props);
-	}
-
 	public componentDidMount() {
 		const { validateOnMount, values, onChange } = this.props;
 		if (validateOnMount) {

@@ -1,7 +1,11 @@
 import express from "express";
 import requireLogin from "../middlewares/requireLogin";
 import { Booking, BookingCreateOptions, BookingUpdateOptions } from "../api";
-import { BookingAttributes } from "../../shared/typings";
+import {
+	BookingAttributes,
+	WialonUnitServerResponseGet,
+	ExtractServerResponseData
+} from "../../shared/typings";
 import { ResponseBuilder } from "../utils";
 
 const router = express.Router();
@@ -110,5 +114,24 @@ router.delete<
 	}
 	res.json(response);
 });
+
+router.get<{ id: string }, WialonUnitServerResponseGet>(
+	"/:id/vehicle/wialonUnit",
+	async ({ user, params }, res) => {
+		const response = new ResponseBuilder<
+			ExtractServerResponseData<WialonUnitServerResponseGet>
+		>();
+		try {
+			const foundBooking = await Booking.get(user, parseInt(params.id));
+			const vehicle = await foundBooking.getVehicle();
+			const wialonData = await vehicle.getWialonData();
+			response.setData(wialonData);
+			response.handleSuccess(`Found data for booking ${params.id}`, res);
+		} catch (e) {
+			response.handleError(e, res);
+		}
+		res.json(response.toObject());
+	}
+);
 
 export default router;

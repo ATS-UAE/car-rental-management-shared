@@ -37,3 +37,4 @@ export * from "./ModalConfirm";
 export * from "./FormFinalizeBooking";
 export * from "./InfoText";
 export * from "./FormBookingUpdate";
+export * from "./FieldCheckboxGroup";

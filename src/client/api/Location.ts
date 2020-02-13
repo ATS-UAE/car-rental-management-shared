@@ -1,26 +1,18 @@
 import { Api } from ".";
-import { ServerResponseMeta } from "../../shared/typings";
-
-export interface LocationAttributes {
-	id: number;
-	name: string;
-	lat: number;
-	lng: number;
-	address: string;
-	locationImageSrc: string | null;
-
-	readonly createdAt: Date;
-	readonly updatedAt: Date;
-}
+import {
+	ServerResponseMeta,
+	LocationServerResponseGet,
+	ExtractServerResponseData
+} from "../../shared/typings";
 
 export class Location {
 	constructor(
-		public data: LocationAttributes,
+		public data: ExtractServerResponseData<LocationServerResponseGet>,
 		public meta: ServerResponseMeta
 	) {}
 
 	public static fromClientId = (clientId: number) =>
-		Api.execute<LocationAttributes[]>(
+		Api.execute<ExtractServerResponseData<LocationServerResponseGet>[]>(
 			"get",
 			`/api/carbooking/clients/${clientId}/locations`
 		).then(({ data, ...meta }) => {

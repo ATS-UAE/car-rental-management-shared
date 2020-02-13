@@ -67,7 +67,8 @@ export abstract class Booking {
 			userId: yup.number(),
 			vehicleId: yup.number(),
 			bookingType: yup.mixed<BookingType>().oneOf(Object.values(BookingType)),
-			replaceVehicleId: yup.number().nullable()
+			replaceVehicleId: yup.number().nullable(),
+			returned: yup.boolean()
 		})
 		.when(
 			["$user", "$operation", "$target", "$data", "$casting"],

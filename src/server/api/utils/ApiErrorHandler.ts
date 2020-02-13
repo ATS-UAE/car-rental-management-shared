@@ -7,9 +7,9 @@ export class ApiErrorHandler {
 		if (e instanceof FormException) {
 			// Add fields to errors
 			for (const error of e.fields) {
-				console.log("error fields",error);
-				if (error.name === "permission") {
-					throw new InvalidPermissionException(error.message);
+				console.log("error fields", error);
+				if (typeof error !== "string" && error.name === "permission") {
+					throw new InvalidPermissionException(error.value);
 				}
 			}
 			throw e;

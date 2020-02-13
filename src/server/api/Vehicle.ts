@@ -1,9 +1,18 @@
 import { Op, FindOptions } from "sequelize";
 import _ from "lodash";
+import { Wialon } from "node-wialon";
 import { Vehicle as VehicleModel, User, Booking, Category } from "../models";
-import { VehicleAttributes, BookingStatus, Role } from "../../shared/typings";
+import {
+	VehicleAttributes,
+	BookingStatus,
+	Role,
+	WialonUnitAttributes
+} from "../../shared/typings";
 import { getBookingStatus } from "../utils";
-import { InvalidPermissionException } from "./exceptions";
+import {
+	InvalidPermissionException,
+	ItemNotFoundException
+} from "./exceptions";
 import { Vehicle as VehicleValidators } from "./validators";
 import { ApiErrorHandler } from "./utils";
 import { UseParameters, Collection, Castable, API_OPERATION } from ".";
@@ -38,10 +47,33 @@ export type UpdateVehicleOptions = UseParameters<
 	| "locationId"
 >;
 export class Vehicle implements Castable<Partial<VehicleAttributes>> {
-	private constructor(public data: VehicleModel) {}
+	public constructor(public data: VehicleModel) {}
 
 	public cast = (user: User) =>
 		VehicleValidators.getValidator(user, API_OPERATION.READ).cast(this.data);
+
+	public getWialonData = async (): Promise<WialonUnitAttributes | null> => {
+		if (this.data.wialonUnitId) {
+			const w = await Wialon.login({ token: process.env.WIALON_TOKEN });
+			const unit = await w.Core.searchItem({
+				id: this.data.wialonUnitId,
+				flags: 1 + 256 + 1024 + 8192
+			});
+			if (unit && unit.item) {
+				return {
+					name: unit.item.nm,
+					imei: unit.item.uid,
+					lat: unit.item.pos?.x || null,
+					lng: unit.item.pos?.y || null,
+					mileage: unit.item.cnm || null
+				};
+			}
+			throw new ItemNotFoundException(
+				`Unit with ID ${this.data.wialonUnitId} is not found.`
+			);
+		}
+		return null;
+	};
 
 	public availableForBooking = async (
 		from: number,

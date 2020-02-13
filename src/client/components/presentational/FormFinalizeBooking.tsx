@@ -1,26 +1,17 @@
 import React, { FC } from "react";
 import moment from "moment";
 import * as yup from "yup";
-import {
-	Grid,
-	Button,
-	withStyles,
-	createStyles,
-	WithStyles
-} from "@material-ui/core";
-import {
-	Form,
-	FieldDate,
-	FieldSelect,
-	FieldText,
-	FormProps,
-	FieldSelectItems,
-	InfoText
-} from ".";
+import { Grid, Button, withStyles, createStyles } from "@material-ui/core";
+import { Form, FieldText, FormProps, InfoText, FieldCheckboxGroup } from ".";
 import { BookingType } from "../../../shared/typings";
 
 export interface FormFinalizeBookingValues {
 	amount: number;
+	startMileage?: number;
+	endMileage?: number;
+	startFuel?: number;
+	endFuel?: number;
+	returned: boolean;
 }
 
 interface FormFinalizeBookingProps
@@ -31,17 +22,65 @@ interface FormFinalizeBookingProps
 	user: string;
 	vehicle: string;
 	loading?: boolean;
+	currentMileageCounter?: number;
 	onSubmit: () => void;
 	onCancel: () => void;
 	classes: Partial<Record<keyof typeof styles, string>>;
 }
 
-const formFinalizeBookingSchema = yup.object().shape({
-	amount: yup
-		.number()
-		.typeError("You must specify a number.")
-		.required()
-});
+export const formFinalizeBookingSchema = yup.object().shape(
+	{
+		amount: yup
+			.number()
+			.typeError("You must specify a number.")
+			.required(),
+		startMileage: yup
+			.number()
+			.min(0, "Cannot be negative")
+			.transform((v, ogV) => (ogV === "" ? undefined : v))
+			.when("endMileage", (endMileage, schema) => {
+				if (typeof endMileage === "number") {
+					return schema.test(
+						"no-lower-than-other",
+						"Cannot be higher than ending mileage.",
+						startMileage => {
+							return startMileage !== undefined
+								? startMileage <= endMileage
+								: true;
+						}
+					);
+				}
+			}),
+		endMileage: yup
+			.number()
+			.transform((v, ogV) => (ogV === "" ? undefined : v))
+			.when("startMileage", (startMileage, schema) => {
+				if (typeof startMileage === "number") {
+					return schema.test(
+						"no-lower-than-other",
+						"Cannot be lower than starting mileage.",
+						endMileage => {
+							return endMileage !== undefined
+								? startMileage <= endMileage
+								: true;
+						}
+					);
+				}
+			}),
+		startFuel: yup
+			.number()
+			.min(0, "Minimum of 0")
+			.max(100, "Maximum of 100")
+			.transform((v, ogV) => (ogV === "" ? undefined : v)),
+		endFuel: yup
+			.number()
+			.min(0, "Minimum of 0")
+			.max(100, "Maximum of 100")
+			.transform((v, ogV) => (ogV === "" ? undefined : v)),
+		returned: yup.boolean()
+	},
+	[["startMileage", "endMileage"]]
+);
 
 const FormFinalizeBookingBase: FC<FormFinalizeBookingProps> = ({
 	vehicle,
@@ -52,10 +91,13 @@ const FormFinalizeBookingBase: FC<FormFinalizeBookingProps> = ({
 	classes = {},
 	onSubmit,
 	onCancel,
+	currentMileageCounter,
+	onChange,
 	...formProps
 }) => {
 	const hasErrors =
 		(formProps.errors && Object.keys(formProps.errors).length > 0) || false;
+	console.log(formProps);
 	const action = (
 		<Grid container spacing={2}>
 			<Grid item>
@@ -80,12 +122,13 @@ const FormFinalizeBookingBase: FC<FormFinalizeBookingProps> = ({
 			</Grid>
 		</Grid>
 	);
-
+	// TODO: Add return checkbox
 	return (
 		<Form
 			validationSchema={formFinalizeBookingSchema}
 			footer={action}
 			title="Finalize Booking"
+			onChange={onChange}
 			{...formProps}
 		>
 			<Grid container spacing={2}>
@@ -117,6 +160,38 @@ const FormFinalizeBookingBase: FC<FormFinalizeBookingProps> = ({
 						value={moment(to).format("lll")}
 					/>
 				</Grid>
+				<Grid item xs={6}>
+					<FieldText
+						fullWidth
+						name="startMileage"
+						type="number"
+						label="Starting km"
+					/>
+				</Grid>
+				<Grid item xs={6}>
+					<FieldText
+						fullWidth
+						name="endMileage"
+						type="number"
+						label="Ending km"
+					/>
+				</Grid>
+				<Grid item xs={6}>
+					<FieldText
+						fullWidth
+						name="startFuel"
+						type="number"
+						label="Start Fuel %"
+					/>
+				</Grid>
+				<Grid item xs={6}>
+					<FieldText
+						fullWidth
+						name="endFuel"
+						type="number"
+						label="Ending Fuel %"
+					/>
+				</Grid>
 				<Grid item xs={12}>
 					<FieldText
 						fullWidth
@@ -125,6 +200,21 @@ const FormFinalizeBookingBase: FC<FormFinalizeBookingProps> = ({
 						label="Payment Amount"
 					/>
 				</Grid>
+				<Grid item xs={currentMileageCounter ? 6 : 12}>
+					<FieldCheckboxGroup
+						name="returned"
+						label="Tick if vehicle has been returned."
+					/>
+				</Grid>
+				{currentMileageCounter && (
+					<Grid item xs={6}>
+						<InfoText
+							classes={{ root: classes.field }}
+							title="Wialon Mileage Counter km"
+							value={String(currentMileageCounter)}
+						/>
+					</Grid>
+				)}
 			</Grid>
 		</Form>
 	);

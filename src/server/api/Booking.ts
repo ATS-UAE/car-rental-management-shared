@@ -5,17 +5,18 @@ import moment from "moment";
 import { Booking as BookingValidators } from "./validators";
 import {
 	BookingAttributes,
-	ReplaceVehicleAttributes,Role
+	ReplaceVehicleAttributes,
+	Role
 } from "../../shared/typings";
 import {
 	User,
 	Booking as BookingModel,
 	ReplaceVehicle,
 	Location,
-	Vehicle
+	Vehicle as VehicleModel
 } from "../models";
 import { ItemNotFoundException } from "./exceptions";
-import { UseParameters, API_OPERATION } from ".";
+import { UseParameters, API_OPERATION, Vehicle } from ".";
 import { ApiErrorHandler } from "./utils";
 import { Castable, Collection } from "./Collection";
 import {
@@ -51,6 +52,7 @@ export type BookingUpdateOptions = UseParameters<
 	| "endFuel"
 	| "vehicleId"
 	| "bookingType"
+	| "returned"
 > & {
 	replaceVehicle?: UseParameters<
 		ReplaceVehicleAttributes,
@@ -59,7 +61,7 @@ export type BookingUpdateOptions = UseParameters<
 };
 
 export class Booking implements Castable<Partial<BookingAttributes>> {
-	private constructor(public data: BookingModel) {}
+	public constructor(public data: BookingModel) {}
 
 	public cast = (user: User) =>
 		BookingValidators.getValidator(user, API_OPERATION.READ).cast(this.data);
@@ -70,7 +72,7 @@ export class Booking implements Castable<Partial<BookingAttributes>> {
 		if (user.role === Role.GUEST) {
 			// Get bookings on self.
 			bookings = await user.$get("bookings", {
-				include: [Vehicle, ReplaceVehicle]
+				include: [VehicleModel, ReplaceVehicle]
 			});
 		} else if (user.role === Role.ADMIN || user.role === Role.KEY_MANAGER) {
 			// Get bookings on self client.
@@ -82,19 +84,24 @@ export class Booking implements Castable<Partial<BookingAttributes>> {
 							clientId: user.clientId
 						}
 					},
-					Vehicle,
+					VehicleModel,
 					ReplaceVehicle
 				]
 			});
 		} else if (user.role === Role.MASTER) {
 			// Get all bookings.
 			bookings = await BookingModel.findAll({
-				include: [Vehicle, ReplaceVehicle]
+				include: [VehicleModel, ReplaceVehicle]
 			});
 		}
 		return new Collection<Partial<BookingAttributes>, Booking>(
 			bookings.map(b => new Booking(b))
 		);
+	};
+
+	public getVehicle = async () => {
+		const vehicle = await VehicleModel.findByPk(this.data.vehicleId);
+		return new Vehicle(vehicle);
 	};
 
 	public static create = async (user: User, options: BookingCreateOptions) => {
@@ -220,7 +227,7 @@ export class Booking implements Castable<Partial<BookingAttributes>> {
 				}
 			}
 		}).then(async users => {
-			const vehicle = await Vehicle.findByPk(bookingData.vehicleId);
+			const vehicle = await VehicleModel.findByPk(bookingData.vehicleId);
 			const location = vehicle && (await Location.findByPk(vehicle.locationId));
 
 			let lng = location.lng;
@@ -265,7 +272,7 @@ export class Booking implements Castable<Partial<BookingAttributes>> {
 
 	public sendInvoice = async (amount: number) => {
 		const bookingData = await this.data.reload({
-			include: [{ model: User }, { model: Vehicle }]
+			include: [{ model: User }, { model: VehicleModel }]
 		});
 		await sendInvoiceEmail({
 			email: bookingData.user.email,
@@ -281,7 +288,7 @@ export class Booking implements Castable<Partial<BookingAttributes>> {
 
 	public sendBookingConfirmation = async () => {
 		const bookingData = await this.data.reload({
-			include: [{ model: User }, { model: Vehicle }]
+			include: [{ model: User }, { model: VehicleModel }]
 		});
 		const vehicleLocation = await Location.findByPk(
 			bookingData.vehicle.locationId

@@ -1,38 +1,43 @@
-import { BookingChargeUnit } from "../../shared/typings";
-import { PartialExcept, ServerResponseMeta } from "../../shared/typings";
-import { Api, LocationAttributes, Location } from ".";
-
-export interface VehicleAttributes {
-	id: number;
-	brand: string;
-	model: string;
-	plateNumber: string;
-	vin: string;
-	defleeted: boolean;
-	parkingLocation: string | null;
-	vehicleImageSrc: string | null;
-	bookingChargeCount: number;
-	bookingCharge: number;
-	wialonUnitId: number | null;
-	bookingChargeUnit: BookingChargeUnit | null;
-	clientId: number | null;
-	locationId: number | null;
-
-	readonly createdAt: Date;
-	readonly updatedAt: Date;
-}
+import {
+	VehicleAttributes,
+	LocationAttributes,
+	PartialExcept,
+	ServerResponseMeta,
+	WialonUnitAttributes,
+	LocationServerResponseGet,
+	VehicleServerResponseGet,
+	ExtractServerResponseData
+} from "../../shared/typings";
+import { Api, Location } from ".";
 
 export class Vehicle {
 	constructor(
-		public data: PartialExcept<VehicleAttributes, "id">,
+		public data: ExtractServerResponseData<VehicleServerResponseGet>,
 		public meta?: ServerResponseMeta
 	) {}
 
+	public wialonData: WialonUnitAttributes | null = null;
+
+	public getWialonData = async () => {
+		if (this.data.wialonUnitId) {
+			this.wialonData = await Api.execute<WialonUnitAttributes>(
+				"get",
+				`/api/carbooking/wialon/${this.data.wialonUnitId}`
+			).then(res => res.data);
+		}
+	};
+
 	public static getLocation = async (vehicleId: number) =>
-		Api.execute<LocationAttributes | null>(
+		Api.execute<ExtractServerResponseData<LocationServerResponseGet>>(
 			"get",
 			`/api/carbooking/vehicles/${vehicleId}/location`
 		).then(({ data, ...meta }) =>
 			data !== null ? new Location(data, meta) : null
 		);
+
+	public fromId = async (vehicleId: number) =>
+		Api.execute<ExtractServerResponseData<VehicleServerResponseGet>>(
+			"get",
+			`/api/carbooking/vehicles/${vehicleId}`
+		).then(({ data, ...meta }) => new Vehicle(data, meta));
 }

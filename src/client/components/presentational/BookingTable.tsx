@@ -150,7 +150,7 @@ export const getBookingTableActions = (
 				};
 			},
 			({ approved, amount }) => {
-				const visible = approved && amount === null;
+				const visible = approved === true;
 				return {
 					icon: () => <Check />,
 					tooltip: "Finalize",

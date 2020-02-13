@@ -34,7 +34,10 @@ const ModalFinalizeBookingBase: FC<Props> = ({
 }: Props) => {
 	const [booking, setBooking] = useState<Booking | undefined>();
 	const [values, setValues] = useState<FormFinalizeBookingValues | undefined>();
-	const [errors, setErrors] = useState<FormError<FormFinalizeBookingValues>>();
+	const [errors, setErrors] = useState<FormError<FormFinalizeBookingValues>>(
+		{}
+	);
+	const [currentMileageCounter, setCurrentMileageCounter] = useState<number>();
 	const [touched, setTouched] = useState<
 		TouchedFields<FormFinalizeBookingValues>
 	>();
@@ -51,11 +54,26 @@ const ModalFinalizeBookingBase: FC<Props> = ({
 			history.push("/bookings");
 		} else {
 			Booking.fromId(Number(bookingId))
-				.then(b => {
+				.then(async b => {
 					setBooking(b);
-					setValues({
-						amount: b.data.amount || 0
-					});
+					const values: FormFinalizeBookingValues = {
+						amount: b.data.amount || 0,
+						endFuel: b.data.endFuel || undefined,
+						endMileage: b.data.endMileage || undefined,
+						startFuel: b.data.startFuel || undefined,
+						startMileage: b.data.startMileage || undefined,
+						returned: b.data.returned
+					};
+					try {
+						const wialonData = await Booking.getVehicleWialonData(b.data.id);
+						if (wialonData?.data.mileage) {
+							setCurrentMileageCounter(wialonData.data.mileage);
+						}
+					} catch (e) {
+						// TODO: user error modal.
+						console.error(e);
+					}
+					setValues(values);
 				})
 				.catch(e => {
 					// TODO use error modal.
@@ -81,6 +99,7 @@ const ModalFinalizeBookingBase: FC<Props> = ({
 					onCancel={() => {
 						history.push("/bookings");
 					}}
+					currentMileageCounter={currentMileageCounter}
 					from={moment(booking.data.from, "X").toDate()}
 					to={moment(booking.data.to, "X").toDate()}
 					bookingType={booking.data.bookingType || "Unknown"}
@@ -93,7 +112,7 @@ const ModalFinalizeBookingBase: FC<Props> = ({
 					onSubmit={async () => {
 						setLoading(true);
 						try {
-							values && booking.finalize(values.amount);
+							values && booking.finalize(values);
 						} catch (e) {
 							console.error(e);
 							// TODO: SHow error in modal.

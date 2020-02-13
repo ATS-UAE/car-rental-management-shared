@@ -13,7 +13,7 @@ export type LocationServerResponseGet = ServerResponse<
 >;
 
 export type LocationServerResponseGetAll = ServerResponse<
-	DatePropsToUnix<ExtractServerResponseData<LocationServerResponseGet>>[]
+	ExtractServerResponseData<LocationServerResponseGet>[]
 >;
 export type LocationServerParamsPatch = DatePropsToUnix<
 	Partial<RemoveImmutableSequelizeProperties<LocationAttributes>>

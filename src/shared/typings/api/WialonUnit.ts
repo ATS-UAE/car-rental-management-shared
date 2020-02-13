@@ -1,11 +1,14 @@
-import { CoreSearchItemsResponse } from "node-wialon";
-import { FlattenIfArray, ServerResponse } from "../";
+import { ServerResponse } from "../";
 
-export type WialonUnitAttributes = FlattenIfArray<
-	CoreSearchItemsResponse["items"]
->;
+export interface WialonUnitAttributes {
+	name: string;
+	imei: string;
+	lat: number | null;
+	lng: number | null;
+	mileage: number | null;
+}
 
-export type WialonUnitServerResponseGet = ServerResponse<WialonUnitAttributes>;
+export type WialonUnitServerResponseGet = ServerResponse<WialonUnitAttributes | null>;
 export type WialonUnitServerResponseGetAll = ServerResponse<
 	WialonUnitAttributes[]
 >;

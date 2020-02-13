@@ -12,11 +12,15 @@ import {
 	TouchedFields,
 	FieldSelectItems
 } from "../presentational";
-import { Booking, LocationAttributes, Location, Vehicle } from "../../api";
+import { Booking, Location, Vehicle } from "../../api";
 import { ResolveThunks, connect, MapStateToProps } from "react-redux";
 import { ReduxState } from "../../reducers";
 import * as actions from "../../actions";
-import { Role } from "../../../shared/typings";
+import {
+	Role,
+	ExtractServerResponseData,
+	LocationServerResponseGetAll
+} from "../../../shared/typings";
 import moment from "moment";
 
 interface ModalFormBookingUpdateStateProps {
@@ -36,7 +40,9 @@ type State = {
 	values: FormBookingUpdateValues;
 	errors: FormError<FormBookingUpdateValues>;
 	touched: TouchedFields<FormBookingUpdateValues>;
-	locations: LocationAttributes[] | undefined;
+	locations:
+		| ExtractServerResponseData<LocationServerResponseGetAll>
+		| undefined;
 	errorNotes: string[];
 	initializing: boolean;
 	loading: boolean;

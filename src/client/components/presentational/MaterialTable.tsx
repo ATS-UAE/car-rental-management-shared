@@ -1,4 +1,4 @@
-import React, { forwardRef, FC } from "react";
+import React, { forwardRef } from "react";
 import MTable, { MaterialTableProps } from "material-table";
 
 import AddBox from "@material-ui/icons/AddBox";
