@@ -112,7 +112,6 @@ const FormFinalizeBookingBase: FC<FormFinalizeBookingProps> = ({
 }) => {
 	const hasErrors =
 		(formProps.errors && Object.keys(formProps.errors).length > 0) || false;
-	console.log(formProps);
 	const action = (
 		<Grid container spacing={2}>
 			<Grid item>
