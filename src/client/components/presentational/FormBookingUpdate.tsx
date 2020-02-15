@@ -10,7 +10,7 @@ import {
 	FieldSelectItems,
 	FormStatus,
 	FormProps,
-	FormError
+	FieldErrors
 } from ".";
 import { BookingType } from "../../../shared/typings";
 import { toTitleWords } from "../../utils";

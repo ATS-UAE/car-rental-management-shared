@@ -2,7 +2,7 @@ import React, { Component, createContext } from "react";
 import { ObjectSchema, ValidationError } from "yup";
 import _ from "lodash";
 
-export type FormError<Values extends object> = Partial<
+export type FieldErrors<Values extends object> = Partial<
 	Record<keyof Values, string>
 >;
 
@@ -16,8 +16,8 @@ export interface FormProviderProps<
 		| ObjectSchema<Values>
 		| ((value: Values, context?: Context) => void); // Must throw ValidationError
 	values: Values;
-	errors?: FormError<Values>;
-	onChange: (value: Values, errors: FormError<Values>, name?: string) => void;
+	errors?: FieldErrors<Values>;
+	onChange: (value: Values, errors: FieldErrors<Values>, name?: string) => void;
 	touched?: TouchedFields<Values>;
 	onFieldTouch?: (fields: TouchedFields<Values>, name?: string) => void;
 	castOnChange?: boolean;
@@ -35,7 +35,7 @@ interface FormContextProviderValue {
 	values: object;
 	setFieldValue: (name: string, value: any) => void;
 	setTouchedField: (name: string) => void;
-	errors: FormError<object>;
+	errors: FieldErrors<object>;
 	touched: TouchedFields<object>;
 }
 
@@ -71,7 +71,7 @@ export class FormProvider<Values extends object> extends Component<
 
 	private validateForm = (values: Values) => {
 		const { validationSchema, context } = this.props;
-		let errorMessages: FormError<Values> = {};
+		let errorMessages: FieldErrors<Values> = {};
 		if (validationSchema) {
 			try {
 				if (typeof validationSchema === "function") {

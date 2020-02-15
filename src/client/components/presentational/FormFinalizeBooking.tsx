@@ -2,7 +2,14 @@ import React, { FC } from "react";
 import moment from "moment";
 import * as yup from "yup";
 import { Grid, Button, withStyles, createStyles } from "@material-ui/core";
-import { Form, FieldText, FormProps, InfoText, FieldCheckboxGroup } from ".";
+import {
+	Form,
+	FieldText,
+	FormProps,
+	InfoText,
+	FieldCheckboxGroup,
+	FieldDate
+} from ".";
 import { BookingType } from "../../../shared/typings";
 
 export interface FormFinalizeBookingValues {
@@ -11,6 +18,8 @@ export interface FormFinalizeBookingValues {
 	endMileage?: number;
 	startFuel?: number;
 	endFuel?: number;
+	returnDate?: Date;
+	pickupDate?: Date;
 	returned: boolean;
 }
 
@@ -37,7 +46,7 @@ export const formFinalizeBookingSchema = yup.object().shape(
 		startMileage: yup
 			.number()
 			.min(0, "Cannot be negative")
-			.transform((v, ogV) => (ogV === "" ? undefined : v))
+			.transform((v, ogV) => (ogV === "" || v === "" ? undefined : v))
 			.when("endMileage", (endMileage, schema) => {
 				if (typeof endMileage === "number") {
 					return schema.test(
@@ -53,7 +62,7 @@ export const formFinalizeBookingSchema = yup.object().shape(
 			}),
 		endMileage: yup
 			.number()
-			.transform((v, ogV) => (ogV === "" ? undefined : v))
+			.transform((v, ogV) => (ogV === "" || v === "" ? undefined : v))
 			.when("startMileage", (startMileage, schema) => {
 				if (typeof startMileage === "number") {
 					return schema.test(
@@ -71,12 +80,18 @@ export const formFinalizeBookingSchema = yup.object().shape(
 			.number()
 			.min(0, "Minimum of 0")
 			.max(100, "Maximum of 100")
-			.transform((v, ogV) => (ogV === "" ? undefined : v)),
+			.transform((v, ogV) => (ogV === "" || v === "" ? undefined : v)),
 		endFuel: yup
 			.number()
 			.min(0, "Minimum of 0")
 			.max(100, "Maximum of 100")
-			.transform((v, ogV) => (ogV === "" ? undefined : v)),
+			.transform((v, ogV) => (ogV === "" || v === "" ? undefined : v)),
+		returnDate: yup.date().when("returned", (returned, schema) => {
+			if (returned) {
+				return schema.required("Please provide a date");
+			}
+		}),
+		pickupDate: yup.date(),
 		returned: yup.boolean()
 	},
 	[["startMileage", "endMileage"]]
@@ -193,6 +208,9 @@ const FormFinalizeBookingBase: FC<FormFinalizeBookingProps> = ({
 					/>
 				</Grid>
 				<Grid item xs={12}>
+					<FieldDate fullWidth name="pickupDate" label="Vehicle Pickup Date" />
+				</Grid>
+				<Grid item xs={12}>
 					<FieldText
 						fullWidth
 						name="amount"
@@ -200,12 +218,24 @@ const FormFinalizeBookingBase: FC<FormFinalizeBookingProps> = ({
 						label="Payment Amount"
 					/>
 				</Grid>
-				<Grid item xs={currentMileageCounter ? 6 : 12}>
+				<Grid
+					item
+					xs={formProps.values.returned || currentMileageCounter ? 6 : 12}
+				>
 					<FieldCheckboxGroup
 						name="returned"
 						label="Tick if vehicle has been returned."
 					/>
 				</Grid>
+				{formProps.values.returned && (
+					<Grid item xs={6}>
+						<FieldDate
+							fullWidth
+							name="returnDate"
+							label="Vehicle Return Date"
+						/>
+					</Grid>
+				)}
 				{currentMileageCounter && (
 					<Grid item xs={6}>
 						<InfoText

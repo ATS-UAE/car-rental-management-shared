@@ -8,7 +8,7 @@ import {
 	FormBookingUpdateValues,
 	FormStatus,
 	formBookingUpdateValidationSchema,
-	FormError,
+	FieldErrors,
 	TouchedFields,
 	FieldSelectItems
 } from "../presentational";
@@ -38,7 +38,7 @@ type Props = ModalFormBookingUpdateStateProps &
 
 type State = {
 	values: FormBookingUpdateValues;
-	errors: FormError<FormBookingUpdateValues>;
+	errors: FieldErrors<FormBookingUpdateValues>;
 	touched: TouchedFields<FormBookingUpdateValues>;
 	locations:
 		| ExtractServerResponseData<LocationServerResponseGetAll>

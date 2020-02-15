@@ -52,7 +52,8 @@ export type BookingUpdateOptions = UseParameters<
 	| "endFuel"
 	| "vehicleId"
 	| "bookingType"
-	| "returned"
+	| "returnDate"
+	| "pickupDate"
 > & {
 	replaceVehicle?: UseParameters<
 		ReplaceVehicleAttributes,

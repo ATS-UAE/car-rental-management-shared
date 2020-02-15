@@ -4,7 +4,7 @@ import {
 	BookingTable,
 	BookingTableItemData,
 	MaterialTable,
-	BookingTabeleRowData
+	BookingTableRowData
 } from ".";
 import { shallow } from "enzyme";
 import { Role, BookingType, BookingStatus } from "../../../shared/typings";
@@ -16,16 +16,16 @@ import {
 import { toTitleWords } from "../../utils";
 
 const findAction = (
-	actions: MaterialTableProps<BookingTabeleRowData>["actions"],
+	actions: MaterialTableProps<BookingTableRowData>["actions"],
 	tooltip: string,
 	data?: BookingTableItemData
-): Action<BookingTabeleRowData> | undefined => {
+): Action<BookingTableRowData> | undefined => {
 	const processedData = data
 		? processBookingTableData([data])[0]
 		: processBookingTableData([BOOKING_TABLE_DATA[0]])[0];
 	if (actions) {
 		for (const action of actions) {
-			let extractedAction: Action<BookingTabeleRowData>;
+			let extractedAction: Action<BookingTableRowData>;
 			if (typeof action === "function") {
 				extractedAction = action(processedData);
 			} else {

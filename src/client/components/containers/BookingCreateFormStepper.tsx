@@ -14,7 +14,7 @@ import {
 	BookingCreateFormStepperVehicleItem,
 	BookingCreateFormStepperLocationItem,
 	BookingCreateFormStepperValues,
-	FormError,
+	FieldErrors,
 	TouchedFields,
 	FieldSelectItems
 } from "../presentational";
@@ -82,7 +82,7 @@ export const BookingCreateFormStepperBase: FC<Props> = ({
 	}, [auth]);
 
 	const [errors, setErrors] = useState<
-		FormError<BookingCreateFormStepperValues>
+		FieldErrors<BookingCreateFormStepperValues>
 	>({});
 	const [loading, setLoading] = useState<boolean>(false);
 	const [errorNotes, setErrorNotes] = useState<string[]>([]);

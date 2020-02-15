@@ -33,10 +33,11 @@ import moment from "moment";
 import { BookingType } from "../../../shared/typings";
 import {
 	ExtractServerResponseData,
-	BookingServerResponseGetAll
+	BookingServerResponseGetAll,
+	BookingServerParamsPost
 } from "../../../shared/typings";
 import { rangeOverlap } from "../../utils";
-import { BookingCreateParams, BookingGetResponseItem } from "../../api";
+import { BookingGetResponseItem } from "../../api";
 
 const useFieldStyles = makeStyles(theme => ({
 	spacer: {
@@ -394,7 +395,7 @@ const formBookingCreateValidationSchema = yup.object().shape({
 
 export type BookingCreateFormStepperValues = {
 	locationId: number;
-} & BookingCreateParams;
+} & BookingServerParamsPost;
 
 export interface BookingCreateFormStepperProps
 	extends FormProps<BookingCreateFormStepperValues>,
@@ -547,7 +548,6 @@ const BookingCreateFormStepperBase: FC<BookingCreateFormStepperProps> = ({
 											context: { bookings, status: FormStatus.SUBMITTING }
 										}
 									);
-
 									onSubmit(casted);
 								})) ||
 							undefined

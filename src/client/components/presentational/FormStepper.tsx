@@ -10,7 +10,7 @@ import {
 	Grid
 } from "@material-ui/core";
 import { Form, FormProps } from ".";
-import { FormError } from "./FormProvider";
+import { FieldErrors } from "./FormProvider";
 
 export interface FormStep {
 	id: number;
@@ -153,9 +153,9 @@ export class FormStepper<Values extends object> extends Component<
 
 	public static getPageErrors = <Values extends object = object>(
 		currentPage: FormStep,
-		errors?: FormError<Values>
-	): Partial<FormError<Values>> => {
-		let pickedErrors: FormError<Values> =
+		errors?: FieldErrors<Values>
+	): Partial<FieldErrors<Values>> => {
+		let pickedErrors: FieldErrors<Values> =
 			(errors && _.pick(errors, currentPage.fields)) || {};
 
 		return pickedErrors;

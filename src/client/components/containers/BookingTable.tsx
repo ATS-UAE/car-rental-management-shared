@@ -4,7 +4,8 @@ import { RouteChildrenProps, withRouter } from "react-router";
 import { compose } from "recompose";
 import {
 	BookingTable as BookingTablePresentational,
-	BookingTableItemData
+	BookingTableItemData,
+	FormBookingPickup
 } from "../presentational";
 import * as actions from "../../actions";
 import { ReduxState } from "../../reducers";
@@ -55,6 +56,7 @@ const BookingTableBase: FC<Props> = ({
 					paid: b.paid,
 					to: b.to,
 					username,
+					pickupDate: b.pickupDate,
 					vehicle: `${b.vehicle.plateNumber} - ${b.vehicle.brand} ${b.vehicle.model}`
 				};
 			})) ||
@@ -95,6 +97,11 @@ const BookingTableBase: FC<Props> = ({
 				}}
 				onFinalize={({ id }) => {
 					history.push(`/bookings/finalize/${id}`, {
+						background: true
+					});
+				}}
+				onPickup={({ id }) => {
+					history.push(`/bookings/pickup/${id}`, {
 						background: true
 					});
 				}}

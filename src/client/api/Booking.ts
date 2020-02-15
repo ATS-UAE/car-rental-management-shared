@@ -3,39 +3,14 @@ import {
 	ServerResponseMeta,
 	ExtractServerResponseData,
 	BookingServerResponseGet,
-	WialonUnitServerResponseGet
+	WialonUnitServerResponseGet,
+	BookingServerParamsPost,
+	BookingServerParamsPatch
 } from "../../shared/typings";
 import { Role } from "../../shared/typings";
 
-export interface BookingCreateParams
-	extends Omit<
-		ExtractServerResponseData<BookingServerResponseGet>,
-		| "id"
-		| "paid"
-		| "amount"
-		| "approved"
-		| "finished"
-		| "startMileage"
-		| "endMileage"
-		| "startFuel"
-		| "endFuel"
-		| "replaceVehicleId"
-		| "createdAt"
-		| "updatedAt"
-		| "vehicle"
-		| "finalized"
-		| "returned"
-	> {
-	replaceVehicle?: {
-		vin: string;
-		plateNumber: string;
-		brand: string;
-		model: string;
-	};
-}
-
-export type BookingUpdateParams = Partial<
-	Omit<ExtractServerResponseData<BookingServerResponseGet>, "id">
+export type BookingUpdateParams = ExtractServerResponseData<
+	BookingServerParamsPatch
 >;
 
 export type BookingGetResponseItem = ExtractServerResponseData<
@@ -44,12 +19,18 @@ export type BookingGetResponseItem = ExtractServerResponseData<
 
 export type BookingFinalizeParams = Pick<
 	BookingUpdateParams,
-	| "returned"
+	| "returnDate"
+	| "pickupDate"
 	| "amount"
 	| "endFuel"
 	| "startFuel"
 	| "startMileage"
 	| "endMileage"
+>;
+
+export type BookingPickupParams = Pick<
+	BookingUpdateParams,
+	"startMileage" | "startFuel"
 >;
 
 export class Booking {
@@ -93,10 +74,10 @@ export class Booking {
 			return new Booking(res.data, meta);
 		});
 
-	public static create = (params: BookingCreateParams) =>
+	public static create = (params: BookingServerParamsPost) =>
 		Api.execute<
 			ExtractServerResponseData<BookingServerResponseGet>,
-			BookingCreateParams
+			BookingServerParamsPost
 		>("post", `/api/carbooking/bookings`, {
 			body: params
 		}).then(res => {
@@ -145,6 +126,8 @@ export class Booking {
 		});
 
 	public finalize = (values: BookingFinalizeParams) => this.update(values);
+
+	public pickup = (values: BookingPickupParams) => this.update(values);
 
 	public update = (params: BookingUpdateParams) =>
 		Api.execute<

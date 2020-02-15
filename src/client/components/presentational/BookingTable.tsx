@@ -9,7 +9,8 @@ import {
 	Delete,
 	Edit,
 	Check,
-	Payment
+	Payment,
+	Undo
 } from "@material-ui/icons";
 import { RoleUtils, toTitleWords, getBookingStatus } from "../../utils";
 import moment from "moment";
@@ -26,17 +27,19 @@ export interface BookingTableItemData {
 	to: number;
 	bookingType: BookingType;
 	finished: boolean;
+	pickupDate: number | null;
 }
 
 export interface BookingTableProps {
 	data: BookingTableItemData[];
 	onRefresh: () => void;
-	onUpdate: (rowData: BookingTabeleRowData) => void;
-	onApprove: (rowData: BookingTabeleRowData) => void;
-	onDeny: (rowData: BookingTabeleRowData) => void;
-	onDelete: (rowData: BookingTabeleRowData) => void;
-	onFinalize: (rowData: BookingTabeleRowData) => void;
-	onPay: (rowData: BookingTabeleRowData) => void;
+	onUpdate: (rowData: BookingTableRowData) => void;
+	onApprove: (rowData: BookingTableRowData) => void;
+	onDeny: (rowData: BookingTableRowData) => void;
+	onDelete: (rowData: BookingTableRowData) => void;
+	onFinalize: (rowData: BookingTableRowData) => void;
+	onPay: (rowData: BookingTableRowData) => void;
+	onPickup: (rowData: BookingTableRowData) => void;
 	role: Role | null;
 	isLoading?: boolean;
 }
@@ -51,6 +54,7 @@ export const BookingTable: FC<BookingTableProps> = ({
 	onRefresh,
 	onFinalize,
 	onPay,
+	onPickup,
 	isLoading
 }) => {
 	return (
@@ -64,7 +68,8 @@ export const BookingTable: FC<BookingTableProps> = ({
 				onDelete,
 				onRefresh,
 				onFinalize,
-				onPay
+				onPay,
+				onPickup
 			})}
 			options={{
 				filtering: true,
@@ -80,22 +85,24 @@ export const BookingTable: FC<BookingTableProps> = ({
 	);
 };
 
-type TableActions = {
-	onUpdate: BookingTableProps["onUpdate"];
-	onApprove: BookingTableProps["onApprove"];
-	onDeny: BookingTableProps["onDeny"];
-	onDelete: BookingTableProps["onDelete"];
-	onRefresh: BookingTableProps["onRefresh"];
-	onFinalize: BookingTableProps["onFinalize"];
-	onPay: BookingTableProps["onFinalize"];
-};
+type TableActions = Pick<
+	BookingTableProps,
+	| "onUpdate"
+	| "onApprove"
+	| "onDeny"
+	| "onDelete"
+	| "onRefresh"
+	| "onFinalize"
+	| "onPay"
+	| "onPickup"
+>;
 
 export const getBookingTableActions = (
 	role: Role | null,
 	tableActions: TableActions
-): MaterialTableProps<BookingTabeleRowData>["actions"] => {
+): MaterialTableProps<BookingTableRowData>["actions"] => {
 	const currentTimestamp = moment();
-	const actions: MaterialTableProps<BookingTabeleRowData>["actions"] = [
+	const actions: MaterialTableProps<BookingTableRowData>["actions"] = [
 		{
 			icon: () => <Refresh />,
 			tooltip: "Refresh Booking List",
@@ -167,6 +174,16 @@ export const getBookingTableActions = (
 					hidden: !visible,
 					onClick: (e, data) => !Array.isArray(data) && tableActions.onPay(data)
 				};
+			},
+			({ approved, pickupDate }) => {
+				const visible = approved && pickupDate === null;
+				return {
+					icon: () => <Undo />,
+					tooltip: "Vehicle Pick-up",
+					hidden: !visible,
+					onClick: (e, data) =>
+						!Array.isArray(data) && tableActions.onPickup(data)
+				};
 			}
 		);
 	}
@@ -176,7 +193,7 @@ export const getBookingTableActions = (
 
 export const getBookingTableColumns = (
 	role: Role | null
-): Column<BookingTabeleRowData>[] => {
+): Column<BookingTableRowData>[] => {
 	const columns = [...BOOKING_COLUMNS];
 
 	if (role === Role.GUEST || role === null) {
@@ -188,7 +205,7 @@ export const getBookingTableColumns = (
 
 export const processBookingTableData = (
 	data: BookingTableItemData[]
-): BookingTabeleRowData[] => {
+): BookingTableRowData[] => {
 	return data.map(item => {
 		const bookingSent = moment(item.createdAt, "X");
 		const bookingStart = moment(item.from, "X");
@@ -219,12 +236,14 @@ export const processBookingTableData = (
 					to: item.to
 				})
 			),
-			bookingType: toTitleWords(item.bookingType)
+			bookingType: toTitleWords(item.bookingType),
+			pickupDate:
+				(item.pickupDate && moment(item.pickupDate, "X").toDate()) || null
 		};
 	});
 };
 
-export interface BookingTabeleRowData {
+export interface BookingTableRowData {
 	id: number;
 	approved: boolean | null;
 	username: string;
@@ -245,9 +264,10 @@ export interface BookingTabeleRowData {
 	toDay: number;
 	status: string;
 	bookingType: string;
+	pickupDate: Date | null;
 }
 
-const BOOKING_COLUMNS: Column<BookingTabeleRowData>[] = [
+const BOOKING_COLUMNS: Column<BookingTableRowData>[] = [
 	{
 		title: "ID",
 		type: "numeric",
@@ -265,6 +285,12 @@ const BOOKING_COLUMNS: Column<BookingTabeleRowData>[] = [
 		title: "Sent",
 		type: "datetime",
 		field: "createdAt"
+	},
+	{
+		title: "Sent Date",
+		type: "date",
+		field: "createdAt",
+		hidden: true
 	},
 	{
 		title: "Sent Year",
@@ -288,6 +314,12 @@ const BOOKING_COLUMNS: Column<BookingTabeleRowData>[] = [
 		field: "from"
 	},
 	{
+		title: "Start Date",
+		type: "date",
+		field: "from",
+		hidden: true
+	},
+	{
 		title: "Start Year",
 		field: "fromYear",
 		hidden: true
@@ -306,6 +338,12 @@ const BOOKING_COLUMNS: Column<BookingTabeleRowData>[] = [
 		title: "End",
 		type: "datetime",
 		field: "to"
+	},
+	{
+		title: "End Date",
+		type: "date",
+		field: "to",
+		hidden: true
 	},
 	{
 		title: "End Year",

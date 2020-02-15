@@ -63,11 +63,17 @@ export class Booking extends Model<Booking> implements BookingAttributes {
 	public vehicleId: number;
 
 	@Column({ allowNull: false, type: DataType.STRING })
-	public readonly bookingType: BookingType;
+	public bookingType: BookingType;
 
 	@ForeignKey(() => ReplaceVehicle)
 	@Column
 	public replaceVehicleId: number | null;
+
+	@Column({ type: DataType.DATE, allowNull: true, defaultValue: null })
+	public returnDate: Date | null;
+
+	@Column({ type: DataType.DATE, allowNull: true, defaultValue: null })
+	public pickupDate: Date | null;
 
 	@CreatedAt
 	public readonly createdAt: Date;

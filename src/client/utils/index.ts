@@ -1,10 +1,11 @@
 import { ServerResponse } from "../../shared/typings";
-import { FormError } from "../components/presentational";
+import { FieldErrors } from "../components/presentational";
+import { AxiosError } from "axios";
 export * from "./RoleUtils";
 export * from "./helpers";
 
 export class FormErrors<Values extends object> {
-	public fieldErrors: FormError<Values> = {};
+	public fieldErrors: FieldErrors<Values> = {};
 	public formErrors: string[] = [];
 
 	public addFieldError(error: { key: string; value: string }) {
@@ -18,7 +19,19 @@ export class FormErrors<Values extends object> {
 		this.formErrors.push(error);
 	}
 
-	static handleFormApiErrors = <Values extends object>(
+	public static handleAxiosError = <Values extends object>(
+		e: AxiosError<ServerResponse<Values>> & Error
+	) => {
+		if (e.response && e.response.data) {
+			return FormErrors.handleFormApiErrors(e.response.data);
+		}
+		// Return error message
+		const errors = new FormErrors<Values>();
+		errors.addFormError(e.message);
+		return errors;
+	};
+
+	public static handleFormApiErrors = <Values extends object>(
 		error: ServerResponse<Values>
 	) => {
 		const errors = new FormErrors<Values>();

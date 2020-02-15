@@ -34,7 +34,8 @@ export const BOOKING_TABLE_DATA: BookingTableTestItem[] = [
 		updatable: true,
 		finalizable: false,
 		payable: false,
-		status: BookingStatus.PENDING
+		status: BookingStatus.PENDING,
+		pickupDate: null
 	},
 	// Status: Denied
 	{
@@ -56,7 +57,8 @@ export const BOOKING_TABLE_DATA: BookingTableTestItem[] = [
 		updatable: false,
 		finalizable: false,
 		payable: false,
-		status: BookingStatus.DENIED
+		status: BookingStatus.DENIED,
+		pickupDate: null
 	},
 	// Status: Approved
 	{
@@ -78,7 +80,8 @@ export const BOOKING_TABLE_DATA: BookingTableTestItem[] = [
 		updatable: true,
 		finalizable: true,
 		payable: false,
-		status: BookingStatus.APPROVED
+		status: BookingStatus.APPROVED,
+		pickupDate: null
 	},
 	// Status: Expired
 	{
@@ -102,7 +105,8 @@ export const BOOKING_TABLE_DATA: BookingTableTestItem[] = [
 		updatable: true,
 		finalizable: false,
 		payable: false,
-		status: BookingStatus.EXPIRED
+		status: BookingStatus.EXPIRED,
+		pickupDate: null
 	},
 	// Status: Ongoing
 	{
@@ -126,7 +130,8 @@ export const BOOKING_TABLE_DATA: BookingTableTestItem[] = [
 		updatable: true,
 		finalizable: true,
 		payable: false,
-		status: BookingStatus.ONGOING
+		status: BookingStatus.ONGOING,
+		pickupDate: null
 	},
 	// Status: Ongoing
 	{
@@ -150,7 +155,8 @@ export const BOOKING_TABLE_DATA: BookingTableTestItem[] = [
 		updatable: false,
 		finalizable: true,
 		payable: true,
-		status: BookingStatus.ONGOING
+		status: BookingStatus.ONGOING,
+		pickupDate: null
 	},
 	// Status: Finished
 	{
@@ -174,6 +180,7 @@ export const BOOKING_TABLE_DATA: BookingTableTestItem[] = [
 		updatable: false,
 		finalizable: true,
 		payable: true,
-		status: BookingStatus.FINISHED
+		status: BookingStatus.FINISHED,
+		pickupDate: null
 	}
 ];

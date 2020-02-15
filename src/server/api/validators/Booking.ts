@@ -17,11 +17,16 @@ import { Validator } from ".";
 type ValidatorParameters = Parameters<typeof Booking.getValidator>;
 
 interface BookingValidationData
-	extends Omit<BookingAttributes, "from" | "to" | "createdAt" | "updatedAt"> {
+	extends Omit<
+		BookingAttributes,
+		"from" | "to" | "createdAt" | "updatedAt" | "pickupDate" | "returnDate"
+	> {
 	from: number | Date;
 	to: number | Date;
 	createdAt: number | Date;
-	createdat: number | Date;
+	updatedAt: number | Date;
+	pickupDate: number | Date;
+	returnDate: number | Date;
 }
 
 type BookingValidatorContextWithSchema = [
@@ -41,35 +46,47 @@ export abstract class Booking {
 
 	private static validatorSchema = yup
 		.object()
-		.shape({
-			paid: yup.boolean(),
-			amount: yup.number().nullable(),
-			from: yup
-				.date()
-				.transform((v, originalValue) =>
-					typeof originalValue === "number"
-						? moment(originalValue, "X").toDate()
-						: originalValue
-				),
-			to: yup
-				.date()
-				.transform((v, originalValue) =>
-					typeof originalValue === "number"
-						? moment(originalValue, "X").toDate()
-						: originalValue
-				),
-			approved: yup.boolean().nullable(),
-			finished: yup.boolean(),
-			startMileage: yup.number().nullable(),
-			endMileage: yup.number().nullable(),
-			startFuel: yup.number().nullable(),
-			endFuel: yup.number().nullable(),
-			userId: yup.number(),
-			vehicleId: yup.number(),
-			bookingType: yup.mixed<BookingType>().oneOf(Object.values(BookingType)),
-			replaceVehicleId: yup.number().nullable(),
-			returned: yup.boolean()
-		})
+		.shape(
+			{
+				paid: yup.boolean(),
+				amount: yup.number().nullable(),
+				from: yup
+					.date()
+					.transform((v, originalValue) =>
+						typeof originalValue === "number"
+							? moment(originalValue, "X").toDate()
+							: originalValue
+					),
+				to: yup
+					.date()
+					.transform((v, originalValue) =>
+						typeof originalValue === "number"
+							? moment(originalValue, "X").toDate()
+							: originalValue
+					),
+				approved: yup.boolean().nullable(),
+				finished: yup.boolean(),
+				startMileage: yup.number().nullable(),
+				endMileage: yup.number().nullable(),
+				startFuel: yup
+					.number()
+					.min(0, "Minimum of 0")
+					.max(100, "Maximum of 100")
+					.nullable(),
+				endFuel: yup
+					.number()
+					.min(0, "Minimum of 0")
+					.max(100, "Maximum of 100")
+					.nullable(),
+				userId: yup.number(),
+				vehicleId: yup.number(),
+				bookingType: yup.mixed<BookingType>().oneOf(Object.values(BookingType)),
+				replaceVehicleId: yup.number().nullable(),
+				returnDate: yup.date().nullable(),
+				pickupDate: yup.date().nullable()
+			},
+			[["endMileage", "startMileage"]]
+		)
 		.when(
 			["$user", "$operation", "$target", "$data", "$casting"],
 			(...args: BookingValidatorContextWithSchema) => {
@@ -107,6 +124,22 @@ export abstract class Booking {
 									moment(originalValue as Date).unix()
 								),
 							updatedAt: yup
+								.number()
+								.nullable()
+								.transform(
+									(v, originalValue) =>
+										(originalValue && moment(originalValue as Date).unix()) ||
+										null
+								),
+							returnDate: yup
+								.number()
+								.nullable()
+								.transform(
+									(v, originalValue) =>
+										(originalValue && moment(originalValue as Date).unix()) ||
+										null
+								),
+							pickupDate: yup
 								.number()
 								.nullable()
 								.transform(
@@ -278,11 +311,29 @@ export abstract class Booking {
 								Role.ADMIN,
 								Role.KEY_MANAGER
 							]),
-							startMileage: stripField(yup.number().nullable(), [
-								Role.MASTER,
-								Role.ADMIN,
-								Role.KEY_MANAGER
-							]),
+							startMileage: stripField(
+								yup
+									.number()
+									.nullable()
+									.min(0, "Cannot be negative")
+									.transform((v, ogV) =>
+										ogV === "" || v === "" ? undefined : v
+									)
+									.when("endMileage", (endMileage, schema) => {
+										if (typeof endMileage === "number") {
+											return schema.test(
+												"no-lower-than-other",
+												"Cannot be higher than ending mileage.",
+												startMileage => {
+													return startMileage !== undefined
+														? startMileage <= endMileage
+														: true;
+												}
+											);
+										}
+									}),
+								[Role.MASTER, Role.ADMIN, Role.KEY_MANAGER]
+							),
 							approved: stripField(
 								yup
 									.boolean()
@@ -343,11 +394,25 @@ export abstract class Booking {
 								Role.ADMIN,
 								Role.KEY_MANAGER
 							]),
-							endMileage: stripField(yup.number().nullable(), [
-								Role.MASTER,
-								Role.ADMIN,
-								Role.KEY_MANAGER
-							]),
+							endMileage: stripField(
+								yup
+									.number()
+									.nullable()
+									.when("startMileage", (startMileage, schema) => {
+										if (typeof startMileage === "number") {
+											return schema.test(
+												"no-lower-than-other",
+												"Cannot be lower than starting mileage.",
+												endMileage => {
+													return endMileage !== undefined
+														? startMileage <= endMileage
+														: true;
+												}
+											);
+										}
+									}),
+								[Role.MASTER, Role.ADMIN, Role.KEY_MANAGER]
+							),
 							paid: stripField(yup.boolean(), [
 								Role.MASTER,
 								Role.ADMIN,

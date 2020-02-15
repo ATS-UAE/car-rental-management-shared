@@ -5,9 +5,9 @@ import { withRouter, RouteChildrenProps } from "react-router";
 import { compose } from "recompose";
 import { Booking } from "../../api";
 import {
-	FormFinalizeBooking,
+	FormBookingPickup,
 	Modal,
-	FormFinalizeBookingValues,
+	FormBookingPickupValues,
 	TouchedFields,
 	FieldErrors
 } from "../presentational";
@@ -16,18 +16,18 @@ import * as actions from "../../actions";
 import { formBookingPickupSchema } from "../presentational/FormBookingPickup";
 import { FormErrors } from "../../utils";
 
-interface ModalFinalizeBookingStateProps {
+interface ModalFormBookingPickupStateProps {
 	auth: ReduxState["auth"];
 	users: ReduxState["users"];
 }
 
-type ModalFinalizeBookingActionProps = ResolveThunks<typeof actions>;
+type ModalFormBookingPickupActionProps = ResolveThunks<typeof actions>;
 
-type Props = ModalFinalizeBookingStateProps &
-	ModalFinalizeBookingActionProps &
+type Props = ModalFormBookingPickupStateProps &
+	ModalFormBookingPickupActionProps &
 	RouteChildrenProps<{ id: string }, {}>;
 
-const ModalFinalizeBookingBase: FC<Props> = ({
+const ModalFormBookingPickupBase: FC<Props> = ({
 	match,
 	history,
 	auth,
@@ -35,14 +35,14 @@ const ModalFinalizeBookingBase: FC<Props> = ({
 	fetchBookings
 }: Props) => {
 	const [booking, setBooking] = useState<Booking | undefined>();
-	const [values, setValues] = useState<FormFinalizeBookingValues | undefined>();
-	const [errors, setErrors] = useState<FieldErrors<FormFinalizeBookingValues>>(
+	const [values, setValues] = useState<FormBookingPickupValues | undefined>();
+	const [errors, setErrors] = useState<FieldErrors<FormBookingPickupValues>>(
 		{}
 	);
 	const [errorNotes, setErrorNotes] = useState<string[]>([]);
 	const [currentMileageCounter, setCurrentMileageCounter] = useState<number>();
 	const [touched, setTouched] = useState<
-		TouchedFields<FormFinalizeBookingValues>
+		TouchedFields<FormBookingPickupValues>
 	>();
 	const [isLoading, setLoading] = useState<boolean>(false);
 	const bookingId = match?.params.id;
@@ -59,19 +59,12 @@ const ModalFinalizeBookingBase: FC<Props> = ({
 			Booking.fromId(Number(bookingId))
 				.then(async b => {
 					setBooking(b);
-					const values: FormFinalizeBookingValues = {
-						amount: b.data.amount || 0,
-						endFuel: b.data.endFuel || undefined,
-						endMileage: b.data.endMileage || undefined,
-						startFuel: b.data.startFuel || undefined,
-						startMileage: b.data.startMileage || undefined,
-						returnDate:
-							(b.data.returnDate && moment(b.data.returnDate, "X").toDate()) ||
-							undefined,
+					const values: FormBookingPickupValues = {
 						pickupDate:
 							(b.data.pickupDate && moment(b.data.pickupDate, "X").toDate()) ||
 							undefined,
-						returned: Boolean(b.data.pickupDate)
+						startFuel: b.data.startFuel || undefined,
+						startMileage: b.data.startMileage || undefined
 					};
 					try {
 						const wialonData = await Booking.getVehicleWialonData(b.data.id);
@@ -98,9 +91,9 @@ const ModalFinalizeBookingBase: FC<Props> = ({
 			onClose={() => history.push("/bookings")}
 		>
 			{booker && booking && (
-				<FormFinalizeBooking
+				<FormBookingPickup
 					// Cast because children will not load if values is undefined.
-					values={values as FormFinalizeBookingValues}
+					values={values as FormBookingPickupValues}
 					onChange={(values, errors) => {
 						setValues(values);
 						setErrors(errors);
@@ -123,25 +116,14 @@ const ModalFinalizeBookingBase: FC<Props> = ({
 						setLoading(true);
 						try {
 							values &&
-								(await booking.finalize(
-									formBookingPickupSchema.cast({
-										...values,
-										pickupDate:
-											values.pickupDate && moment(values.pickupDate).unix(),
-										returnDate: values.returned
-											? values.pickupDate && moment(values.pickupDate).unix()
-											: null
-									})
-								));
+								(await booking.pickup(formBookingPickupSchema.cast(values)));
 							history.replace("/bookings");
 						} catch (e) {
 							const apiErrors = FormErrors.handleAxiosError<
-								FormFinalizeBookingValues
+								FormBookingPickupValues
 							>(e);
 							setErrors({ ...errors, ...apiErrors.fieldErrors });
 							setErrorNotes(apiErrors.formErrors);
-
-							// TODO: SHow error in modal.
 						}
 						setLoading(false);
 						fetchBookings();
@@ -153,7 +135,7 @@ const ModalFinalizeBookingBase: FC<Props> = ({
 };
 
 const mapStateToProps: MapStateToProps<
-	ModalFinalizeBookingStateProps,
+	ModalFormBookingPickupStateProps,
 	{},
 	ReduxState
 > = ({ auth, users }) => ({
@@ -161,7 +143,7 @@ const mapStateToProps: MapStateToProps<
 	users
 });
 
-export const ModalFormFinalizeBooking = compose<Props, {}>(
+export const ModalFormBookingPickup = compose<Props, {}>(
 	withRouter,
 	connect(mapStateToProps, actions)
-)(ModalFinalizeBookingBase);
+)(ModalFormBookingPickupBase);

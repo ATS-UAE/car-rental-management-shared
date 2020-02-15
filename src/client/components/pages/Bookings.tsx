@@ -19,7 +19,8 @@ import {
 	ModalConfirmDeleteBooking,
 	ModalFormBookingUpdate,
 	ModalFormFinalizeBooking,
-	ModalConfirmPayBooking
+	ModalConfirmPayBooking,
+	ModalFormBookingPickup
 } from "../containers";
 import { ReduxState } from "../../reducers";
 
@@ -56,19 +57,23 @@ const Bookings: FC<Props> = ({
 		<Paper className={classNames(classes.root, classes.items)}>
 			<Route
 				path="/bookings/delete/:id"
-				render={({ history, match }) => <ModalConfirmDeleteBooking />}
+				render={() => <ModalConfirmDeleteBooking />}
 			/>
 			<Route
 				path="/bookings/edit/:id"
-				render={({ history, match }) => <ModalFormBookingUpdate />}
+				render={() => <ModalFormBookingUpdate />}
 			/>
 			<Route
 				path="/bookings/pay/:id"
-				render={({ history, match }) => <ModalConfirmPayBooking />}
+				render={() => <ModalConfirmPayBooking />}
 			/>
 			<Route
 				path="/bookings/finalize/:id"
-				render={({ history, match }) => <ModalFormFinalizeBooking />}
+				render={() => <ModalFormFinalizeBooking />}
+			/>
+			<Route
+				path="/bookings/pickup/:id"
+				render={() => <ModalFormBookingPickup />}
 			/>
 			<Switch>
 				<Route

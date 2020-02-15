@@ -2,12 +2,13 @@ import React, { FC } from "react";
 import moment from "moment";
 import * as yup from "yup";
 import { Grid, Button, withStyles, createStyles } from "@material-ui/core";
-import { Form, FieldText, FormProps, InfoText } from ".";
+import { Form, FieldText, FormProps, InfoText, FieldDate } from ".";
 import { BookingType } from "../../../shared/typings";
 
 export interface FormBookingPickupValues {
 	startMileage?: number;
 	startFuel?: number;
+	pickupDate?: Date;
 }
 
 interface FormBookingPickupProps extends FormProps<FormBookingPickupValues> {
@@ -23,15 +24,19 @@ interface FormBookingPickupProps extends FormProps<FormBookingPickupValues> {
 	classes: Partial<Record<keyof typeof styles, string>>;
 }
 
-export const formBookingPickupSchema = yup.object().shape({
-	startMileage: yup
-		.number()
-		.transform((v, ogV) => (ogV === "" ? undefined : v)),
-	startFuel: yup
-		.number()
-		.min(0, "Minimum of 0")
-		.max(100, "Maximum of 100")
-});
+export const formBookingPickupSchema = yup
+	.object()
+	.shape<FormBookingPickupValues>({
+		startMileage: yup
+			.number()
+			.transform((v, ogV) => (ogV === "" || v === "" ? undefined : v)),
+		startFuel: yup
+			.number()
+			.min(0, "Minimum of 0")
+			.max(100, "Maximum of 100")
+			.transform((v, ogV) => (ogV === "" || v === "" ? undefined : v)),
+		pickupDate: yup.date()
+	});
 
 const FormBookingPickupBase: FC<FormBookingPickupProps> = ({
 	vehicle,
@@ -123,6 +128,9 @@ const FormBookingPickupBase: FC<FormBookingPickupProps> = ({
 						type="number"
 						label="Starting Fuel %"
 					/>
+				</Grid>
+				<Grid item xs={6}>
+					<FieldDate fullWidth name="pickupDate" label="Vehicle Pickup Date" />
 				</Grid>
 				{currentMileageCounter && (
 					<Grid item xs={6}>
