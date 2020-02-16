@@ -31,7 +31,7 @@ const ModalConfirmDeleteBookingBase: FC<Props> = ({
 				setLoading(true);
 				if (bookingId) {
 					try {
-						await Booking.delete(Number(bookingId));
+						await Booking.destroy(Number(bookingId));
 						fetchBookings();
 					} catch (e) {
 						// TODO: show error in modal.

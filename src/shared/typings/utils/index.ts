@@ -18,3 +18,15 @@ export type FlattenIfArray<T> = T extends (infer R)[] ? R : T;
 export type ExtractServerResponseData<T> = T extends ServerResponse<infer Data>
 	? Data
 	: T;
+
+export type UnixToDate<T> = T extends number ? Date : T;
+
+export type UnixPropsToDate<T extends object, K extends keyof T> = {
+	[P in keyof T]: P extends K ? Date : T[P];
+};
+
+export type UseParameters<
+	AllParams,
+	RequiredParams extends keyof AllParams = never,
+	OptionalParams extends keyof AllParams = never
+> = Pick<AllParams, RequiredParams> & Pick<Partial<AllParams>, OptionalParams>;

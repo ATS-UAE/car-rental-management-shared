@@ -11,3 +11,4 @@ export * from "./ModalFormBookingUpdate";
 export * from "./ModalFormFinalizeBooking";
 export * from "./ModalConfirmPayBooking";
 export * from "./ModalFormBookingPickup";
+export * from "./ModalFormBookingDetailView";

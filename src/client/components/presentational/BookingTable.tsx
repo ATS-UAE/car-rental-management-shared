@@ -10,7 +10,8 @@ import {
 	Edit,
 	Check,
 	Payment,
-	Undo
+	Undo,
+	Visibility
 } from "@material-ui/icons";
 import { RoleUtils, toTitleWords, getBookingStatus } from "../../utils";
 import moment from "moment";
@@ -40,6 +41,7 @@ export interface BookingTableProps {
 	onFinalize: (rowData: BookingTableRowData) => void;
 	onPay: (rowData: BookingTableRowData) => void;
 	onPickup: (rowData: BookingTableRowData) => void;
+	onView: (rowData: BookingTableRowData) => void;
 	role: Role | null;
 	isLoading?: boolean;
 }
@@ -55,6 +57,7 @@ export const BookingTable: FC<BookingTableProps> = ({
 	onFinalize,
 	onPay,
 	onPickup,
+	onView,
 	isLoading
 }) => {
 	return (
@@ -69,7 +72,8 @@ export const BookingTable: FC<BookingTableProps> = ({
 				onRefresh,
 				onFinalize,
 				onPay,
-				onPickup
+				onPickup,
+				onView
 			})}
 			options={{
 				filtering: true,
@@ -95,6 +99,7 @@ type TableActions = Pick<
 	| "onFinalize"
 	| "onPay"
 	| "onPickup"
+	| "onView"
 >;
 
 export const getBookingTableActions = (
@@ -108,6 +113,13 @@ export const getBookingTableActions = (
 			tooltip: "Refresh Booking List",
 			isFreeAction: true,
 			onClick: () => tableActions.onRefresh()
+		},
+		() => {
+			return {
+				icon: () => <Visibility />,
+				tooltip: "View booking details",
+				onClick: (e, data) => !Array.isArray(data) && tableActions.onView(data)
+			};
 		}
 	];
 
@@ -179,7 +191,7 @@ export const getBookingTableActions = (
 				const visible = approved && pickupDate === null;
 				return {
 					icon: () => <Undo />,
-					tooltip: "Vehicle Pick-up",
+					tooltip: "Vehicle pick-up",
 					hidden: !visible,
 					onClick: (e, data) =>
 						!Array.isArray(data) && tableActions.onPickup(data)

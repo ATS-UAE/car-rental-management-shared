@@ -39,3 +39,4 @@ export * from "./InfoText";
 export * from "./FormBookingUpdate";
 export * from "./FieldCheckboxGroup";
 export * from "./FormBookingPickup";
+export * from "./FormBookingDetailView";

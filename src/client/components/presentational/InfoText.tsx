@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, ReactText } from "react";
 import {
 	Typography,
 	withStyles,
@@ -8,9 +8,10 @@ import {
 } from "@material-ui/core";
 
 export interface InfoTextProps {
-	title: string;
-	value: string;
+	title: ReactText;
+	value: ReactText;
 	classes?: Partial<Record<keyof typeof styles, string>>;
+	fullWidth?: boolean;
 }
 
 const InfoTextBase: FC<InfoTextProps & WithStyles<typeof styles>> = ({
@@ -37,7 +38,9 @@ const InfoTextBase: FC<InfoTextProps & WithStyles<typeof styles>> = ({
 
 const styles = (theme: Theme) =>
 	createStyles({
-		root: {},
+		root: (props: InfoTextProps) => ({
+			width: props.fullWidth ? "100%" : undefined
+		}),
 		title: {
 			marginRight: theme.spacing(1)
 		},

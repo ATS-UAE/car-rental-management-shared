@@ -9,14 +9,14 @@ import {
 	Role
 } from "../../shared/typings";
 import {
-	User,
+	User as UserModel,
 	Booking as BookingModel,
 	ReplaceVehicle,
 	Location,
 	Vehicle as VehicleModel
 } from "../models";
 import { ItemNotFoundException } from "./exceptions";
-import { UseParameters, API_OPERATION, Vehicle } from ".";
+import { UseParameters, API_OPERATION, Vehicle, User } from ".";
 import { ApiErrorHandler } from "./utils";
 import { Castable, Collection } from "./Collection";
 import {
@@ -64,10 +64,10 @@ export type BookingUpdateOptions = UseParameters<
 export class Booking implements Castable<Partial<BookingAttributes>> {
 	public constructor(public data: BookingModel) {}
 
-	public cast = (user: User) =>
+	public cast = (user: UserModel) =>
 		BookingValidators.getValidator(user, API_OPERATION.READ).cast(this.data);
 
-	public static getAll = async (user: User) => {
+	public static getAll = async (user: UserModel) => {
 		let bookings: BookingModel[] = [];
 
 		if (user.role === Role.GUEST) {
@@ -80,7 +80,7 @@ export class Booking implements Castable<Partial<BookingAttributes>> {
 			bookings = await BookingModel.findAll({
 				include: [
 					{
-						model: User,
+						model: UserModel,
 						where: {
 							clientId: user.clientId
 						}
@@ -101,11 +101,14 @@ export class Booking implements Castable<Partial<BookingAttributes>> {
 	};
 
 	public getVehicle = async () => {
-		const vehicle = await VehicleModel.findByPk(this.data.vehicleId);
-		return new Vehicle(vehicle);
+		await this.data.reload({ include: [VehicleModel] });
+		return new Vehicle(this.data.vehicle);
 	};
 
-	public static create = async (user: User, options: BookingCreateOptions) => {
+	public static create = async (
+		user: UserModel,
+		options: BookingCreateOptions
+	) => {
 		try {
 			const validator = BookingValidators.getValidator(
 				user,
@@ -139,7 +142,7 @@ export class Booking implements Castable<Partial<BookingAttributes>> {
 		}
 	};
 
-	public static get = async (user: User, bookingId: number) => {
+	public static get = async (user: UserModel, bookingId: number) => {
 		const booking = await BookingModel.findByPk(bookingId, {
 			include: [{ all: true }]
 		});
@@ -164,7 +167,7 @@ export class Booking implements Castable<Partial<BookingAttributes>> {
 		}
 	};
 
-	public update = async (user: User, options: BookingUpdateOptions) => {
+	public update = async (user: UserModel, options: BookingUpdateOptions) => {
 		try {
 			const booking = await this.data.reload({
 				include: [{ model: ReplaceVehicle }]
@@ -201,7 +204,7 @@ export class Booking implements Castable<Partial<BookingAttributes>> {
 			new ApiErrorHandler(e);
 		}
 	};
-	public destroy = async (user: User) => {
+	public destroy = async (user: UserModel) => {
 		try {
 			// Validate JSON schema.
 			await BookingValidators.getValidator(
@@ -218,9 +221,9 @@ export class Booking implements Castable<Partial<BookingAttributes>> {
 
 	public setEmailNotificationsToBookingManagers = async () => {
 		const bookingData = await this.data.reload({
-			include: [{ model: User }]
+			include: [{ model: UserModel }]
 		});
-		await User.findAll({
+		await UserModel.findAll({
 			where: {
 				clientId: bookingData.user.clientId,
 				role: {
@@ -271,9 +274,16 @@ export class Booking implements Castable<Partial<BookingAttributes>> {
 		});
 	};
 
+	public getUser = async () => {
+		await this.data.reload({
+			include: [UserModel]
+		});
+		return new User(this.data.user);
+	};
+
 	public sendInvoice = async (amount: number) => {
 		const bookingData = await this.data.reload({
-			include: [{ model: User }, { model: VehicleModel }]
+			include: [{ model: UserModel }, { model: VehicleModel }]
 		});
 		await sendInvoiceEmail({
 			email: bookingData.user.email,
@@ -289,7 +299,7 @@ export class Booking implements Castable<Partial<BookingAttributes>> {
 
 	public sendBookingConfirmation = async () => {
 		const bookingData = await this.data.reload({
-			include: [{ model: User }, { model: VehicleModel }]
+			include: [{ model: UserModel }, { model: VehicleModel }]
 		});
 		const vehicleLocation = await Location.findByPk(
 			bookingData.vehicle.locationId

@@ -2,7 +2,8 @@ import {
 	UserAttributes,
 	DatePropsToUnix,
 	ServerResponse,
-	RemoveImmutableSequelizeProperties
+	RemoveImmutableSequelizeProperties,
+	UseParameters
 } from "../";
 
 export type UserServerResponseGet = ServerResponse<
@@ -12,7 +13,36 @@ export type UserServerResponseGetAll = ServerResponse<
 	DatePropsToUnix<UserAttributes>[]
 >;
 export type UserServerParamsPatch = DatePropsToUnix<
-	Partial<RemoveImmutableSequelizeProperties<UserAttributes>>
+	UseParameters<
+		RemoveImmutableSequelizeProperties<UserAttributes>,
+		never,
+		| "userImageSrc"
+		| "timeZone"
+		| "clientId"
+		| "email"
+		| "firstName"
+		| "lastName"
+		| "blocked"
+		| "mobileNumber"
+		| "licenseImageSrc"
+		| "password"
+		| "role"
+		| "username"
+	>
+>;
+export type UserServerParamsPost = DatePropsToUnix<
+	UseParameters<
+		RemoveImmutableSequelizeProperties<UserAttributes>,
+		| "clientId"
+		| "email"
+		| "username"
+		| "firstName"
+		| "lastName"
+		| "password"
+		| "mobileNumber"
+		| "role",
+		"userImageSrc" | "timeZone"
+	>
 >;
 export type UserServerResponsePatch = UserServerResponseGet;
 export type UserServerResponseDelete = UserServerResponseGet;

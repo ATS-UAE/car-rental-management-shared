@@ -4,8 +4,7 @@ import { RouteChildrenProps, withRouter } from "react-router";
 import { compose } from "recompose";
 import {
 	BookingTable as BookingTablePresentational,
-	BookingTableItemData,
-	FormBookingPickup
+	BookingTableItemData
 } from "../presentational";
 import * as actions from "../../actions";
 import { ReduxState } from "../../reducers";
@@ -102,6 +101,11 @@ const BookingTableBase: FC<Props> = ({
 				}}
 				onPickup={({ id }) => {
 					history.push(`/bookings/pickup/${id}`, {
+						background: true
+					});
+				}}
+				onView={({ id }) => {
+					history.push(`/bookings/${id}`, {
 						background: true
 					});
 				}}

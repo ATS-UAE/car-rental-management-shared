@@ -4,6 +4,7 @@ import { ObjectSchema } from "yup";
 
 export * from "./Booking";
 export * from "./Vehicle";
+export * from "./User";
 
 export class Validator<Schema extends object, Target, NewData> {
 	constructor(

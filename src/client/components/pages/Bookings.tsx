@@ -20,7 +20,8 @@ import {
 	ModalFormBookingUpdate,
 	ModalFormFinalizeBooking,
 	ModalConfirmPayBooking,
-	ModalFormBookingPickup
+	ModalFormBookingPickup,
+	ModalFormBookingDetailView
 } from "../containers";
 import { ReduxState } from "../../reducers";
 
@@ -74,6 +75,10 @@ const Bookings: FC<Props> = ({
 			<Route
 				path="/bookings/pickup/:id"
 				render={() => <ModalFormBookingPickup />}
+			/>
+			<Route
+				path="/bookings/:id(\d+)"
+				render={() => <ModalFormBookingDetailView />}
 			/>
 			<Switch>
 				<Route

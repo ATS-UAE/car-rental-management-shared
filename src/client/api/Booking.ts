@@ -5,9 +5,12 @@ import {
 	BookingServerResponseGet,
 	WialonUnitServerResponseGet,
 	BookingServerParamsPost,
-	BookingServerParamsPatch
+	BookingServerParamsPatch,
+	VehicleServerResponseGet,
+	UserServerResponseGet,
+	Role
 } from "../../shared/typings";
-import { Role } from "../../shared/typings";
+import { User, Vehicle } from ".";
 
 export type BookingUpdateParams = ExtractServerResponseData<
 	BookingServerParamsPatch
@@ -98,7 +101,19 @@ export class Booking {
 		return this.data.approved === null || role === Role.ADMIN;
 	};
 
-	public static delete = (id: number) =>
+	public getUser = () =>
+		Api.execute<ExtractServerResponseData<UserServerResponseGet>>(
+			"get",
+			`/api/carbooking/bookings/${this.data.id}/user`
+		).then(({ data, ...meta }) => new User(data, meta));
+
+	public getVehicle = () =>
+		Api.execute<ExtractServerResponseData<VehicleServerResponseGet>>(
+			"get",
+			`/api/carbooking/bookings/${this.data.id}/vehicle`
+		).then(({ data, ...meta }) => new Vehicle(data, meta));
+
+	public static destroy = (id: number) =>
 		Api.execute<ExtractServerResponseData<BookingServerResponseGet>>(
 			"delete",
 			`/api/carbooking/bookings/${id}`
@@ -107,7 +122,8 @@ export class Booking {
 			return new Booking(data, meta);
 		});
 
-	public delete = () => Booking.delete(this.data.id);
+	public destroy = () => Booking.destroy(this.data.id);
+
 	public approve = (approval?: boolean) =>
 		Booking.approve(this.data.id, approval);
 
