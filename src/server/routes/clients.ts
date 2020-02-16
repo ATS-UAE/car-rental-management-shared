@@ -7,7 +7,7 @@ import { Role, LocationAttributes } from "../../shared/typings";
 import {
 	ResourceNotFoundException,
 	InvalidPermissionException
-} from "../utils/exceptions";
+} from "../api/exceptions";
 
 const router = express.Router();
 

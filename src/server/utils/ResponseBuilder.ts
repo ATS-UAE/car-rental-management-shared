@@ -1,12 +1,9 @@
 import { Response } from "express";
 import {
-	InvalidPermissionException,
-	ResourceNotFoundException
-} from "./exceptions";
-import {
 	FormException,
 	FieldError,
-	ItemNotFoundException
+	InvalidPermissionException,
+	ResourceNotFoundException
 } from "../api/exceptions";
 export default class ResponseBuilder<T = unknown> {
 	constructor(
@@ -42,10 +39,7 @@ export default class ResponseBuilder<T = unknown> {
 		if (e instanceof InvalidPermissionException) {
 			this.setCode(422);
 			res.status(422);
-		} else if (
-			e instanceof ResourceNotFoundException ||
-			e instanceof ItemNotFoundException
-		) {
+		} else if (e instanceof ResourceNotFoundException) {
 			this.setCode(404);
 			res.status(404);
 		} else if (e instanceof FormException) {

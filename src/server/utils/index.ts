@@ -5,7 +5,7 @@ import _ from "lodash";
 import { Moment } from "moment";
 import { URL } from "url";
 
-import { FlattenIfArray,BookingStatus } from "../../shared/typings";
+import { FlattenIfArray, BookingStatus } from "../../shared/typings";
 
 export { default as ResponseBuilder } from "./ResponseBuilder";
 
@@ -198,4 +198,4 @@ export const rangeOverlap = (
 	return Math.max(x1, y1) <= Math.min(x2, y2);
 };
 
-export * from "./RoleUtils";
+export * from "../../shared/utils/RoleUtils";

@@ -8,7 +8,7 @@ import RBAC from "../utils/rbac";
 import {
 	InvalidPermissionException,
 	ResourceNotFoundException
-} from "../utils/exceptions";
+} from "../api/exceptions";
 
 export default class Client extends DataSource {
 	constructor(db: any, userAccessor: UserAccessor) {

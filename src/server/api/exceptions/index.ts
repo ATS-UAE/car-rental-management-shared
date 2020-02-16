@@ -1,5 +1,5 @@
 export * from "./ApiException";
 export * from "./FormException";
-export * from "./DataBaseException";
+export * from "./UnknownException";
 export * from "./InvalidPermissionException";
-export * from "./ResourceNotFound";
+export * from "./ResourceNotFoundException";

@@ -7,7 +7,7 @@ import RBAC from "../utils/rbac";
 import {
 	InvalidPermissionException,
 	ResourceNotFoundException
-} from "../utils/exceptions";
+} from "../api/exceptions";
 import { toMySQLDate, exceptFields } from "../utils";
 import { BookingType } from "../../shared/typings";
 import { User, Vehicle, Location } from "../models";

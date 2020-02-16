@@ -18,7 +18,7 @@ import { User } from "../datasource";
 import {
 	InvalidPermissionException,
 	ResourceNotFoundException
-} from "../utils/exceptions";
+} from "../api/exceptions";
 import { InviteToken } from "../typings";
 
 const router = express.Router();

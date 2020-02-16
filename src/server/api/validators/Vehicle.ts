@@ -1,10 +1,8 @@
 import * as Yup from "yup";
-import moment from "moment";
-
 import { User, Vehicle as VehicleModel } from "../../models";
 import { API_OPERATION } from "..";
 import { UpdateVehicleOptions, CreateVehicleOptions } from "../Vehicle";
-import { Validator } from ".";
+import { Validator, YupValidatorBuilder } from ".";
 import {
 	VehicleAttributes,
 	Role,
@@ -30,10 +28,10 @@ export abstract class Vehicle {
 		}
 	) => new Validator(Vehicle.validatorSchema, user, operation, data);
 
-	private static validatorSchema = Yup.object<
-		Omit<VehicleAttributes, "id" | "createdAt" | "updatedAt">
-	>()
-		.shape({
+	private static validatorSchema = new YupValidatorBuilder(
+		Yup.object<
+			Omit<VehicleAttributes, "id" | "createdAt" | "updatedAt">
+		>().shape({
 			brand: Yup.string(),
 			model: Yup.string(),
 			plateNumber: Yup.string(),
@@ -51,67 +49,56 @@ export abstract class Vehicle {
 			wialonUnitId: Yup.number().nullable(),
 			available: Yup.boolean()
 		})
-		.when(
-			["$user", "$operation", "$target", "$data", "$casting"],
-			(...args: VehicleValidatorContextWithSchema) => {
-				let [user, operation, target, data, casting, schema] = args;
-
-				switch (operation) {
-					case API_OPERATION.READ: {
-						schema = schema.shape({
-							id: Yup.number(),
-							categories: Yup.array(
-								Yup.object().shape({
-									id: Yup.number(),
-									name: Yup.string()
-								})
-							)
-						});
-						break;
+	)
+		.read(({ schema }) => {
+			return schema.shape({
+				id: Yup.number(),
+				categories: Yup.array(
+					Yup.object().shape({
+						id: Yup.number(),
+						name: Yup.string()
+					})
+				)
+			});
+		})
+		.create(({ schema, user }) => {
+			return schema
+				.shape({
+					brand: Yup.string().required(),
+					model: Yup.string().required(),
+					bookingChargeCount: Yup.number().default(0),
+					bookingCharge: Yup.number().default(0)
+				})
+				.test(
+					"permission",
+					"You do not have the permission to do this.",
+					function() {
+						return user.role === Role.MASTER;
 					}
-					case API_OPERATION.CREATE: {
-						schema = schema
-							.shape({
-								brand: Yup.string().required(),
-								model: Yup.string().required(),
-								bookingChargeCount: Yup.number().default(0),
-								bookingCharge: Yup.number().default(0)
-							})
-							.test(
-								"permission",
-								"You do not have the permission to do this.",
-								function() {
-									return user.role === Role.MASTER;
+				);
+		})
+		.update<VehicleModel, VehicleAttributes, UpdateVehicleOptions>(
+			({ schema, user, target }) => {
+				return schema
+					.shape({ id: Yup.number().required() })
+					.test(
+						"permission",
+						"You do not have the permission to do this.",
+						function() {
+							if (user.role === Role.MASTER) {
+								return true;
+							} else if (
+								user.role === Role.ADMIN ||
+								user.role === Role.KEY_MANAGER
+							) {
+								if (target.clientId === user.clientId) {
+									return true;
 								}
-							);
-						break;
-					}
-					case API_OPERATION.UPDATE: {
-						schema = schema
-							.shape({ id: Yup.number().required() })
-							.test(
-								"permission",
-								"You do not have the permission to do this.",
-								function() {
-									if (user.role === Role.MASTER) {
-										return true;
-									} else if (
-										user.role === Role.ADMIN ||
-										user.role === Role.KEY_MANAGER
-									) {
-										if (target.clientId === user.clientId) {
-											return true;
-										}
-									}
+							}
 
-									return false;
-								}
-							);
-						break;
-					}
-				}
-
-				return schema;
+							return false;
+						}
+					);
 			}
-		);
+		).schema;
 }

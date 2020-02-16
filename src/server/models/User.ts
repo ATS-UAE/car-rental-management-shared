@@ -64,7 +64,7 @@ export class User extends Model<User> implements UserAttributes {
 	public objectNo: string | null;
 
 	@Column
-	public lastLogin: string | null;
+	public lastLogin: Date | null;
 
 	@Column
 	public userImageSrc: string | null;

@@ -5,7 +5,7 @@ import RBAC from "../utils/rbac";
 import {
 	InvalidPermissionException,
 	ResourceNotFoundException
-} from "../utils/exceptions";
+} from "../api/exceptions";
 import { exceptFields } from "../utils";
 
 export default class Vehicle extends DataSource {

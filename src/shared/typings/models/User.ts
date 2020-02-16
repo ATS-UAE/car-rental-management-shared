@@ -10,7 +10,7 @@ export interface UserAttributes {
 	mobileNumber: string;
 	contractNo: string | null;
 	objectNo: string | null;
-	lastLogin: string | null;
+	lastLogin: Date | null;
 	userImageSrc: string | null;
 	licenseImageSrc: string | null;
 	blocked: boolean;

@@ -1,8 +1,8 @@
 export interface AccidentAttributes {
 	id: number;
 	message: string;
-	accidentImageSrc: string;
-	accidentVideoSrc: string;
+	accidentImageSrc: string | null;
+	accidentVideoSrc: string | null;
 	lat: number;
 	lng: number;
 	userId: number;

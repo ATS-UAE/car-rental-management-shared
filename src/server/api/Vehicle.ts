@@ -11,7 +11,7 @@ import {
 import { getBookingStatus } from "../utils";
 import {
 	InvalidPermissionException,
-	ItemNotFoundException
+	ResourceNotFoundException
 } from "./exceptions";
 import { Vehicle as VehicleValidators } from "./validators";
 import { ApiErrorHandler } from "./utils";
@@ -68,7 +68,7 @@ export class Vehicle implements Castable<Partial<VehicleAttributes>> {
 					mileage: unit.item.cnm || null
 				};
 			}
-			throw new ItemNotFoundException(
+			throw new ResourceNotFoundException(
 				`Unit with ID ${this.data.wialonUnitId} is not found.`
 			);
 		}

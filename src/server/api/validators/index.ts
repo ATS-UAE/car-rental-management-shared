@@ -5,6 +5,8 @@ import { ObjectSchema } from "yup";
 export * from "./Booking";
 export * from "./Vehicle";
 export * from "./User";
+export * from "./Accident";
+export * from "./YupValidatorBuilder";
 
 export class Validator<Schema extends object, Target, NewData> {
 	constructor(

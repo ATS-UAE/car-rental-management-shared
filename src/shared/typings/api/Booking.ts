@@ -3,7 +3,8 @@ import {
 	DatePropsToUnix,
 	ServerResponse,
 	RemoveImmutableSequelizeProperties,
-	ExtractServerResponseData
+	ExtractServerResponseData,
+	UseParameters
 } from "../";
 
 export type BookingServerResponseGet = ServerResponse<
@@ -23,10 +24,10 @@ export type BookingServerResponseGetAll = ServerResponse<
 export type BookingServerParamsPatch = Partial<
 	DatePropsToUnix<RemoveImmutableSequelizeProperties<BookingAttributes>>
 >;
-export type BookingServerParamsPost = Omit<
+export type BookingServerParamsPost = UseParameters<
 	RemoveImmutableSequelizeProperties<BookingAttributes>,
-	| "id"
-	| "paid"
+	"vehicleId" | "from" | "to" | "userId" | "bookingType",
+	| "replaceVehicleId"
 	| "amount"
 	| "approved"
 	| "finished"
@@ -34,10 +35,8 @@ export type BookingServerParamsPost = Omit<
 	| "endMileage"
 	| "startFuel"
 	| "endFuel"
-	| "replaceVehicleId"
-	| "vehicle"
-	| "finalized"
 	| "pickupDate"
+	| "paid"
 	| "returnDate"
 >;
 export type BookingServerResponsePatch = BookingServerResponseGet;

@@ -30,3 +30,11 @@ export type UseParameters<
 	RequiredParams extends keyof AllParams = never,
 	OptionalParams extends keyof AllParams = never
 > = Pick<AllParams, RequiredParams> & Pick<Partial<AllParams>, OptionalParams>;
+
+export type ReplaceAttributes<
+	Original extends object,
+	Enhancer extends object
+> = {
+	[P in keyof Original]: P extends keyof Enhancer ? Enhancer[P] : Original[P];
+} &
+	Omit<Enhancer, keyof Original>;

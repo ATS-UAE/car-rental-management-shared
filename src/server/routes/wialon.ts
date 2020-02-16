@@ -1,7 +1,7 @@
 import express from "express";
 import { Wialon } from "node-wialon";
 import { ResponseBuilder } from "../utils";
-import { ItemNotFoundException } from "../api/exceptions";
+import { ResourceNotFoundException } from "../api/exceptions";
 
 const router = express.Router();
 
@@ -34,7 +34,7 @@ router.get<{ id: string }>("/units/:id", async (req, res) => {
 			response.setData(unit.item);
 		} else {
 			response.setCode(404);
-			throw new ItemNotFoundException(
+			throw new ResourceNotFoundException(
 				`Unit with ID ${req.query.id} is not found.`
 			);
 		}

@@ -15,7 +15,7 @@ import {
 	Location,
 	Vehicle as VehicleModel
 } from "../models";
-import { ItemNotFoundException } from "./exceptions";
+import { ResourceNotFoundException } from "./exceptions";
 import { UseParameters, API_OPERATION, Vehicle, User } from ".";
 import { ApiErrorHandler } from "./utils";
 import { Castable, Collection } from "./Collection";
@@ -148,7 +148,7 @@ export class Booking implements Castable<Partial<BookingAttributes>> {
 		});
 
 		if (!booking) {
-			throw new ItemNotFoundException(
+			throw new ResourceNotFoundException(
 				`Booking with ${bookingId} does not exist.`
 			);
 		}

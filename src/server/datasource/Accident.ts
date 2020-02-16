@@ -4,9 +4,8 @@ import UserAccessor from "./types/UserAccessor";
 import RBAC from "../utils/rbac";
 import {
 	InvalidPermissionException,
-	ResourceNotFoundException,
-	InvalidInputException
-} from "../utils/exceptions";
+	ResourceNotFoundException
+} from "../api/exceptions";
 import { exceptFields } from "../utils";
 export default class Accident extends DataSource {
 	user: UserAccessor;
@@ -138,7 +137,7 @@ export default class Accident extends DataSource {
 		const accidentVehicle = await this.getVehicle(data.vehicleId);
 
 		if (!accidentVehicle) {
-			throw new InvalidInputException("Vehicle is not found.", ["vehicleId"]);
+			throw new ResourceNotFoundException("Vehicle is not found.");
 		}
 		if (!accessible) {
 			throw new InvalidPermissionException();

@@ -1,21 +1,32 @@
 import { ObjectSchema } from "yup";
+import { ReplaceAttributes } from "../../../shared/typings";
 import { User } from "../../models";
 import { API_OPERATION } from "..";
 
-type SchemaCallBack<Target, Data, Attributes extends object> = (data: {
+type SchemaCallBack<
+	Target,
+	Data,
+	Attributes extends object,
+	Enhancement extends object
+> = (data: {
 	user: User;
 	target: Target;
 	operation: API_OPERATION;
 	data: Data;
 	casting?: boolean;
 	schema: ObjectSchema<Attributes>;
-}) => ObjectSchema<Attributes>;
+}) => ObjectSchema<ReplaceAttributes<Attributes, Enhancement>>;
 
 export class YupValidatorBuilder<Attributes extends object = {}> {
 	constructor(public baseSchema: ObjectSchema<Attributes>) {}
 
-	public read = <Target, Data>(
-		schemaBuilder: SchemaCallBack<Target, Data, Attributes>
+	public read = <Target, Data, ReplacementAttributes extends object>(
+		schemaBuilder: SchemaCallBack<
+			Target,
+			Data,
+			Attributes,
+			ReplacementAttributes
+		>
 	) => {
 		this.baseSchema = this.baseSchema.when(
 			["$user", "$operation", "$target", "$data", "$casting"],
@@ -36,8 +47,13 @@ export class YupValidatorBuilder<Attributes extends object = {}> {
 		return this;
 	};
 
-	public update = <Target, Data>(
-		schemaBuilder: SchemaCallBack<Target, Data, Attributes>
+	public update = <Target, Data, ReplacementAttributes extends object>(
+		schemaBuilder: SchemaCallBack<
+			Target,
+			Data,
+			Attributes,
+			ReplacementAttributes
+		>
 	) => {
 		this.baseSchema = this.baseSchema.when(
 			["$user", "$operation", "$target", "$data", "$casting"],
@@ -58,8 +74,13 @@ export class YupValidatorBuilder<Attributes extends object = {}> {
 		return this;
 	};
 
-	public destroy = <Target, Data>(
-		schemaBuilder: SchemaCallBack<Target, Data, Attributes>
+	public destroy = <Target, Data, ReplacementAttributes extends object>(
+		schemaBuilder: SchemaCallBack<
+			Target,
+			Data,
+			Attributes,
+			ReplacementAttributes
+		>
 	) => {
 		this.baseSchema = this.baseSchema.when(
 			["$user", "$operation", "$target", "$data", "$casting"],
@@ -80,8 +101,13 @@ export class YupValidatorBuilder<Attributes extends object = {}> {
 		return this;
 	};
 
-	public create = <Target, Data>(
-		schemaBuilder: SchemaCallBack<Target, Data, Attributes>
+	public create = <Target, Data, ReplacementAttributes extends object>(
+		schemaBuilder: SchemaCallBack<
+			Target,
+			Data,
+			Attributes,
+			ReplacementAttributes
+		>
 	) => {
 		this.baseSchema = this.baseSchema.when(
 			["$user", "$operation", "$target", "$data", "$casting"],
@@ -102,8 +128,17 @@ export class YupValidatorBuilder<Attributes extends object = {}> {
 		return this;
 	};
 
-	public any = <Target = unknown, Data = unknown>(
-		schemaBuilder: SchemaCallBack<Target, Data, Attributes>
+	public any = <
+		Target = unknown,
+		Data = unknown,
+		ReplacementAttributes extends object = any
+	>(
+		schemaBuilder: SchemaCallBack<
+			Target,
+			Data,
+			Attributes,
+			ReplacementAttributes
+		>
 	) => {
 		this.baseSchema = this.baseSchema.when(
 			["$user", "$operation", "$target", "$data", "$casting"],
