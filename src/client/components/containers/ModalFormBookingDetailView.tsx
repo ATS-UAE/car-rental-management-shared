@@ -42,6 +42,7 @@ class ModalFormBookingDetailViewBase extends Component<Props, State> {
 						b.getUser(),
 						b.getVehicle()
 					]);
+					console.log(b.data);
 					this.setState({
 						values: {
 							booker: user.data.username,

@@ -66,7 +66,7 @@ export class YupValidatorBuilder<Attributes extends object = {}> {
 			ReplacementAttributes
 		>
 	) => {
-		this.schema.when(
+		this.schema = this.schema.when(
 			["$user", "$operation", "$target", "$data", "$casting"],
 			function(
 				user: User,
@@ -101,7 +101,7 @@ export class YupValidatorBuilder<Attributes extends object = {}> {
 			ReplacementAttributes
 		>
 	) => {
-		this.schema.when(
+		this.schema = this.schema.when(
 			["$user", "$operation", "$target", "$data", "$casting"],
 			function(
 				user: User,
@@ -136,7 +136,7 @@ export class YupValidatorBuilder<Attributes extends object = {}> {
 			ReplacementAttributes
 		>
 	) => {
-		this.schema.when(
+		this.schema = this.schema.when(
 			["$user", "$operation", "$target", "$data", "$casting"],
 			function(
 				user: User,
@@ -175,7 +175,7 @@ export class YupValidatorBuilder<Attributes extends object = {}> {
 			ReplacementAttributes
 		>
 	) => {
-		this.schema.when(
+		this.schema = this.schema.when(
 			["$user", "$operation", "$target", "$data", "$casting"],
 			function(
 				user: User,

@@ -122,17 +122,16 @@ const ModalFinalizeBookingBase: FC<Props> = ({
 					onSubmit={async () => {
 						setLoading(true);
 						try {
+							console.log(values);
 							values &&
-								(await booking.finalize(
-									formBookingPickupSchema.cast({
-										...values,
-										pickupDate:
-											values.pickupDate && moment(values.pickupDate).unix(),
-										returnDate: values.returned
-											? values.pickupDate && moment(values.pickupDate).unix()
-											: null
-									})
-								));
+								(await booking.finalize({
+									...values,
+									pickupDate:
+										values.pickupDate && moment(values.pickupDate).unix(),
+									returnDate: values.returned
+										? values.pickupDate && moment(values.pickupDate).unix()
+										: null
+								}));
 							history.replace("/bookings");
 						} catch (e) {
 							const apiErrors = FormErrors.handleAxiosError<

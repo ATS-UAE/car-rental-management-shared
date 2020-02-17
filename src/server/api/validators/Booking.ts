@@ -187,6 +187,24 @@ export abstract class Booking {
 						}
 						return true;
 					}),
+				pickupDate: yup
+					.date()
+					.nullable()
+					.transform((value, originalValue) => {
+						console.log(value, originalValue);
+						return (
+							(originalValue && moment(originalValue, "X").toDate()) || value
+						);
+					}),
+				returnDate: yup
+					.date()
+					.nullable()
+					.transform((value, originalValue) => {
+						console.log(value, originalValue);
+						return (
+							(originalValue && moment(originalValue, "X").toDate()) || value
+						);
+					}),
 				finished: stripField(
 					yup
 						.boolean()

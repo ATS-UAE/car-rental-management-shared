@@ -116,20 +116,14 @@ export const FormBookingDetailView: FC<FormBookingDetailViewProps> = ({
 				<Grid item xs={6}>
 					<InfoText
 						title="Starting Fuel"
-						value={
-							(values.pickupDate && moment(values.pickupDate).calendar()) ||
-							"N/A"
-						}
+						value={values.startFuel || "N/A"}
 						fullWidth
 					/>
 				</Grid>
 				<Grid item xs={6}>
 					<InfoText
 						title="Ending Fuel"
-						value={
-							(values.returnDate && moment(values.returnDate).calendar()) ||
-							"N/A"
-						}
+						value={values.endFuel || "N/A"}
 						fullWidth
 					/>
 				</Grid>
