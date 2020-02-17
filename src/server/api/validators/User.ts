@@ -6,12 +6,14 @@ import {
 	UserServerParamsPost,
 	ExtractServerResponseData,
 	UserAttributes,
-	DatePropsToUnix
+	DatePropsToUnix,
+	UserServerResponseGet
 } from "../../../shared/typings";
 import { InviteToken } from "../../typings";
 import { API_OPERATION } from "..";
 import { Validator } from ".";
 import { YupValidatorBuilder } from "./YupValidatorBuilder";
+import moment = require("moment");
 
 export abstract class User {
 	public static getValidator = (
@@ -26,14 +28,13 @@ export abstract class User {
 	) => new Validator(User.validatorSchema, user, operation, data);
 
 	public static validatorSchema = new YupValidatorBuilder(
-		yup.object<DatePropsToUnix<UserAttributes>>().shape({
+		yup.object<ExtractServerResponseData<UserServerResponseGet>>().shape({
 			username: yup.string(),
 			firstName: yup.string(),
 			lastName: yup.string(),
 			emaill: yup.string(),
 			password: yup.string(),
 			mobileNumber: yup.string(),
-			lastLogin: yup.number().nullable(),
 			userImageSrc: yup.string().nullable(),
 			blocked: yup.boolean(),
 			emailConfirmed: yup.boolean(),
@@ -42,9 +43,21 @@ export abstract class User {
 			timezone: yup.string()
 		})
 	)
-		.read(({ schema, data }) => {
-			return schema.shape({ id: yup.number() });
-		})
+		.read<never, never, { id: number; lastLogin: number | null }>(
+			({ schema }) => {
+				return schema.shape({
+					id: yup.number(),
+					lastLogin: yup
+						.number()
+						.nullable()
+						.transform(
+							(v, originalValue) =>
+								(originalValue && moment(originalValue as Date).unix()) ||
+								originalValue
+						)
+				});
+			}
+		)
 		.create(({ schema }) => {
 			return schema.shape({
 				username: yup

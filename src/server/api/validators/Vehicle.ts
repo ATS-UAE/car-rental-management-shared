@@ -5,6 +5,8 @@ import { UpdateVehicleOptions, CreateVehicleOptions } from "../Vehicle";
 import { Validator, YupValidatorBuilder } from ".";
 import {
 	VehicleAttributes,
+	VehicleServerResponseGet,
+	ExtractServerResponseData,
 	Role,
 	BookingChargeUnit
 } from "../../../shared/typings";
@@ -29,9 +31,7 @@ export abstract class Vehicle {
 	) => new Validator(Vehicle.validatorSchema, user, operation, data);
 
 	private static validatorSchema = new YupValidatorBuilder(
-		Yup.object<
-			Omit<VehicleAttributes, "id" | "createdAt" | "updatedAt">
-		>().shape({
+		Yup.object<ExtractServerResponseData<VehicleServerResponseGet>>().shape({
 			brand: Yup.string(),
 			model: Yup.string(),
 			plateNumber: Yup.string(),
@@ -53,6 +53,7 @@ export abstract class Vehicle {
 		.read(({ schema }) => {
 			return schema.shape({
 				id: Yup.number(),
+				// TODO: Remove this.
 				categories: Yup.array(
 					Yup.object().shape({
 						id: Yup.number(),

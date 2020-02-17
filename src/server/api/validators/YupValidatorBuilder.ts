@@ -18,7 +18,11 @@ type SchemaCallBack<
 }) => ObjectSchema<ReplaceAttributes<Attributes, Enhancement>>;
 
 export class YupValidatorBuilder<Attributes extends object = {}> {
-	constructor(public baseSchema: ObjectSchema<Attributes>) {}
+	constructor(public schema: ObjectSchema<Attributes>) {}
+
+	public getSchema = () => {
+		return this.schema;
+	};
 
 	public read = <Target, Data, ReplacementAttributes extends object>(
 		schemaBuilder: SchemaCallBack<
@@ -28,11 +32,18 @@ export class YupValidatorBuilder<Attributes extends object = {}> {
 			ReplacementAttributes
 		>
 	) => {
-		this.baseSchema = this.baseSchema.when(
+		this.schema = this.schema.when(
 			["$user", "$operation", "$target", "$data", "$casting"],
-			([user, operation, target, data, casting, schema]) => {
+			function(
+				user: User,
+				operation: API_OPERATION,
+				target: Target,
+				data: Data,
+				casting: boolean,
+				schema: ObjectSchema<Attributes>
+			) {
 				if (operation === API_OPERATION.READ) {
-					schema = schemaBuilder({
+					return schemaBuilder({
 						user,
 						target,
 						operation,
@@ -41,9 +52,9 @@ export class YupValidatorBuilder<Attributes extends object = {}> {
 						schema
 					});
 				}
+				return schema;
 			}
 		);
-
 		return this;
 	};
 
@@ -55,11 +66,18 @@ export class YupValidatorBuilder<Attributes extends object = {}> {
 			ReplacementAttributes
 		>
 	) => {
-		this.baseSchema = this.baseSchema.when(
+		this.schema.when(
 			["$user", "$operation", "$target", "$data", "$casting"],
-			([user, operation, target, data, casting, schema]) => {
+			function(
+				user: User,
+				operation: API_OPERATION,
+				target: Target,
+				data: Data,
+				casting: boolean,
+				schema: ObjectSchema<Attributes>
+			) {
 				if (operation === API_OPERATION.UPDATE) {
-					schema = schemaBuilder({
+					return schemaBuilder({
 						user,
 						target,
 						operation,
@@ -68,6 +86,7 @@ export class YupValidatorBuilder<Attributes extends object = {}> {
 						schema
 					});
 				}
+				return schema;
 			}
 		);
 
@@ -82,11 +101,18 @@ export class YupValidatorBuilder<Attributes extends object = {}> {
 			ReplacementAttributes
 		>
 	) => {
-		this.baseSchema = this.baseSchema.when(
+		this.schema.when(
 			["$user", "$operation", "$target", "$data", "$casting"],
-			([user, operation, target, data, casting, schema]) => {
+			function(
+				user: User,
+				operation: API_OPERATION,
+				target: Target,
+				data: Data,
+				casting: boolean,
+				schema: ObjectSchema<Attributes>
+			) {
 				if (operation === API_OPERATION.DELETE) {
-					schema = schemaBuilder({
+					return schemaBuilder({
 						user,
 						target,
 						operation,
@@ -95,6 +121,7 @@ export class YupValidatorBuilder<Attributes extends object = {}> {
 						schema
 					});
 				}
+				return schema;
 			}
 		);
 
@@ -109,11 +136,18 @@ export class YupValidatorBuilder<Attributes extends object = {}> {
 			ReplacementAttributes
 		>
 	) => {
-		this.baseSchema = this.baseSchema.when(
+		this.schema.when(
 			["$user", "$operation", "$target", "$data", "$casting"],
-			([user, operation, target, data, casting, schema]) => {
+			function(
+				user: User,
+				operation: API_OPERATION,
+				target: Target,
+				data: Data,
+				casting: boolean,
+				schema: ObjectSchema<Attributes>
+			) {
 				if (operation === API_OPERATION.CREATE) {
-					schema = schemaBuilder({
+					return schemaBuilder({
 						user,
 						target,
 						operation,
@@ -122,6 +156,7 @@ export class YupValidatorBuilder<Attributes extends object = {}> {
 						schema
 					});
 				}
+				return schema;
 			}
 		);
 
@@ -140,10 +175,17 @@ export class YupValidatorBuilder<Attributes extends object = {}> {
 			ReplacementAttributes
 		>
 	) => {
-		this.baseSchema = this.baseSchema.when(
+		this.schema.when(
 			["$user", "$operation", "$target", "$data", "$casting"],
-			([user, operation, target, data, casting, schema]) => {
-				schema = schemaBuilder({
+			function(
+				user: User,
+				operation: API_OPERATION,
+				target: Target,
+				data: Data,
+				casting: boolean,
+				schema: ObjectSchema<Attributes>
+			) {
+				return schemaBuilder({
 					user,
 					target,
 					operation,
@@ -153,11 +195,6 @@ export class YupValidatorBuilder<Attributes extends object = {}> {
 				});
 			}
 		);
-
 		return this;
 	};
-
-	get schema() {
-		return this.baseSchema;
-	}
 }

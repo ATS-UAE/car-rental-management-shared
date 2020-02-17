@@ -6,7 +6,9 @@ import {
 	VehicleAttributes,
 	BookingStatus,
 	Role,
-	WialonUnitAttributes
+	WialonUnitAttributes,
+	ExtractServerResponseData,
+	VehicleServerResponseGet
 } from "../../shared/typings";
 import { getBookingStatus } from "../utils";
 import {
@@ -46,7 +48,8 @@ export type UpdateVehicleOptions = UseParameters<
 	| "clientId"
 	| "locationId"
 >;
-export class Vehicle implements Castable<Partial<VehicleAttributes>> {
+export class Vehicle
+	implements Castable<ExtractServerResponseData<VehicleServerResponseGet>> {
 	public constructor(public data: VehicleModel) {}
 
 	public cast = (user: User) =>

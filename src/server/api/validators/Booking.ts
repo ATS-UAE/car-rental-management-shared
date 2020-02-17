@@ -18,33 +18,9 @@ import {
 } from "../../../shared/typings";
 import { stripField } from "./utils";
 import { isBookingTimeSlotTaken } from "../../utils";
-import { BookingCreateOptions, BookingUpdateOptions } from "../Booking";
 import { API_OPERATION } from "..";
 import { Validator, YupValidatorBuilder } from ".";
 
-type ValidatorParameters = Parameters<typeof Booking.getValidator>;
-
-interface BookingValidationData
-	extends Omit<
-		BookingAttributes,
-		"from" | "to" | "createdAt" | "updatedAt" | "pickupDate" | "returnDate"
-	> {
-	from: number | Date;
-	to: number | Date;
-	createdAt: number | Date;
-	updatedAt: number | Date;
-	pickupDate: number | Date;
-	returnDate: number | Date;
-}
-
-type BookingValidatorContextWithSchema = [
-	ValidatorParameters[0],
-	API_OPERATION,
-	BookingModel,
-	BookingUpdateOptions | BookingCreateOptions,
-	boolean,
-	yup.ObjectSchema<BookingValidationData>
-];
 export abstract class Booking {
 	public static getValidator = (
 		user: User,
@@ -99,9 +75,9 @@ export abstract class Booking {
 			null,
 			BookingAttributes,
 			ExtractServerResponseData<BookingServerResponseGet>
-		>(({ schema, data }) => {
+		>(function({ schema, data }) {
 			if (data.bookingType === BookingType.REPLACEMENT) {
-				schema = schema.shape({
+				schema.shape({
 					replaceVehicle: yup
 						.object()
 						.shape({
@@ -167,7 +143,7 @@ export abstract class Booking {
 				BookingServerParamsPatch,
 				"from" | "to" | "returnDate" | "pickupDate"
 			>
-		>(({ schema, data: updateData, target, user }) => {
+		>(function({ schema, data: updateData, target, user }) {
 			return schema.shape({
 				from: yup
 					.date()
@@ -412,7 +388,7 @@ export abstract class Booking {
 				})
 			});
 		})
-		.create(({ schema }) => {
+		.create(function({ schema }) {
 			return schema
 				.shape({
 					paid: stripField(yup.boolean().default(false), [Role.GUEST], true),
@@ -533,7 +509,7 @@ export abstract class Booking {
 					}
 				);
 		})
-		.destroy(({ schema }) => {
+		.destroy(function({ schema }) {
 			return schema.shape({
 				approved: yup
 					.boolean()
@@ -544,5 +520,6 @@ export abstract class Booking {
 						value => value !== true
 					)
 			});
-		}).schema;
+		})
+		.getSchema();
 }
