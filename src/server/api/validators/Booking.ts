@@ -501,30 +501,6 @@ export abstract class Booking {
 						}
 						return false;
 					}
-				)
-				.test(
-					"permission",
-					"You do not have the permission to do this.",
-					async function(v) {
-						const user = this.options.context["user"] as User;
-
-						// Only allow guest to create bookings on itself.
-						if (user.role === Role.GUEST && v.userId === user.id) {
-							return true;
-							// Only allow bookings on users with the same client.
-						} else if (
-							user.role === Role.KEY_MANAGER ||
-							user.role === Role.ADMIN
-						) {
-							const targetUser = await User.findByPk(user.id);
-							if (targetUser.clientId === user.clientId) {
-								return true;
-							}
-						} else if (user.role === Role.MASTER) {
-							return true;
-						}
-						return false;
-					}
 				);
 		})
 		.destroy(function({ schema }) {

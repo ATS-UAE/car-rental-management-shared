@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, ReactNode } from "react";
 import {
 	Select,
 	FormControl,
@@ -7,11 +7,12 @@ import {
 	InputLabel,
 	Input,
 	SelectProps,
-	FormControlProps
+	FormControlProps,
+	ListSubheader
 } from "@material-ui/core";
 import { InputProps, Field } from ".";
 
-export interface FieldSelectProps extends InputProps<FieldSelectItem> {
+export interface FieldSelectProps extends InputProps<FieldSelectItemValue> {
 	haveNone?: boolean;
 	FormControlProps?: FormControlProps;
 	items: FieldSelectItems;
@@ -19,9 +20,14 @@ export interface FieldSelectProps extends InputProps<FieldSelectItem> {
 	SelectProps?: Omit<SelectProps, keyof FieldSelectProps>;
 }
 
-export type FieldSelectItem = string | number;
+export type FieldSelectItemValue = string | number;
 
-export type FieldSelectItems = Array<{ label: string; value: FieldSelectItem }>;
+export type FieldSelectItem = { label: string; value: FieldSelectItemValue };
+
+export type FieldSelectItems = Array<{
+	label: string;
+	value: FieldSelectItemValue | FieldSelectItem[];
+}>;
 
 export const FieldSelect: FC<FieldSelectProps> = ({
 	haveNone,
@@ -35,7 +41,7 @@ export const FieldSelect: FC<FieldSelectProps> = ({
 	transformer
 }) => {
 	return (
-		<Field<FieldSelectItem> name={name} defaultValue="">
+		<Field<FieldSelectItemValue> name={name} defaultValue="">
 			{({ value, error, setFieldValue, touched, onBlur }) => (
 				<FormControl
 					fullWidth={fullWidth}
@@ -50,8 +56,10 @@ export const FieldSelect: FC<FieldSelectProps> = ({
 						error={Boolean(touched && error)}
 						onChange={e =>
 							transformer
-								? setFieldValue(transformer(e.target.value as FieldSelectItem))
-								: setFieldValue(e.target.value as FieldSelectItem)
+								? setFieldValue(
+										transformer(e.target.value as FieldSelectItemValue)
+								  )
+								: setFieldValue(e.target.value as FieldSelectItemValue)
 						}
 						input={<Input name={name} id={name} />}
 						autoWidth
@@ -61,11 +69,28 @@ export const FieldSelect: FC<FieldSelectProps> = ({
 								<em>None</em>
 							</MenuItem>
 						)}
-						{items.map((item, index) => (
-							<MenuItem value={item.value} key={item.value}>
-								{item.label}
-							</MenuItem>
-						))}
+						{items.reduce<Array<ReactNode>>((acc, item, index) => {
+							if (Array.isArray(item.value)) {
+								acc.push(
+									<ListSubheader key={item.label}>{item.label}</ListSubheader>
+								);
+								item.value.forEach(item => {
+									acc.push(
+										<MenuItem value={item.value} key={item.value}>
+											{item.label}
+										</MenuItem>
+									);
+								});
+							} else {
+								acc.push(
+									<MenuItem value={item.value} key={item.value}>
+										{item.label}
+									</MenuItem>
+								);
+							}
+
+							return acc;
+						}, [])}
 					</Select>
 					{helperText ||
 						(touched && error && (

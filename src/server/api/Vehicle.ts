@@ -13,10 +13,10 @@ import {
 import { getBookingStatus } from "../utils";
 import {
 	InvalidPermissionException,
-	ResourceNotFoundException
+	ResourceNotFoundException,
+	FormException
 } from "./exceptions";
 import { Vehicle as VehicleValidators } from "./validators";
-import { ApiErrorHandler } from "./utils";
 import { UseParameters, Collection, Castable, API_OPERATION } from ".";
 
 export type CreateVehicleOptions = UseParameters<
@@ -139,7 +139,7 @@ export class Vehicle
 
 			await this.data.update(vehicleOptions);
 		} catch (e) {
-			new ApiErrorHandler(e);
+			FormException.handleFieldErrors(e);
 		}
 	};
 
@@ -161,7 +161,7 @@ export class Vehicle
 
 			return new Booking(createdVehicle);
 		} catch (e) {
-			new ApiErrorHandler(e);
+			FormException.handleFieldErrors(e);
 		}
 	};
 

@@ -16,12 +16,13 @@ import {
 	BookingCreateFormStepperValues,
 	FieldErrors,
 	TouchedFields,
-	FieldSelectItems
+	FieldSelectItems,
+	FieldSelectItem
 } from "../presentational";
 import _ from "lodash";
 import { ReduxState } from "../../reducers";
 import { Role, BookingChargeUnit } from "../../../shared/typings";
-import { RoleUtils } from "../../utils";
+import { RoleUtils, toTitleWords } from "../../utils";
 import { Booking, ServerQueryError } from "../../api";
 
 interface BookingCreateFormStepperStateProps {
@@ -135,12 +136,27 @@ export const BookingCreateFormStepperBase: FC<Props> = ({
 			RoleUtils.isRoleBetter(Role.KEY_MANAGER, role) &&
 			users &&
 			users.data &&
-			users.data
-				.filter(u => u.role === Role.GUEST)
-				.map(u => ({
-					label: u.username,
-					value: u.id
-				}))) ||
+			Object.values(Role).reduce<FieldSelectItems>((acc, role) => {
+				const category = toTitleWords(role);
+				const categoryItems: FieldSelectItem[] = users.data
+					.filter(u => u.role === role)
+					.sort((u1, u2) => {
+						if (u1.username > u2.username) {
+							return 1;
+						} else if (u1.username < u2.username) {
+							return -1;
+						}
+						return 0;
+					})
+					.map<FieldSelectItem>(u => ({
+						label: u.username,
+						value: u.id
+					}));
+				if (categoryItems.length > 0) {
+					acc.push({ label: category, value: categoryItems });
+				}
+				return acc;
+			}, [])) ||
 		undefined;
 
 	return auth && auth.data && bookings && bookings.data && role ? (

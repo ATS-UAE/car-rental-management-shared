@@ -1,8 +1,6 @@
 import { ValidationError } from "yup";
 import { FieldError, FormException } from "../exceptions";
 
-export * from "./ApiErrorHandler";
-
 export const getValidationErrors = (errors: ValidationError): FieldError[] =>
 	errors.inner.map(error =>
 		typeof error === "string"

@@ -89,15 +89,13 @@ const Bookings: FC<Props> = ({
 					path="/bookings"
 					render={({ history, match }) => (
 						<div className={classes.items}>
-							<Role excludes={[RoleEnum.KEY_MANAGER]}>
-								<Button
-									variant="contained"
-									color="primary"
-									onClick={() => history.push("/bookings/new")}
-								>
-									Book a vehicle
-								</Button>
-							</Role>
+							<Button
+								variant="contained"
+								color="primary"
+								onClick={() => history.push("/bookings/new")}
+							>
+								Book a vehicle
+							</Button>
 							<BookingTable />
 						</div>
 					)}

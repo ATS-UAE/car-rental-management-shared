@@ -15,9 +15,12 @@ import {
 	Location,
 	Vehicle as VehicleModel
 } from "../models";
-import { ResourceNotFoundException } from "./exceptions";
+import {
+	ResourceNotFoundException,
+	InvalidPermissionException,
+	FormException
+} from "./exceptions";
 import { UseParameters, API_OPERATION, Vehicle, User } from ".";
-import { ApiErrorHandler } from "./utils";
 import { Castable, Collection } from "./Collection";
 import {
 	sendBookingNotification,
@@ -110,6 +113,10 @@ export class Booking implements Castable<Partial<BookingAttributes>> {
 		options: BookingCreateOptions
 	) => {
 		try {
+			if (!user) {
+				throw new InvalidPermissionException("You need to login first!");
+			}
+
 			const validator = BookingValidators.getValidator(
 				user,
 				API_OPERATION.CREATE
@@ -138,7 +145,7 @@ export class Booking implements Castable<Partial<BookingAttributes>> {
 
 			return new Booking(createdBooking);
 		} catch (e) {
-			new ApiErrorHandler(e);
+			FormException.handleFieldErrors(e);
 		}
 	};
 
@@ -201,7 +208,7 @@ export class Booking implements Castable<Partial<BookingAttributes>> {
 
 			return new Booking(updatedBooking);
 		} catch (e) {
-			new ApiErrorHandler(e);
+			FormException.handleFieldErrors(e);
 		}
 	};
 	public destroy = async (user: UserModel) => {
@@ -215,7 +222,7 @@ export class Booking implements Castable<Partial<BookingAttributes>> {
 
 			await this.data.destroy();
 		} catch (e) {
-			new ApiErrorHandler(e);
+			FormException.handleFieldErrors(e);
 		}
 	};
 

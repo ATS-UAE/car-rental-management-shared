@@ -15,14 +15,14 @@ import {
 	WithStyles
 } from "@material-ui/core";
 
-import { InputProps, FieldSelectItem, Field } from ".";
+import { InputProps, FieldSelectItemValue, Field } from ".";
 
 export interface FieldSelectMultiProps
-	extends InputProps<FieldSelectItem[]>,
+	extends InputProps<FieldSelectItemValue[]>,
 		WithStyles<typeof styles> {
 	haveNone?: boolean;
 	FormControlProps?: FormControlProps;
-	items: Array<{ label: string; value: FieldSelectItem }>;
+	items: Array<{ label: string; value: FieldSelectItemValue }>;
 	fullWidth: boolean;
 	SelectProps?: Omit<SelectProps, keyof FieldSelectMultiProps>;
 }
@@ -31,15 +31,15 @@ const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 
 const isSelected = (
-	items: FieldSelectItem[],
-	value: FieldSelectItem
+	items: FieldSelectItemValue[],
+	value: FieldSelectItemValue
 ): boolean => Boolean(items.find(item => item === value));
 
 const getNewValues = (
 	event: ChangeEvent<{ value: unknown }>
-): FieldSelectItem[] => {
+): FieldSelectItemValue[] => {
 	const { options } = event.target as HTMLSelectElement;
-	const values: FieldSelectItem[] = [];
+	const values: FieldSelectItemValue[] = [];
 	for (let i = 0, l = options.length; i < l; i += 1) {
 		if (options[i].selected) {
 			values.push(options[i].value);
@@ -62,7 +62,7 @@ const FieldSelectMultiBase: FC<FieldSelectMultiProps> = ({
 	transformer
 }) => {
 	return (
-		<Field<FieldSelectItem[]> name={name} defaultValue={[]}>
+		<Field<FieldSelectItemValue[]> name={name} defaultValue={[]}>
 			{({ setFieldValue, error, touched, onBlur, value }) => (
 				<FormControl
 					fullWidth={fullWidth}
@@ -84,7 +84,7 @@ const FieldSelectMultiBase: FC<FieldSelectMultiProps> = ({
 						name={name}
 						input={<Input name={name} id={name} />}
 						renderValue={selected => {
-							const cast = selected as FieldSelectItem[];
+							const cast = selected as FieldSelectItemValue[];
 							return (
 								<div className={classes.chips}>
 									{items.reduce<ReactNode[]>((acc, item) => {
