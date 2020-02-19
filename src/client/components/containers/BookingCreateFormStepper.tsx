@@ -167,6 +167,7 @@ export const BookingCreateFormStepperBase: FC<Props> = ({
 				setLoading(true);
 				try {
 					await Booking.create(v);
+					fetchBookings();
 					history.replace("/bookings");
 				} catch (e) {
 					if (e instanceof ServerQueryError) {
