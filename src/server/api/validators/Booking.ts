@@ -14,7 +14,8 @@ import {
 	BookingServerResponseGet,
 	ExtractServerResponseData,
 	BookingServerParamsPatch,
-	UnixPropsToDate
+	UnixPropsToDate,
+	BookingServerParamsPost
 } from "../../../shared/typings";
 import { stripField } from "./utils";
 import { isBookingTimeSlotTaken } from "../../utils";
@@ -191,7 +192,6 @@ export abstract class Booking {
 					.date()
 					.nullable()
 					.transform((value, originalValue) => {
-						console.log(value, originalValue);
 						return (
 							(originalValue && moment(originalValue, "X").toDate()) || value
 						);
@@ -200,7 +200,6 @@ export abstract class Booking {
 					.date()
 					.nullable()
 					.transform((value, originalValue) => {
-						console.log(value, originalValue);
 						return (
 							(originalValue && moment(originalValue, "X").toDate()) || value
 						);
@@ -406,7 +405,14 @@ export abstract class Booking {
 				})
 			});
 		})
-		.create(function({ schema }) {
+		.create<
+			never,
+			ExtractServerResponseData<BookingServerParamsPost>,
+			UnixPropsToDate<
+				ExtractServerResponseData<BookingServerParamsPost>,
+				"from" | "to" | "pickupDate" | "returnDate"
+			>
+		>(function({ schema, data }) {
 			return schema
 				.shape({
 					paid: stripField(yup.boolean().default(false), [Role.GUEST], true),
@@ -443,26 +449,22 @@ export abstract class Booking {
 					to: yup
 						.date()
 						.required()
+						.transform((value, originalValue) =>
+							moment(originalValue, "X").toDate()
+						)
 						.test(
 							"no-lower-than-other",
 							`Booking time end cannot be lower than starting time.`,
 							function(value) {
-								const { parent } = this;
-								return moment(value, "X") < parent.from;
+								return moment(value).unix() > data.from;
 							}
-						)
-						.transform((value, originalValue) =>
-							moment(originalValue, "X").toDate()
 						),
 					bookingType: yup
 						.mixed<BookingType>()
 						.oneOf(Object.values(BookingType))
 						.required(),
 					replaceVehicle: yup.lazy(function(value, options) {
-						const { context } = options;
-						if (
-							context["bookingOptions"].bookingType === BookingType.REPLACEMENT
-						) {
+						if (data.bookingType === BookingType.REPLACEMENT) {
 							return yup
 								.object()
 								.shape({

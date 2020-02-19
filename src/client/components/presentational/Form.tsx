@@ -8,7 +8,6 @@ import {
 } from "@material-ui/core";
 import { WithStyles } from "@material-ui/core/styles/withStyles";
 import {
-	ErrorChip,
 	FormProvider,
 	FormProviderProps,
 	FormHeader,

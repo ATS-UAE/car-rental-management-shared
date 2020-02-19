@@ -89,10 +89,16 @@ const ReplaceVehicleFields: FC<{}> = () => {
 					fullWidth
 					label="Plate Number"
 					name="replaceVehicle.plateNumber"
+					transformer={v => v.toUpperCase()}
 				></FieldText>
 			</Grid>
 			<Grid xs={12} md={6} item>
-				<FieldText fullWidth label="VIN" name="replaceVehicle.vin"></FieldText>
+				<FieldText
+					fullWidth
+					label="VIN"
+					name="replaceVehicle.vin"
+					transformer={v => v.toUpperCase()}
+				></FieldText>
 			</Grid>
 			<Grid xs={12} md={6} item>
 				<FieldText
@@ -373,13 +379,13 @@ const formBookingCreateValidationSchema = yup.object().shape({
 		.required("Required"),
 	replaceVehicle: yup
 		.mixed()
-		.when(["$values", "$status"], (bookingType, status, schema) => {
+		.when(["$values", "$status"], (values, status, schema) => {
 			if (
 				status === FormStatus.SUBMITTING &&
-				bookingType !== BookingType.REPLACEMENT
+				values.bookingType !== BookingType.REPLACEMENT
 			) {
 				return schema.nullable().transform(() => null);
-			} else if (bookingType === BookingType.REPLACEMENT) {
+			} else if (values.bookingType === BookingType.REPLACEMENT) {
 				return yup.object().shape({
 					plateNumber: yup.string().required("Required"),
 					brand: yup.string().required("Required"),
@@ -506,6 +512,8 @@ const BookingCreateFormStepperBase: FC<BookingCreateFormStepperProps> = ({
 				formBookingCreateValidationSchema.validateSync(values, {
 					abortEarly: false,
 					context: {
+						values: values,
+						status: FormStatus.CHANGING,
 						bookings
 					}
 				});
@@ -542,13 +550,17 @@ const BookingCreateFormStepperBase: FC<BookingCreateFormStepperProps> = ({
 						onSubmit={
 							(utils.isLastPage &&
 								(() => {
-									const casted = formBookingCreateValidationSchema.cast(
+									const castedValues = formBookingCreateValidationSchema.cast(
 										formProps.values,
 										{
-											context: { bookings, status: FormStatus.SUBMITTING }
+											context: {
+												values: formProps.values,
+												bookings,
+												status: FormStatus.SUBMITTING
+											}
 										}
 									);
-									onSubmit(casted);
+									onSubmit(castedValues);
 								})) ||
 							undefined
 						}

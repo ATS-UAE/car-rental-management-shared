@@ -26,11 +26,6 @@ export interface FormProviderProps<
 	validateOnContextChange?: boolean;
 }
 
-interface OtherData {
-	value: any;
-	validateOnChange: boolean;
-}
-
 interface FormContextProviderValue {
 	values: object;
 	setFieldValue: (name: string, value: any) => void;

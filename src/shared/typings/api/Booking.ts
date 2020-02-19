@@ -24,20 +24,22 @@ export type BookingServerResponseGetAll = ServerResponse<
 export type BookingServerParamsPatch = Partial<
 	DatePropsToUnix<RemoveImmutableSequelizeProperties<BookingAttributes>>
 >;
-export type BookingServerParamsPost = UseParameters<
-	RemoveImmutableSequelizeProperties<BookingAttributes>,
-	"vehicleId" | "from" | "to" | "userId" | "bookingType",
-	| "replaceVehicleId"
-	| "amount"
-	| "approved"
-	| "finished"
-	| "startMileage"
-	| "endMileage"
-	| "startFuel"
-	| "endFuel"
-	| "pickupDate"
-	| "paid"
-	| "returnDate"
+export type BookingServerParamsPost = DatePropsToUnix<
+	UseParameters<
+		RemoveImmutableSequelizeProperties<BookingAttributes>,
+		"vehicleId" | "from" | "to" | "userId" | "bookingType",
+		| "replaceVehicleId"
+		| "amount"
+		| "approved"
+		| "finished"
+		| "startMileage"
+		| "endMileage"
+		| "startFuel"
+		| "endFuel"
+		| "pickupDate"
+		| "paid"
+		| "returnDate"
+	>
 >;
 export type BookingServerResponsePatch = BookingServerResponseGet;
 export type BookingServerResponseDelete = BookingServerResponseGet;

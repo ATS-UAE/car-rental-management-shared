@@ -1,16 +1,7 @@
-import React, { FC, useState, ReactElement, Component, ReactNode } from "react";
+import React, { ReactElement, Component, ReactNode } from "react";
 import _ from "lodash";
-import {
-	Stepper,
-	Step,
-	StepLabel,
-	withStyles,
-	createStyles,
-	WithStyles,
-	Grid
-} from "@material-ui/core";
-import { Form, FormProps } from ".";
-import { FieldErrors } from "./FormProvider";
+import { Stepper, Step, StepLabel } from "@material-ui/core";
+import { Form, FormProps, FieldErrors, TouchedFields } from ".";
 
 export interface FormStep {
 	id: number;
@@ -52,6 +43,35 @@ interface FormStepperProps<Values extends object>
 
 type Props<Values extends object> = FormStepperProps<Values>;
 
+const flattenObjectNames = (
+	obj: Object,
+	currentStack: number = 1,
+	maxStacks: number = 10
+): string[] => {
+	const result: string[] = [];
+	if (currentStack > maxStacks) {
+		return result;
+	}
+	for (const key of Object.keys(obj)) {
+		if (obj.hasOwnProperty(key)) {
+			const value = obj[key];
+			if (value !== null && typeof value === "object") {
+				const deepValues = flattenObjectNames(
+					value,
+					currentStack + 1,
+					maxStacks
+				);
+				for (const deepKey of deepValues) {
+					result.push(`${key}.${deepKey}`);
+				}
+			} else {
+				result.push(key);
+			}
+		}
+	}
+
+	return result;
+};
 export class FormStepper<Values extends object> extends Component<
 	FormStepper<Values>["C"] extends React.ComponentType<infer P> ? P : never,
 	{}
@@ -225,6 +245,18 @@ class FormStepperBase<Values extends object> extends Component<Props<Values>> {
 					formProps.onFieldTouch
 				)
 		};
+
+		const stepHasError = (step: FormStep): boolean => {
+			for (const field of step.fields) {
+				const error = formProps.errors && _.get(formProps.errors, field);
+				const touched = formProps.touched && _.get(formProps.touched, field);
+				if (error && touched) {
+					return true;
+				}
+			}
+			return false;
+		};
+
 		return (
 			<Form
 				{...formProps}
@@ -242,7 +274,7 @@ class FormStepperBase<Values extends object> extends Component<Props<Values>> {
 								active={step.id === activeStep.id}
 								key={step.id}
 							>
-								<StepLabel alternativeLabel error={step.error}>
+								<StepLabel alternativeLabel error={stepHasError(step)}>
 									{step.label}
 								</StepLabel>
 							</Step>
