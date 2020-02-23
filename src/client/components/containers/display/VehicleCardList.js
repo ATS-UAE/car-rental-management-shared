@@ -24,21 +24,14 @@ import {
 } from "../../../../shared/typings";
 import { api } from "../../../utils/helpers";
 import RBAC from "../../../utils/rbac";
-import CardList from "../../presentational/display/CardList";
+import { CardList } from "../../presentational/";
 import Dialog from "../../presentational/display/Dialog";
 import Can from "../layout/Can";
 
-function VehicleCardList({
-	vehicles,
-	history,
-	classes,
-	auth,
-	fetchVehicles,
-	enums
-}) {
+function VehicleCardList({ vehicles, history, classes, auth, fetchVehicles }) {
 	const [formData, setFormData] = useState(null);
 	const [isLoading, setLoading] = useState(false);
-
+	console.log(vehicles);
 	const renderDialog = ({ match, children }) => (
 		<Dialog
 			onMount={async () => {
@@ -314,10 +307,8 @@ function VehicleCardList({
 						title: `${brand} ${model}`,
 						descriptions: [plateNumber, vin],
 						imgSrc: vehicleImageSrc || "/static/images/car-no-image-avl.jpg",
-						props: {
-							classes: {
-								card: classes.card
-							}
+						classes: {
+							card: classes.card
 						},
 						controls: (
 							<Can
@@ -403,6 +394,7 @@ function VehicleCardList({
 						)
 					};
 					if (bookingChargeUnit) {
+						console.log(typeof bookingChargeUnit);
 						data.descriptions.push(
 							`Cost: ${bookingCharge} Dhs per${
 								bookingChargeCount === 1 ? " " : ` ${bookingChargeCount}`

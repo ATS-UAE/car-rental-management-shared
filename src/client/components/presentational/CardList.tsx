@@ -17,11 +17,12 @@ import { search } from "../../utils/helpers";
 import { CardListItem, CardListItemProps } from ".";
 
 export interface CardListProps extends WithStyles<typeof styles> {
-	cards: Array<{
-		id: string | number;
-		GridProps?: GridProps;
-		props: CardListItemProps;
-	}>;
+	cards: Array<
+		{
+			id: string | number;
+			GridProps?: GridProps;
+		} & CardListItemProps
+	>;
 	GridProps?: GridProps;
 	showAll?: boolean;
 	details?: (paginatedCardList: CardListProps["cards"]) => ReactNode;
@@ -52,8 +53,7 @@ class CardListBase extends Component<CardListProps, CardListState> {
 
 	private searchCardList = (keyword: string) => {
 		const { cards } = this.props;
-		return cards.filter(({ props }) => {
-			const { descriptions, title } = props;
+		return cards.filter(({ descriptions, title }) => {
 			let passFilter = false;
 			if (descriptions) {
 				for (let text of descriptions) {
@@ -73,8 +73,10 @@ class CardListBase extends Component<CardListProps, CardListState> {
 		});
 	};
 
-	private getPaginatedList = (cards: CardListProps["cards"]) =>
-		cards.slice(this.state.page, this.state.page + this.state.rowsPerPage);
+	private getPaginatedList = (cards: CardListProps["cards"]) => {
+		const { rowsPerPage, page } = this.state;
+		return cards.slice(page * rowsPerPage, (page + 1) * rowsPerPage);
+	};
 
 	render() {
 		const { cards, GridProps, classes, showAll, details } = this.props;
@@ -85,13 +87,9 @@ class CardListBase extends Component<CardListProps, CardListState> {
 
 		if (!showAll) {
 			filteredCardList = this.searchCardList(this.state.filter);
-
 			paginatedCardList = this.getPaginatedList(filteredCardList);
 		}
-
-		const hasSelectedItem = cardList.some(card =>
-			card.props && card.props.selected ? true : false
-		);
+		const hasSelectedItem = cardList.some(card => Boolean(card.selected));
 		return (
 			<div className={classes.root}>
 				{details && (
@@ -144,7 +142,7 @@ class CardListBase extends Component<CardListProps, CardListState> {
 						[classes.selected]: hasSelectedItem
 					})}
 				>
-					{paginatedCardList.map(({ props, GridProps, id }) => (
+					{paginatedCardList.map(({ GridProps, id, ...cardProps }) => (
 						<Grid
 							item
 							xs={12}
@@ -154,7 +152,7 @@ class CardListBase extends Component<CardListProps, CardListState> {
 							{...GridProps}
 							classes={{ root: classes.gridItem }}
 						>
-							<CardListItem {...props} />
+							<CardListItem {...cardProps} />
 						</Grid>
 					))}
 				</Grid>

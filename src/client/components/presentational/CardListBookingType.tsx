@@ -41,23 +41,21 @@ const CardListBookingTypeBase: FC<CardListBookingTypeProps &
 							lg: 4
 						},
 						id: type,
-						props: {
-							title: toTitleWords(type),
-							iconName,
-							selected: value === type,
-							onClick: () => onClick(type),
+						title: toTitleWords(type),
+						iconName,
+						selected: value === type,
+						onClick: () => onClick(type),
+						classes: {
+							card: classes.bookingListCard
+						},
+						CardContentProps: {
 							classes: {
-								card: classes.bookingListCard
-							},
-							CardContentProps: {
-								classes: {
-									root: classes.bookingListCardContent
-								}
-							},
-							TitleProps: {
-								classes: {
-									root: classes.bookingListCardTitle
-								}
+								root: classes.bookingListCardContent
+							}
+						},
+						TitleProps: {
+							classes: {
+								root: classes.bookingListCardTitle
 							}
 						}
 					});
