@@ -22,7 +22,9 @@ const styles = (theme: Theme) =>
 			},
 			[theme.breakpoints.up("sm")]: {
 				height: 64
-			}
+			},
+			filter:
+				"drop-shadow(0px 2px 1px rgba(0,0,0,0.2)) drop-shadow(0px 1px 1px rgba(0,0,0,0.14)) drop-shadow(0px 1px 3px rgba(0,0,0,0.12))"
 		},
 		toolbar: {
 			display: "flex",
