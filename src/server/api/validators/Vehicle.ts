@@ -63,43 +63,16 @@ export abstract class Vehicle {
 			});
 		})
 		.create(({ schema, user }) => {
-			return schema
-				.shape({
-					brand: Yup.string().required(),
-					model: Yup.string().required(),
-					bookingChargeCount: Yup.number().default(0),
-					bookingCharge: Yup.number().default(0)
-				})
-				.test(
-					"permission",
-					"You do not have the permission to do this.",
-					function() {
-						return user.role === Role.MASTER;
-					}
-				);
+			return schema.shape({
+				brand: Yup.string().required(),
+				model: Yup.string().required(),
+				bookingChargeCount: Yup.number().default(0),
+				bookingCharge: Yup.number().default(0)
+			});
 		})
 		.update<VehicleModel, VehicleAttributes, UpdateVehicleOptions>(
 			({ schema, user, target }) => {
-				return schema
-					.shape({ id: Yup.number().required() })
-					.test(
-						"permission",
-						"You do not have the permission to do this.",
-						function() {
-							if (user.role === Role.MASTER) {
-								return true;
-							} else if (
-								user.role === Role.ADMIN ||
-								user.role === Role.KEY_MANAGER
-							) {
-								if (target.clientId === user.clientId) {
-									return true;
-								}
-							}
-
-							return false;
-						}
-					);
+				return schema.shape({ id: Yup.number().required() });
 			}
 		).schema;
 }
