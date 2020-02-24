@@ -21,19 +21,6 @@ import { stripField } from "./utils";
 import { isBookingTimeSlotTaken } from "../../utils";
 import { API_OPERATION } from "..";
 import { Validator, YupValidatorBuilder } from ".";
-<<<<<<< Updated upstream
-=======
-
-type ValidatorParameters = Parameters<typeof Booking.getValidator>;
-
-interface BookingValidationData
-	extends Omit<BookingAttributes, "from" | "to" | "createdAt" | "updatedAt"> {
-	from: number | Date;
-	to: number | Date;
-	createdAt: number | Date;
-	createdat: number | Date;
-}
->>>>>>> Stashed changes
 
 export abstract class Booking {
 	public static getValidator = (
@@ -43,7 +30,6 @@ export abstract class Booking {
 	) => new Validator(Booking.validatorSchema, user, operation, target);
 
 	private static validatorSchema = new YupValidatorBuilder(
-<<<<<<< Updated upstream
 		yup.object().shape(
 			{
 				paid: yup.boolean(),
@@ -228,129 +214,11 @@ export abstract class Booking {
 								const changed =
 									updateData?.finished !== undefined &&
 									updateData.finished !== target.finished;
-=======
-		yup.object().shape({
-			paid: yup.boolean(),
-			amount: yup.number().nullable(),
-			from: yup
-				.mixed()
-				.transform((v, originalValue) =>
-					typeof originalValue === "number"
-						? moment(originalValue, "X").toDate()
-						: originalValue
-				),
-			to: yup
-				.mixed()
-				.transform((v, originalValue) =>
-					typeof originalValue === "number"
-						? moment(originalValue, "X").toDate()
-						: originalValue
-				),
-			approved: yup.boolean().nullable(),
-			finished: yup.boolean(),
-			startMileage: yup.number().nullable(),
-			endMileage: yup.number().nullable(),
-			startFuel: yup.number().nullable(),
-			endFuel: yup.number().nullable(),
-			userId: yup.number(),
-			vehicleId: yup.number(),
-			bookingType: yup.mixed<BookingType>().oneOf(Object.values(BookingType)),
-			replaceVehicleId: yup.number().nullable()
-		})
-	)
-		.read<null, BookingCreateOptions>(({ schema, data }) => {
-			if (data.bookingType === BookingType.REPLACEMENT) {
-				schema = schema.shape({
-					replaceVehicle: yup
-						.object()
-						.shape({
-							brand: yup.string().nullable(),
-							model: yup.string().nullable(),
-							vin: yup.string().nullable(),
-							plateNumber: yup.string().nullable()
-						})
-						.nullable()
-				});
-			}
-			return schema.shape({
-				id: yup.number(),
-				from: yup
-					.number()
-					.transform((v, originalValue) =>
-						moment(originalValue as Date).unix()
-					),
-				to: yup
-					.number()
-					.transform((v, originalValue) =>
-						moment(originalValue as Date).unix()
-					),
-				createdAt: yup
-					.number()
-					.transform((v, originalValue) =>
-						moment(originalValue as Date).unix()
-					),
-				updatedAt: yup
-					.number()
-					.nullable()
-					.transform(
-						(v, originalValue) =>
-							(originalValue && moment(originalValue as Date).unix()) || null
-					),
-				vehicle: yup.object().shape({
-					id: yup.number(),
-					brand: yup.string(),
-					model: yup.string(),
-					vin: yup.string(),
-					plateNumber: yup.string()
-				})
-			});
-		})
-		.update<BookingModel, BookingUpdateOptions>(
-			({ schema, data: updateData, target, user }) => {
-				return schema.shape({
-					from: yup
-						.date()
-						.transform((value, originalValue) =>
-							moment(originalValue, "X").toDate()
-						)
-						.test(
-							"no-approved",
-							"Booking has already been approved",
-							function() {
-								const changed =
-									updateData?.from !== undefined &&
-									updateData.from !== target.from;
-								if (!changed) {
-									return true;
-								}
-								// If Guest, deny changes if approved.
-								if (user.role === Role.GUEST && target.approved) {
-									return false;
-								} else if (user.role === Role.KEY_MANAGER && target.finished) {
-									// If Key Manager, deny if booking has finished.
-									return false;
-								}
-								return true;
-							}
-						),
-					to: yup
-						.date()
-						.transform((value, originalValue) =>
-							moment(originalValue, "X").toDate()
-						)
-						.test(
-							"no-approved",
-							"Booking has already been approved",
-							function() {
-								const changed =
-									updateData?.to !== undefined && updateData.to !== target.to;
->>>>>>> Stashed changes
 
 								if (!changed) {
 									return true;
 								}
 
-<<<<<<< Updated upstream
 								const bookedVehicle = await Vehicle.findByPk(target.vehicleId, {
 									include: [{ model: BookingModel }]
 								});
@@ -545,225 +413,6 @@ export abstract class Booking {
 				"from" | "to" | "pickupDate" | "returnDate"
 			>
 		>(function({ schema, data }) {
-=======
-								// If Guest, deny changes if approved.
-								if (user.role === Role.GUEST && target.approved) {
-									return false;
-								} else if (user.role === Role.KEY_MANAGER && target.finished) {
-									// If Key Manager, deny if booking has finished.
-									return false;
-								}
-								return true;
-							}
-						),
-					finished: stripField(
-						yup
-							.boolean()
-							.test(
-								"timeslot-available",
-								"This booking is intersects with another booking at the time specified.",
-								async function() {
-									const changed =
-										updateData?.finished !== undefined &&
-										updateData.finished !== target.finished;
-
-									if (!changed) {
-										return true;
-									}
-
-									const bookedVehicle = await Vehicle.findByPk(
-										target.vehicleId,
-										{
-											include: [{ model: BookingModel }]
-										}
-									);
-									return !isBookingTimeSlotTaken(
-										bookedVehicle.bookings.map(({ from, to, id }) => ({
-											from: moment(from).unix(),
-											to: moment(to).unix(),
-											id
-										})),
-										moment(target.from).unix(),
-										moment(target.from).unix(),
-										target.id
-									);
-								}
-							),
-						[Role.MASTER, Role.ADMIN, Role.KEY_MANAGER]
-					),
-					userId: yup
-						.number()
-						.test(
-							"no-approved",
-							"Booking has already been approved",
-							function() {
-								const changed =
-									updateData?.userId !== undefined &&
-									updateData.userId !== target.userId;
-
-								if (!changed) {
-									return true;
-								}
-
-								// If Guest, deny changes if approved.
-								if (user.role === Role.GUEST && target.approved) {
-									return false;
-								} else if (user.role === Role.KEY_MANAGER && target.finished) {
-									// If Key Manager, deny if booking has finished.
-									return false;
-								}
-								return true;
-							}
-						),
-					vehicleId: yup
-						.number()
-						.test(
-							"no-approved",
-							"Booking has already been approved",
-							function() {
-								const changed =
-									updateData?.vehicleId !== undefined &&
-									updateData.vehicleId !== target.vehicleId;
-
-								if (!changed) {
-									return true;
-								}
-
-								// If Guest or KM, deny changes if approved.
-								if (
-									user.role === Role.GUEST ||
-									user.role === Role.KEY_MANAGER
-								) {
-									if (target.approved) {
-										return false;
-									}
-								}
-								return true;
-							}
-						),
-					startFuel: stripField(yup.number().nullable(), [
-						Role.MASTER,
-						Role.ADMIN,
-						Role.KEY_MANAGER
-					]),
-					startMileage: stripField(yup.number().nullable(), [
-						Role.MASTER,
-						Role.ADMIN,
-						Role.KEY_MANAGER
-					]),
-					approved: stripField(
-						yup
-							.boolean()
-							.nullable()
-							.test(
-								"no-finished-booking",
-								"This booking has already finished.",
-								function() {
-									const changed =
-										updateData?.approved !== undefined &&
-										updateData.approved !== target.approved;
-
-									if (!changed) {
-										return true;
-									}
-
-									return !target.finished;
-								}
-							)
-							.test(
-								"pending-only",
-								function() {
-									return `Booking has already been ${
-										target.approved ? "approved" : "denied"
-									}`;
-								},
-								function() {
-									const changed =
-										updateData?.approved !== undefined &&
-										updateData.approved !== target.approved;
-
-									if (!changed) {
-										return true;
-									}
-
-									return changed ? target.approved === null : true;
-								}
-							)
-							.test(
-								"booking-expired",
-								"Booking has already expired",
-								function() {
-									const changed =
-										updateData?.approved !== undefined &&
-										updateData.approved !== target.approved;
-
-									if (!changed) {
-										return true;
-									}
-
-									return moment(target.from).isAfter(moment());
-								}
-							),
-						[Role.MASTER, Role.ADMIN, Role.KEY_MANAGER]
-					),
-					endFuel: stripField(yup.number().nullable(), [
-						Role.MASTER,
-						Role.ADMIN,
-						Role.KEY_MANAGER
-					]),
-					endMileage: stripField(yup.number().nullable(), [
-						Role.MASTER,
-						Role.ADMIN,
-						Role.KEY_MANAGER
-					]),
-					paid: stripField(yup.boolean(), [
-						Role.MASTER,
-						Role.ADMIN,
-						Role.KEY_MANAGER
-					]),
-					replaceVehicle: yup.lazy(function(value, options) {
-						// If booking type has been changed to replacement, then require a replacement vehicle.
-						if (
-							updateData.bookingType === BookingType.REPLACEMENT &&
-							target.bookingType !== BookingType.REPLACEMENT
-						) {
-							return yup
-								.object()
-								.shape({
-									plateNumber: yup.string().required(),
-									vin: yup.string().required(),
-									brand: yup.string().required(),
-									model: yup.string().required()
-								})
-								.required();
-						} else if (target.bookingType === BookingType.REPLACEMENT) {
-							// If existing booking type is Replacement, allow updating partially.
-							return yup
-								.object()
-								.shape({
-									plateNumber: yup.string(),
-									vin: yup.string(),
-									brand: yup.string(),
-									model: yup.string()
-								})
-								.transform(v => {
-									const replaceVehicle = ReplaceVehicle.findByPk(
-										target.replaceVehicleId
-									);
-									return { ...v, ...replaceVehicle };
-								});
-						}
-						return yup
-							.mixed()
-							.notRequired()
-							.nullable()
-							.transform(() => null);
-					})
-				});
-			}
-		)
-		.create(({ schema }) => {
->>>>>>> Stashed changes
 			return schema
 				.shape({
 					paid: stripField(yup.boolean().default(false), [Role.GUEST], true),
@@ -800,41 +449,22 @@ export abstract class Booking {
 					to: yup
 						.date()
 						.required()
-<<<<<<< Updated upstream
 						.transform((value, originalValue) =>
 							moment(originalValue, "X").toDate()
 						)
-=======
->>>>>>> Stashed changes
 						.test(
 							"no-lower-than-other",
 							`Booking time end cannot be lower than starting time.`,
 							function(value) {
-<<<<<<< Updated upstream
 								return moment(value).unix() > data.from;
 							}
-=======
-								const { parent } = this;
-								return moment(value, "X") < parent.from;
-							}
-						)
-						.transform((value, originalValue) =>
-							moment(originalValue, "X").toDate()
->>>>>>> Stashed changes
 						),
 					bookingType: yup
 						.mixed<BookingType>()
 						.oneOf(Object.values(BookingType))
 						.required(),
 					replaceVehicle: yup.lazy(function(value, options) {
-<<<<<<< Updated upstream
 						if (data.bookingType === BookingType.REPLACEMENT) {
-=======
-						const { context } = options;
-						if (
-							context["bookingOptions"].bookingType === BookingType.REPLACEMENT
-						) {
->>>>>>> Stashed changes
 							return yup
 								.object()
 								.shape({
@@ -873,39 +503,9 @@ export abstract class Booking {
 						}
 						return false;
 					}
-<<<<<<< Updated upstream
 				);
 		})
 		.destroy(function({ schema }) {
-=======
-				)
-				.test(
-					"permission",
-					"You do not have the permission to do this.",
-					async function(v) {
-						const user = this.options.context["user"] as User;
-
-						// Only allow guest to create bookings on itself.
-						if (user.role === Role.GUEST && v.userId === user.id) {
-							return true;
-							// Only allow bookings on users with the same client.
-						} else if (
-							user.role === Role.KEY_MANAGER ||
-							user.role === Role.ADMIN
-						) {
-							const targetUser = await User.findByPk(user.id);
-							if (targetUser.clientId === user.clientId) {
-								return true;
-							}
-						} else if (user.role === Role.MASTER) {
-							return true;
-						}
-						return false;
-					}
-				);
-		})
-		.destroy(({ schema }) => {
->>>>>>> Stashed changes
 			return schema.shape({
 				approved: yup
 					.boolean()
@@ -916,10 +516,6 @@ export abstract class Booking {
 						value => value !== true
 					)
 			});
-<<<<<<< Updated upstream
 		})
 		.getSchema();
-=======
-		}).schema;
->>>>>>> Stashed changes
 }

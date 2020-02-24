@@ -15,13 +15,8 @@ export class FormException extends ApiException {
 	}
 	public static extractFieldErrors = (e: ValidationError): FieldError[] => {
 		return e.inner.map(error => ({
-<<<<<<< Updated upstream
 			key: error.path,
 			value: error.message,
-=======
-			field: error.path,
-			message: error.message,
->>>>>>> Stashed changes
 			name: error.name
 		}));
 	};
