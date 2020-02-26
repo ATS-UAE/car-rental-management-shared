@@ -30,7 +30,7 @@ import {
 	FieldSelectItems
 } from ".";
 import moment from "moment";
-import { BookingType } from "../../../shared/typings";
+import { BookingType, FlattenIfArray } from "../../../shared/typings";
 import {
 	ExtractServerResponseData,
 	BookingServerResponseGetAll,
@@ -38,6 +38,7 @@ import {
 } from "../../../shared/typings";
 import { rangeOverlap } from "../../utils";
 import { BookingGetResponseItem } from "../../api";
+import { CardListProps } from "./CardList";
 
 const useFieldStyles = makeStyles(theme => ({
 	spacer: {
@@ -162,32 +163,26 @@ const VehicleFieldsBase: FC<{
 				{fieldProps => (
 					<CardList
 						cards={vehicles.map(v => {
-							const data: {
-								id: string | number;
-								GridProps?: GridProps;
-								props: CardListItemProps;
-							} = {
+							const data: FlattenIfArray<CardListProps["cards"]> = {
 								GridProps: {
 									xs: 12,
 									sm: 12,
 									className: classes.fullHeight
 								},
 								id: v.id,
-								props: {
-									classes: {
-										card: classes.card
-									},
-									selected: v.id === fieldProps.value,
-									title: v.label,
-									imgSrc:
-										v.vehicleImageSrc || "/static/images/car-no-image-avl.jpg",
-									descriptions: [v.plateNumber],
-									onClick: () => fieldProps.setFieldValue(v.id),
-									iconName: v.id === fieldProps.value ? "Done" : ""
-								}
+								classes: {
+									card: classes.card
+								},
+								selected: v.id === fieldProps.value,
+								title: v.label,
+								imgSrc:
+									v.vehicleImageSrc || "/static/images/car-no-image-avl.jpg",
+								descriptions: [v.plateNumber],
+								onClick: () => fieldProps.setFieldValue(v.id),
+								iconName: v.id === fieldProps.value ? "Done" : ""
 							};
-							if (v.cost && data.props.descriptions) {
-								data.props.descriptions.push(v.cost);
+							if (v.cost && data.descriptions) {
+								data.descriptions.push(v.cost);
 							}
 							return data;
 						})}

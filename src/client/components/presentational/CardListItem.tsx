@@ -18,7 +18,7 @@ import * as icons from "@material-ui/icons";
 import classNames from "classnames";
 
 export interface CardListItemProps {
-	classes?: Partial<ClassNameMap<keyof typeof styles>>;
+	classes?: Partial<ClassNameMap<keyof ReturnType<typeof styles>>>;
 	title?: string;
 	descriptions?: string[];
 	controls?: ReactNode;
