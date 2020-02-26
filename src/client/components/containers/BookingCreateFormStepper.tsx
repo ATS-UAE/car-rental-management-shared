@@ -108,11 +108,12 @@ export const BookingCreateFormStepperBase: FC<Props> = ({
 							  users.data.find(u => u.id === values.userId);
 					return user && user.clientId === v.clientId;
 				})
-				.map(v => ({
+				.map<BookingCreateFormStepperVehicleItem>(v => ({
 					label: `${v.brand} ${v.model}`,
 					plateNumber: v.plateNumber,
 					id: v.id,
 					locationId: v.locationId as number,
+					vehicleImageSrc: v.vehicleImageSrc || undefined,
 					cost: getVehicleCost(
 						v.bookingChargeCount,
 						v.bookingCharge,
