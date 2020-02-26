@@ -72,7 +72,9 @@ export const FieldSelect: FC<FieldSelectProps> = ({
 						{items.reduce<Array<ReactNode>>((acc, item, index) => {
 							if (Array.isArray(item.value)) {
 								acc.push(
-									<ListSubheader key={item.label}>{item.label}</ListSubheader>
+									<ListSubheader key={item.label} disableSticky>
+										{item.label}
+									</ListSubheader>
 								);
 								item.value.forEach(item => {
 									acc.push(
