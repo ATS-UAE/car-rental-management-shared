@@ -19,12 +19,8 @@ export const BOOKING_TABLE_DATA: BookingTableTestItem[] = [
 		username: "Okabe Rintarou",
 		finished: false,
 		createdAt: moment().unix(),
-		from: moment()
-			.add(30, "minutes")
-			.unix(),
-		to: moment()
-			.add(1, "day")
-			.unix(),
+		from: moment().add(30, "minutes").unix(),
+		to: moment().add(1, "day").unix(),
 		vehicle: "Toyota",
 		bookingType: BookingType.BUSINESS,
 		amount: null,
@@ -45,9 +41,7 @@ export const BOOKING_TABLE_DATA: BookingTableTestItem[] = [
 		finished: false,
 		createdAt: moment().unix(),
 		from: moment().unix(),
-		to: moment()
-			.add(1, "day")
-			.unix(),
+		to: moment().add(1, "day").unix(),
 		vehicle: "Toyota",
 		bookingType: BookingType.BUSINESS,
 		amount: null,
@@ -68,9 +62,7 @@ export const BOOKING_TABLE_DATA: BookingTableTestItem[] = [
 		finished: false,
 		createdAt: moment().unix(),
 		from: moment().unix(),
-		to: moment()
-			.add(1, "day")
-			.unix(),
+		to: moment().add(1, "day").unix(),
 		vehicle: "Toyota",
 		bookingType: BookingType.BUSINESS,
 		amount: null,
@@ -83,31 +75,6 @@ export const BOOKING_TABLE_DATA: BookingTableTestItem[] = [
 		status: BookingStatus.APPROVED,
 		pickupDate: null
 	},
-	// Status: Expired
-	{
-		id: 4,
-		approved: null,
-		username: "Okabe Rintarou",
-		finished: false,
-		createdAt: moment().unix(),
-		from: moment()
-			.subtract(1, "day")
-			.unix(),
-		to: moment()
-			.add(1, "day")
-			.unix(),
-		vehicle: "Toyota",
-		bookingType: BookingType.BUSINESS,
-		amount: null,
-		paid: false,
-		approvable: false,
-		deletable: true,
-		updatable: true,
-		finalizable: false,
-		payable: false,
-		status: BookingStatus.EXPIRED,
-		pickupDate: null
-	},
 	// Status: Ongoing
 	{
 		id: 5,
@@ -115,12 +82,8 @@ export const BOOKING_TABLE_DATA: BookingTableTestItem[] = [
 		username: "Okabe Rintarou",
 		finished: false,
 		createdAt: moment().unix(),
-		from: moment()
-			.subtract(1, "day")
-			.unix(),
-		to: moment()
-			.add(1, "day")
-			.unix(),
+		from: moment().subtract(1, "day").unix(),
+		to: moment().add(1, "day").unix(),
 		vehicle: "Toyota",
 		bookingType: BookingType.BUSINESS,
 		amount: null,
@@ -140,12 +103,8 @@ export const BOOKING_TABLE_DATA: BookingTableTestItem[] = [
 		username: "Okabe Rintarou",
 		finished: false,
 		createdAt: moment().unix(),
-		from: moment()
-			.subtract(1, "day")
-			.unix(),
-		to: moment()
-			.add(1, "day")
-			.unix(),
+		from: moment().subtract(1, "day").unix(),
+		to: moment().add(1, "day").unix(),
 		vehicle: "Toyota",
 		bookingType: BookingType.BUSINESS,
 		amount: 100,
@@ -165,12 +124,8 @@ export const BOOKING_TABLE_DATA: BookingTableTestItem[] = [
 		username: "Okabe Rintarou",
 		finished: false,
 		createdAt: moment().unix(),
-		from: moment()
-			.subtract(2, "days")
-			.unix(),
-		to: moment()
-			.subtract(1, "day")
-			.unix(),
+		from: moment().subtract(2, "days").unix(),
+		to: moment().subtract(1, "day").unix(),
 		vehicle: "Toyota",
 		bookingType: BookingType.BUSINESS,
 		amount: 100,
