@@ -8,7 +8,7 @@ import {
 	createStyles,
 	Theme
 } from "@material-ui/core";
-import Paper, { PaperProps } from "@material-ui/core/Paper";
+import Paper from "@material-ui/core/Paper";
 
 export interface InfoCardProps extends WithStyles<typeof styles> {
 	tabs: Array<{

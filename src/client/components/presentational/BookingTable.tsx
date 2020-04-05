@@ -125,9 +125,8 @@ export const getBookingTableActions = (
 
 	if (role && role !== Role.GUEST) {
 		actions.push(
-			({ from, approved }) => {
-				const expiredBooking = currentTimestamp.isAfter(from);
-				const visible = approved === null && !expiredBooking;
+			({ approved }) => {
+				const visible = approved === null;
 				return {
 					icon: () => <ThumbUp />,
 					tooltip: "Approve",
@@ -136,9 +135,8 @@ export const getBookingTableActions = (
 						!Array.isArray(data) && tableActions.onApprove(data)
 				};
 			},
-			({ from, approved }) => {
-				const expiredBooking = currentTimestamp.isAfter(from);
-				const visible = approved === null && !expiredBooking;
+			({ approved }) => {
+				const visible = approved === null;
 				return {
 					icon: () => <ThumbDown />,
 					tooltip: "Deny",

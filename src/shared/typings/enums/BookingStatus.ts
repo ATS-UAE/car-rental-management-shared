@@ -3,7 +3,6 @@ export enum BookingStatus {
 	ONGOING = "ONGOING",
 	FINISHED = "FINISHED",
 	APPROVED = "APPROVED",
-	EXPIRED = "EXPIRED",
 	DENIED = "DENIED",
 	PENDING = "PENDING"
 }

@@ -1,6 +1,7 @@
 export * from "./Booking";
 export * from "./Vehicle";
 export * from "./User";
+export * from "./Location";
 export * from "./Collection";
 
 export enum API_OPERATION {

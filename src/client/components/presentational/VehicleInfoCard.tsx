@@ -101,11 +101,7 @@ const generateTabs = ({
 		body: (
 			<div className={classes.paddingTop}>
 				{image && (
-					<img
-						className={classes.vehicleImage}
-						src={image}
-						alt="Vehicle Image"
-					></img>
+					<img className={classes.vehicleImage} src={image} alt="Vehicle"></img>
 				)}
 				<Grid container>
 					{generateGridItemKeyValueField({
@@ -227,8 +223,9 @@ const styles = (theme: Theme) =>
 		}
 	});
 
-const VehicleInfoCardBase: FC<VehicleInfoCardProps &
-	WithStyles<typeof styles>> = props => {
+const VehicleInfoCardBase: FC<
+	VehicleInfoCardProps & WithStyles<typeof styles>
+> = props => {
 	return <InfoCard tabs={generateTabs(props)}></InfoCard>;
 };
 

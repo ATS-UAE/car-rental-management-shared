@@ -135,9 +135,10 @@ export const getBookingStatus = (booking: {
 		else status = BookingStatus.APPROVED;
 	} else {
 		if (booking.approved === null) {
-			if (hasPassedFrom) status = BookingStatus.EXPIRED;
-			else status = BookingStatus.PENDING;
-		} else if (booking.approved === false) status = BookingStatus.DENIED;
+			status = BookingStatus.PENDING;
+		} else if (booking.approved === false) {
+			status = BookingStatus.DENIED;
+		}
 	}
 	return status;
 };

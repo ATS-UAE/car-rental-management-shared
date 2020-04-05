@@ -81,7 +81,7 @@ export class Vehicle
 	public availableForBooking = async (
 		from: number,
 		to: number,
-		bookings: Booking[]
+		bookings?: Booking[]
 	) => {
 		if (this.data.defleeted === true) {
 			return false;

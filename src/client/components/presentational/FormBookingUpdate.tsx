@@ -9,8 +9,7 @@ import {
 	FieldDate,
 	FieldSelectItems,
 	FormStatus,
-	FormProps,
-	FieldErrors
+	FormProps
 } from ".";
 import { BookingType } from "../../../shared/typings";
 import { toTitleWords } from "../../utils";
@@ -40,7 +39,7 @@ export interface FormBookingUpdateProps
 	loading: boolean;
 }
 
-export  const formBookingUpdateValidationSchema = Yup.object().shape<
+export const formBookingUpdateValidationSchema = Yup.object().shape<
 	Omit<FormBookingUpdateValues, "locationId">
 >({
 	id: Yup.number(),

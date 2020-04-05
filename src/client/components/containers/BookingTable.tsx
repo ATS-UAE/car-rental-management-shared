@@ -80,7 +80,7 @@ const BookingTableBase: FC<Props> = ({
 				onDeny={async ({ id }) => {
 					setIsFetchingData(true);
 					try {
-						await Booking.approve(id);
+						await Booking.approve(id, false);
 						await fetchBookings();
 					} catch (e) {
 						// TODO: Display modal to user.

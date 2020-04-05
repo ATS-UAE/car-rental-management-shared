@@ -1,12 +1,14 @@
 import express from "express";
 import requireLogin from "../middlewares/requireLogin";
-import { Booking, BookingCreateOptions, BookingUpdateOptions } from "../api";
+import { Booking } from "../api";
 import {
 	BookingAttributes,
 	WialonUnitServerResponseGet,
 	ExtractServerResponseData,
 	VehicleServerResponseGet,
-	UserServerResponseGet
+	UserServerResponseGet,
+	BookingServerParamsPost,
+	BookingServerParamsPatch
 } from "../../shared/typings";
 import { ResponseBuilder } from "../utils";
 
@@ -36,7 +38,7 @@ router.get<undefined, ResponseBuilder<Partial<BookingAttributes>[]>, undefined>(
 router.post<
 	undefined,
 	ResponseBuilder<Partial<BookingAttributes>>,
-	BookingCreateOptions
+	BookingServerParamsPost
 >("/", async ({ user, body }, res) => {
 	const response = new ResponseBuilder<Partial<BookingAttributes>>();
 	try {
@@ -71,7 +73,7 @@ router.get<
 router.patch<
 	{ id: string },
 	ResponseBuilder<Partial<BookingAttributes>>,
-	BookingUpdateOptions
+	BookingServerParamsPatch
 >("/:id", async ({ user, params, body }: any, res) => {
 	const response = new ResponseBuilder<Partial<BookingAttributes>>();
 	try {

@@ -5,8 +5,9 @@ import moment from "moment";
 import { Booking as BookingValidators } from "./validators";
 import {
 	BookingAttributes,
-	ReplaceVehicleAttributes,
-	Role
+	Role,
+	BookingServerParamsPost,
+	BookingServerParamsPatch
 } from "../../shared/typings";
 import {
 	User as UserModel,
@@ -27,42 +28,6 @@ import {
 	sendInvoice as sendInvoiceEmail,
 	sendBookingConfirmation as sendBookingConfirmationEmail
 } from "../utils/mail";
-
-export type BookingCreateOptions = UseParameters<
-	BookingAttributes,
-	"from" | "to" | "bookingType",
-	"userId" | "vehicleId"
-> & {
-	replaceVehicle?: UseParameters<
-		ReplaceVehicleAttributes,
-		"vin" | "brand" | "model" | "plateNumber"
-	>;
-};
-
-export type BookingUpdateOptions = UseParameters<
-	BookingAttributes,
-	"id",
-	| "userId"
-	| "paid"
-	| "amount"
-	| "from"
-	| "to"
-	| "approved"
-	| "finished"
-	| "startMileage"
-	| "endMileage"
-	| "startFuel"
-	| "endFuel"
-	| "vehicleId"
-	| "bookingType"
-	| "returnDate"
-	| "pickupDate"
-> & {
-	replaceVehicle?: UseParameters<
-		ReplaceVehicleAttributes,
-		"vin" | "brand" | "model" | "plateNumber"
-	>;
-};
 
 export class Booking implements Castable<Partial<BookingAttributes>> {
 	public constructor(public data: BookingModel) {}
@@ -110,7 +75,7 @@ export class Booking implements Castable<Partial<BookingAttributes>> {
 
 	public static create = async (
 		user: UserModel,
-		options: BookingCreateOptions
+		options: BookingServerParamsPost
 	) => {
 		try {
 			if (!user) {
@@ -126,9 +91,17 @@ export class Booking implements Castable<Partial<BookingAttributes>> {
 			await validator.validate(options);
 			// Cast the JSON
 			const bookingOptions = validator.cast(options) as Partial<
-				BookingCreateOptions
+				BookingServerParamsPost
 			>;
 
+			const vehicle = await Vehicle.get(user, options.vehicleId);
+
+			if (!(await vehicle.availableForBooking(options.from, options.to))) {
+				throw new FormException(
+					"Vehicle is not available. Please select another vehicle.",
+					[{ key: "vehicleId", value: "Vehicle is not available." }]
+				);
+			}
 			// Create replaced vehicle.
 			const replacedVehicle =
 				bookingOptions.replaceVehicle &&
@@ -174,7 +147,10 @@ export class Booking implements Castable<Partial<BookingAttributes>> {
 		}
 	};
 
-	public update = async (user: UserModel, options: BookingUpdateOptions) => {
+	public update = async (
+		user: UserModel,
+		options: BookingServerParamsPatch
+	) => {
 		try {
 			const booking = await this.data.reload({
 				include: [{ model: ReplaceVehicle }]
@@ -188,7 +164,7 @@ export class Booking implements Castable<Partial<BookingAttributes>> {
 			await validator.validate(options);
 			// Cast the JSON
 			const bookingOptions = validator.cast(options) as Partial<
-				BookingUpdateOptions
+				BookingServerParamsPatch
 			>;
 
 			// Create replaced vehicle.

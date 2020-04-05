@@ -10,9 +10,10 @@ import {
 	formBookingUpdateValidationSchema,
 	FieldErrors,
 	TouchedFields,
-	FieldSelectItems
+	FieldSelectItems,
+	FieldSelectItem
 } from "../presentational";
-import { Booking, Location, Vehicle } from "../../api";
+import { Booking, Location, Vehicle, User } from "../../api";
 import { ResolveThunks, connect, MapStateToProps } from "react-redux";
 import { ReduxState } from "../../reducers";
 import * as actions from "../../actions";
@@ -22,6 +23,7 @@ import {
 	LocationServerResponseGetAll
 } from "../../../shared/typings";
 import moment from "moment";
+import { RoleUtils, toTitleWords } from "../../utils";
 
 interface ModalFormBookingUpdateStateProps {
 	auth: ReduxState["auth"];
@@ -84,7 +86,7 @@ class ModalFormBookingUpdateBase extends Component<Props, State> {
 	};
 
 	public componentDidMount = () => {
-		const { match, history, locations } = this.props;
+		const { match, history } = this.props;
 		const bookingId = match?.params.id;
 		if (!bookingId) {
 			history.push("/bookings");
@@ -134,7 +136,7 @@ class ModalFormBookingUpdateBase extends Component<Props, State> {
 
 			if (values.userId && users && users.data) {
 				const user = users.data.find(u => u.id == values.userId);
-				if (user && user.clientId !== null) {
+				if (user && (user.clientId !== null || user.role === Role.MASTER)) {
 					this.setState({
 						locations: [],
 						values: {
@@ -143,18 +145,26 @@ class ModalFormBookingUpdateBase extends Component<Props, State> {
 							locationId: resetFields ? undefined : values.locationId
 						}
 					});
-					Location.fromClientId(user.clientId).then(l => {
-						this.setState({
-							locations: l.map(l => l.data)
+					if (user.clientId) {
+						Location.fromClientId(user.clientId).then(l => {
+							this.setState({
+								locations: l.map(l => l.data)
+							});
 						});
-					});
+					} else if (user.role === Role.MASTER) {
+						Location.getAll().then(l => {
+							this.setState({
+								locations: l.map(l => l.data)
+							});
+						});
+					}
 				}
 			}
 		}
 	};
 
 	public render = () => {
-		const { users, vehicles, history } = this.props;
+		const { users, vehicles, history, auth } = this.props;
 		const {
 			initializing,
 			values,
@@ -171,7 +181,7 @@ class ModalFormBookingUpdateBase extends Component<Props, State> {
 				label: l.name,
 				value: l.id
 			}))) || [{ label: "Please select a user.", value: "" }];
-
+		console.log(locations);
 		const vehicleList: FieldSelectItems | undefined =
 			(values &&
 				vehicles &&
@@ -182,12 +192,40 @@ class ModalFormBookingUpdateBase extends Component<Props, State> {
 						value: v.id
 					}))) ||
 			[];
-
+		// List of users grouped by roles. If user is a master account,
+		// add to list unconditionally, else user should have an assigned Client ID
+		// to be added to list.
 		const userList: FieldSelectItems | undefined =
-			(users &&
-				users.data
-					.filter(u => u.role === Role.GUEST && u.clientId !== null)
-					.map(u => ({ label: u.username, value: u.id }))) ||
+			(auth &&
+				auth.data.role &&
+				users &&
+				users.data &&
+				Object.values(Role).reduce<FieldSelectItems>((acc, role) => {
+					const category = toTitleWords(role);
+					const categoryItems: FieldSelectItem[] = users.data
+						.filter(u => {
+							if (u.role === Role.MASTER) {
+								return u.role === role;
+							}
+							return u.role === role && u.clientId !== null;
+						})
+						.sort((u1, u2) => {
+							if (u1.username > u2.username) {
+								return 1;
+							} else if (u1.username < u2.username) {
+								return -1;
+							}
+							return 0;
+						})
+						.map<FieldSelectItem>(u => ({
+							label: u.username,
+							value: u.id
+						}));
+					if (categoryItems.length > 0) {
+						acc.push({ label: category, value: categoryItems });
+					}
+					return acc;
+				}, [])) ||
 			undefined;
 
 		return (

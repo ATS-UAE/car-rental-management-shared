@@ -100,12 +100,14 @@ export const BookingCreateFormStepperBase: FC<Props> = ({
 			vehicles.data &&
 			vehicles.data
 				.filter(v => {
+					// User whom the booking will belong.
 					const user =
 						auth.data.role === Role.GUEST
 							? auth.data
 							: values.userId &&
 							  users &&
 							  users.data.find(u => u.id === values.userId);
+					// Filter vehicles with the same client Id by the found user.
 					return user && user.clientId === v.clientId;
 				})
 				.map<BookingCreateFormStepperVehicleItem>(v => ({
@@ -131,7 +133,9 @@ export const BookingCreateFormStepperBase: FC<Props> = ({
 				label: l.name
 			}))) ||
 		[];
-
+	// List of users grouped by roles. If user is a master account,
+	// add to list unconditionally, else user should have an assigned Client ID
+	// to be added to list.
 	const userList: FieldSelectItems | undefined =
 		(role &&
 			RoleUtils.isRoleBetter(Role.KEY_MANAGER, role) &&
@@ -140,7 +144,12 @@ export const BookingCreateFormStepperBase: FC<Props> = ({
 			Object.values(Role).reduce<FieldSelectItems>((acc, role) => {
 				const category = toTitleWords(role);
 				const categoryItems: FieldSelectItem[] = users.data
-					.filter(u => u.role === role)
+					.filter(u => {
+						if (u.role === Role.MASTER) {
+							return u.role === role;
+						}
+						return u.role === role && u.clientId !== null;
+					})
 					.sort((u1, u2) => {
 						if (u1.username > u2.username) {
 							return 1;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { connect } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import { Grid, Button } from "@material-ui/core";
 import LocationForm from "../../presentational/forms/LocationForm";
 import * as reduxActions from "../../../actions";
@@ -102,7 +102,4 @@ const mapStateToProps = ({ locations }) => ({
 	locations
 });
 
-export default connect(
-	mapStateToProps,
-	reduxActions
-)(NewLocationButtonDialog);
+export default connect(mapStateToProps, reduxActions)(NewLocationButtonDialog);
