@@ -7,6 +7,7 @@ import {
 	ExtractServerResponseData
 } from "../../../shared/typings";
 import { BookingGetResponseItem } from "../../api";
+import { getBookingStatus } from "../../../shared/utils";
 export { default as CancellablePromise } from "./CancellablePromise";
 export { default as api } from "./api";
 
@@ -70,28 +71,6 @@ export const isBookingTimeSlotTaken = (
 	}
 
 	return taken;
-};
-
-export const getBookingStatus = (booking: {
-	from: number;
-	to: number;
-	approved: boolean | null;
-}): BookingStatus => {
-	let status = BookingStatus.UNKNOWN;
-	let currentTime = moment();
-	let hasPassedFrom = moment(booking.from, "X").isSameOrBefore(currentTime);
-	let hasPassedTo = moment(booking.to, "X").isSameOrBefore(currentTime);
-	if (booking.approved) {
-		if (hasPassedFrom && !hasPassedTo) status = BookingStatus.ONGOING;
-		else if (hasPassedTo) status = BookingStatus.FINISHED;
-		else status = BookingStatus.APPROVED;
-	} else {
-		if (booking.approved === null) {
-			if (hasPassedFrom) status = BookingStatus.EXPIRED;
-			else status = BookingStatus.PENDING;
-		} else if (booking.approved === false) status = BookingStatus.DENIED;
-	}
-	return status;
 };
 
 export const rangeOverlap = (

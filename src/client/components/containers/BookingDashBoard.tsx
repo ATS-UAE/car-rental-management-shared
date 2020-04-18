@@ -2,7 +2,8 @@ import React, { FC } from "react";
 import { connect, MapStateToProps } from "react-redux";
 import moment from "moment";
 import { BarChart, BarChartProps } from "../presentational";
-import { getBookingStatus, toTitleWords } from "../../utils/helpers";
+import { toTitleWords } from "../../utils/helpers";
+import { getBookingStatus } from "../../../shared/utils";
 import { ReduxState } from "../../reducers";
 
 interface BookingDashBoardStateProps {
@@ -12,9 +13,7 @@ interface BookingDashBoardStateProps {
 type Props = BookingDashBoardStateProps;
 
 const BookingDashBoardBase: FC<Props> = ({ bookings }) => {
-	const lastYear = moment()
-		.subtract(11, "months")
-		.startOf("month");
+	const lastYear = moment().subtract(11, "months").startOf("month");
 	const currentTime = moment();
 	const data: BarChartProps<{ name: string; [key: string]: any }>["data"] = [];
 	const bars: BarChartProps<{ name: string; [key: string]: any }>["bars"] = [];

@@ -2,6 +2,7 @@ import React, { FC } from "react";
 import { Column, MaterialTableProps } from "material-table";
 import { MaterialTable } from ".";
 import { BookingType, Role } from "../../../shared/typings";
+import { getBookingStatus } from "../../../shared/utils";
 import {
 	Refresh,
 	ThumbUp,
@@ -13,7 +14,7 @@ import {
 	Undo,
 	Visibility
 } from "@material-ui/icons";
-import { RoleUtils, toTitleWords, getBookingStatus } from "../../utils";
+import { RoleUtils, toTitleWords,  } from "../../utils";
 import moment from "moment";
 
 export interface BookingTableItemData {

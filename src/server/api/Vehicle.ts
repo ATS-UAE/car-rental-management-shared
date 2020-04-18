@@ -10,7 +10,7 @@ import {
 	ExtractServerResponseData,
 	VehicleServerResponseGet
 } from "../../shared/typings";
-import { getBookingStatus } from "../utils";
+import { getBookingStatus } from "../../shared/utils";
 import {
 	InvalidPermissionException,
 	ResourceNotFoundException,
