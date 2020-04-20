@@ -1,9 +1,0 @@
-{
-	"compilerOptions": {
-		"target": "ES6",
-		"esModuleInterop": true,
-		"moduleResolution": "node",
-		"inlineSourceMap": true,
-		"module": "CommonJS"
-	}
-}
