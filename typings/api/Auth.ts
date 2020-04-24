@@ -4,4 +4,7 @@ export interface AuthAttributes extends Omit<UserAttributes, "clientId"> {
 	clientId: number;
 }
 
-export type AuthServerResponseGet = ServerResponse<AuthAttributes>;
+export type AuthServerResponseGet = Omit<
+	ServerResponse<AuthAttributes>,
+	"password"
+>;
