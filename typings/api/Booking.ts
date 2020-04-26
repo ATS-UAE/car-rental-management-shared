@@ -14,11 +14,11 @@ export type BookingServerResponseGet = ServerResponse<
 export type BookingServerResponseGetAll = ServerResponse<
 	DatePropsToUnix<ExtractServerResponseData<BookingServerResponseGet>>[]
 >;
-export type BookingServerParamsPatch = Partial<
+export type BookingServerParamsPatch = 
 	DatePropsToUnix<
 		UseParameters<
 			BookingAttributes,
-			"id",
+			never,
 			| "userId"
 			| "paid"
 			| "amount"
@@ -40,8 +40,8 @@ export type BookingServerParamsPatch = Partial<
 				"vin" | "brand" | "model" | "plateNumber"
 			>;
 		}
-	>
->;
+	>;
+
 export type BookingServerParamsPost = DatePropsToUnix<
 	UseParameters<
 		RemoveImmutableSequelizeProperties<BookingAttributes>,
