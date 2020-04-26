@@ -4,20 +4,12 @@ import {
 	ServerResponse,
 	RemoveImmutableSequelizeProperties,
 	ExtractServerResponseData,
-	UseParameters
+	UseParameters,
 } from "../";
 import { ReplaceVehicleAttributes } from "../models";
 
 export type BookingServerResponseGet = ServerResponse<
-	DatePropsToUnix<BookingAttributes> & {
-		vehicle: {
-			id: number;
-			vin: string;
-			plateNumber: string;
-			brand: string;
-			model: string;
-		};
-	}
+	DatePropsToUnix<BookingAttributes>
 >;
 export type BookingServerResponseGetAll = ServerResponse<
 	DatePropsToUnix<ExtractServerResponseData<BookingServerResponseGet>>[]
