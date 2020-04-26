@@ -64,5 +64,6 @@ export type BookingServerParamsPost = DatePropsToUnix<
 		"vin" | "brand" | "model" | "plateNumber"
 	>;
 };
+export type BookingServerResponsePost = BookingServerResponseGet;
 export type BookingServerResponsePatch = BookingServerResponseGet;
 export type BookingServerResponseDelete = BookingServerResponseGet;
