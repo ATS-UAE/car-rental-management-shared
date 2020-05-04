@@ -13,6 +13,11 @@ export type DatePropsToUnix<T extends object> = {
 export type PartialExcept<T, K extends keyof T> = Partial<Omit<T, K>> &
 	Pick<T, K>;
 
+/**
+ * Makes keys 'K' of 'T' partial.
+ */
+export type PartialKeys<T, K extends keyof T> = Partial<Pick<T,K>> & Omit<T, K>
+
 export type FlattenIfArray<T> = T extends (infer R)[] ? R : T;
 
 export type ExtractServerResponseData<T> = T extends ServerResponse<infer Data>

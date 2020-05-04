@@ -44,5 +44,6 @@ export type UserServerParamsPost = DatePropsToUnix<
 		"userImageSrc" | "timeZone"
 	>
 >;
+export type UserServerResponsePost = UserServerResponseGet;
 export type UserServerResponsePatch = UserServerResponseGet;
 export type UserServerResponseDelete = UserServerResponseGet;
