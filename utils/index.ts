@@ -50,3 +50,20 @@ export const hasActiveBooking = (
 	}
 	return active;
 };
+
+export const toTitleWords = (word: string, delimiter: string = "_"): string => {
+	let splitWord = word.split(delimiter);
+	let result = "";
+	for (let word of splitWord) {
+		for (let i = 0; i < word.length; i++) {
+			let letter = word[i];
+			if (i === 0) {
+				result += letter.toUpperCase();
+			} else {
+				result += letter.toLowerCase();
+			}
+		}
+		result += " ";
+	}
+	return result;
+};
