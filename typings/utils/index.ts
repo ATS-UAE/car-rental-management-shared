@@ -16,7 +16,8 @@ export type PartialExcept<T, K extends keyof T> = Partial<Omit<T, K>> &
 /**
  * Makes keys 'K' of 'T' partial.
  */
-export type PartialKeys<T, K extends keyof T> = Partial<Pick<T,K>> & Omit<T, K>
+export type PartialKeys<T, K extends keyof T> = Partial<Pick<T, K>> &
+	Omit<T, K>;
 
 export type FlattenIfArray<T> = T extends (infer R)[] ? R : T;
 
@@ -43,3 +44,5 @@ export type ReplaceAttributes<
 	[P in keyof Original]: P extends keyof Enhancer ? Enhancer[P] : Original[P];
 } &
 	Omit<Enhancer, keyof Original>;
+
+export type WithID<T extends object> = T & { id: number };
