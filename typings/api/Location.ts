@@ -6,6 +6,7 @@ import {
 	ClientAttributes,
 	ExtractServerResponseData
 } from "../";
+import { UseParameters } from "../utils";
 
 // TODO: No nested models.
 export type LocationServerResponseGet = ServerResponse<
@@ -20,3 +21,5 @@ export type LocationServerParamsPatch = DatePropsToUnix<
 >;
 export type LocationServerResponsePatch = LocationServerResponseGet;
 export type LocationServerResponseDelete = LocationServerResponseGet;
+export type LocationServerResponsePost = LocationServerResponseGet;
+export type LocationServerParamsPost = DatePropsToUnix<UseParameters<RemoveImmutableSequelizeProperties<LocationAttributes>, "name" | "lat" | "lng" | "address", "locationImageSrc">>
