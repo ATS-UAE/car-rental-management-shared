@@ -18,6 +18,10 @@ export interface BookingAttributes {
 	replaceVehicleId: number | null;
 	returnDate: Date | null;
 	pickupDate: Date | null;
+	replacePlateNumber: string;
+	replaceBrand: string;
+	replaceModel: string;
+	replaceVin: string;
 
 	readonly createdAt: Date;
 	readonly updatedAt: Date;

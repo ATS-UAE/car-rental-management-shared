@@ -14,33 +14,31 @@ export type BookingServerResponseGet = ServerResponse<
 export type BookingServerResponseGetAll = ServerResponse<
 	DatePropsToUnix<ExtractServerResponseData<BookingServerResponseGet>>[]
 >;
-export type BookingServerParamsPatch = 
-	DatePropsToUnix<
-		UseParameters<
-			BookingAttributes,
-			never,
-			| "userId"
-			| "paid"
-			| "amount"
-			| "from"
-			| "to"
-			| "approved"
-			| "finished"
-			| "startMileage"
-			| "endMileage"
-			| "startFuel"
-			| "endFuel"
-			| "vehicleId"
-			| "bookingType"
-			| "returnDate"
-			| "pickupDate"
-		> & {
-			replaceVehicle?: UseParameters<
-				ReplaceVehicleAttributes,
-				"vin" | "brand" | "model" | "plateNumber"
-			>;
-		}
-	>;
+export type BookingServerParamsPatch = DatePropsToUnix<
+	UseParameters<
+		BookingAttributes,
+		never,
+		| "userId"
+		| "paid"
+		| "amount"
+		| "from"
+		| "to"
+		| "approved"
+		| "finished"
+		| "startMileage"
+		| "endMileage"
+		| "startFuel"
+		| "endFuel"
+		| "vehicleId"
+		| "bookingType"
+		| "returnDate"
+		| "pickupDate"
+		| "replaceVin"
+		| "replaceBrand"
+		| "replaceModel"
+		| "replacePlateNumber"
+	>
+>;
 
 export type BookingServerParamsPost = DatePropsToUnix<
 	UseParameters<
@@ -57,13 +55,12 @@ export type BookingServerParamsPost = DatePropsToUnix<
 		| "pickupDate"
 		| "paid"
 		| "returnDate"
+		| "replaceVin"
+		| "replaceBrand"
+		| "replaceModel"
+		| "replacePlateNumber"
 	>
-> & {
-	replaceVehicle?: UseParameters<
-		ReplaceVehicleAttributes,
-		"vin" | "brand" | "model" | "plateNumber"
-	>;
-};
+>;
 export type BookingServerResponsePost = BookingServerResponseGet;
 export type BookingServerResponsePatch = BookingServerResponseGet;
 export type BookingServerResponseDelete = BookingServerResponseGet;
