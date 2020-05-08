@@ -6,7 +6,6 @@ import {
 	ExtractServerResponseData,
 	UseParameters,
 } from "../";
-import { ReplaceVehicleAttributes } from "../models";
 
 export type BookingServerResponseGet = ServerResponse<
 	DatePropsToUnix<BookingAttributes>
