@@ -7,10 +7,10 @@ import {
 } from "../";
 
 export type UserServerResponseGet = ServerResponse<
-	DatePropsToUnix<UserAttributes> & { categories: number[] }
+	DatePropsToUnix<UserAttributes>
 >;
 export type UserServerResponseGetAll = ServerResponse<
-	(DatePropsToUnix<UserAttributes> & { categories: number[] })[]
+	DatePropsToUnix<UserAttributes>[]
 >;
 export type UserServerParamsPatch = DatePropsToUnix<
 	UseParameters<

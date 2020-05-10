@@ -8,16 +8,10 @@ import {
 import { UseParameters } from "../utils";
 // TODO: Do not allow nested models.
 export type VehicleServerResponseGet = ServerResponse<
-	DatePropsToUnix<
-		VehicleAttributes & {
-			categories: number[];
-		}
-	>
+	DatePropsToUnix<VehicleAttributes>
 >;
 export type VehicleServerResponseGetAll = ServerResponse<
-	(DatePropsToUnix<ExtractServerResponseData<VehicleServerResponseGet>> & {
-		categories: number[];
-	})[]
+	DatePropsToUnix<ExtractServerResponseData<VehicleServerResponseGet>>[]
 >;
 export type VehicleServerParamsPatch = DatePropsToUnix<
 	Partial<RemoveImmutableSequelizeProperties<VehicleAttributes>>
@@ -36,7 +30,7 @@ export type VehicleServerParamsPost = DatePropsToUnix<
 		| "vehicleImageSrc"
 		| "parkingLocation"
 		| "locationId"
-	>
+	> & { categories: number[] }
 >;
 export type VehicleServerResponsePost = VehicleServerResponseGet;
 export type VehicleServerResponsePatch = VehicleServerResponseGet;
