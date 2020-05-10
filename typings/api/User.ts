@@ -7,10 +7,10 @@ import {
 } from "../";
 
 export type UserServerResponseGet = ServerResponse<
-	DatePropsToUnix<UserAttributes>
+	DatePropsToUnix<UserAttributes> & { categories: number[] }
 >;
 export type UserServerResponseGetAll = ServerResponse<
-	DatePropsToUnix<UserAttributes>[]
+	(DatePropsToUnix<UserAttributes> & { categories: number[] })[]
 >;
 export type UserServerParamsPatch = DatePropsToUnix<
 	UseParameters<
@@ -28,7 +28,7 @@ export type UserServerParamsPatch = DatePropsToUnix<
 		| "password"
 		| "role"
 		| "username"
-	>
+	> & { categories: number[] }
 >;
 export type UserServerParamsPost = DatePropsToUnix<
 	UseParameters<
@@ -43,7 +43,7 @@ export type UserServerParamsPost = DatePropsToUnix<
 		| "role",
 		"userImageSrc" | "timeZone"
 	>
->;
+> & { categories: number[] };
 export type UserServerResponsePost = UserServerResponseGet;
 export type UserServerResponsePatch = UserServerResponseGet;
 export type UserServerResponseDelete = UserServerResponseGet;

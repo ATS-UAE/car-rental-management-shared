@@ -1,6 +1,5 @@
 import {
 	VehicleAttributes,
-	CategoryAttributes,
 	DatePropsToUnix,
 	ServerResponse,
 	RemoveImmutableSequelizeProperties,
@@ -11,12 +10,14 @@ import { UseParameters } from "../utils";
 export type VehicleServerResponseGet = ServerResponse<
 	DatePropsToUnix<
 		VehicleAttributes & {
-			categories: Pick<CategoryAttributes, "name" | "id">[];
+			categories: number[];
 		}
 	>
 >;
 export type VehicleServerResponseGetAll = ServerResponse<
-	DatePropsToUnix<ExtractServerResponseData<VehicleServerResponseGet>>[]
+	(DatePropsToUnix<ExtractServerResponseData<VehicleServerResponseGet>> & {
+		categories: number[];
+	})[]
 >;
 export type VehicleServerParamsPatch = DatePropsToUnix<
 	Partial<RemoveImmutableSequelizeProperties<VehicleAttributes>>
@@ -26,9 +27,17 @@ export type VehicleServerParamsPost = DatePropsToUnix<
 	UseParameters<
 		RemoveImmutableSequelizeProperties<VehicleAttributes>,
 		"brand" | "model" | "plateNumber" | "vin",
-		"wialonUnitId" | "bookingCharge" | "bookingChargeCount" | "bookingChargeUnit" | "clientId" | "defleeted" | "vehicleImageSrc" | "parkingLocation" | "locationId"
+		| "wialonUnitId"
+		| "bookingCharge"
+		| "bookingChargeCount"
+		| "bookingChargeUnit"
+		| "clientId"
+		| "defleeted"
+		| "vehicleImageSrc"
+		| "parkingLocation"
+		| "locationId"
 	>
->
-export type VehicleServerResponsePost = VehicleServerResponseGet
+>;
+export type VehicleServerResponsePost = VehicleServerResponseGet;
 export type VehicleServerResponsePatch = VehicleServerResponseGet;
 export type VehicleServerResponseDelete = VehicleServerResponseGet;
