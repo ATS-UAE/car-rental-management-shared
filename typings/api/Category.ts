@@ -14,6 +14,7 @@ export type CategoryServerResponseGetAll = ServerResponse<
 export type CategoryServerParamsPatch = DatePropsToUnix<
 	Partial<RemoveImmutableSequelizeProperties<CategoryAttributes>>
 >;
+export type CategoryServerResponsePost = CategoryServerResponseGet
 export type CategoryServerParamsPost = Pick<
 	CategoryAttributes,
 	"name" | "clientId"
