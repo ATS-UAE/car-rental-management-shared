@@ -14,7 +14,9 @@ export type VehicleServerResponseGetAll = ServerResponse<
 	DatePropsToUnix<ExtractServerResponseData<VehicleServerResponseGet>>[]
 >;
 export type VehicleServerParamsPatch = DatePropsToUnix<
-	Partial<RemoveImmutableSequelizeProperties<VehicleAttributes>>
+	Partial<RemoveImmutableSequelizeProperties<VehicleAttributes>> & {
+		categories?: number[];
+	}
 >;
 
 export type VehicleServerParamsPost = DatePropsToUnix<
@@ -30,7 +32,7 @@ export type VehicleServerParamsPost = DatePropsToUnix<
 		| "vehicleImageSrc"
 		| "parkingLocation"
 		| "locationId"
-	> & { categories: number[] }
+	> & { categories?: number[] }
 >;
 export type VehicleServerResponsePost = VehicleServerResponseGet;
 export type VehicleServerResponsePatch = VehicleServerResponseGet;
