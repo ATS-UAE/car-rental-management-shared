@@ -13,7 +13,7 @@ export type ClientServerResponseGetAll = ServerResponse<
 	DatePropsToUnix<ClientAttributes>[]
 >;
 
-export type ClientServerResponsePost = Pick<ClientAttributes, "name">;
+export type ClientServerResponsePost = ClientServerResponseGet;
 export type ClientServerParamsPost = DatePropsToUnix<
 	UseParameters<
 		RemoveImmutableSequelizeProperties<
