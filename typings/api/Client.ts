@@ -16,11 +16,11 @@ export type ClientServerResponseGetAll = ServerResponse<
 export type ClientServerResponsePost = ClientServerResponseGet;
 export type ClientServerParamsPost = DatePropsToUnix<
 	UseParameters<
-		RemoveImmutableSequelizeProperties<
-			ClientAttributes
-		>,"name", never
+		RemoveImmutableSequelizeProperties<ClientAttributes>,
+		"name",
+		never
 	>
->
+>;
 export interface ClientServerParamsPatch
 	extends DatePropsToUnix<
 		Partial<RemoveImmutableSequelizeProperties<ClientAttributes>>

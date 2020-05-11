@@ -4,7 +4,7 @@ import {
 	ServerResponse,
 	RemoveImmutableSequelizeProperties,
 	ExtractServerResponseData,
-	UseParameters,
+	UseParameters
 } from "../";
 
 export type BookingServerResponseGet = ServerResponse<
