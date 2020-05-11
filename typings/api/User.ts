@@ -28,7 +28,7 @@ export type UserServerParamsPatch = DatePropsToUnix<
 		| "password"
 		| "role"
 		| "username"
-	> & { categories: number[] }
+	> & { categories?: number[] }
 >;
 export type UserServerParamsPost = DatePropsToUnix<
 	UseParameters<
@@ -43,7 +43,7 @@ export type UserServerParamsPost = DatePropsToUnix<
 		| "role",
 		"userImageSrc" | "timeZone"
 	>
-> & { categories: number[] };
+> & { categories?: number[] };
 export type UserServerResponsePost = UserServerResponseGet;
 export type UserServerResponsePatch = UserServerResponseGet;
 export type UserServerResponseDelete = UserServerResponseGet;
