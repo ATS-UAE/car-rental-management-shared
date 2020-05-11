@@ -51,6 +51,15 @@ export const hasActiveBooking = (
 	return active;
 };
 
+export const rangeOverlap = (
+	x1: number,
+	x2: number,
+	y1: number,
+	y2: number
+): boolean => {
+	return Math.max(x1, y1) <= Math.min(x2, y2);
+};
+
 export const toTitleWords = (word: string, delimiter: string = "_"): string => {
 	let splitWord = word.split(delimiter);
 	let result = "";
