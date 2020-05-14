@@ -9,3 +9,9 @@ export interface AuthAttributes
 export type AuthServerResponseGet = ServerResponse<
 	DatePropsToUnix<AuthAttributes>
 >;
+
+export type LoginServerParamsPost = {
+	username: string;
+	password: string;
+	remember?: boolean;
+};
