@@ -15,3 +15,9 @@ export type LoginServerParamsPost = {
 	password: string;
 	remember?: boolean;
 };
+
+export type ForgotServerParamsPost = {
+	token?: string;
+	password?: string;
+	email?: string;
+};
