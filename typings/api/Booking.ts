@@ -43,7 +43,6 @@ export type BookingServerParamsPost = DatePropsToUnix<
 	UseParameters<
 		RemoveImmutableSequelizeProperties<BookingAttributes>,
 		"vehicleId" | "from" | "to" | "userId" | "bookingType",
-		| "replaceVehicleId"
 		| "amount"
 		| "approved"
 		| "finished"
