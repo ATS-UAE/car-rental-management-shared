@@ -1,5 +1,10 @@
-import { UserAttributes, ServerResponse } from "../";
-import { DatePropsToUnix } from "../utils";
+import {
+	DatePropsToUnix,
+	UseParameters,
+	UserAttributes,
+	ServerResponse,
+	RemoveImmutableSequelizeProperties
+} from "../";
 
 export interface AuthAttributes
 	extends Omit<UserAttributes, "clientId" | "password"> {
@@ -8,6 +13,22 @@ export interface AuthAttributes
 
 export type AuthServerResponseGet = ServerResponse<
 	DatePropsToUnix<AuthAttributes>
+>;
+
+export type AuthServerParamsPatch = DatePropsToUnix<
+	UseParameters<
+		RemoveImmutableSequelizeProperties<UserAttributes>,
+		never,
+		| "userImageSrc"
+		| "timeZone"
+		| "clientId"
+		| "email"
+		| "firstName"
+		| "lastName"
+		| "mobileNumber"
+		| "password"
+		| "username"
+	>
 >;
 
 export type LoginServerParamsPost = {
