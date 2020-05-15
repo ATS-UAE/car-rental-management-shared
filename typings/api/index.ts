@@ -24,3 +24,10 @@ export type RemoveImmutableSequelizeProperties<T> = Omit<
 	T,
 	"createdAt" | "updatedAt" | "id"
 >;
+
+export enum API_OPERATION {
+	CREATE = "CREATE",
+	DELETE = "DELETE",
+	UPDATE = "UPDATE",
+	READ = "READ"
+}
