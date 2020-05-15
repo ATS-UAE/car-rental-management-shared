@@ -76,3 +76,25 @@ export const toTitleWords = (word: string, delimiter: string = "_"): string => {
 	}
 	return result;
 };
+
+export const isBookingTimeSlotTaken = (
+	bookings: Array<{
+		from: number;
+		to: number;
+		id: number;
+	}>,
+	from: number,
+	to: number,
+	bookingId?: number
+): boolean => {
+	let taken = false;
+
+	for (const booking of bookings) {
+		taken = rangeOverlap(from, to, booking.from, booking.to);
+		if ((taken && !bookingId) || bookingId !== booking.id) {
+			return taken;
+		}
+	}
+
+	return taken;
+};
