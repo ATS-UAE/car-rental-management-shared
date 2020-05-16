@@ -8,8 +8,6 @@ export interface UserAttributes {
 	email: string;
 	password: string;
 	mobileNumber: string;
-	contractNo: string | null;
-	objectNo: string | null;
 	lastLogin: Date | null;
 	userImageSrc: string | null;
 	licenseImageSrc: string | null;
@@ -17,7 +15,6 @@ export interface UserAttributes {
 	emailConfirmed: boolean;
 	clientId: number | null;
 	role: Role;
-	userCreatorId: number;
 	timeZone: string;
 
 	readonly createdAt: Date;
