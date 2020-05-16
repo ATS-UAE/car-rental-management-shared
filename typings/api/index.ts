@@ -8,6 +8,7 @@ export * from "./User";
 export * from "./Vehicle";
 export * from "./WialonUnit";
 export * from "./Report";
+export * from "./Invite";
 
 export interface ServerResponse<Result> extends ServerResponseMeta {
 	data: Result;
