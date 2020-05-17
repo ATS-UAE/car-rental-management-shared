@@ -3,5 +3,5 @@ export interface VehicleCategoryAttributes {
 	vehicleId: number;
 
 	readonly createdAt: Date;
-	readonly updatedAt: Date;
+	readonly updatedAt: Date | null;
 }

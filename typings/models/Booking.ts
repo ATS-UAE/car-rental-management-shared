@@ -23,5 +23,5 @@ export interface BookingAttributes {
 	replaceVin: string | null;
 
 	readonly createdAt: Date;
-	readonly updatedAt: Date;
+	readonly updatedAt: Date | null;
 }

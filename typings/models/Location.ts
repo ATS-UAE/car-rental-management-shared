@@ -7,5 +7,5 @@ export interface LocationAttributes {
 	locationImageSrc: string | null;
 
 	readonly createdAt: Date;
-	readonly updatedAt: Date;
+	readonly updatedAt: Date | null;
 }

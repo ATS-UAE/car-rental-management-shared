@@ -18,5 +18,5 @@ export interface UserAttributes {
 	timeZone: string;
 
 	readonly createdAt: Date;
-	readonly updatedAt: Date;
+	readonly updatedAt: Date | null;
 }

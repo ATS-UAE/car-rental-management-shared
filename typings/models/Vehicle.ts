@@ -17,5 +17,5 @@ export interface VehicleAttributes {
 	locationId: number | null;
 
 	readonly createdAt: Date;
-	readonly updatedAt: Date;
+	readonly updatedAt: Date | null;
 }

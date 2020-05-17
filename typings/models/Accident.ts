@@ -10,5 +10,5 @@ export interface AccidentAttributes {
 	bookingId: number;
 
 	readonly createdAt: Date;
-	readonly updatedAt: Date;
+	readonly updatedAt: Date | null;
 }

@@ -4,5 +4,5 @@ export interface CategoryAttributes {
 	clientId: number;
 
 	readonly createdAt: Date;
-	readonly updatedAt: Date;
+	readonly updatedAt: Date | null;
 }
