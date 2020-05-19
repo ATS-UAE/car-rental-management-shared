@@ -3,14 +3,12 @@ import {
 	DatePropsToUnix,
 	ServerResponse,
 	RemoveImmutableSequelizeProperties,
-	ClientAttributes,
 	ExtractServerResponseData
 } from "../";
 import { UseParameters } from "../utils";
 
-// TODO: No nested models.
 export type LocationServerResponseGet = ServerResponse<
-	DatePropsToUnix<LocationAttributes> & { clients: ClientAttributes[] }
+	DatePropsToUnix<LocationAttributes>
 >;
 
 export type LocationServerResponseGetAll = ServerResponse<
