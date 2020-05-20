@@ -6,10 +6,7 @@ import {
 	RemoveImmutableSequelizeProperties
 } from "../";
 
-export interface AuthAttributes
-	extends Omit<UserAttributes, "clientId" | "password"> {
-	clientId: number;
-}
+export type AuthAttributes = Omit<UserAttributes, "password">;
 
 export type AuthServerResponseGet = ServerResponse<
 	DatePropsToUnix<AuthAttributes>
