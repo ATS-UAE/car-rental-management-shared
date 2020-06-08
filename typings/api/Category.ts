@@ -18,7 +18,8 @@ export type CategoryServerParamsPatch = DatePropsToUnix<
 export type CategoryServerResponsePost = CategoryServerResponseGet;
 export type CategoryServerParamsPost = UseParameters<
 	CategoryAttributes,
-	"name" | "clientId"
+	"name" | "clientId",
+	"bookingCharge" | "bookingChargeCount" | "bookingChargeUnit"
 >;
 export type CategoryServerResponsePatch = CategoryServerResponseGet;
 export type CategoryServerResponseDelete = CategoryServerResponseGet;
