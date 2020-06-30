@@ -31,6 +31,7 @@ export type VehicleServerParamsPost = DatePropsToUnix<
 		| "defleeted"
 		| "vehicleImageSrc"
 		| "parkingLocation"
+		| "categoryCostId"
 		| "locationId"
 	> & { categories?: number[] }
 >;
