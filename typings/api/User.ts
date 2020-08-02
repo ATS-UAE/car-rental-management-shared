@@ -21,7 +21,7 @@ export type UserCreateOptions = DatePropsToUnix<
 	>
 > & { categories?: number[] };
 
-export type UserInviteOptions = { token: string } & Omit<
+export type UserSignUpOptions = { token: string } & Omit<
 	UserCreateOptions,
 	"role" | "email" | "clientId" | "categories"
 >;
@@ -50,7 +50,7 @@ export type UserServerParamsPatch = DatePropsToUnix<
 		| "username"
 	> & { categories?: number[] }
 >;
-export type UserServerParamsPost = UserCreateOptions | UserInviteOptions;
+export type UserServerParamsPost = UserCreateOptions | UserSignUpOptions;
 export type UserServerResponsePost = UserServerResponseGet;
 export type UserServerResponsePatch = UserServerResponseGet;
 export type UserServerResponseDelete = UserServerResponseGet;
