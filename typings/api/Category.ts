@@ -6,11 +6,17 @@ import {
 } from "../";
 import { UseParameters } from "../utils";
 
+export interface CategoryRelationAttributes
+	extends DatePropsToUnix<CategoryAttributes> {
+	vehicles: number[];
+	users: number[];
+}
+
 export type CategoryServerResponseGet = ServerResponse<
-	DatePropsToUnix<CategoryAttributes>
+	CategoryRelationAttributes
 >;
 export type CategoryServerResponseGetAll = ServerResponse<
-	DatePropsToUnix<CategoryAttributes>[]
+	CategoryRelationAttributes[]
 >;
 export type CategoryServerParamsPatch = DatePropsToUnix<
 	Partial<RemoveImmutableSequelizeProperties<CategoryAttributes>>
