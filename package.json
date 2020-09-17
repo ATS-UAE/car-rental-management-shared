@@ -9,7 +9,7 @@
 		"test:run": "jest --config jest.config.json",
 		"test:watch": "jest --watch --config jest.config.json",
 		"format": "prettier --write \"**/*.*\"",
-		"lint": "eslint --ext .js,.jsx,.ts,.tsx utils typings --color --fix --config .eslintrc",
+		"lint": "eslint --ext .js,.jsx,.ts,.tsx src --color --fix --config .eslintrc",
 		"build": "rm -rf ./dist/* && tsc",
 		"preversion": "npm run lint",
 		"postversion": "git push && git push --tags"
