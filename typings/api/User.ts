@@ -4,7 +4,7 @@ import {
 	ServerResponse,
 	RemoveImmutableSequelizeProperties,
 	UseParameters
-} from "../";
+} from "..";
 
 export type UserServerResponseGet = ServerResponse<
 	DatePropsToUnix<UserAttributes>

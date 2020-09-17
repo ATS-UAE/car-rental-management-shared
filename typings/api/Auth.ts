@@ -1,4 +1,4 @@
-import { UserAttributes, ServerResponse } from "../";
+import { UserAttributes, ServerResponse } from "..";
 import { DatePropsToUnix } from "../utils";
 
 export interface AuthAttributes

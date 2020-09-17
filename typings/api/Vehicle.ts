@@ -5,7 +5,7 @@ import {
 	ServerResponse,
 	RemoveImmutableSequelizeProperties,
 	ExtractServerResponseData
-} from "../";
+} from "..";
 import { UseParameters } from "../utils";
 // TODO: Do not allow nested models.
 export type VehicleServerResponseGet = ServerResponse<
@@ -26,9 +26,17 @@ export type VehicleServerParamsPost = DatePropsToUnix<
 	UseParameters<
 		RemoveImmutableSequelizeProperties<VehicleAttributes>,
 		"brand" | "model" | "plateNumber" | "vin",
-		"wialonUnitId" | "bookingCharge" | "bookingChargeCount" | "bookingChargeUnit" | "clientId" | "defleeted" | "vehicleImageSrc" | "parkingLocation" | "locationId"
+		| "wialonUnitId"
+		| "bookingCharge"
+		| "bookingChargeCount"
+		| "bookingChargeUnit"
+		| "clientId"
+		| "defleeted"
+		| "vehicleImageSrc"
+		| "parkingLocation"
+		| "locationId"
 	>
->
-export type VehicleServerResponsePost = VehicleServerResponseGet
+>;
+export type VehicleServerResponsePost = VehicleServerResponseGet;
 export type VehicleServerResponsePatch = VehicleServerResponseGet;
 export type VehicleServerResponseDelete = VehicleServerResponseGet;

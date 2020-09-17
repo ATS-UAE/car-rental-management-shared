@@ -9,20 +9,19 @@ export const getBookingStatus = (booking: {
 	approved: boolean | null;
 }): BookingStatus => {
 	let status = BookingStatus.UNKNOWN;
-	let currentTime = moment();
-	let hasPassedFrom = moment(booking.from, "X").isSameOrBefore(currentTime);
-	let hasPassedTo = moment(booking.to, "X").isSameOrBefore(currentTime);
+	const currentTime = moment();
+	const hasPassedFrom = moment(booking.from, "X").isSameOrBefore(currentTime);
+	const hasPassedTo = moment(booking.to, "X").isSameOrBefore(currentTime);
 	if (booking.approved) {
 		if (hasPassedFrom && !hasPassedTo) status = BookingStatus.ONGOING;
 		else if (hasPassedTo) status = BookingStatus.FINISHED;
 		else status = BookingStatus.APPROVED;
-	} else {
-		if (booking.approved === null) {
-			status = BookingStatus.PENDING;
-		} else if (booking.approved === false) {
-			status = BookingStatus.DENIED;
-		}
+	} else if (booking.approved === null) {
+		status = BookingStatus.PENDING;
+	} else if (booking.approved === false) {
+		status = BookingStatus.DENIED;
 	}
+
 	return status;
 };
 
@@ -35,28 +34,27 @@ export const hasActiveBooking = (
 	}>,
 	bookingId?: number
 ): boolean => {
-	let active = false;
-	if (bookings) {
-		for (const booking of bookings) {
-			let status = getBookingStatus(booking);
-			if (
-				status === BookingStatus.PENDING ||
-				status === BookingStatus.ONGOING ||
-				status === BookingStatus.APPROVED
-			) {
-				if (!bookingId || bookingId !== booking.id) return true;
+	return bookings.some((booking) => {
+		const status = getBookingStatus(booking);
+		if (
+			status === BookingStatus.PENDING ||
+			status === BookingStatus.ONGOING ||
+			status === BookingStatus.APPROVED
+		) {
+			if (!bookingId || bookingId !== booking.id) {
+				return true;
 			}
 		}
-	}
-	return active;
+		return false;
+	});
 };
 
 export const toTitleWords = (word: string, delimiter: string = "_"): string => {
-	let splitWord = word.split(delimiter);
+	const splitWord = word.split(delimiter);
 	let result = "";
-	for (let word of splitWord) {
-		for (let i = 0; i < word.length; i++) {
-			let letter = word[i];
+	splitWord.forEach((item) => {
+		for (let i = 0; i < item.length; i++) {
+			const letter = item[i];
 			if (i === 0) {
 				result += letter.toUpperCase();
 			} else {
@@ -64,6 +62,6 @@ export const toTitleWords = (word: string, delimiter: string = "_"): string => {
 			}
 		}
 		result += " ";
-	}
+	});
 	return result;
 };

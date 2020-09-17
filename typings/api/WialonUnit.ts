@@ -1,4 +1,4 @@
-import { ServerResponse } from "../";
+import { ServerResponse } from "..";
 
 export interface WialonUnitAttributes {
 	name: string;

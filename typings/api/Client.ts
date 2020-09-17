@@ -3,7 +3,7 @@ import {
 	DatePropsToUnix,
 	ServerResponse,
 	RemoveImmutableSequelizeProperties
-} from "../";
+} from "..";
 
 export type ClientServerResponseGet = ServerResponse<
 	DatePropsToUnix<ClientAttributes>

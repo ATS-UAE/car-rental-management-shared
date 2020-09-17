@@ -1,4 +1,4 @@
-import { BookingChargeUnit } from "../";
+import { BookingChargeUnit } from "..";
 
 export interface VehicleAttributes {
 	id: number;

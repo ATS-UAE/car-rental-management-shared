@@ -1,4 +1,4 @@
-import { BookingType } from "../";
+import { BookingType } from "..";
 
 export interface BookingAttributes {
 	id: number;
