@@ -6,11 +6,31 @@ import {
 	UseParameters
 } from "../";
 
+export type UserCreateOptions = DatePropsToUnix<
+	UseParameters<
+		RemoveImmutableSequelizeProperties<UserAttributes>,
+		| "clientId"
+		| "email"
+		| "username"
+		| "firstName"
+		| "lastName"
+		| "password"
+		| "mobileNumber"
+		| "role",
+		"userImageSrc" | "timeZone"
+	>
+> & { categories?: number[] };
+
+export type UserSignUpOptions = { token: string } & Omit<
+	UserCreateOptions,
+	"role" | "email" | "clientId" | "categories"
+>;
+
 export type UserServerResponseGet = ServerResponse<
-	DatePropsToUnix<UserAttributes>
+	DatePropsToUnix<Omit<UserAttributes, "password">>
 >;
 export type UserServerResponseGetAll = ServerResponse<
-	DatePropsToUnix<UserAttributes>[]
+	DatePropsToUnix<Omit<UserAttributes, "password">>[]
 >;
 export type UserServerParamsPatch = DatePropsToUnix<
 	UseParameters<
@@ -28,22 +48,9 @@ export type UserServerParamsPatch = DatePropsToUnix<
 		| "password"
 		| "role"
 		| "username"
-	>
+	> & { categories?: number[] }
 >;
-export type UserServerParamsPost = DatePropsToUnix<
-	UseParameters<
-		RemoveImmutableSequelizeProperties<UserAttributes>,
-		| "clientId"
-		| "email"
-		| "username"
-		| "firstName"
-		| "lastName"
-		| "password"
-		| "mobileNumber"
-		| "role",
-		"userImageSrc" | "timeZone"
-	>
->;
+export type UserServerParamsPost = UserCreateOptions | UserSignUpOptions;
 export type UserServerResponsePost = UserServerResponseGet;
 export type UserServerResponsePatch = UserServerResponseGet;
 export type UserServerResponseDelete = UserServerResponseGet;

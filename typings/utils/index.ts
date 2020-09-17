@@ -1,6 +1,6 @@
 import { ServerResponse } from "../api";
 
-export type DateToUnix<T> = T extends Date ? number : T;
+export type DateToUnix<T> = T extends Date ? Exclude<T, Date> | number : T;
 
 export type Nullable<T> = {
 	[K in keyof T]: T[K] | null;
@@ -25,10 +25,10 @@ export type ExtractServerResponseData<T> = T extends ServerResponse<infer Data>
 	? Data
 	: T;
 
-export type UnixToDate<T> = T extends number ? Date : T;
+export type UnixToDate<T> = T extends number ? Exclude<T, number> | Date : T;
 
 export type UnixPropsToDate<T extends object, K extends keyof T> = {
-	[P in keyof T]: P extends K ? Date : T[P];
+	[P in keyof T]: P extends K ? UnixToDate<T[P]> : T[P];
 };
 
 export type UseParameters<

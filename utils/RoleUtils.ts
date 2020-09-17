@@ -10,12 +10,17 @@ export class RoleUtils {
 	 * @param requiredRole The role required to be higher or equal to.
 	 * @param role The role to be compared.
 	 */
-	static isRoleBetter = (requiredRole: Role, role: Role | string): boolean => {
+	static isRoleBetter = (
+		requiredRole: Role,
+		role: Role | string
+	): boolean => {
 		const requiredRoleIndex = RoleUtils.roleRanks.findIndex(
-			value => value === requiredRole
+			(value) => value === requiredRole
 		);
 
-		const roleIndex = RoleUtils.roleRanks.findIndex(value => value === role);
+		const roleIndex = RoleUtils.roleRanks.findIndex(
+			(value) => value === role
+		);
 
 		if (requiredRoleIndex >= 0 && roleIndex >= 0) {
 			return roleIndex <= requiredRoleIndex;

@@ -4,7 +4,7 @@ import {
 	ServerResponse,
 	RemoveImmutableSequelizeProperties,
 	ExtractServerResponseData,
-	UseParameters,
+	UseParameters
 } from "../";
 
 export type BookingServerResponseGet = ServerResponse<
@@ -43,7 +43,6 @@ export type BookingServerParamsPost = DatePropsToUnix<
 	UseParameters<
 		RemoveImmutableSequelizeProperties<BookingAttributes>,
 		"vehicleId" | "from" | "to" | "userId" | "bookingType",
-		| "replaceVehicleId"
 		| "amount"
 		| "approved"
 		| "finished"

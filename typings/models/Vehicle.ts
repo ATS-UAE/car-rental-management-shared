@@ -15,7 +15,8 @@ export interface VehicleAttributes {
 	bookingChargeUnit: BookingChargeUnit | null;
 	clientId: number | null;
 	locationId: number | null;
+	categoryCostId: number | null;
 
 	readonly createdAt: Date;
-	readonly updatedAt: Date;
+	readonly updatedAt: Date | null;
 }

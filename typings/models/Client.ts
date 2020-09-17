@@ -3,5 +3,5 @@ export interface ClientAttributes {
 	name: string;
 
 	readonly createdAt: Date;
-	readonly updatedAt: Date;
+	readonly updatedAt: Date | null;
 }

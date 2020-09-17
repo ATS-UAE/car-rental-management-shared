@@ -5,7 +5,6 @@ export * from "./Category";
 export * from "./Client";
 export * from "./ClientLocation";
 export * from "./Location";
-export * from "./ReplaceVehicle";
 export * from "./User";
 export * from "./UserVehicleCategory";
 export * from "./Vehicle";
