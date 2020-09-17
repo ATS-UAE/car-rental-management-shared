@@ -9,15 +9,21 @@ export * from "./Vehicle";
 export * from "./WialonUnit";
 export * from "./Report";
 export interface ServerResponse<Result> extends ServerResponseMeta {
-    data: Result;
+	data: Result;
 }
 export interface ServerResponseMeta {
-    code: number;
-    errors: Array<string | {
-        key: string;
-        value: string;
-    }>;
-    success: boolean;
-    message: string;
+	code: number;
+	errors: Array<
+		| string
+		| {
+				key: string;
+				value: string;
+		  }
+	>;
+	success: boolean;
+	message: string;
 }
-export declare type RemoveImmutableSequelizeProperties<T> = Omit<T, "createdAt" | "updatedAt" | "id">;
+export declare type RemoveImmutableSequelizeProperties<T> = Omit<
+	T,
+	"createdAt" | "updatedAt" | "id"
+>;

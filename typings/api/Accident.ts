@@ -22,7 +22,7 @@ export type AccidentServerParamsPost = DatePropsToUnix<
 	UseParameters<
 		RemoveImmutableSequelizeProperties<AccidentAttributes>,
 		"message" | "userId" | "vehicleId" | "bookingId",
-		"accidentImageSrc" | "accidentVideoSrc" | "lat" | "lng" 
+		"accidentImageSrc" | "accidentVideoSrc" | "lat" | "lng"
 	>
->
-export type AccidentServerResponsePost = AccidentServerResponseGet
+>;
+export type AccidentServerResponsePost = AccidentServerResponseGet;
