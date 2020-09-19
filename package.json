@@ -10,9 +10,11 @@
 		"test:watch": "jest --watch --config jest.config.json",
 		"format": "prettier --write \"**/*.*\"",
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx src --color --fix --config .eslintrc",
-		"build": "rm -rf ./dist/* && tsc",
-		"preversion": "npm run lint",
-		"postversion": "git push && git push --tags"
+		"clean": "rm -rf ./dist/*",
+		"build": "tsc",
+		"preversion": "npm run lint && npm run clean && npm run build",
+		"postversion": "git push && git push --tags",
+		"prepare": "npm run build"
 	},
 	"repository": {
 		"type": "git",
