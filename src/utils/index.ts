@@ -2,6 +2,7 @@ import moment from "moment";
 import { BookingStatus } from "../typings";
 
 export * from "./RoleUtils";
+export * from "./CalculatedCost";
 
 export const getBookingStatus = (booking: {
 	from: number;
