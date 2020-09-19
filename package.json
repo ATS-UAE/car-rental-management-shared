@@ -7,7 +7,7 @@
 		"test:watch": "jest --watch --config jest.config.json",
 		"format": "prettier --write \"**/*.*\"",
 		"lint": "eslint --ext .js,.jsx,.ts,.tsx src --color --fix --config .eslintrc",
-		"clean": "rm -rf ./dist/*",
+		"clean": "find ./typings ./utils -type f \\( -name \"*.d.ts\" -o -name \"*.js\" \\) -exec rm -f {} +",
 		"build": "tsc",
 		"preversion": "npm run lint && npm run clean && npm run build",
 		"postversion": "git push && git push --tags",
