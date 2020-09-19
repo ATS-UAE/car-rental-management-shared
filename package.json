@@ -2,6 +2,8 @@
 	"name": "car-rental-management-shared",
 	"version": "2.0.3",
 	"description": "",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
 	"scripts": {
 		"test:run": "jest --config jest.config.json",
 		"test:watch": "jest --watch --config jest.config.json",
@@ -11,7 +13,7 @@
 		"build": "tsc",
 		"preversion": "npm run lint && npm run clean && npm run build",
 		"postversion": "git push && git push --tags",
-		"prepare": "npm run build"
+		"prepare": "tsc"
 	},
 	"repository": {
 		"type": "git",
