@@ -8,7 +8,8 @@
 		"declaration": true,
 		"lib": ["ES2015", "dom"],
 		"allowSyntheticDefaultImports": true,
-		"allowJs": false
-	},
-	"include": ["utils", "typings"]
+		"allowJs": false,
+		"outDir": "dist",
+		"rootDirs": ["src/typings", "src/utils"]
+	}
 }
