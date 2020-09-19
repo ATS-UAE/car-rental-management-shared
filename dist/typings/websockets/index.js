@@ -10,4 +10,9 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !exports.hasOwnProperty(p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.SocketEventName = void 0;
 __exportStar(require("./Booking"), exports);
+var SocketEventName;
+(function (SocketEventName) {
+    SocketEventName["BOOKING_UPDATE"] = "booking_update";
+})(SocketEventName = exports.SocketEventName || (exports.SocketEventName = {}));
