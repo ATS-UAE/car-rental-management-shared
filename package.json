@@ -1,6 +1,6 @@
 {
 	"name": "car-rental-management-shared",
-	"version": "2.0.1",
+	"version": "2.0.2",
 	"description": "",
 	"scripts": {
 		"test:run": "jest --config jest.config.json",
