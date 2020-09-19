@@ -1,2 +1,6 @@
 node_modules
 dist
+typings/**/*.d.ts
+typings/**/*.js
+utils/**/*.d.ts
+utils/**/*.js

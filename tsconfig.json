@@ -5,10 +5,8 @@
 		"strict": true,
 		"esModuleInterop": true,
 		"forceConsistentCasingInFileNames": true,
-		"outDir": "dist",
 		"declaration": true,
 		"lib": ["ES2015", "dom"],
-		"allowSyntheticDefaultImports": true,
-		"rootDirs": ["src/utils", "src/typings"]
+		"allowSyntheticDefaultImports": true
 	}
 }

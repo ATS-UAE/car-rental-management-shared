@@ -2,12 +2,6 @@
 	"name": "car-rental-management-shared",
 	"version": "2.0.0",
 	"description": "",
-	"files": [
-		"dist"
-	],
-	"exports": {
-		"./": "./dist"
-	},
 	"scripts": {
 		"test:run": "jest --config jest.config.json",
 		"test:watch": "jest --watch --config jest.config.json",
