@@ -6,8 +6,7 @@
 		"dist"
 	],
 	"exports": {
-		"./utils": "./dist/utils",
-		"./typings": "./dist/typings"
+		"./": "./dist"
 	},
 	"scripts": {
 		"test:run": "jest --config jest.config.json",
