@@ -5,6 +5,6 @@ export enum SocketEventName {
 }
 
 export interface SocketEvent<EventName extends SocketEventName, Data> {
-	name: Event;
+	name: EventName;
 	data: Data;
 }
