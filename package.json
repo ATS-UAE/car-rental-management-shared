@@ -5,6 +5,10 @@
 	"files": [
 		"dist"
 	],
+	"exports": {
+		"./utils": "./dist/utils",
+		"./typings": "./dist/typings"
+	},
 	"scripts": {
 		"test:run": "jest --config jest.config.json",
 		"test:watch": "jest --watch --config jest.config.json",
