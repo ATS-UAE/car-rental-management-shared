@@ -1,3 +1,5 @@
+export * from "./Booking";
+
 export enum SocketEventName {
 	BOOKING_UPDATE = "booking_update",
 	BOOKING_CREATE = "booking_create"
