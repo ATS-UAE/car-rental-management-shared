@@ -10,11 +10,5 @@
 		"allowSyntheticDefaultImports": true,
 		"allowJs": false
 	},
-	"include": ["utils", "typings"],
-	"exclude": [
-		"utils/**/*.js",
-		"utils/**/*.d.ts",
-		"typings/**/*.js",
-		"typings/**/*.d.ts"
-	]
+	"include": ["utils", "typings"]
 }
