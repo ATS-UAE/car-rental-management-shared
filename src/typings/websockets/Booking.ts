@@ -1,4 +1,4 @@
-import type { SocketEvent, SocketEventName } from ".";
+import type { SocketNotificationEvent, SocketEventName } from ".";
 import { BookingAttributes } from "../models";
 
 /**
@@ -14,12 +14,12 @@ export type BookingApprovalEventData = Pick<
  */
 export type BookingCreateEventData = Pick<BookingAttributes, "id">;
 
-export type BookingApprovalEvent = SocketEvent<
+export type BookingApprovalEvent = SocketNotificationEvent<
 	SocketEventName.BOOKING_APPROVAL,
 	BookingApprovalEventData
 >;
 
-export type BookingCreateEvent = SocketEvent<
+export type BookingCreateEvent = SocketNotificationEvent<
 	SocketEventName.BOOKING_CREATE,
 	BookingCreateEventData
 >;
