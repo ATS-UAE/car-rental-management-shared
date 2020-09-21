@@ -6,7 +6,6 @@ export enum EventName {
 }
 
 export interface NotificationEvent<NotificationType extends EventName, Data> {
-	name: "notification";
 	type: NotificationType;
 	data: Data;
 }
