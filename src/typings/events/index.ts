@@ -1,14 +1,11 @@
 export * from "./Booking";
 
-export enum SocketEventName {
+export enum EventName {
 	BOOKING_APPROVAL = "booking_approval",
 	BOOKING_CREATE = "booking_create"
 }
 
-export interface SocketNotificationEvent<
-	NotificationType extends SocketEventName,
-	Data
-> {
+export interface NotificationEvent<NotificationType extends EventName, Data> {
 	name: "notification";
 	type: NotificationType;
 	data: Data;
