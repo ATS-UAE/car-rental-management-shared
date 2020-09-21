@@ -1,16 +1,18 @@
-import type {
-	BookingServerResponseGet,
-	BookingServerResponsePost
-} from "../api";
 import type { SocketEvent, SocketEventName } from ".";
 
-export type BookingUpdateEventData = BookingServerResponseGet["data"];
+/**
+ * Sends the approval status of the booking.
+ */
+export type BookingApprovalEventData = boolean | null;
 
-export type BookingCreateEventData = BookingServerResponsePost["data"];
+/**
+ * Sends the ID of the new booking.
+ */
+export type BookingCreateEventData = number;
 
-export type BookingUpdateEvent = SocketEvent<
-	SocketEventName.BOOKING_UPDATE,
-	BookingUpdateEventData
+export type BookingApprovalEvent = SocketEvent<
+	SocketEventName.BOOKING_APPROVAL,
+	BookingApprovalEventData
 >;
 
 export type BookingCreateEvent = SocketEvent<
