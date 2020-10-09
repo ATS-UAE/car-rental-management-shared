@@ -5,7 +5,13 @@ export type PushSubscriptionParamsPostMobile = {
 	data: string;
 };
 
-export type PushSubscriptionParamsPostWeb = PushSubscription;
+export type PushSubscriptionParamsPostWeb = {
+	endpoint: string;
+	keys: {
+		p256dh: string;
+		auth: string;
+	};
+};
 
 export type PushSubscriptionParamsPost =
 	| PushSubscriptionParamsPostMobile
