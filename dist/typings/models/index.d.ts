@@ -10,3 +10,7 @@ export * from "./UserVehicleCategory";
 export * from "./Vehicle";
 export * from "./VehicleCategory";
 export * from "./VehicleIssue";
+export interface SequelizeBaseAttributes {
+    readonly createdAt: Date;
+    readonly updatedAt: Date | null;
+}
