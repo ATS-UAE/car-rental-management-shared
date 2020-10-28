@@ -1,5 +1,6 @@
+import { SequelizeBaseAttributes } from ".";
 import { Role } from "..";
-export interface UserAttributes {
+export interface UserAttributes extends SequelizeBaseAttributes {
     id: number;
     username: string;
     firstName: string;
@@ -15,6 +16,4 @@ export interface UserAttributes {
     clientId: number | null;
     role: Role;
     timeZone: string;
-    readonly createdAt: Date;
-    readonly updatedAt: Date | null;
 }
