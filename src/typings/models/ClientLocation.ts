@@ -1,7 +1,6 @@
-export interface ClientLocationAttributes {
+import { SequelizeBaseAttributes } from ".";
+
+export interface ClientLocationAttributes extends SequelizeBaseAttributes {
 	locationId: number;
 	clientId: number;
-
-	readonly createdAt: Date;
-	readonly updatedAt: Date | null;
 }

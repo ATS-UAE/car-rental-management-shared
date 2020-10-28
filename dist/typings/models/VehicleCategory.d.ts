@@ -1,6 +1,5 @@
-export interface VehicleCategoryAttributes {
+import { SequelizeBaseAttributes } from ".";
+export interface VehicleCategoryAttributes extends SequelizeBaseAttributes {
     categoryId: number;
     vehicleId: number;
-    readonly createdAt: Date;
-    readonly updatedAt: Date | null;
 }

@@ -1,4 +1,5 @@
-export interface AccidentAttributes {
+import { SequelizeBaseAttributes } from ".";
+export interface AccidentAttributes extends SequelizeBaseAttributes {
     id: number;
     message: string;
     accidentImageSrc: string | null;
@@ -8,6 +9,4 @@ export interface AccidentAttributes {
     userId: number;
     vehicleId: number;
     bookingId: number;
-    readonly createdAt: Date;
-    readonly updatedAt: Date | null;
 }

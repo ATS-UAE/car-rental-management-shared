@@ -1,5 +1,6 @@
+import { SequelizeBaseAttributes } from ".";
 import { BookingType } from "..";
-export interface BookingAttributes {
+export interface BookingAttributes extends SequelizeBaseAttributes {
     id: number;
     paid: boolean;
     amount: number | null;
@@ -20,6 +21,4 @@ export interface BookingAttributes {
     replaceBrand: string | null;
     replaceModel: string | null;
     replaceVin: string | null;
-    readonly createdAt: Date;
-    readonly updatedAt: Date | null;
 }

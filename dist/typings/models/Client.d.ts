@@ -1,6 +1,5 @@
-export interface ClientAttributes {
+import { SequelizeBaseAttributes } from ".";
+export interface ClientAttributes extends SequelizeBaseAttributes {
     id: number;
     name: string;
-    readonly createdAt: Date;
-    readonly updatedAt: Date | null;
 }

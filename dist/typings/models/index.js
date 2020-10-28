@@ -22,3 +22,5 @@ __exportStar(require("./UserVehicleCategory"), exports);
 __exportStar(require("./Vehicle"), exports);
 __exportStar(require("./VehicleCategory"), exports);
 __exportStar(require("./VehicleIssue"), exports);
+__exportStar(require("./MobilePush"), exports);
+__exportStar(require("./WebPush"), exports);

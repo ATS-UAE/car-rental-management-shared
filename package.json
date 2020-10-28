@@ -7,7 +7,7 @@
 	"scripts": {
 		"test:run": "jest --config jest.config.json",
 		"test:watch": "jest --watch --config jest.config.json",
-		"format": "prettier --write \"**/*.*\"",
+		"format": "prettier --write \"**/*.ts\" \"**/*.js\" \"**/*.json\"",
 		"lint": "eslint --ext .ts,.tsx src --color --fix --config .eslintrc",
 		"clean": "rm -rf dist",
 		"build": "tsc",

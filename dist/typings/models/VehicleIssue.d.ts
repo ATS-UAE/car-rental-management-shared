@@ -1,7 +1,6 @@
-export interface VehicleIssueAttributes {
+import { SequelizeBaseAttributes } from ".";
+export interface VehicleIssueAttributes extends SequelizeBaseAttributes {
     id: number;
     message: string;
     vehicleId: number;
-    readonly createdAt: Date;
-    readonly updatedAt: Date | null;
 }

@@ -1,8 +1,7 @@
-export interface AccidentUserStatusAttributes {
+import { SequelizeBaseAttributes } from ".";
+export interface AccidentUserStatusAttributes extends SequelizeBaseAttributes {
     read: boolean;
     deleted: boolean;
     accidentId: number;
     userId: number;
-    readonly createdAt: Date;
-    readonly updatedAt: Date | null;
 }

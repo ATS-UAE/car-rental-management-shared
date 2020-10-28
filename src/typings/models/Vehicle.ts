@@ -1,6 +1,7 @@
+import { SequelizeBaseAttributes } from ".";
 import { BookingChargeUnit } from "..";
 
-export interface VehicleAttributes {
+export interface VehicleAttributes extends SequelizeBaseAttributes {
 	id: number;
 	brand: string;
 	model: string;
@@ -16,7 +17,4 @@ export interface VehicleAttributes {
 	clientId: number | null;
 	locationId: number | null;
 	categoryCostId: number | null;
-
-	readonly createdAt: Date;
-	readonly updatedAt: Date | null;
 }
