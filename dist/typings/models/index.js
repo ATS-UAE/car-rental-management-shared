@@ -24,3 +24,4 @@ __exportStar(require("./VehicleCategory"), exports);
 __exportStar(require("./VehicleIssue"), exports);
 __exportStar(require("./MobilePush"), exports);
 __exportStar(require("./WebPush"), exports);
+__exportStar(require("./UserLocation"), exports);

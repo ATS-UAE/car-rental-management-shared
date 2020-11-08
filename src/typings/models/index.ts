@@ -12,6 +12,7 @@ export * from "./VehicleCategory";
 export * from "./VehicleIssue";
 export * from "./MobilePush";
 export * from "./WebPush";
+export * from "./UserLocation";
 
 export interface SequelizeBaseAttributes {
 	readonly createdAt: Date;
