@@ -1,6 +1,7 @@
 import { UserAttributes, DatePropsToUnix, ServerResponse, RemoveImmutableSequelizeProperties, UseParameters } from "..";
 export declare type UserCreateOptions = DatePropsToUnix<UseParameters<RemoveImmutableSequelizeProperties<UserAttributes>, "clientId" | "email" | "username" | "firstName" | "lastName" | "password" | "mobileNumber" | "role", "userImageSrc" | "timeZone">> & {
     categories?: number[];
+    locations?: number[];
 };
 export declare type UserSignUpOptions = {
     token: string;
@@ -9,6 +10,7 @@ export declare type UserServerResponseGet = ServerResponse<DatePropsToUnix<Omit<
 export declare type UserServerResponseGetAll = ServerResponse<DatePropsToUnix<Omit<UserAttributes, "password">>[]>;
 export declare type UserServerParamsPatch = DatePropsToUnix<UseParameters<RemoveImmutableSequelizeProperties<UserAttributes>, never, "userImageSrc" | "timeZone" | "clientId" | "email" | "firstName" | "lastName" | "blocked" | "mobileNumber" | "licenseImageSrc" | "password" | "role" | "username"> & {
     categories?: number[];
+    locations?: number[];
 }>;
 export declare type UserServerParamsPost = UserCreateOptions | UserSignUpOptions;
 export declare type UserServerResponsePost = UserServerResponseGet;
