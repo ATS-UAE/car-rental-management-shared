@@ -16,7 +16,7 @@ export type LocationServerResponseGetAll = ServerResponse<
 >;
 export type LocationServerParamsPatch = DatePropsToUnix<
 	Partial<RemoveImmutableSequelizeProperties<LocationAttributes>>
->;
+> & { users?: number[] };
 export type LocationServerResponsePatch = LocationServerResponseGet;
 export type LocationServerResponseDelete = LocationServerResponseGet;
 export type LocationServerResponsePost = LocationServerResponseGet;
@@ -26,4 +26,4 @@ export type LocationServerParamsPost = DatePropsToUnix<
 		"name" | "lat" | "lng" | "address",
 		"locationImageSrc"
 	>
->;
+> & { users?: number[] };
