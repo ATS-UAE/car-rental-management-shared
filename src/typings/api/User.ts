@@ -19,7 +19,7 @@ export type UserCreateOptions = DatePropsToUnix<
 		| "role",
 		"userImageSrc" | "timeZone"
 	>
-> & { categories?: number[] };
+> & { categories?: number[]; locations?: number[] };
 
 export type UserSignUpOptions = { token: string } & Omit<
 	UserCreateOptions,
@@ -48,7 +48,7 @@ export type UserServerParamsPatch = DatePropsToUnix<
 		| "password"
 		| "role"
 		| "username"
-	> & { categories?: number[] }
+	> & { categories?: number[]; locations?: number[] }
 >;
 export type UserServerParamsPost = UserCreateOptions | UserSignUpOptions;
 export type UserServerResponsePost = UserServerResponseGet;
