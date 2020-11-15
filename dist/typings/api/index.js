@@ -10,7 +10,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !exports.hasOwnProperty(p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ErrorCode = void 0;
+exports.StatusCode = void 0;
 __exportStar(require("./Auth"), exports);
 __exportStar(require("./Accident"), exports);
 __exportStar(require("./Booking"), exports);
@@ -24,35 +24,35 @@ __exportStar(require("./Report"), exports);
 __exportStar(require("./Invite"), exports);
 __exportStar(require("./VehicleCategory"), exports);
 __exportStar(require("./PushSubscription"), exports);
-var ErrorCode;
-(function (ErrorCode) {
+var StatusCode;
+(function (StatusCode) {
     /**
      * You are trying to access a resource that is not intended to
      * be accessed by your role.
      */
-    ErrorCode["UNAUTHORIZED_ROLE"] = "UNAUTHORIZED_ROLE";
+    StatusCode["UNAUTHORIZED_ROLE"] = "UNAUTHORIZED_ROLE";
     /**
      * You are not logged in.
      */
-    ErrorCode["UNAUTHENTICATED"] = "UNAUTHENTICATED";
+    StatusCode["UNAUTHENTICATED"] = "UNAUTHENTICATED";
     /**
      * You are trying to create, or update a resource with invalid fields.
      */
-    ErrorCode["INVALID_PARAMETERS"] = "INVALID_PARAMETERS";
+    StatusCode["INVALID_PARAMETERS"] = "INVALID_PARAMETERS";
     /**
      * You are trying to execute an unallowed action to a resource.
      */
-    ErrorCode["UNALLOWED_ACTION"] = "UNALLOWED_ACTION";
+    StatusCode["UNALLOWED_ACTION"] = "UNALLOWED_ACTION";
     /**
      * The resource you are trying to access for is not found.
      */
-    ErrorCode["RESOURCE_NOT_FOUND"] = "RESOURCE_NOT_FOUND";
+    StatusCode["RESOURCE_NOT_FOUND"] = "RESOURCE_NOT_FOUND";
     /**
      * ¯\\\_(ツ)\_/¯
      */
-    ErrorCode["UNKNOWN"] = "UNKNOWN";
+    StatusCode["UNKNOWN"] = "UNKNOWN";
     /**
      * No errors!
      */
-    ErrorCode["SUCCESS"] = "SUCCESS";
-})(ErrorCode = exports.ErrorCode || (exports.ErrorCode = {}));
+    StatusCode["SUCCESS"] = "SUCCESS";
+})(StatusCode = exports.StatusCode || (exports.StatusCode = {}));

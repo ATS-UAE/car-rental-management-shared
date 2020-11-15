@@ -11,7 +11,7 @@ export * from "./Report";
 export * from "./Invite";
 export * from "./VehicleCategory";
 export * from "./PushSubscription";
-export declare enum ErrorCode {
+export declare enum StatusCode {
     /**
      * You are trying to access a resource that is not intended to
      * be accessed by your role.
@@ -46,7 +46,7 @@ export interface ServerResponse<Result> extends ServerResponseMeta {
     data: Result;
 }
 export interface ServerResponseMeta {
-    code: ErrorCode;
+    code: StatusCode;
     errors: Array<string | {
         key: string;
         value: string;
