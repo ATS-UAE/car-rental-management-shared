@@ -51,4 +51,8 @@ var ErrorCode;
      * ¯\\\_(ツ)\_/¯
      */
     ErrorCode["UNKNOWN"] = "UNKNOWN";
+    /**
+     * No errors!
+     */
+    ErrorCode["SUCCESS"] = "SUCCESS";
 })(ErrorCode = exports.ErrorCode || (exports.ErrorCode = {}));

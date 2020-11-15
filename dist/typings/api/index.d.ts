@@ -36,7 +36,11 @@ export declare enum ErrorCode {
     /**
      * ¯\\\_(ツ)\_/¯
      */
-    UNKNOWN = "UNKNOWN"
+    UNKNOWN = "UNKNOWN",
+    /**
+     * No errors!
+     */
+    SUCCESS = "SUCCESS"
 }
 export interface ServerResponse<Result> extends ServerResponseMeta {
     data: Result;
