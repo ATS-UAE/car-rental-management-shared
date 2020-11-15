@@ -32,7 +32,11 @@ export declare enum ErrorCode {
     /**
      * The resource you are trying to access for is not found.
      */
-    RESOURCE_NOT_FOUND = "RESOURCE_NOT_FOUND"
+    RESOURCE_NOT_FOUND = "RESOURCE_NOT_FOUND",
+    /**
+     * ¯\\\_(ツ)\_/¯
+     */
+    UNKNOWN = "UNKNOWN"
 }
 export interface ServerResponse<Result> extends ServerResponseMeta {
     data: Result;

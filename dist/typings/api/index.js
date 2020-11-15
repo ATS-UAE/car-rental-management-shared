@@ -47,4 +47,8 @@ var ErrorCode;
      * The resource you are trying to access for is not found.
      */
     ErrorCode["RESOURCE_NOT_FOUND"] = "RESOURCE_NOT_FOUND";
+    /**
+     * ¯\\\_(ツ)\_/¯
+     */
+    ErrorCode["UNKNOWN"] = "UNKNOWN";
 })(ErrorCode = exports.ErrorCode || (exports.ErrorCode = {}));
