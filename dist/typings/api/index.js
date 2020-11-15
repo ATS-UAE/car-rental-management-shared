@@ -10,7 +10,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !exports.hasOwnProperty(p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.API_OPERATION = void 0;
+exports.ErrorCode = void 0;
 __exportStar(require("./Auth"), exports);
 __exportStar(require("./Accident"), exports);
 __exportStar(require("./Booking"), exports);
@@ -24,10 +24,27 @@ __exportStar(require("./Report"), exports);
 __exportStar(require("./Invite"), exports);
 __exportStar(require("./VehicleCategory"), exports);
 __exportStar(require("./PushSubscription"), exports);
-var API_OPERATION;
-(function (API_OPERATION) {
-    API_OPERATION["CREATE"] = "CREATE";
-    API_OPERATION["DELETE"] = "DELETE";
-    API_OPERATION["UPDATE"] = "UPDATE";
-    API_OPERATION["READ"] = "READ";
-})(API_OPERATION = exports.API_OPERATION || (exports.API_OPERATION = {}));
+var ErrorCode;
+(function (ErrorCode) {
+    /**
+     * You are trying to access a resource that is not intended to
+     * be accessed by your role.
+     */
+    ErrorCode["UNAUTHORIZED_ROLE"] = "UNAUTHORIZED_ROLE";
+    /**
+     * You are not logged in.
+     */
+    ErrorCode["UNAUTHENTICATED"] = "UNAUTHENTICATED";
+    /**
+     * You are trying to create, or update a resource with invalid fields.
+     */
+    ErrorCode["INVALID_PARAMETERS"] = "INVALID_PARAMETERS";
+    /**
+     * You are trying to execute an unallowed action to a resource.
+     */
+    ErrorCode["UNALLOWED_ACTION"] = "UNALLOWED_ACTION";
+    /**
+     * The resource you are trying to access for is not found.
+     */
+    ErrorCode["RESOURCE_NOT_FOUND"] = "RESOURCE_NOT_FOUND";
+})(ErrorCode = exports.ErrorCode || (exports.ErrorCode = {}));

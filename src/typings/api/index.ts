@@ -12,12 +12,35 @@ export * from "./Invite";
 export * from "./VehicleCategory";
 export * from "./PushSubscription";
 
+export enum ErrorCode {
+	/**
+	 * You are trying to access a resource that is not intended to
+	 * be accessed by your role.
+	 */
+	UNAUTHORIZED_ROLE = "UNAUTHORIZED_ROLE",
+	/**
+	 * You are not logged in.
+	 */
+	UNAUTHENTICATED = "UNAUTHENTICATED",
+	/**
+	 * You are trying to create, or update a resource with invalid fields.
+	 */
+	INVALID_PARAMETERS = "INVALID_PARAMETERS",
+	/**
+	 * You are trying to execute an unallowed action to a resource.
+	 */
+	UNALLOWED_ACTION = "UNALLOWED_ACTION",
+	/**
+	 * The resource you are trying to access for is not found.
+	 */
+	RESOURCE_NOT_FOUND = "RESOURCE_NOT_FOUND"
+}
 export interface ServerResponse<Result> extends ServerResponseMeta {
 	data: Result;
 }
 
 export interface ServerResponseMeta {
-	code: number;
+	code: ErrorCode;
 	errors: Array<string | { key: string; value: string }>;
 	success: boolean;
 	message: string;
@@ -27,10 +50,3 @@ export type RemoveImmutableSequelizeProperties<T> = Omit<
 	T,
 	"createdAt" | "updatedAt" | "id"
 >;
-
-export enum API_OPERATION {
-	CREATE = "CREATE",
-	DELETE = "DELETE",
-	UPDATE = "UPDATE",
-	READ = "READ"
-}
