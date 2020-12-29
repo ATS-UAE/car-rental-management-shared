@@ -1,11 +1,11 @@
 import { ServerResponse } from "..";
 
-export type WialonUnitCommand =
-	| "DOOR_UNLOCK"
-	| "DOOR_LOCK"
-	| "IMMOBILIZER_ON"
-	| "IMMOBILIZER_OFF";
-
+export enum WialonUnitCommand {
+	DOOR_UNLOCK = "DOOR_UNLOCK",
+	DOOR_LOCK = "DOOR_LOCK",
+	IMMOBILIZER_ON = "IMMOBILIZER_ON",
+	IMMOBILIZER_OFF = "IMMOBILIZER_OFF"
+}
 export interface WialonUnitAttributes {
 	id: number;
 	name: string;
