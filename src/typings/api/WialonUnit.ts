@@ -1,10 +1,8 @@
 import { ServerResponse } from "..";
 
-export enum WialonUnitCommand {
-	DOOR_UNLOCK = "DOOR_UNLOCK",
-	DOOR_LOCK = "DOOR_LOCK",
-	IMMOBILIZER_ON = "IMMOBILIZER_ON",
-	IMMOBILIZER_OFF = "IMMOBILIZER_OFF"
+export interface WialonUnitCommand {
+	label: string;
+	value: string;
 }
 export interface WialonUnitAttributes {
 	id: number;
@@ -13,7 +11,7 @@ export interface WialonUnitAttributes {
 	lat: number | null;
 	lng: number | null;
 	mileage: number | null;
-	supportedCommands: WialonUnitCommand[];
+	commands: WialonUnitCommand[];
 }
 
 export type WialonUnitServerResponseGet = ServerResponse<WialonUnitAttributes>;
