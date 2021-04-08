@@ -1,17 +1,20 @@
 import { BookingChargeUnit } from "../typings";
+export interface BookingParams {
+    from: Date;
+    to: Date;
+    startMileage: number | null;
+    endMileage: number | null;
+}
+export interface CostParams {
+    bookingChargeUnit: BookingChargeUnit | null;
+    bookingChargeCount: number;
+    bookingCharge: number;
+}
 export declare class CalculatedCost {
-    cost: number;
-    count: number;
-    unit: BookingChargeUnit;
-    constructor(cost: number, count: number, unit: BookingChargeUnit);
-    static calculateCost: (bookingParams: {
-        from: Date;
-        to: Date;
-        startMileage: number | null;
-        endMileage: number | null;
-    }, costParams: {
-        bookingChargeUnit: BookingChargeUnit | null;
-        bookingChargeCount: number;
-        bookingCharge: number;
-    }) => CalculatedCost | null;
+    private bookingParams;
+    private costParams;
+    private constructor();
+    static calculateBookingCost: (bookingParams: BookingParams, costParams: CostParams) => CalculatedCost;
+    hasCost: () => boolean;
+    getCost: () => number | null;
 }
