@@ -1,15 +1,13 @@
 import { UserBookings } from "./BookingFormCreateValidator";
-import {
-	BookingCreateFormValues,
-	BookingFormCreateValidator
-} from "./BookingFormCreateValidator";
+import { BookingFormCreateValidator } from "./BookingFormCreateValidator";
 import { BookingType } from "../../../typings";
 import { DateUtils } from "../../DateUtils";
+import { BookingFormUtils } from "../../test-utils/forms/BookingFormUtils";
 
 describe("BookingFormCreateValidator", () => {
 	describe("Booking interval validations", () => {
 		it("Does not allow when the start is greater than end.", () => {
-			const formValues = createBookingFormValues({
+			const formValues = BookingFormUtils.createBookingFormValues({
 				from: DateUtils.addSecondsToDate(new Date(), 100),
 				to: new Date()
 			});
@@ -20,7 +18,7 @@ describe("BookingFormCreateValidator", () => {
 	});
 	describe("Bookings when the user already have a booking on the specified time.", () => {
 		it("Does not allow bookings when the selected interval already has a booking.", () => {
-			const formValues = createBookingFormValues();
+			const formValues = BookingFormUtils.createBookingFormValues();
 			const existingBookings: UserBookings[] = [
 				{
 					bookingType: formValues.bookingType,
@@ -39,14 +37,14 @@ describe("BookingFormCreateValidator", () => {
 			expect(errors.to).toBeDefined();
 		});
 		it("Allow bookings when the selected interval does not have a booking.", () => {
-			const formValues = createBookingFormValues();
+			const formValues = BookingFormUtils.createBookingFormValues();
 
 			const errors = BookingFormCreateValidator.validate(formValues, []);
 
 			expect(Object.values(errors)).toHaveLength(0);
 		});
 		it("Allows bookings when the selected interval already has a booking and a replacement booking.", () => {
-			const formValues = createBookingFormValues({
+			const formValues = BookingFormUtils.createBookingFormValues({
 				bookingType: BookingType.REPLACEMENT,
 				replaceBrand: "TEST",
 				replaceModel: "TEST",
@@ -72,7 +70,7 @@ describe("BookingFormCreateValidator", () => {
 	});
 	describe("Replacement bookings", () => {
 		it("Requires the replacement vehicle fields when a booking is a replacement type.", () => {
-			const formValues = createBookingFormValues({
+			const formValues = BookingFormUtils.createBookingFormValues({
 				bookingType: BookingType.REPLACEMENT
 			});
 			const existingBookings: UserBookings[] = [
@@ -105,26 +103,8 @@ describe("BookingFormCreateValidator", () => {
 		expect(errors.vehicleId).toBeDefined();
 	});
 	it("Does not give any errors on valid values", () => {
-		const formValues = createBookingFormValues();
+		const formValues = BookingFormUtils.createBookingFormValues();
 		const errors = BookingFormCreateValidator.validate(formValues, []);
 		expect(Object.values(errors)).toHaveLength(0);
 	});
 });
-
-const createBookingFormValues = (
-	override?: Partial<BookingCreateFormValues>
-): BookingCreateFormValues => {
-	const THIRTY_MINUTES_IN_SECONDS = 60 * 30;
-
-	const bookingFormValues: BookingCreateFormValues = {
-		from: new Date(),
-		to: DateUtils.addSecondsToDate(new Date(), THIRTY_MINUTES_IN_SECONDS),
-		userId: 1,
-		bookingType: BookingType.PRIVATE,
-		locationId: 1,
-		vehicleId: 1,
-		...override
-	};
-
-	return bookingFormValues;
-};
