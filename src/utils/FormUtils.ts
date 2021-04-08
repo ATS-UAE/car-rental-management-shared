@@ -31,7 +31,7 @@ export abstract class FormUtils {
 		return {};
 	};
 
-	public static isAxiosError = <Response>(
+	private static isAxiosError = <Response>(
 		e: Error
 	): e is AxiosError<Response> => {
 		const axiosError = e as AxiosError;
@@ -41,11 +41,13 @@ export abstract class FormUtils {
 		return false;
 	};
 
-	public static getErrorsFromApiError = <Values extends object>(e: Error) => {
+	public static getErrorsFromApiError = <Values extends object>(
+		e: AxiosError<ServerResponseMeta> | Error
+	) => {
 		const fieldErrors: FieldErrors<Values> = {};
 		const formErrors: string[] = [];
 
-		if (FormUtils.isAxiosError<ServerResponseMeta>(e)) {
+		if ("response" in e) {
 			/**
 			 * If the response has an error message from errors array, use those errors,
 			 * if there are no errors in the errors array, use the message instead.
