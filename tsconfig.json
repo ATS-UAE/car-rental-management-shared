@@ -10,6 +10,6 @@
 		"allowSyntheticDefaultImports": true,
 		"allowJs": false,
 		"outDir": "dist",
-		"rootDirs": ["src/typings", "src/utils"]
+		"rootDirs": ["src/typings"]
 	}
 }
