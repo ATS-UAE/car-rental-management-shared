@@ -1,4 +1,4 @@
-import { BookingStatus } from "../typings";
+import { BookingChargeUnit, BookingStatus } from "../typings";
 import { BookingUtils } from "./BookingUtils";
 import { DateUtils } from "./DateUtils";
 
@@ -73,6 +73,28 @@ describe("BookingUtils", () => {
 				DateUtils.addSecondsToDate(new Date(), 201)
 			);
 			expect(isTaken).toBeFalsy();
+		});
+	});
+	describe("Getting booking cost string.", () => {
+		it("Should cost 1 aed per day.", () => {
+			const bookingCost = BookingUtils.getBookingCostString(
+				1,
+				1,
+				BookingChargeUnit.DAY
+			);
+			expect(bookingCost).toEqual("1 AED per 1 Day");
+		});
+		it("It should pluralize booking charge unit.", () => {
+			const bookingCost = BookingUtils.getBookingCostString(
+				1,
+				2,
+				BookingChargeUnit.DAY
+			);
+			expect(bookingCost).toEqual("1 AED per 2 Days");
+		});
+		it("Should return null for free bookings", () => {
+			const bookingCost = BookingUtils.getBookingCostString(1, 1, null);
+			expect(bookingCost).toEqual(null);
 		});
 	});
 });

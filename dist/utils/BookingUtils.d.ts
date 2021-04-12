@@ -1,4 +1,4 @@
-import { BookingStatus } from "../typings";
+import { BookingChargeUnit, BookingStatus } from "../typings";
 export declare abstract class BookingUtils {
     static getBookingStatus: (booking: {
         from: Date;
@@ -10,4 +10,5 @@ export declare abstract class BookingUtils {
         to: number | Date;
         id: number;
     }[], from: number | Date, to: number | Date, bookingId?: number | undefined) => boolean;
+    static getBookingCostString: (bookingCharge: number, bookingChargeCount: number, bookingChargeUnit: BookingChargeUnit | null) => null | string;
 }

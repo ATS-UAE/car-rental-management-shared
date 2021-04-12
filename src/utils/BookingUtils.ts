@@ -1,4 +1,5 @@
-import { BookingStatus } from "../typings";
+import pluralize from "pluralize";
+import { BookingChargeUnit, BookingStatus } from "../typings";
 import { DateUtils } from "./DateUtils";
 import { MathUtils } from "./MathUtils";
 
@@ -37,7 +38,8 @@ export abstract class BookingUtils {
 		from: number | Date,
 		to: number | Date,
 		bookingId?: number
-	): boolean => bookings.some((booking) => {
+	): boolean =>
+		bookings.some((booking) => {
 			const taken = MathUtils.rangeOverlap(
 				DateUtils.getUnixTimestampFromDate(DateUtils.getDate(from)),
 				DateUtils.getUnixTimestampFromDate(DateUtils.getDate(to)),
@@ -49,4 +51,17 @@ export abstract class BookingUtils {
 			}
 			return false;
 		});
+
+	public static getBookingCostString = (
+		bookingCharge: number,
+		bookingChargeCount: number,
+		bookingChargeUnit: BookingChargeUnit | null
+	): null | string => {
+		if (bookingChargeUnit && bookingChargeCount > 0 && bookingCharge > 0) {
+			return `${bookingCharge} AED per ${
+				bookingChargeCount > 0 ? `${bookingChargeCount} ` : " "
+			}${pluralize(bookingChargeUnit, Number(bookingChargeCount))}`;
+		}
+		return null;
+	};
 }
