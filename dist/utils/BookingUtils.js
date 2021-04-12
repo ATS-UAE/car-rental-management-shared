@@ -31,15 +31,13 @@ var BookingUtils = /** @class */ (function () {
         }
         return status;
     };
-    BookingUtils.isBookingTimeSlotTaken = function (bookings, from, to, bookingId) {
-        return bookings.some(function (booking) {
-            var taken = MathUtils_1.MathUtils.rangeOverlap(DateUtils_1.DateUtils.getUnixTimestampFromDate(DateUtils_1.DateUtils.getDate(from)), DateUtils_1.DateUtils.getUnixTimestampFromDate(DateUtils_1.DateUtils.getDate(to)), DateUtils_1.DateUtils.getUnixTimestampFromDate(DateUtils_1.DateUtils.getDate(booking.from)), DateUtils_1.DateUtils.getUnixTimestampFromDate(DateUtils_1.DateUtils.getDate(booking.to)));
-            if ((taken && !bookingId) || bookingId !== booking.id) {
-                return taken;
-            }
-            return false;
-        });
-    };
+    BookingUtils.isBookingTimeSlotTaken = function (bookings, from, to, bookingId) { return bookings.some(function (booking) {
+        var taken = MathUtils_1.MathUtils.rangeOverlap(DateUtils_1.DateUtils.getUnixTimestampFromDate(DateUtils_1.DateUtils.getDate(from)), DateUtils_1.DateUtils.getUnixTimestampFromDate(DateUtils_1.DateUtils.getDate(to)), DateUtils_1.DateUtils.getUnixTimestampFromDate(DateUtils_1.DateUtils.getDate(booking.from)), DateUtils_1.DateUtils.getUnixTimestampFromDate(DateUtils_1.DateUtils.getDate(booking.to)));
+        if ((taken && !bookingId) || bookingId !== booking.id) {
+            return taken;
+        }
+        return false;
+    }); };
     return BookingUtils;
 }());
 exports.BookingUtils = BookingUtils;

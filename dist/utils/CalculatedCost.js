@@ -55,9 +55,7 @@ var CalculatedCost = /** @class */ (function () {
             return null;
         };
     }
-    CalculatedCost.calculateBookingCost = function (bookingParams, costParams) {
-        return new CalculatedCost(bookingParams, costParams);
-    };
+    CalculatedCost.calculateBookingCost = function (bookingParams, costParams) { return new CalculatedCost(bookingParams, costParams); };
     return CalculatedCost;
 }());
 exports.CalculatedCost = CalculatedCost;

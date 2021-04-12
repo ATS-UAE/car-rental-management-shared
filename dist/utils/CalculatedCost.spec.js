@@ -13,12 +13,8 @@ var __assign = (this && this.__assign) || function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var typings_1 = require("../typings");
 var CalculatedCost_1 = require("./CalculatedCost");
-var getBookingParams = function (overrides) {
-    return __assign({ from: new Date(), to: new Date(), startMileage: 100, endMileage: 200 }, overrides);
-};
-var getCostParams = function (overrides) {
-    return __assign({ bookingChargeUnit: typings_1.BookingChargeUnit.KILOMETER, bookingChargeCount: 5, bookingCharge: 5 }, overrides);
-};
+var getBookingParams = function (overrides) { return (__assign({ from: new Date(), to: new Date(), startMileage: 100, endMileage: 200 }, overrides)); };
+var getCostParams = function (overrides) { return (__assign({ bookingChargeUnit: typings_1.BookingChargeUnit.KILOMETER, bookingChargeCount: 5, bookingCharge: 5 }, overrides)); };
 describe("CalculatedCost", function () {
     describe("Free bookings", function () {
         it("Returns true on free bookings.", function () {

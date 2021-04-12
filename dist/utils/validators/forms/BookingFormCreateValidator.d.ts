@@ -1,5 +1,5 @@
-import { BookingAttributes, BookingType, DatePropsToUnix } from "car-rental-management-shared";
 import { FieldErrors } from "react-form";
+import { BookingAttributes, BookingType, DatePropsToUnix } from "../../../typings";
 export declare type UserBookings = Pick<DatePropsToUnix<BookingAttributes>, "from" | "to" | "userId" | "bookingType">;
 export interface BookingCreateFormValues {
     vehicleId: number;

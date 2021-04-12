@@ -20,8 +20,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthFormValidator = void 0;
-var FormUtils_1 = require("@utils/FormUtils");
 var yup = __importStar(require("yup"));
+var FormUtils_1 = require("../../FormUtils");
 var AuthFormValidator = /** @class */ (function () {
     function AuthFormValidator() {
     }

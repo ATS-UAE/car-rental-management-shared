@@ -21,9 +21,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BookingFormCreateValidator = void 0;
 var yup = __importStar(require("yup"));
-var DateUtils_1 = require("../DateUtils");
-var car_rental_management_shared_1 = require("car-rental-management-shared");
-var FormUtils_1 = require("@utils/FormUtils");
+var DateUtils_1 = require("../../DateUtils");
+var typings_1 = require("../../../typings");
+var FormUtils_1 = require("../../FormUtils");
 var BookingFormCreateValidator = /** @class */ (function () {
     function BookingFormCreateValidator() {
     }
@@ -42,29 +42,33 @@ var BookingFormCreateValidator = /** @class */ (function () {
         return {};
     };
     BookingFormCreateValidator.useReplacementBookingFields = function (bookingType, schema) {
-        if (bookingType !== car_rental_management_shared_1.BookingType.REPLACEMENT) {
-            return schema.nullable().transform(function () { return null; });
-        }
-        if (bookingType === car_rental_management_shared_1.BookingType.REPLACEMENT) {
+        if (bookingType === typings_1.BookingType.REPLACEMENT) {
             return schema.required();
         }
+        return schema.nullable().transform(function () { return null; });
     };
     BookingFormCreateValidator.canUserBookVehiclesOn = function (user, userBookings, bookingFormValues) {
-        if (bookingFormValues.bookingType === car_rental_management_shared_1.BookingType.REPLACEMENT) {
+        if (bookingFormValues.bookingType === typings_1.BookingType.REPLACEMENT) {
             return true;
         }
-        for (var _i = 0, userBookings_1 = userBookings; _i < userBookings_1.length; _i++) {
-            var booking = userBookings_1[_i];
+        var isTimeslotTaken = userBookings.some(function (booking) {
             var isSameUser = booking.userId === user.id;
-            var isReplacementBooking = booking.bookingType === car_rental_management_shared_1.BookingType.REPLACEMENT;
+            var isReplacementBooking = booking.bookingType === typings_1.BookingType.REPLACEMENT;
             if (isSameUser && !isReplacementBooking) {
-                var dateOverlapsFromOtherBookings = car_rental_management_shared_1.rangeOverlap(DateUtils_1.DateUtils.getUnixTimestampFromDate(bookingFormValues.from), DateUtils_1.DateUtils.getUnixTimestampFromDate(bookingFormValues.to), booking.from, booking.to);
-                if (dateOverlapsFromOtherBookings) {
-                    return false;
+                var dateOverlapsWithAnotherBooking = DateUtils_1.DateUtils.doesDateIntervalOverlaps({
+                    start: DateUtils_1.DateUtils.getDate(bookingFormValues.from),
+                    end: DateUtils_1.DateUtils.getDate(bookingFormValues.to)
+                }, {
+                    start: DateUtils_1.DateUtils.getDate(booking.from),
+                    end: DateUtils_1.DateUtils.getDate(booking.to)
+                });
+                if (dateOverlapsWithAnotherBooking) {
+                    return true;
                 }
             }
-        }
-        return true;
+            return false;
+        });
+        return !isTimeslotTaken;
     };
     BookingFormCreateValidator.formBookingCreateValidationSchema = yup.object().shape({
         from: yup
@@ -107,7 +111,7 @@ var BookingFormCreateValidator = /** @class */ (function () {
         vehicleId: yup.number().required("Required"),
         bookingType: yup
             .mixed()
-            .oneOf(Object.values(car_rental_management_shared_1.BookingType))
+            .oneOf(Object.values(typings_1.BookingType))
             .required("Required"),
         replacePlateNumber: yup
             .string()
