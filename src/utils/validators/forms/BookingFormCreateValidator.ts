@@ -1,4 +1,5 @@
 import * as yup from "yup";
+import { FieldErrors } from "react-form";
 import { DateUtils } from "../../DateUtils";
 import {
 	BookingAttributes,
@@ -6,7 +7,6 @@ import {
 	DatePropsToUnix,
 	UserAttributes
 } from "../../../typings";
-import { FieldErrors } from "react-form";
 import { FormUtils } from "../../FormUtils";
 
 export type UserBookings = Pick<
@@ -52,12 +52,10 @@ export abstract class BookingFormCreateValidator {
 		bookingType: BookingType,
 		schema: yup.AnySchema
 	) => {
-		if (bookingType !== BookingType.REPLACEMENT) {
-			return schema.nullable().transform(() => null);
-		}
 		if (bookingType === BookingType.REPLACEMENT) {
 			return schema.required();
 		}
+		return schema.nullable().transform(() => null);
 	};
 
 	private static canUserBookVehiclesOn = (
@@ -71,11 +69,11 @@ export abstract class BookingFormCreateValidator {
 		if (bookingFormValues.bookingType === BookingType.REPLACEMENT) {
 			return true;
 		}
-		for (const booking of userBookings) {
+		const isTimeslotTaken = userBookings.some((booking) => {
 			const isSameUser = booking.userId === user.id;
 			const isReplacementBooking = booking.bookingType === BookingType.REPLACEMENT;
 			if (isSameUser && !isReplacementBooking) {
-				const dateOverlapsFromOtherBookings = DateUtils.doesDateIntervalOverlaps(
+				const dateOverlapsWithAnotherBooking = DateUtils.doesDateIntervalOverlaps(
 					{
 						start: DateUtils.getDate(bookingFormValues.from),
 						end: DateUtils.getDate(bookingFormValues.to)
@@ -85,12 +83,13 @@ export abstract class BookingFormCreateValidator {
 						end: DateUtils.getDate(booking.to)
 					}
 				);
-				if (dateOverlapsFromOtherBookings) {
-					return false;
+				if (dateOverlapsWithAnotherBooking) {
+					return true;
 				}
 			}
-		}
-		return true;
+			return false;
+		});
+		return !isTimeslotTaken;
 	};
 
 	private static formBookingCreateValidationSchema = yup.object().shape({
@@ -108,8 +107,8 @@ export abstract class BookingFormCreateValidator {
 					return false;
 				}
 			)
-			.when("$bookings", (bookings: UserBookings[], schema: yup.AnySchema) => {
-				return schema.test(
+			.when("$bookings", (bookings: UserBookings[], schema: yup.AnySchema) =>
+				schema.test(
 					"no-same-schedules",
 					"You already have a booking during this time.",
 					function (from: unknown) {
@@ -123,8 +122,8 @@ export abstract class BookingFormCreateValidator {
 						}
 						return true;
 					}
-				);
-			}),
+				)
+			),
 		to: yup
 			.mixed()
 			.required("Required")
@@ -136,8 +135,8 @@ export abstract class BookingFormCreateValidator {
 					return DateUtils.dateIsAfter(to, from);
 				}
 			)
-			.when("$bookings", (bookings: UserBookings[], schema: yup.AnySchema) => {
-				return schema.test(
+			.when("$bookings", (bookings: UserBookings[], schema: yup.AnySchema) =>
+				schema.test(
 					"no-same-schedules",
 					"You already have a booking during this time.",
 					function (to: unknown) {
@@ -151,8 +150,8 @@ export abstract class BookingFormCreateValidator {
 						}
 						return true;
 					}
-				);
-			}),
+				)
+			),
 		locationId: yup.number().required("Required"),
 		userId: yup.number().required("Required"),
 		vehicleId: yup.number().required("Required"),

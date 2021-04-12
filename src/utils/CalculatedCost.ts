@@ -29,9 +29,7 @@ export class CalculatedCost {
 	public static calculateBookingCost = (
 		bookingParams: BookingParams,
 		costParams: CostParams
-	) => {
-		return new CalculatedCost(bookingParams, costParams);
-	};
+	) => new CalculatedCost(bookingParams, costParams);
 
 	public hasCost = () => {
 		const {

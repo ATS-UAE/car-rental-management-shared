@@ -1,5 +1,5 @@
-import { UserBookings } from "./BookingFormCreateValidator";
-import { BookingFormCreateValidator } from "./BookingFormCreateValidator";
+import { UserBookings , BookingFormCreateValidator } from "./BookingFormCreateValidator";
+
 import { BookingType } from "../../../typings";
 import { DateUtils } from "../../DateUtils";
 import { BookingFormUtils } from "../../test-utils/forms/BookingFormUtils";

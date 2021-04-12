@@ -16,7 +16,7 @@ export abstract class FormUtils {
 				_.set(newErrors, errors.path, errors.message);
 			}
 
-			for (const error of errors.inner) {
+			errors.inner.forEach((error) => {
 				if (error.path) {
 					_.set(newErrors, error.path, error.message);
 				}
@@ -24,8 +24,7 @@ export abstract class FormUtils {
 					error,
 					newErrors
 				);
-			}
-
+			});
 			return newErrors;
 		}
 		return {};

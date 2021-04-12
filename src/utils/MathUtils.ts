@@ -4,7 +4,5 @@ export abstract class MathUtils {
 		x2: number,
 		y1: number,
 		y2: number
-	): boolean => {
-		return Math.max(x1, y1) <= Math.min(x2, y2);
-	};
+	): boolean => Math.max(x1, y1) <= Math.min(x2, y2);
 }

@@ -26,7 +26,7 @@ describe("FormUtils", () => {
 					success: false
 				}
 			}
-		} as AxiosError<any>);
+		} as AxiosError);
 
 		expect(apiErrors.form).toHaveLength(1);
 		expect(apiErrors.form[0]).toEqual("TEST");

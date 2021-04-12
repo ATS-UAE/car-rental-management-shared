@@ -29,7 +29,8 @@
 		"date-fns": "<3.0.0",
 		"lodash": "<5.0.0",
 		"react-form": "github:ramilamparo/react-form",
-		"yup": "<1.0.0*"
+		"yup": "<1.0.0*",
+		"axios": "<1.0.0"
 	},
 	"devDependencies": {
 		"@types/jest": "^26.0.22",
@@ -48,5 +49,6 @@
 		"prettier-eslint-cli": "^5.0.1",
 		"ts-jest": "^26.5.4",
 		"typescript": "^4.2.4"
-	}
+	},
+	"dependencies": {}
 }

@@ -37,8 +37,7 @@ export abstract class BookingUtils {
 		from: number | Date,
 		to: number | Date,
 		bookingId?: number
-	): boolean => {
-		return bookings.some((booking) => {
+	): boolean => bookings.some((booking) => {
 			const taken = MathUtils.rangeOverlap(
 				DateUtils.getUnixTimestampFromDate(DateUtils.getDate(from)),
 				DateUtils.getUnixTimestampFromDate(DateUtils.getDate(to)),
@@ -50,5 +49,4 @@ export abstract class BookingUtils {
 			}
 			return false;
 		});
-	};
 }

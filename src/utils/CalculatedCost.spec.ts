@@ -3,24 +3,20 @@ import { CalculatedCost, BookingParams, CostParams } from "./CalculatedCost";
 
 const getBookingParams = (
 	overrides?: Partial<BookingParams>
-): BookingParams => {
-	return {
+): BookingParams => ({
 		from: new Date(),
 		to: new Date(),
 		startMileage: 100,
 		endMileage: 200,
 		...overrides
-	};
-};
+	});
 
-const getCostParams = (overrides?: Partial<CostParams>): CostParams => {
-	return {
+const getCostParams = (overrides?: Partial<CostParams>): CostParams => ({
 		bookingChargeUnit: BookingChargeUnit.KILOMETER,
 		bookingChargeCount: 5,
 		bookingCharge: 5,
 		...overrides
-	};
-};
+	});
 
 describe("CalculatedCost", () => {
 	describe("Free bookings", () => {

@@ -10,7 +10,7 @@ export abstract class BookingFormValidator {
 		values: Partial<BookingCreateFormValues>,
 		bookings: UserBookings[]
 	): FieldErrors<BookingCreateFormValues> => {
-		let errors: FieldErrors<BookingCreateFormValues> = BookingFormCreateValidator.validate(
+		const errors: FieldErrors<BookingCreateFormValues> = BookingFormCreateValidator.validate(
 			values,
 			bookings
 		);
