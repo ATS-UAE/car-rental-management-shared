@@ -37,13 +37,6 @@ var FormUtils = /** @class */ (function () {
         }
         return {};
     };
-    FormUtils.isAxiosError = function (e) {
-        var axiosError = e;
-        if (axiosError && axiosError.isAxiosError) {
-            return true;
-        }
-        return false;
-    };
     FormUtils.getErrorsFromApiError = function (e) {
         var _a;
         var fieldErrors = {};

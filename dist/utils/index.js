@@ -16,3 +16,4 @@ __exportStar(require("./DateUtils"), exports);
 __exportStar(require("./MathUtils"), exports);
 __exportStar(require("./StringUtils"), exports);
 __exportStar(require("./UserUtils"), exports);
+__exportStar(require("./FormUtils"), exports);
