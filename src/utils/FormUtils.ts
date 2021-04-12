@@ -30,16 +30,6 @@ export abstract class FormUtils {
 		return {};
 	};
 
-	private static isAxiosError = <Response>(
-		e: Error
-	): e is AxiosError<Response> => {
-		const axiosError = e as AxiosError;
-		if (axiosError && axiosError.isAxiosError) {
-			return true;
-		}
-		return false;
-	};
-
 	public static getErrorsFromApiError = <Values extends object>(
 		e: AxiosError<ServerResponseMeta> | Error
 	) => {
